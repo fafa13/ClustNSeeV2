@@ -16,11 +16,13 @@ package org.cytoscape.clustnsee3.internal.analysis;
 import java.util.Vector;
 
 import org.cytoscape.clustnsee3.internal.analysis.edge.CnSEdge;
+import org.cytoscape.model.CyEdge;
 
 public class CnSClusterLink {
 	private CnSCluster source, target;
 	private Vector<CnSEdge> edges;
 	private Vector<CnSNode> nodes;
+	private CyEdge cyEdge;
 	
 	public CnSClusterLink(CnSCluster source, CnSCluster target) {
 		super();
@@ -56,5 +58,11 @@ public class CnSClusterLink {
 	public boolean equals(Object o) {
 		CnSClusterLink e = (CnSClusterLink)o;
 		return (e.getSource() == source && e.getTarget() == target) || (e.getSource() == target && e.getTarget() == source);
+	}
+	public void setCyEdge(CyEdge ce) {
+		cyEdge = ce;
+	}
+	public CyEdge getCyEdge() {
+		return cyEdge;
 	}
 }

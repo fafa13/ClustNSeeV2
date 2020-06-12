@@ -13,6 +13,7 @@
 
 package org.cytoscape.clustnsee3.internal.gui.results;
 
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.EnumSet;
@@ -53,6 +54,9 @@ import org.cytoscape.view.model.CyNetworkView;
 import org.cytoscape.view.model.CyNetworkViewFactory;
 import org.cytoscape.view.model.CyNetworkViewManager;
 import org.cytoscape.view.model.View;
+import org.cytoscape.view.presentation.property.BasicVisualLexicon;
+import org.cytoscape.view.presentation.property.NodeShapeVisualProperty;
+import org.cytoscape.view.presentation.property.values.NodeShape;
 import org.cytoscape.work.TaskIterator;
 import org.cytoscape.work.TaskManager;
 
@@ -193,13 +197,14 @@ public class CnSResultsCommandPanel extends CnSPanel {
 	            	// create a new view for my network
 		            CyNetworkView clView = cnvf.createNetworkView(clNet);
 		            networkViewManager.addNetworkView(clView);
+		            for (CnSNode node : cluster.getNodes())
+		            	clView.getNodeView(node.getCyNode()).setVisualProperty(BasicVisualLexicon.NODE_FILL_COLOR, Color.BLUE);
 		            Vector<CyNetworkView> v = new Vector<CyNetworkView>();
 		            v.addElement(clView);
 		            TaskIterator tit = apltf.createTaskIterator(v);
 		            tm.execute(tit);
 		            
-		            
-	            	// Add a node in partition network
+		            // Add a node in partition network
 		            CyNode clNode = cluster.getCyNode();
 		            if (clNode == null) {
 		            	clNode = partNet.addNode();
@@ -215,7 +220,8 @@ public class CnSResultsCommandPanel extends CnSPanel {
 	            
 	            // Add links between cluster nodes
 	            for (CnSClusterLink clusterLink : partition.getClusterLinks()) {
-	            	partNet.addEdge(clusterLink.getSource().getCyNode(), clusterLink.getTarget().getCyNode(), false);
+	            	CyEdge ce = partNet.addEdge(clusterLink.getSource().getCyNode(), clusterLink.getTarget().getCyNode(), false);
+	            	clusterLink.setCyEdge(ce);
 	            }
 	            
 	            CnSCluster[] clusters = new CnSCluster[10];
@@ -256,6 +262,14 @@ public class CnSResultsCommandPanel extends CnSPanel {
 	            // create a new view for my network
 	            CyNetworkView myView = cnvf.createNetworkView(partNet);
 	            networkViewManager.addNetworkView(myView);
+	            for (CnSClusterLink clusterLink : partition.getClusterLinks()) {
+	            	CyEdge ce = clusterLink.getCyEdge();
+	            	myView.getEdgeView(ce).setVisualProperty(BasicVisualLexicon.EDGE_WIDTH, Double.valueOf(clusterLink.getEdges().size()));
+	            }
+	            for (CyNode no : partNet.getNodeList()) {
+	            	myView.getNodeView(no).setVisualProperty(BasicVisualLexicon.NODE_SHAPE, NodeShapeVisualProperty.ROUND_RECTANGLE);
+	            	myView.getNodeView(no).setVisualProperty(BasicVisualLexicon.NODE_FILL_COLOR, Color.PINK);
+	            }
 		        CyLayoutAlgorithm cla = clam.getLayout("circular");
 	            TaskIterator tit = cla.createTaskIterator(myView, cla.getDefaultLayoutContext(), new HashSet<View<CyNode>>(myView.getNodeViews()), "");
 	            tm.execute(tit);

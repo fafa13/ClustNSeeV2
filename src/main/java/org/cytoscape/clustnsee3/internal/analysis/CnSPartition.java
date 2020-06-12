@@ -16,9 +16,6 @@ package org.cytoscape.clustnsee3.internal.analysis;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Vector;
-import java.util.function.Consumer;
-
-import javax.swing.JOptionPane;
 
 import org.cytoscape.clustnsee3.internal.algorithm.CnSAlgorithmParameters;
 import org.cytoscape.clustnsee3.internal.analysis.edge.CnSEdge;
