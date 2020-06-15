@@ -28,6 +28,7 @@ public class CnSEventManager {
 	public static final int ALGORITHM_ENGINE = 6;
 	public static final int RESULTS_PANEL = 7;
 	public static final int CY_ACTIVATOR = 8;
+	public static final int VIEW_MANAGER = 9;
 	
 	private static CnSEventListener plugin;
 	private static CnSEventListener analysisManager;
@@ -37,6 +38,7 @@ public class CnSEventManager {
 	private static CnSEventListener algorithmManager;
 	private static CnSEventListener algorithmEngine;
 	private static CnSEventListener cyActivator;
+	private static CnSEventListener viewManager;
 	private static CnSEventManager instance;
 
 	private CnSEventManager() {
@@ -46,7 +48,7 @@ public class CnSEventManager {
 	public static CnSEventManager getCnsEventManager(CnSEventListener _plugin, 
 			CnSEventListener _analysisManager, CnSEventListener _clustnseeMenuManager,
 			CnSEventListener _dataPanel, CnSEventListener _resultsPanel, CnSEventListener _algorithmManager, 
-			CnSEventListener _algorithmEngine, CyActivator ca) {
+			CnSEventListener _algorithmEngine, CnSEventListener _viewManager, CyActivator ca) {
 		if (instance == null) {
 			instance = new CnSEventManager();
 			plugin = _plugin;
@@ -56,6 +58,7 @@ public class CnSEventManager {
 			resultsPanel = _resultsPanel;
 			algorithmManager = _algorithmManager;
 			algorithmEngine = _algorithmEngine;
+			viewManager = _viewManager;
 			cyActivator = ca;
 		}
 		return instance;
@@ -65,31 +68,42 @@ public class CnSEventManager {
 	    int target = event.getTarget();
 	    Object ret = null;
 	    switch (target) {
-	      case CLUSTNSEE_PLUGIN:
-	        if (plugin != null) ret = plugin.cnsEventOccured(event);
-	        break;
-	      case ANALYSIS_MANAGER:
-	        if (analysisManager != null) ret = analysisManager.cnsEventOccured(event);
-	        break;
-	      case CLUSTNSEE_MENU_MANAGER:
-	        if (clustnseeMenuManager != null) ret = clustnseeMenuManager.cnsEventOccured(event);
-	        break;
-	      case DATA_PANEL:
-	        if (dataPanel != null) ret = dataPanel.cnsEventOccured(event);
-	        break;
-	      case ALGORITHM_MANAGER:
-	        if (algorithmManager != null) ret = algorithmManager.cnsEventOccured(event);
-	        break;
-	      case ALGORITHM_ENGINE:
-	        if (algorithmEngine != null) ret = algorithmEngine.cnsEventOccured(event);
-	        break;
-	      case RESULTS_PANEL:
-	    	if (resultsPanel != null) ret = resultsPanel.cnsEventOccured(event);
-		    break;
+	      	case CLUSTNSEE_PLUGIN:
+	      		if (plugin != null) ret = plugin.cnsEventOccured(event);
+	      		break;
+	      		
+	      	case ANALYSIS_MANAGER:
+	      		if (analysisManager != null) ret = analysisManager.cnsEventOccured(event);
+	      		break;
+	      		
+	      	case CLUSTNSEE_MENU_MANAGER:
+	      		if (clustnseeMenuManager != null) ret = clustnseeMenuManager.cnsEventOccured(event);
+	      		break;
+	      		
+	      	case DATA_PANEL:
+	      		if (dataPanel != null) ret = dataPanel.cnsEventOccured(event);
+	      		break;
+	      		
+	      	case ALGORITHM_MANAGER:
+	      		if (algorithmManager != null) ret = algorithmManager.cnsEventOccured(event);
+	      		break;
+	      		
+	      	case ALGORITHM_ENGINE:
+	      		if (algorithmEngine != null) ret = algorithmEngine.cnsEventOccured(event);
+	      		break;
+	      		
+	      	case RESULTS_PANEL:
+	      		if (resultsPanel != null) ret = resultsPanel.cnsEventOccured(event);
+	      		break;
+	      		
+	      case VIEW_MANAGER:
+	    	  	if (viewManager != null) ret = viewManager.cnsEventOccured(event);
+	    	  	break;
+	    	  	
 	      case CY_ACTIVATOR:
-	    	if (cyActivator != null) ret = cyActivator.cnsEventOccured(event);
-	    	break;
+	    	  if (cyActivator != null) ret = cyActivator.cnsEventOccured(event);
+	    	  break;
 	    }
 	    return ret;
-	  }
+	}
 }

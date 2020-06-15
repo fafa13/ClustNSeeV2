@@ -28,6 +28,7 @@ import org.cytoscape.clustnsee3.internal.gui.control.CnSControlPanel;
 import org.cytoscape.clustnsee3.internal.gui.data.CnSpartitionDetailsPanel;
 import org.cytoscape.clustnsee3.internal.gui.menu.action.CnSMenuManager;
 import org.cytoscape.clustnsee3.internal.gui.results.CnSResultsPanel;
+import org.cytoscape.clustnsee3.internal.view.CnSViewManager;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -40,6 +41,7 @@ public class CnSClustnseePlugin implements CnSEventListener {
 	private CnSpartitionDetailsPanel dataPanel;
 	private CnSResultsPanel resultsPanel;
 	private CnSAlgorithmEngine algorithmEngine;
+	private CnSViewManager viewManager;
 	private static CyAppAdapter adapter;
 	
 	private static CnSClustnseePlugin instance;
@@ -57,7 +59,7 @@ public class CnSClustnseePlugin implements CnSEventListener {
 		resultsPanel = CnSResultsPanel.getInstance();
 		algorithmEngine = CnSAlgorithmEngine.getInstance();
 		CnSClustnseePlugin.adapter = appAdapter;
-		CnSEventManager.getCnsEventManager(this, analysisManager, menuManager, dataPanel, resultsPanel, algorithmManager, algorithmEngine, ca);
+		CnSEventManager.getCnsEventManager(this, analysisManager, menuManager, dataPanel, resultsPanel, algorithmManager, algorithmEngine, viewManager, ca);
 		CnSEvent ev = new CnSEvent(CnSAlgorithmManager.INIT, CnSEventManager.ALGORITHM_MANAGER);
 		CnSEventManager.handleMessage(ev);
 		ev = new CnSEvent(CnSClustnseePlugin.GET_PANEL, CnSEventManager.CLUSTNSEE_PLUGIN);
