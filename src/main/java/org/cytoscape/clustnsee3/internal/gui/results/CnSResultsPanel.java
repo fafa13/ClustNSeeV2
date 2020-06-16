@@ -37,6 +37,11 @@ import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventListener;
 import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
 import org.cytoscape.clustnsee3.internal.gui.widget.CnSPanel;
+import org.cytoscape.clustnsee3.internal.network.CnSNetwork;
+import org.cytoscape.clustnsee3.internal.network.CnSNetworkManager;
+import org.cytoscape.clustnsee3.internal.view.CnSView;
+import org.cytoscape.clustnsee3.internal.view.CnSViewManager;
+import org.cytoscape.clustnsee3.internal.view.state.CnSClusterViewState;
 import org.cytoscape.model.CyEdge;
 import org.cytoscape.model.CyNetwork;
 import org.cytoscape.model.CyNetworkManager;
@@ -68,7 +73,7 @@ public class CnSResultsPanel extends CnSPanel implements CytoPanelComponent, CnS
 	private CnSResultsCommandPanel commandPanel;
 	private Vector<CnSPartition> partitions;
 	private JTabbedPane jtp;
-	private CnSAlgorithmResult result;
+	//private CnSAlgorithmResult result;
 	
 	public static final int PARTITION = 1001;
 	public static final int RESULT = 1003;
@@ -179,7 +184,6 @@ public class CnSResultsPanel extends CnSPanel implements CytoPanelComponent, CnS
         HashMap<Integer, Long> algo_to_cyto = result.getAlgoToCyto();
         for( int k = 0; k < NbClas; k++) {
             CnSCluster newCluster = new CnSCluster();
-            newCluster.setNetwork(currentNetwork);
             Vector<CnSNode> alNodes = new Vector<CnSNode>();
             Vector<CnSEdge> alEdges = new Vector<CnSEdge>();
             Vector<CnSEdge> extEdges = new Vector<CnSEdge>();
@@ -215,7 +219,8 @@ public class CnSResultsPanel extends CnSPanel implements CytoPanelComponent, CnS
             
             // Create a new network
             myNet = crn.addSubNetwork(); //networkFactory.createNetwork();
-            	  
+            newCluster.setNetwork(myNet);
+            
             // Add the network to Cytoscape
             networkManager.addNetwork(myNet);
             
@@ -237,8 +242,17 @@ public class CnSResultsPanel extends CnSPanel implements CytoPanelComponent, CnS
             FTTaskObserver to = new FTTaskObserver(myView, newCluster);
             tm.execute(tit, to);
             
-            networkViewManager.destroyNetworkView(myView);
-            networkManager.destroyNetwork(myNet);
+            CnSView view = new CnSView(myNet, myView, new CnSClusterViewState(newCluster));
+            ev = new CnSEvent(CnSViewManager.ADD_VIEW, CnSEventManager.VIEW_MANAGER);
+            ev.addParameter(CnSViewManager.VIEW, view);
+            CnSEventManager.handleMessage(ev);
+            //networkViewManager.destroyNetworkView(myView);
+            
+            CnSNetwork network = new CnSNetwork(myNet);
+            ev = new CnSEvent(CnSNetworkManager.ADD_NETWORK, CnSEventManager.NETWORK_MANAGER);
+            ev.addParameter(CnSNetworkManager.NETWORK, network);
+            CnSEventManager.handleMessage(ev);
+            //networkManager.destroyNetwork(myNet);
             
             newPartition.addCluster(newCluster);
         }

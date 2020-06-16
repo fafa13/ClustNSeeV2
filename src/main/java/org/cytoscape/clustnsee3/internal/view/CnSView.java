@@ -48,4 +48,15 @@ public class CnSView {
 	public void setName(String name) {
 		this.name = name;
 	}
+	public Object getReference() {
+		return state.getReference();
+	}
+	public CnSViewState getState() {
+		return state;
+	}
+	public boolean equals(Object o) {
+		if (o == null) return false;
+		CnSView v = (CnSView)o;
+		return state.equals(v.getState()) && view == v.getView() && network == v.getNetwork() && v.getName() == name;
+	}
 }

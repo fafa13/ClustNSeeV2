@@ -31,4 +31,10 @@ public abstract class CnSViewState {
 	public void clearReference() {
 		reference = null;
 	}
+	public boolean equals(Object o) {
+		if (reference == null || o == null) return false;
+		CnSViewState s = (CnSViewState)o;
+		if (s.getReference() == null) return false;
+		return s.getReference().equals(reference);
+	}
 }

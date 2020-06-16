@@ -23,6 +23,7 @@ import org.cytoscape.clustnsee3.internal.analysis.edge.CnSEdge;
 import org.cytoscape.model.CyEdge;
 import org.cytoscape.model.CyNetwork;
 import org.cytoscape.model.CyNode;
+import org.cytoscape.model.subnetwork.CySubNetwork;
 
 /**
  * 
@@ -32,7 +33,7 @@ public class CnSCluster implements Comparable<CnSCluster> {
 	private double modularity;
 	private ImageIcon snapshot = null;
 	private String name;
-	private CyNetwork rootNetwork;
+	private CySubNetwork network;
 	
 	private Vector<CnSNode> alNodes;
 	private Vector<CnSEdge> alEdges;
@@ -40,8 +41,8 @@ public class CnSCluster implements Comparable<CnSCluster> {
 	
 	private CyNode cyNode;
 	
-	public CyNetwork getRootNetwork() {
-		return rootNetwork;
+	public CySubNetwork getNetwork() {
+		return network;
 	}
 	public int getNbNodes() {
 		return alNodes.size();
@@ -75,8 +76,8 @@ public class CnSCluster implements Comparable<CnSCluster> {
 		}
 		return ret;
 	}
-	public void setNetwork(CyNetwork network) {
-		rootNetwork = network;
+	public void setNetwork(CySubNetwork network) {
+		this.network = network;
 	}
 	public void setNodes(Vector<CnSNode> alNodes) {
 		this.alNodes = alNodes;
@@ -110,7 +111,7 @@ public class CnSCluster implements Comparable<CnSCluster> {
         int totalDegree = 0;
         Vector<CnSNode> nodes = getNodes();
         for( CnSNode node : nodes) {											// for each node in merged C1
-            totalDegree += rootNetwork.getNeighborList(rootNetwork.getNode(node.getSUID()), CyEdge.Type.ANY).size();	// can this be useful?
+            totalDegree += network.getRootNetwork().getNeighborList(network.getRootNetwork().getNode(node.getSUID()), CyEdge.Type.ANY).size();	// can this be useful?
         }
         int outDegree = totalDegree / 2 - inDegree;
         this.setInDegree( inDegree);

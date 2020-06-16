@@ -20,4 +20,9 @@ import org.cytoscape.clustnsee3.internal.gui.widget.CnSPanel;
  */
 public class CnSPartitionPanel extends CnSPanel {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3256976145066736277L;
+
 }

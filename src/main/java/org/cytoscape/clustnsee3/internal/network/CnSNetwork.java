@@ -2,7 +2,7 @@
 /* Copyright (C) 2018 TAGC, Luminy, Marseille
 /*
 /* @author Fabrice Lopez (TAGC/BCF, Luminy, Marseille)
-/* @date 2 juin 2020
+/* @date 16 juin 2020
 /*
 /* with contributions from:
 /* Lionel Spinelli (CIML/TAGC, Luminy, Marseille)
@@ -11,22 +11,20 @@
 /* Philippe Gambette (LIGM, Marne-la-Vallée)
  */
 
-package org.cytoscape.clustnsee3.internal.analysis.edge;
+package org.cytoscape.clustnsee3.internal.network;
 
-import org.cytoscape.clustnsee3.internal.analysis.CnSCluster;
-import org.cytoscape.model.CyEdge;
+import org.cytoscape.model.CyNetwork;
 
 /**
  * 
  */
-public class CnSNodeEdge extends CnSEdge {
-
-	/**
-	 * @param
-	 * @return
-	 */
-	public CnSNodeEdge(CyEdge cyEdge, CnSCluster cluster) {
-		super(cyEdge, cluster);
+public class CnSNetwork {
+	private CyNetwork network;
+	
+	public CnSNetwork(CyNetwork network) {
+		this.network = network;
 	}
-
+	public CyNetwork getNetwork() {
+		return network;
+	}
 }

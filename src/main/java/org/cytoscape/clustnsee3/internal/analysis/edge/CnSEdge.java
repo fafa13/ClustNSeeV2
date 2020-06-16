@@ -13,8 +13,6 @@
 
 package org.cytoscape.clustnsee3.internal.analysis.edge;
 
-import javax.swing.JOptionPane;
-
 import org.cytoscape.clustnsee3.internal.analysis.CnSCluster;
 import org.cytoscape.model.CyEdge;
 

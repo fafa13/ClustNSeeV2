@@ -20,7 +20,6 @@ import java.util.Vector;
 import org.cytoscape.clustnsee3.internal.algorithm.CnSAlgorithmParameters;
 import org.cytoscape.clustnsee3.internal.analysis.edge.CnSEdge;
 import org.cytoscape.clustnsee3.internal.analysis.edge.CnSEdgeS;
-import org.cytoscape.clustnsee3.internal.analysis.edge.CnSNodeEdge;
 import org.cytoscape.model.CyEdge;
 import org.cytoscape.model.CyNode;
 
@@ -102,7 +101,7 @@ public class CnSPartition {
 			cnsEdge.addCluster(cluster);
 		}
 		else {
-			cnsEdge = new CnSNodeEdge(edge, cluster);
+			cnsEdge = new CnSEdge(edge, cluster);
 			edges.addEdge(cnsEdge);
 		}
 		return cnsEdge;

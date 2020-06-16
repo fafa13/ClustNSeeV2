@@ -36,11 +36,19 @@ public class CnSViewManager implements CnSEventListener {
 	
 	private Vector<CnSView> views;
 	private CnSView selectedView;
+	private static CnSViewManager instance = null;
 	
-	public CnSViewManager() {
+	private CnSViewManager() {
 		super();
 		views = new Vector<CnSView>();
 		selectedView = null;
+	}
+	
+	public static CnSViewManager getInstance() {
+		if (instance == null) {
+			instance = new CnSViewManager();
+		}
+		return instance;
 	}
 
 	/* (non-Javadoc)
@@ -77,7 +85,14 @@ public class CnSViewManager implements CnSEventListener {
 				break;
 				
 			case GET_VIEW :
-				
+				Object reference = event.getParameter(REFERENCE);
+				if (reference != null)
+					for (CnSView v : views)
+						if (v.getReference() != null)
+							if (v.getReference().equals(reference)) {
+								ret = v;
+								break;
+							}
 				break;
 		}
 		return ret;

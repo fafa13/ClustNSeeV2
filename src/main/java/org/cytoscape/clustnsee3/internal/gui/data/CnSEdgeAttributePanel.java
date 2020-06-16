@@ -20,4 +20,9 @@ import org.cytoscape.clustnsee3.internal.gui.widget.CnSPanel;
  */
 public class CnSEdgeAttributePanel extends CnSPanel {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3647642038034366071L;
+
 }

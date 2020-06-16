@@ -57,7 +57,7 @@ public class CnSNodeListTableModel extends AbstractTableModel {
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		// TODO Auto-generated method stub
 		if (columnIndex == 0)
-			return cluster.getRootNetwork().getRow(cluster.getNodes().get(rowIndex).getCyNode()).get(CyNetwork.NAME, String.class);
+			return cluster.getNetwork().getRootNetwork().getRow(cluster.getNodes().get(rowIndex).getCyNode()).get(CyNetwork.NAME, String.class);
 		else if (columnIndex == 1)
 			return cluster.getNodes().get(rowIndex).getNbClusters();
 		else if (columnIndex == 2)
