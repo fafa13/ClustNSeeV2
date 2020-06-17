@@ -30,6 +30,13 @@ import org.cytoscape.clustnsee3.internal.gui.menu.action.CnSMenuManager;
 import org.cytoscape.clustnsee3.internal.gui.results.CnSResultsPanel;
 import org.cytoscape.clustnsee3.internal.network.CnSNetworkManager;
 import org.cytoscape.clustnsee3.internal.view.CnSViewManager;
+import org.cytoscape.model.events.AddedEdgesListener;
+import org.cytoscape.model.events.AddedNodesListener;
+import org.cytoscape.model.events.NetworkAboutToBeDestroyedListener;
+import org.cytoscape.model.events.RemovedEdgesListener;
+import org.cytoscape.model.events.RemovedNodesListener;
+import org.cytoscape.view.model.events.NetworkViewAboutToBeDestroyedListener;
+import org.cytoscape.view.model.events.ViewChangedListener;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -72,6 +79,11 @@ public class CnSClustnseePlugin implements CnSEventListener {
 		context.registerService(CytoPanelComponent.class.getName(), controlPanel, new Properties());
 		context.registerService(CytoPanelComponent.class.getName(), resultsPanel, new Properties());
 		context.registerService(CytoPanelComponent.class.getName(), dataPanel, new Properties());
+		context.registerService(RemovedNodesListener.class.getName(), viewManager, new Properties());
+		context.registerService(AddedNodesListener.class.getName(), viewManager, new Properties());
+		context.registerService(RemovedEdgesListener.class.getName(), viewManager, new Properties());
+		context.registerService(AddedEdgesListener.class.getName(), viewManager, new Properties());
+		context.registerService(NetworkViewAboutToBeDestroyedListener.class.getName(), viewManager, new Properties());
 	}
 	
 	public static CnSClustnseePlugin getInstance(BundleContext context, CyAppAdapter appAdapter, CyActivator ca) {

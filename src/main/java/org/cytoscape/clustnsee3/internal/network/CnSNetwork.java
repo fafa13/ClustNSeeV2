@@ -27,4 +27,7 @@ public class CnSNetwork {
 	public CyNetwork getNetwork() {
 		return network;
 	}
+	public String getName() {
+		return network.getRow(network).get(CyNetwork.NAME, String.class);
+	}
 }

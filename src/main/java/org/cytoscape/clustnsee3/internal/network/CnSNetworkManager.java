@@ -24,8 +24,11 @@ import org.cytoscape.model.CyNetwork;
  */
 public class CnSNetworkManager implements CnSEventListener {
 	public static final int ADD_NETWORK = 1;
+	public static final int RENAME_NETWORK = 2;
+	public static final int REMOVE_NETWORK = 3;
 	
 	public static final int NETWORK = 1000;
+	public static final int NETWORK_NAME = 1001;
 	
 	private Vector<CnSNetwork> networks;
 	
@@ -53,11 +56,23 @@ public class CnSNetworkManager implements CnSEventListener {
 	@Override
 	public Object cnsEventOccured(CnSEvent event) {
 		Object ret = null;
+		CnSNetwork network = null;
 		
 		switch (event.getAction()) {
 			case ADD_NETWORK :
-				CnSNetwork network = (CnSNetwork)event.getParameter(NETWORK);
+				network = (CnSNetwork)event.getParameter(NETWORK);
 				if (!networks.contains(network)) networks.addElement(network);
+				break;
+			
+			case RENAME_NETWORK :
+				network = (CnSNetwork)event.getParameter(NETWORK);
+				String networkName = (String)event.getParameter(NETWORK_NAME);
+				network.getNetwork().getRow(network.getNetwork()).set(CyNetwork.NAME, networkName);
+				break;
+				
+			case REMOVE_NETWORK :
+				network = (CnSNetwork)event.getParameter(NETWORK);
+				networks.removeElement(network);
 				break;
 		}
 		return ret;

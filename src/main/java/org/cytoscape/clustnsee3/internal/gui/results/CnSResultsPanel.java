@@ -242,17 +242,18 @@ public class CnSResultsPanel extends CnSPanel implements CytoPanelComponent, CnS
             FTTaskObserver to = new FTTaskObserver(myView, newCluster);
             tm.execute(tit, to);
             
-            CnSView view = new CnSView(myNet, myView, new CnSClusterViewState(newCluster));
-            ev = new CnSEvent(CnSViewManager.ADD_VIEW, CnSEventManager.VIEW_MANAGER);
-            ev.addParameter(CnSViewManager.VIEW, view);
-            CnSEventManager.handleMessage(ev);
-            //networkViewManager.destroyNetworkView(myView);
             
             CnSNetwork network = new CnSNetwork(myNet);
             ev = new CnSEvent(CnSNetworkManager.ADD_NETWORK, CnSEventManager.NETWORK_MANAGER);
             ev.addParameter(CnSNetworkManager.NETWORK, network);
             CnSEventManager.handleMessage(ev);
             //networkManager.destroyNetwork(myNet);
+            
+            CnSView view = new CnSView(network, myView, new CnSClusterViewState(newCluster));
+            ev = new CnSEvent(CnSViewManager.ADD_VIEW, CnSEventManager.VIEW_MANAGER);
+            ev.addParameter(CnSViewManager.VIEW, view);
+            CnSEventManager.handleMessage(ev);
+            //networkViewManager.destroyNetworkView(myView);
             
             newPartition.addCluster(newCluster);
         }

@@ -13,8 +13,8 @@
 
 package org.cytoscape.clustnsee3.internal.view;
 
+import org.cytoscape.clustnsee3.internal.network.CnSNetwork;
 import org.cytoscape.clustnsee3.internal.view.state.CnSViewState;
-import org.cytoscape.model.CyNetwork;
 import org.cytoscape.view.model.CyNetworkView;
 
 /**
@@ -23,15 +23,13 @@ import org.cytoscape.view.model.CyNetworkView;
 public class CnSView {
 	private CnSViewState state;
 	private CyNetworkView view;
-	private CyNetwork network;
-	private String name;
+	private CnSNetwork network;
 	
-	public CnSView(CyNetwork network, CyNetworkView view, CnSViewState state) {
+	public CnSView(CnSNetwork network, CyNetworkView view, CnSViewState state) {
 		super();
 		this.view = view;
 		this.network = network;
 		setViewState(state);
-		name = "View";
 	}
 	public void setViewState(CnSViewState state) {
 		this.state = state;
@@ -39,14 +37,8 @@ public class CnSView {
 	public CyNetworkView getView() {
 		return view;
 	}
-	public CyNetwork getNetwork() {
+	public CnSNetwork getNetwork() {
 		return network;
-	}
-	public String getName() {
-		return name;
-	}
-	public void setName(String name) {
-		this.name = name;
 	}
 	public Object getReference() {
 		return state.getReference();
@@ -57,6 +49,6 @@ public class CnSView {
 	public boolean equals(Object o) {
 		if (o == null) return false;
 		CnSView v = (CnSView)o;
-		return state.equals(v.getState()) && view == v.getView() && network == v.getNetwork() && v.getName() == name;
+		return state.equals(v.getState()) && view == v.getView() && network == v.getNetwork()/* && v.getName() == name*/;
 	}
 }

@@ -37,6 +37,8 @@ import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
 import org.cytoscape.clustnsee3.internal.gui.widget.CnSButton;
 import org.cytoscape.clustnsee3.internal.gui.widget.CnSPanel;
+import org.cytoscape.clustnsee3.internal.network.CnSNetwork;
+import org.cytoscape.clustnsee3.internal.network.CnSNetworkManager;
 import org.cytoscape.clustnsee3.internal.view.CnSView;
 import org.cytoscape.clustnsee3.internal.view.CnSViewManager;
 import org.cytoscape.clustnsee3.internal.view.state.CnSClusterViewState;
@@ -151,7 +153,16 @@ public class CnSResultsCommandPanel extends CnSPanel {
 	            	FTTaskObserver to = new FTTaskObserver(myView, newCluster);
 	            	tm.execute(tit, to);
 	            
-	            	view = new CnSView(myNet, myView, new CnSClusterViewState(newCluster));
+	            	CnSNetwork network = new CnSNetwork(myNet);
+	                ev = new CnSEvent(CnSNetworkManager.ADD_NETWORK, CnSEventManager.NETWORK_MANAGER);
+	                ev.addParameter(CnSNetworkManager.NETWORK, network);
+	                CnSEventManager.handleMessage(ev);
+	                ev = new CnSEvent(CnSNetworkManager.RENAME_NETWORK, CnSEventManager.NETWORK_MANAGER);
+	                ev.addParameter(CnSNetworkManager.NETWORK, network);
+	                ev.addParameter(CnSNetworkManager.NETWORK_NAME, newCluster.getName());
+	                CnSEventManager.handleMessage(ev);
+	                    
+	            	view = new CnSView(network, myView, new CnSClusterViewState(newCluster));
 	            	ev = new CnSEvent(CnSViewManager.ADD_VIEW, CnSEventManager.VIEW_MANAGER);
 	            	ev.addParameter(CnSViewManager.VIEW, view);
 	            	CnSEventManager.handleMessage(ev);
@@ -159,7 +170,7 @@ public class CnSResultsCommandPanel extends CnSPanel {
 				else {
 					ev = new CnSEvent(CyActivator.GET_APPLICATION_MANAGER, CnSEventManager.CY_ACTIVATOR);
 			        CyApplicationManager applicationManager = (CyApplicationManager)CnSEventManager.handleMessage(ev);
-			        applicationManager.setCurrentNetwork(view.getNetwork());
+			        applicationManager.setCurrentNetwork(view.getNetwork().getNetwork());
 				}
 	        }
 		});
@@ -229,10 +240,14 @@ public class CnSResultsCommandPanel extends CnSPanel {
 							// create a new view for my network
 							CyNetworkView clView = cnvf.createNetworkView(clNet);
 							networkViewManager.addNetworkView(clView);
-		            
+							
+							CnSNetwork network = new CnSNetwork(clNet);
+			                ev = new CnSEvent(CnSNetworkManager.ADD_NETWORK, CnSEventManager.NETWORK_MANAGER);
+			                ev.addParameter(CnSNetworkManager.NETWORK, network);
+			                CnSEventManager.handleMessage(ev);
+							
 							// register the view
-							CnSView view = new CnSView(clNet, clView, new CnSClusterViewState(cluster));
-							view.setName(cluster.getName());
+							CnSView view = new CnSView(network, clView, new CnSClusterViewState(cluster));
 							ev = new CnSEvent(CnSViewManager.ADD_VIEW, CnSEventManager.VIEW_MANAGER);
 							ev.addParameter(CnSViewManager.VIEW, view);
 							CnSEventManager.handleMessage(ev);
@@ -267,7 +282,7 @@ public class CnSResultsCommandPanel extends CnSPanel {
 						
 						
 					}
-					// Add links between cluster nodes
+					// Add interaction links between cluster nodes
 					for (CnSClusterLink clusterLink : partition.getClusterLinks()) {
 						if (clusterLink.getCyEdge() == null) {
 							CyEdge ce = partNet.addEdge(clusterLink.getSource().getCyNode(), clusterLink.getTarget().getCyNode(), false);
@@ -277,14 +292,21 @@ public class CnSResultsCommandPanel extends CnSPanel {
 							partNet.addEdge(clusterLink.getCyEdge());
 						}
 					}
-						
+					
 					// create a new view for my network
 					CyNetworkView cyView = cnvf.createNetworkView(partNet);
 					networkViewManager.addNetworkView(cyView);
 	            
 					for (CnSClusterLink clusterLink : partition.getClusterLinks()) {
 						CyEdge ce = clusterLink.getCyEdge();
-						cyView.getEdgeView(ce).setVisualProperty(BasicVisualLexicon.EDGE_WIDTH, Double.valueOf(clusterLink.getEdges().size()));
+						if (clusterLink.getNodes().size() > 0) {
+							cyView.getEdgeView(ce).setVisualProperty(BasicVisualLexicon.EDGE_WIDTH, Double.valueOf(clusterLink.getNodes().size()));
+							cyView.getEdgeView(ce).setVisualProperty(BasicVisualLexicon.EDGE_PAINT, Color.green);
+						}
+						else {
+							cyView.getEdgeView(ce).setVisualProperty(BasicVisualLexicon.EDGE_WIDTH, Double.valueOf(clusterLink.getEdges().size()));
+							cyView.getEdgeView(ce).setVisualProperty(BasicVisualLexicon.EDGE_PAINT, Color.blue);
+						}
 					}
 					for (CyNode no : partNet.getNodeList()) {
 						cyView.getNodeView(no).setVisualProperty(BasicVisualLexicon.NODE_SHAPE, NodeShapeVisualProperty.ROUND_RECTANGLE);
@@ -295,8 +317,12 @@ public class CnSResultsCommandPanel extends CnSPanel {
 					TaskIterator tit = cla.createTaskIterator(cyView, cla.getDefaultLayoutContext(), new HashSet<View<CyNode>>(cyView.getNodeViews()), "");
 					tm.execute(tit);
 					
-					myView = new CnSView(partNet, cyView, new CnSPartitionViewState(partition));
-					myView.setName(partition.getNetworkName() + ":" + partition.getAlgorithmName());
+					CnSNetwork network = new CnSNetwork(partNet);
+	                ev = new CnSEvent(CnSNetworkManager.ADD_NETWORK, CnSEventManager.NETWORK_MANAGER);
+	                ev.addParameter(CnSNetworkManager.NETWORK, network);
+	                CnSEventManager.handleMessage(ev);
+					
+					myView = new CnSView(network, cyView, new CnSPartitionViewState(partition));
 					ev = new CnSEvent(CnSViewManager.ADD_VIEW, CnSEventManager.VIEW_MANAGER);
 					ev.addParameter(CnSViewManager.VIEW, myView);
 					CnSEventManager.handleMessage(ev);
@@ -304,7 +330,7 @@ public class CnSResultsCommandPanel extends CnSPanel {
 					
 				ev = new CnSEvent(CyActivator.GET_APPLICATION_MANAGER, CnSEventManager.CY_ACTIVATOR);
 				CyApplicationManager applicationManager = (CyApplicationManager)CnSEventManager.handleMessage(ev);
-				applicationManager.setCurrentNetwork(myView.getNetwork());
+				applicationManager.setCurrentNetwork(myView.getNetwork().getNetwork());
 			}
 		});
 	}
