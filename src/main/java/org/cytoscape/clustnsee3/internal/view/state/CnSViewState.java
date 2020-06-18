@@ -37,4 +37,7 @@ public abstract class CnSViewState {
 		if (s.getReference() == null) return false;
 		return s.getReference().equals(reference);
 	}
+	public boolean isUserView() {
+		return false;
+	}
 }

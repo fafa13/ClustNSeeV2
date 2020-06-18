@@ -20,7 +20,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import org.cytoscape.clustnsee3.internal.algorithm.CnSAlgorithm;
-import org.cytoscape.clustnsee3.internal.analysis.AnalysisTask;
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
 import org.cytoscape.model.CyEdge;
@@ -487,7 +486,7 @@ public class CnSOCGAlgorithm extends CnSAlgorithm {
      * @param analysis The contextual analysis
      */
     private void readNetwork( CyNetwork inputNetwork) {
-    	Logger LOGGER = LoggerFactory.getLogger(AnalysisTask.class);
+    	Logger LOGGER = LoggerFactory.getLogger(this.getClass());
         CnSEvent ev = new CnSEvent(CnSAlgorithmEngine.GET_SCOPE, CnSEventManager.ALGORITHM_ENGINE);
         String scope = (String)CnSEventManager.handleMessage(ev);
 
@@ -650,7 +649,7 @@ public class CnSOCGAlgorithm extends CnSAlgorithm {
      * @return
      */
     private int Clique() {
-    	Logger LOGGER = LoggerFactory.getLogger(AnalysisTask.class);
+    	Logger LOGGER = LoggerFactory.getLogger(this.getClass());
         if( verbose == 1) {
             LOGGER.debug("Starting Initial classes : maximal cliques");
         }
@@ -818,7 +817,7 @@ public class CnSOCGAlgorithm extends CnSAlgorithm {
      * @return
      */
     private int ClasArete( int CardMax) {
-    	Logger LOGGER = LoggerFactory.getLogger(AnalysisTask.class);
+    	Logger LOGGER = LoggerFactory.getLogger(this.getClass());
         if( verbose == 1) {
             LOGGER.debug("Starting Initial classes : edges");
         }
@@ -851,7 +850,7 @@ public class CnSOCGAlgorithm extends CnSAlgorithm {
      * @return
      */
     private int StarCliq() {
-    	Logger LOGGER = LoggerFactory.getLogger(AnalysisTask.class);
+    	Logger LOGGER = LoggerFactory.getLogger(this.getClass());
         if( verbose == 1) {
             LOGGER.debug("Starting Initial classes : centered cliques");
         }

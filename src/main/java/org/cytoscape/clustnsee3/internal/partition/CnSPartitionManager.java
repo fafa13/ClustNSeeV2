@@ -11,9 +11,8 @@
 /* Philippe Gambette (LIGM, Marne-la-Vallée)
  */
 
-package org.cytoscape.clustnsee3.internal.analysis;
+package org.cytoscape.clustnsee3.internal.partition;
 
-import java.util.Iterator;
 import java.util.Vector;
 
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
@@ -22,16 +21,21 @@ import org.cytoscape.clustnsee3.internal.event.CnSEventListener;
 /**
  * 
  */
-public class CnSPartitionHandler implements CnSEventListener {
+public class CnSPartitionManager implements CnSEventListener {
+	public static final int ADD_PARTITON = 1;
+	public static final int GET_PARTITION = 2;
+	
+	public static final int PARTITION = 1000;
+	public static final int PARTITION_INDEX = 1001;
+	
+	private static CnSPartitionManager instance;
+	private Vector<CnSPartition> partitions;
+	
 	/**
 	 * @param
 	 * @return
 	 */
-	
-	private static CnSPartitionHandler instance;
-	private Vector<CnSPartition> partitions;
-	
-	private CnSPartitionHandler() {
+	private CnSPartitionManager() {
 		super();
 		partitions = new Vector<CnSPartition>();
 	}
@@ -41,8 +45,22 @@ public class CnSPartitionHandler implements CnSEventListener {
 	 */
 	@Override
 	public Object cnsEventOccured(CnSEvent event) {
-		// TODO Auto-generated method stub
-		return null;
+		Object ret = null;
+		
+		switch (event.getAction()) {
+			case ADD_PARTITON :
+				CnSPartition p = (CnSPartition)event.getParameter(PARTITION);
+				if (!partitions.contains(p)) partitions.addElement(p);
+ 				break;
+				
+			case GET_PARTITION :
+				Integer index = (Integer)event.getParameter(PARTITION_INDEX);
+				if (index != null)
+					if (partitions.size() > index.intValue())
+						ret = partitions.elementAt(index.intValue());
+				break;
+		}
+		return ret;
 	}
 
 	/**
@@ -50,20 +68,10 @@ public class CnSPartitionHandler implements CnSEventListener {
 	 * @param
 	 * @return
 	 */
-	public static CnSPartitionHandler getInstance() {
+	public static CnSPartitionManager getInstance() {
 		if (instance == null)
-			instance = new CnSPartitionHandler();
+			instance = new CnSPartitionManager();
 		return instance;
-	}
-	public void addPartition(CnSPartition partition) {
-		if (partition != null) partitions.addElement(partition);
-	}
-
-	/* (non-Javadoc)
-	 * @see java.lang.Iterable#iterator()
-	 */
-	public Iterator<CnSPartition> getPartitionIterator() {
-		return partitions.iterator();
 	}
 }
 

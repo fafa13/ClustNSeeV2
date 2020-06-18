@@ -19,6 +19,7 @@ import java.util.Vector;
 import javax.swing.JOptionPane;
 
 import org.cytoscape.clustnsee3.internal.CyActivator;
+import org.cytoscape.clustnsee3.internal.analysis.CnSCluster;
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventListener;
 import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
@@ -26,21 +27,19 @@ import org.cytoscape.clustnsee3.internal.network.CnSNetworkManager;
 import org.cytoscape.clustnsee3.internal.view.state.CnSUserViewState;
 import org.cytoscape.clustnsee3.internal.view.state.CnSViewState;
 import org.cytoscape.event.AbstractCyEvent;
-import org.cytoscape.model.CyEdge;
 import org.cytoscape.model.CyNetwork;
 import org.cytoscape.model.CyNode;
+import org.cytoscape.model.CyRow;
 import org.cytoscape.model.events.AddedEdgesEvent;
 import org.cytoscape.model.events.AddedEdgesListener;
 import org.cytoscape.model.events.AddedNodesEvent;
 import org.cytoscape.model.events.AddedNodesListener;
-import org.cytoscape.model.events.NetworkAboutToBeDestroyedEvent;
-import org.cytoscape.model.events.NetworkAboutToBeDestroyedListener;
-import org.cytoscape.model.events.NetworkDestroyedEvent;
-import org.cytoscape.model.events.NetworkDestroyedListener;
 import org.cytoscape.model.events.RemovedEdgesEvent;
 import org.cytoscape.model.events.RemovedEdgesListener;
 import org.cytoscape.model.events.RemovedNodesEvent;
 import org.cytoscape.model.events.RemovedNodesListener;
+import org.cytoscape.model.events.UnsetNetworkPointerEvent;
+import org.cytoscape.model.events.UnsetNetworkPointerListener;
 import org.cytoscape.view.model.CyNetworkView;
 import org.cytoscape.view.model.CyNetworkViewManager;
 import org.cytoscape.view.model.events.NetworkViewAboutToBeDestroyedEvent;
@@ -51,17 +50,19 @@ import org.cytoscape.view.model.events.ViewChangedEvent;
  * 
  */
 public class CnSViewManager implements CnSEventListener, RemovedNodesListener, AddedNodesListener, 
-RemovedEdgesListener, AddedEdgesListener, NetworkViewAboutToBeDestroyedListener {
+RemovedEdgesListener, AddedEdgesListener, NetworkViewAboutToBeDestroyedListener, UnsetNetworkPointerListener {
 	public static final int ADD_VIEW = 1;
 	public static final int DELETE_VIEW = 2;
 	public static final int SET_SELECTED_VIEW = 3;
 	public static final int GET_SELECTED_VIEW = 4;
 	public static final int SET_STATE = 5;
 	public static final int GET_VIEW = 6;
+	public static final int SELECT_CLUSTER = 7;
 	
 	public static final int VIEW = 1000;
 	public static final int STATE = 1001;
 	public static final int REFERENCE = 1002;
+	public static final int CLUSTER = 1003;
 	
 	private Vector<CnSView> views;
 	private CnSView selectedView;
@@ -91,7 +92,7 @@ RemovedEdgesListener, AddedEdgesListener, NetworkViewAboutToBeDestroyedListener 
 		}
 		return ret;
 	}
-
+	
 	/* (non-Javadoc)
 	 * @see org.cytoscape.clustnsee3.internal.event.CnSEventListener#cnsEventOccured(org.cytoscape.clustnsee3.internal.event.CnSEvent)
 	 */
@@ -137,6 +138,17 @@ RemovedEdgesListener, AddedEdgesListener, NetworkViewAboutToBeDestroyedListener 
 								ret = v;
 								break;
 							}
+				break;
+				
+			case SELECT_CLUSTER :
+				CnSCluster cluster = (CnSCluster)event.getParameter(CLUSTER);
+				for (CnSView v : views) {
+					if (v.getView().getNodeView(cluster.getCyNode()) != null) {
+						Collection<CyRow> matchingRows = v.getNetwork().getNetwork().getTable(CyNode.class, CyNetwork.LOCAL_ATTRS).getMatchingRows("selected", true);
+						for (CyRow row : matchingRows) row.set("selected", false);
+						v.getNetwork().getNetwork().getRow(cluster.getCyNode()).set("selected", true);
+					}
+				}
 				break;
 		}
 		return ret;
@@ -206,11 +218,24 @@ RemovedEdgesListener, AddedEdgesListener, NetworkViewAboutToBeDestroyedListener 
 	@Override
 	public void handleEvent(NetworkViewAboutToBeDestroyedEvent e) {
 		CnSView cnsv = getView(e.getNetworkView());
-        if (cnsv != null) {
-        	views.removeElement(cnsv);
-        	CnSEvent ev = new CnSEvent(CnSNetworkManager.REMOVE_NETWORK, CnSEventManager.NETWORK_MANAGER);
-        	ev.addParameter(CnSNetworkManager.NETWORK, cnsv.getNetwork());
-        	CnSEventManager.handleMessage(ev);
-        }
+        if (cnsv != null) views.removeElement(cnsv);
+    }
+
+	/* (non-Javadoc)
+	 * @see org.cytoscape.model.events.UnsetNetworkPointerListener#handleEvent(org.cytoscape.model.events.SetNetworkPointerEvent)
+	 */
+	@Override
+	public void handleEvent(UnsetNetworkPointerEvent e) {
+		CnSEvent ev = new CnSEvent(CnSNetworkManager.RENAME_NETWORK, CnSEventManager.NETWORK_MANAGER);
+		for (CnSView v : views) {
+			if (v.getView().getNodeView(e.getNode()) != null) {
+				if (!v.isUserView()) {
+					v.setViewState(new CnSUserViewState());
+					ev.addParameter(CnSNetworkManager.NETWORK, v.getNetwork());
+					ev.addParameter(CnSNetworkManager.NETWORK_NAME, "Copy of " + v.getNetwork().getName());
+					CnSEventManager.handleMessage(ev);
+				}
+			}
+		}
 	}
 }

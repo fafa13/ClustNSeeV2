@@ -11,13 +11,17 @@
 /* Philippe Gambette (LIGM, Marne-la-Vallée)
  */
 
-package org.cytoscape.clustnsee3.internal.analysis;
+package org.cytoscape.clustnsee3.internal.partition;
 
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Vector;
 
 import org.cytoscape.clustnsee3.internal.algorithm.CnSAlgorithmParameters;
+import org.cytoscape.clustnsee3.internal.analysis.CnSCluster;
+import org.cytoscape.clustnsee3.internal.analysis.CnSClusterLink;
+import org.cytoscape.clustnsee3.internal.analysis.CnSNode;
+import org.cytoscape.clustnsee3.internal.analysis.CnSNodeS;
 import org.cytoscape.clustnsee3.internal.analysis.edge.CnSEdge;
 import org.cytoscape.clustnsee3.internal.analysis.edge.CnSEdgeS;
 import org.cytoscape.model.CyEdge;
@@ -114,8 +118,10 @@ public class CnSPartition {
 		return clusters;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void makeClusterLinks(CnSCluster cluster) {
 		Vector<CnSEdge> commonEdges = null;
+		Vector<CnSNode> commonNodes = null;
 		for (CnSCluster cl : clusters) {
 			if (cl != cluster) {
 				commonEdges = (Vector<CnSEdge>)cluster.getExtEdges().clone();
@@ -123,6 +129,14 @@ public class CnSPartition {
 				if (commonEdges.size() > 0) {
 					CnSClusterLink clusterLink = new CnSClusterLink(cluster, cl);
 					for (CnSEdge e : commonEdges) clusterLink.addEdge(e);
+					if (!clusterLinks.contains(clusterLink)) clusterLinks.addElement(clusterLink);
+				}
+				
+				commonNodes = (Vector<CnSNode>)cluster.getNodes().clone();
+				commonNodes.retainAll(cl.getNodes());
+				if (commonNodes.size() > 0) {
+					CnSClusterLink clusterLink = new CnSClusterLink(cluster, cl);
+					for (CnSNode n : commonNodes) clusterLink.addNode(n);
 					if (!clusterLinks.contains(clusterLink)) clusterLinks.addElement(clusterLink);
 				}
 			}

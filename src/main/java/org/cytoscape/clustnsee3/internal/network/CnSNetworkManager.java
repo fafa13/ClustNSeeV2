@@ -18,14 +18,18 @@ import java.util.Vector;
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventListener;
 import org.cytoscape.model.CyNetwork;
+import org.cytoscape.model.CyNode;
+import org.cytoscape.model.events.NetworkAboutToBeDestroyedEvent;
+import org.cytoscape.model.events.NetworkAboutToBeDestroyedListener;
 
 /**
  * 
  */
-public class CnSNetworkManager implements CnSEventListener {
+public class CnSNetworkManager implements CnSEventListener, NetworkAboutToBeDestroyedListener {
 	public static final int ADD_NETWORK = 1;
 	public static final int RENAME_NETWORK = 2;
 	public static final int REMOVE_NETWORK = 3;
+	public static final int GET_NETWORK = 4;
 	
 	public static final int NETWORK = 1000;
 	public static final int NETWORK_NAME = 1001;
@@ -73,9 +77,51 @@ public class CnSNetworkManager implements CnSEventListener {
 			case REMOVE_NETWORK :
 				network = (CnSNetwork)event.getParameter(NETWORK);
 				networks.removeElement(network);
+				
+				for (CnSNetwork net : networks) {
+					for (CyNode cn : net.getNetwork().getNodeList()) {
+						if (cn.getNetworkPointer() == network.getNetwork()) {
+							cn.setNetworkPointer(null);
+							
+						}
+					}
+	        	}
+				break;
+				
+			case GET_NETWORK :
+				ret = getNetwork((CyNetwork)event.getParameter(NETWORK));
 				break;
 		}
 		return ret;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.cytoscape.view.model.events.NetworkViewAboutToBeDestroyedListener#handleEvent(org.cytoscape.view.model.events.NetworkViewAboutToBeDestroyedEvent)
+	 */
+	@Override
+	public void handleEvent(NetworkAboutToBeDestroyedEvent e) {
+		CyNetwork n = e.getNetwork();
+		CnSNetwork network = getNetwork(n);
+		networks.removeElement(network);
+		
+		for (CnSNetwork net : networks) {
+			for (CyNode cn : net.getNetwork().getNodeList()) {
+				if (cn.getNetworkPointer() == network.getNetwork()) {
+					cn.setNetworkPointer(null);
+				}
+			}
+    	}
+	}
+	
+	private CnSNetwork getNetwork(CyNetwork n) {
+		CnSNetwork ret = null;
+		
+		for (CnSNetwork cnsn : networks) {
+			if (cnsn.getNetwork() == n) {
+				ret = cnsn;
+				break;
+			}
+		}
+		return ret;
+	}
 }

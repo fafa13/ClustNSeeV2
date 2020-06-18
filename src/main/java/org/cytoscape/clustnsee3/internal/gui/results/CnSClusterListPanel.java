@@ -17,7 +17,6 @@ import java.awt.Color;
 import java.util.Iterator;
 import java.util.Vector;
 
-//import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
@@ -29,6 +28,7 @@ import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
 import org.cytoscape.clustnsee3.internal.gui.data.CnSpartitionDetailsPanel;
 import org.cytoscape.clustnsee3.internal.gui.widget.CnSPanel;
+import org.cytoscape.clustnsee3.internal.view.CnSViewManager;
 
 /**
  * 
@@ -61,6 +61,10 @@ public class CnSClusterListPanel extends CnSPanel {
 						CnSCluster cluster = (CnSCluster)model.getValueAt(table.getSelectionModel().getMaxSelectionIndex(), 1);
 						CnSEvent ev = new CnSEvent(CnSpartitionDetailsPanel.INIT, CnSEventManager.DATA_PANEL);
 						ev.addParameter(CnSpartitionDetailsPanel.CLUSTER, cluster);
+						CnSEventManager.handleMessage(ev);
+						
+						ev = new CnSEvent(CnSViewManager.SELECT_CLUSTER, CnSEventManager.VIEW_MANAGER);
+						ev.addParameter(CnSViewManager.CLUSTER, cluster);
 						CnSEventManager.handleMessage(ev);
 					}
 			}

@@ -15,6 +15,7 @@ package org.cytoscape.clustnsee3.internal.event;
 
 import org.cytoscape.clustnsee3.internal.CyActivator;
 import org.cytoscape.clustnsee3.internal.network.CnSNetworkManager;
+import org.cytoscape.clustnsee3.internal.partition.CnSPartitionManager;
 
 /**
  * This class is an implementation of the Mediator pattern. It's goal is to organize the 
@@ -31,6 +32,7 @@ public class CnSEventManager {
 	public static final int CY_ACTIVATOR = 8;
 	public static final int VIEW_MANAGER = 9;
 	public static final int NETWORK_MANAGER = 10;
+	public static final int PARTITION_MANAGER = 11;
 	
 	private static CnSEventListener plugin;
 	private static CnSEventListener analysisManager;
@@ -42,6 +44,8 @@ public class CnSEventManager {
 	private static CnSEventListener cyActivator;
 	private static CnSEventListener viewManager;
 	private static CnSNetworkManager networkManager;
+	private static CnSPartitionManager partitionManager;
+	
 	private static CnSEventManager instance;
 
 	private CnSEventManager() {
@@ -51,7 +55,7 @@ public class CnSEventManager {
 	public static CnSEventManager getCnsEventManager(CnSEventListener _plugin, 
 			CnSEventListener _analysisManager, CnSEventListener _clustnseeMenuManager,
 			CnSEventListener _dataPanel, CnSEventListener _resultsPanel, CnSEventListener _algorithmManager, 
-			CnSEventListener _algorithmEngine, CnSEventListener _viewManager, CnSNetworkManager _networkManager, CyActivator ca) {
+			CnSEventListener _algorithmEngine, CnSEventListener _viewManager, CnSNetworkManager _networkManager, CnSPartitionManager _partitionManager, CyActivator ca) {
 		if (instance == null) {
 			instance = new CnSEventManager();
 			plugin = _plugin;
@@ -63,6 +67,7 @@ public class CnSEventManager {
 			algorithmEngine = _algorithmEngine;
 			viewManager = _viewManager;
 			networkManager = _networkManager;
+			partitionManager = _partitionManager;
 			cyActivator = ca;
 		}
 		return instance;
@@ -107,7 +112,11 @@ public class CnSEventManager {
 	      	case NETWORK_MANAGER :
 	      		if (networkManager != null) ret = networkManager.cnsEventOccured(event);
 	    	  	break;
-	    	  	
+	    	  
+	      	case PARTITION_MANAGER :
+	      		if (partitionManager != null) ret = partitionManager.cnsEventOccured(event);
+	      		break;
+	      		
 	      	case CY_ACTIVATOR:
 	    	  if (cyActivator != null) ret = cyActivator.cnsEventOccured(event);
 	    	  break;

@@ -51,4 +51,12 @@ public class CnSView {
 		CnSView v = (CnSView)o;
 		return state.equals(v.getState()) && view == v.getView() && network == v.getNetwork()/* && v.getName() == name*/;
 	}
+	/**
+	 * 
+	 * @param
+	 * @return
+	 */
+	public boolean isUserView() {
+		return state.isUserView();
+	}
 }

@@ -20,7 +20,6 @@ import java.util.HashSet;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
-import javax.swing.JOptionPane;
 import javax.swing.border.BevelBorder;
 
 import org.cytoscape.app.CyAppAdapter;
@@ -31,7 +30,6 @@ import org.cytoscape.clustnsee3.internal.algorithm.FTTaskObserver;
 import org.cytoscape.clustnsee3.internal.analysis.CnSCluster;
 import org.cytoscape.clustnsee3.internal.analysis.CnSClusterLink;
 import org.cytoscape.clustnsee3.internal.analysis.CnSNode;
-import org.cytoscape.clustnsee3.internal.analysis.CnSPartition;
 import org.cytoscape.clustnsee3.internal.analysis.edge.CnSEdge;
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
@@ -39,6 +37,7 @@ import org.cytoscape.clustnsee3.internal.gui.widget.CnSButton;
 import org.cytoscape.clustnsee3.internal.gui.widget.CnSPanel;
 import org.cytoscape.clustnsee3.internal.network.CnSNetwork;
 import org.cytoscape.clustnsee3.internal.network.CnSNetworkManager;
+import org.cytoscape.clustnsee3.internal.partition.CnSPartition;
 import org.cytoscape.clustnsee3.internal.view.CnSView;
 import org.cytoscape.clustnsee3.internal.view.CnSViewManager;
 import org.cytoscape.clustnsee3.internal.view.state.CnSClusterViewState;
@@ -282,8 +281,9 @@ public class CnSResultsCommandPanel extends CnSPanel {
 						
 						
 					}
-					// Add interaction links between cluster nodes
+					// Add links between cluster nodes
 					for (CnSClusterLink clusterLink : partition.getClusterLinks()) {
+						//if (clusterLink.getNodes().size() > 0)
 						if (clusterLink.getCyEdge() == null) {
 							CyEdge ce = partNet.addEdge(clusterLink.getSource().getCyNode(), clusterLink.getTarget().getCyNode(), false);
 							clusterLink.setCyEdge(ce);
@@ -293,6 +293,7 @@ public class CnSResultsCommandPanel extends CnSPanel {
 						}
 					}
 					
+					
 					// create a new view for my network
 					CyNetworkView cyView = cnvf.createNetworkView(partNet);
 					networkViewManager.addNetworkView(cyView);
@@ -300,12 +301,12 @@ public class CnSResultsCommandPanel extends CnSPanel {
 					for (CnSClusterLink clusterLink : partition.getClusterLinks()) {
 						CyEdge ce = clusterLink.getCyEdge();
 						if (clusterLink.getNodes().size() > 0) {
-							cyView.getEdgeView(ce).setVisualProperty(BasicVisualLexicon.EDGE_WIDTH, Double.valueOf(clusterLink.getNodes().size()));
-							cyView.getEdgeView(ce).setVisualProperty(BasicVisualLexicon.EDGE_PAINT, Color.green);
+							cyView.getEdgeView(ce).setVisualProperty(BasicVisualLexicon.EDGE_WIDTH, Double.valueOf(Math.min(clusterLink.getNodes().size(), 16)));
+							cyView.getEdgeView(ce).setVisualProperty(BasicVisualLexicon.EDGE_STROKE_UNSELECTED_PAINT, Color.green);
 						}
 						else {
-							cyView.getEdgeView(ce).setVisualProperty(BasicVisualLexicon.EDGE_WIDTH, Double.valueOf(clusterLink.getEdges().size()));
-							cyView.getEdgeView(ce).setVisualProperty(BasicVisualLexicon.EDGE_PAINT, Color.blue);
+							cyView.getEdgeView(ce).setVisualProperty(BasicVisualLexicon.EDGE_WIDTH, Double.valueOf(Math.min(clusterLink.getEdges().size(), 16)));
+							cyView.getEdgeView(ce).setVisualProperty(BasicVisualLexicon.EDGE_STROKE_UNSELECTED_PAINT, Color.blue);
 						}
 					}
 					for (CyNode no : partNet.getNodeList()) {

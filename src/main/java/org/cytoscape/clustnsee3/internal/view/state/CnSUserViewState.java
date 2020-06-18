@@ -20,4 +20,7 @@ public class CnSUserViewState extends CnSViewState {
 	public CnSUserViewState() {
 		super(null);
 	}
+	public boolean isUserView() {
+		return true;
+	}
 }
