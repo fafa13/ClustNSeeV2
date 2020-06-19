@@ -18,6 +18,8 @@ import java.util.Vector;
 
 import javax.swing.JOptionPane;
 
+import org.cytoscape.application.events.SetSelectedNetworkViewsEvent;
+import org.cytoscape.application.events.SetSelectedNetworkViewsListener;
 import org.cytoscape.clustnsee3.internal.CyActivator;
 import org.cytoscape.clustnsee3.internal.analysis.CnSCluster;
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
@@ -38,6 +40,9 @@ import org.cytoscape.model.events.RemovedEdgesEvent;
 import org.cytoscape.model.events.RemovedEdgesListener;
 import org.cytoscape.model.events.RemovedNodesEvent;
 import org.cytoscape.model.events.RemovedNodesListener;
+import org.cytoscape.model.events.RowSetRecord;
+import org.cytoscape.model.events.RowsSetEvent;
+import org.cytoscape.model.events.RowsSetListener;
 import org.cytoscape.model.events.UnsetNetworkPointerEvent;
 import org.cytoscape.model.events.UnsetNetworkPointerListener;
 import org.cytoscape.view.model.CyNetworkView;
@@ -50,7 +55,8 @@ import org.cytoscape.view.model.events.ViewChangedEvent;
  * 
  */
 public class CnSViewManager implements CnSEventListener, RemovedNodesListener, AddedNodesListener, 
-RemovedEdgesListener, AddedEdgesListener, NetworkViewAboutToBeDestroyedListener, UnsetNetworkPointerListener {
+RemovedEdgesListener, AddedEdgesListener, NetworkViewAboutToBeDestroyedListener, 
+UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, RowsSetListener {
 	public static final int ADD_VIEW = 1;
 	public static final int DELETE_VIEW = 2;
 	public static final int SET_SELECTED_VIEW = 3;
@@ -234,6 +240,38 @@ RemovedEdgesListener, AddedEdgesListener, NetworkViewAboutToBeDestroyedListener,
 					ev.addParameter(CnSNetworkManager.NETWORK, v.getNetwork());
 					ev.addParameter(CnSNetworkManager.NETWORK_NAME, "Copy of " + v.getNetwork().getName());
 					CnSEventManager.handleMessage(ev);
+				}
+			}
+		}
+	}
+
+	/* (non-Javadoc)
+	 * @see org.cytoscape.application.events.SetSelectedNetworkViewsListener#handleEvent(org.cytoscape.application.events.SetSelectedNetworkViewsEvent)
+	 */
+	@Override
+	public void handleEvent(SetSelectedNetworkViewsEvent e) {
+		if (e.getNetworkViews().size() > 0) selectedView = getView(e.getNetworkViews().get(0));
+	}
+
+	/* (non-Javadoc)
+	 * @see org.cytoscape.model.events.RowsSetListener#handleEvent(org.cytoscape.model.events.RowsSetEvent)
+	 */
+	@Override
+	public void handleEvent(RowsSetEvent e) {
+		Collection<RowSetRecord> rsr = e.getColumnRecords("selected");
+		
+		String primaryKeyColname = e.getSource().getPrimaryKey().getName();
+		Long nodeId;
+		CyNode node;
+		for (CnSView v : views) {
+			for (RowSetRecord r : rsr) {
+				nodeId = r.getRow().get(primaryKeyColname, Long.class);
+				if (nodeId == null) continue;
+				node = v.getNetwork().getNetwork().getNode(nodeId);
+				if (node !=  null) {
+					Collection<CyRow> rows = v.getNetwork().getNetwork().getRow(node).getTable().getMatchingRows("selected", true);
+					if (rows.size() > 0)
+						JOptionPane.showMessageDialog(null, node + " is selected in network " + v.getNetwork().getName());
 				}
 			}
 		}

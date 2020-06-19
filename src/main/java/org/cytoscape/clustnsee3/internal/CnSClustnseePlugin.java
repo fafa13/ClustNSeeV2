@@ -89,7 +89,7 @@ public class CnSClustnseePlugin implements CnSEventListener {
 		context.registerService(NetworkViewAboutToBeDestroyedListener.class.getName(), viewManager, new Properties());
 		context.registerService(NetworkAboutToBeDestroyedListener.class.getName(), networkManager, new Properties());
 		context.registerService(UnsetNetworkPointerListener.class.getName(), viewManager, new Properties());
-		context.registerService(RowsSetListener.class.getName(), resultsPanel, new Properties());
+		context.registerService(RowsSetListener.class.getName(), viewManager, new Properties());
 	}
 	
 	public static CnSClustnseePlugin getInstance(BundleContext context, CyAppAdapter appAdapter, CyActivator ca) {

@@ -65,7 +65,7 @@ import org.cytoscape.work.TaskManager;
 /**
  * 
  */
-public class CnSResultsPanel extends CnSPanel implements CytoPanelComponent, CnSEventListener, RowsSetListener {
+public class CnSResultsPanel extends CnSPanel implements CytoPanelComponent, CnSEventListener {
 	/**
 	 * 
 	 */
@@ -276,17 +276,5 @@ public class CnSResultsPanel extends CnSPanel implements CytoPanelComponent, CnS
 		//partitions.addElement(newPartition);
 	    clusterListPanel.init(newPartition.getClusters());
         applicationManager.setCurrentNetwork(currentNetwork);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.cytoscape.model.events.RowsSetListener#handleEvent(org.cytoscape.model.events.RowsSetEvent)
-	 */
-	@Override
-	public void handleEvent(RowsSetEvent e) {
-		Collection<RowSetRecord> rsr = e.getColumnRecords("selected");
-		for (RowSetRecord r : rsr) {
-			//if ((boolean)r.getValue()) JOptionPane.showMessageDialog(null, r.getRow().getTable() + " - " + r.getRow().get("name", String.class));
-		}
-		//JOptionPane.showMessageDialog(null, "coucou");
 	}
 }
