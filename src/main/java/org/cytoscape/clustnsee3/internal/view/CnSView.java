@@ -13,9 +13,16 @@
 
 package org.cytoscape.clustnsee3.internal.view;
 
-import org.cytoscape.clustnsee3.internal.network.CnSNetwork;
+import org.cytoscape.clustnsee3.internal.analysis.node.CnSNode;
+import org.cytoscape.clustnsee3.internal.event.CnSEvent;
+import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
+import org.cytoscape.clustnsee3.internal.gui.menu.action.CnSCompressClusterNodeAction;
+import org.cytoscape.clustnsee3.internal.gui.menu.action.CnSExpandClusterNodeAction;
+import org.cytoscape.clustnsee3.internal.partition.CnSPartitionManager;
 import org.cytoscape.clustnsee3.internal.view.state.CnSViewState;
+import org.cytoscape.model.CyNode;
 import org.cytoscape.view.model.CyNetworkView;
+import org.cytoscape.view.model.View;
 
 /**
  * 
@@ -23,12 +30,12 @@ import org.cytoscape.view.model.CyNetworkView;
 public class CnSView {
 	private CnSViewState state;
 	private CyNetworkView view;
-	private CnSNetwork network;
+	private boolean modifCluster;
 	
-	public CnSView(CnSNetwork network, CyNetworkView view, CnSViewState state) {
+	public CnSView(CyNetworkView view, CnSViewState state) {
 		super();
 		this.view = view;
-		this.network = network;
+		modifCluster = false;
 		setViewState(state);
 	}
 	public void setViewState(CnSViewState state) {
@@ -36,9 +43,6 @@ public class CnSView {
 	}
 	public CyNetworkView getView() {
 		return view;
-	}
-	public CnSNetwork getNetwork() {
-		return network;
 	}
 	public Object getReference() {
 		return state.getReference();
@@ -49,7 +53,7 @@ public class CnSView {
 	public boolean equals(Object o) {
 		if (o == null) return false;
 		CnSView v = (CnSView)o;
-		return state.equals(v.getState()) && view == v.getView() && network == v.getNetwork()/* && v.getName() == name*/;
+		return state.equals(v.getState()) && view == v.getView() /*&& network == v.getNetwork() && v.getName() == name*/;
 	}
 	/**
 	 * 
@@ -58,5 +62,33 @@ public class CnSView {
 	 */
 	public boolean isUserView() {
 		return state.isUserView();
+	}
+	public void updateNodeContextMenu() {
+		state.updateNodeContextMenu();
+	}
+	/**
+	 * 
+	 * @param
+	 * @return
+	 */
+	public String getExpandCompressText(View<CyNode> nodeView, CyNetworkView netView) {
+		String ret = null;
+		
+		CnSEvent ev = new CnSEvent(CnSPartitionManager.GET_NODE, CnSEventManager.PARTITION_MANAGER);
+		ev.addParameter(CnSPartitionManager.CY_NODE, nodeView.getModel());
+		CnSNode cnsNode = (CnSNode)CnSEventManager.handleMessage(ev);
+		
+		if (cnsNode != null)
+			if (cnsNode.getNbClusters() > 0)
+				ret = CnSCompressClusterNodeAction.ACTION;
+			else
+				ret = CnSExpandClusterNodeAction.ACTION;
+		return ret;
+	}
+	public void setModifCluster(boolean b) {
+		modifCluster = b;
+	}
+	public boolean getModifCluster() {
+		return modifCluster;
 	}
 }

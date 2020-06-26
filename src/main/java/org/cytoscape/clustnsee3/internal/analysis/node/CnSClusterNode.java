@@ -2,7 +2,7 @@
 /* Copyright (C) 2018 TAGC, Luminy, Marseille
 /*
 /* @author Fabrice Lopez (TAGC/BCF, Luminy, Marseille)
-/* @date 15 juin 2020
+/* @date 24 juin 2020
 /*
 /* with contributions from:
 /* Lionel Spinelli (CIML/TAGC, Luminy, Marseille)
@@ -11,17 +11,11 @@
 /* Philippe Gambette (LIGM, Marne-la-Vallée)
  */
 
-package org.cytoscape.clustnsee3.internal.view.state;
+package org.cytoscape.clustnsee3.internal.analysis.node;
 
 /**
  * 
  */
-public class CnSPartitionViewState extends CnSViewState {
-	
-	public CnSPartitionViewState(Object partition) {
-		super(partition);
-	}
-	public void updateNodeContextMenu() {
-		
-	}
+public class CnSClusterNode {
+
 }

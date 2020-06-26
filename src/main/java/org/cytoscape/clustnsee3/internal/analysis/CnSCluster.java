@@ -20,6 +20,7 @@ import java.util.Vector;
 import javax.swing.ImageIcon;
 
 import org.cytoscape.clustnsee3.internal.analysis.edge.CnSEdge;
+import org.cytoscape.clustnsee3.internal.analysis.node.CnSNode;
 import org.cytoscape.model.CyEdge;
 import org.cytoscape.model.CyNetwork;
 import org.cytoscape.model.CyNode;
@@ -153,6 +154,7 @@ public class CnSCluster implements Comparable<CnSCluster> {
 	public int compareTo(CnSCluster o) {
 		return alNodes.size() - o.getNbNodes();
 	}
+	
 	public int getNodeDegree(CnSNode node) {
 		int ret = 0;
 		CnSEdge edge;

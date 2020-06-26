@@ -40,4 +40,8 @@ public abstract class CnSViewState {
 	public boolean isUserView() {
 		return false;
 	}
+	
+	public void updateNodeContextMenu() {
+		
+	}
 }

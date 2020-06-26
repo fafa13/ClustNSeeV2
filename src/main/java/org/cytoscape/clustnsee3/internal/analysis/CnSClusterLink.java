@@ -16,6 +16,7 @@ package org.cytoscape.clustnsee3.internal.analysis;
 import java.util.Vector;
 
 import org.cytoscape.clustnsee3.internal.analysis.edge.CnSEdge;
+import org.cytoscape.clustnsee3.internal.analysis.node.CnSNode;
 import org.cytoscape.model.CyEdge;
 
 public class CnSClusterLink {

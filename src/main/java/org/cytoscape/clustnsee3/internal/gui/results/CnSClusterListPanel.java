@@ -40,6 +40,7 @@ public class CnSClusterListPanel extends CnSPanel {
 	private static final long serialVersionUID = 1L;
 	private JTable table = null;
 	private CnSResultsTableModel model = null;
+	private JScrollPane scrollPane;
 	
 	public void init (Vector<CnSCluster> clusters) {
 		model = new CnSResultsTableModel(clusters.size());
@@ -52,8 +53,7 @@ public class CnSClusterListPanel extends CnSPanel {
 		table.setBackground(Color.white);
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		table.setDefaultRenderer(Object.class, new CnSResultsTableRenderer());
-		table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-			
+		table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {	
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
 				if (!e.getValueIsAdjusting())
@@ -69,7 +69,8 @@ public class CnSClusterListPanel extends CnSPanel {
 					}
 			}
 		});
-		addComponent(new JScrollPane(table), 0, 0, 1, 1, 1.0, 1.0, NORTH, BOTH, 10, 10, 10, 10, 0, 0);
+		scrollPane = new JScrollPane(table);
+		addComponent(scrollPane, 0, 0, 1, 1, 1.0, 1.0, NORTH, BOTH, 10, 10, 10, 10, 0, 0);
 	}
 
 	/**
@@ -79,5 +80,21 @@ public class CnSClusterListPanel extends CnSPanel {
 	 */
 	public CnSCluster getSelectedCluster() {
 		return model.getCluster(table.getSelectedRow());
+	}
+
+	/**
+	 * 
+	 * @param
+	 * @return
+	 */
+	public void selectCluster(long nodeId) {
+		if (nodeId == -1) {
+			table.clearSelection();
+		}
+		else {
+			int clusterIndex = model.getClusterIndex(nodeId);
+			if (clusterIndex >= 0 && clusterIndex < table.getModel().getRowCount()) table.setRowSelectionInterval(clusterIndex, clusterIndex);
+			scrollPane.scrollRectToVisible(table.getCellRect(clusterIndex, 0, true));
+		}
 	}
 }

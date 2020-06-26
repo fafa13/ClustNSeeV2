@@ -13,21 +13,21 @@
 
 package org.cytoscape.clustnsee3.internal.network;
 
-import org.cytoscape.model.CyNetwork;
+import org.cytoscape.model.subnetwork.CySubNetwork;
 
 /**
  * 
  */
 public class CnSNetwork {
-	private CyNetwork network;
+	private CySubNetwork network;
 	
-	public CnSNetwork(CyNetwork network) {
+	public CnSNetwork(CySubNetwork network) {
 		this.network = network;
 	}
-	public CyNetwork getNetwork() {
+	public CySubNetwork getNetwork() {
 		return network;
 	}
 	public String getName() {
-		return network.getRow(network).get(CyNetwork.NAME, String.class);
+		return network.getRow(network).get(CySubNetwork.NAME, String.class);
 	}
 }

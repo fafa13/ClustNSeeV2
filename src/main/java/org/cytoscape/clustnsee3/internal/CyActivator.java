@@ -2,10 +2,11 @@ package org.cytoscape.clustnsee3.internal;
 
 import java.util.Properties;
 
-import org.cytoscape.app.CyAppAdapter;
 import org.cytoscape.application.CyApplicationManager;
+import org.cytoscape.application.swing.CyNodeViewContextMenuFactory;
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventListener;
+import org.cytoscape.clustnsee3.internal.gui.menu.factory.CnSNodeContextMenuFactory;
 import org.cytoscape.event.CyEventHelper;
 import org.cytoscape.model.CyNetworkFactory;
 import org.cytoscape.model.CyNetworkManager;
@@ -15,6 +16,7 @@ import org.cytoscape.task.visualize.ApplyPreferredLayoutTaskFactory;
 import org.cytoscape.view.layout.CyLayoutAlgorithmManager;
 import org.cytoscape.view.model.CyNetworkViewFactory;
 import org.cytoscape.view.model.CyNetworkViewManager;
+import org.cytoscape.view.presentation.RenderingEngineManager;
 import org.cytoscape.work.SynchronousTaskManager;
 import org.cytoscape.work.TaskObserver;
 import org.osgi.framework.BundleContext;
@@ -31,20 +33,26 @@ public class CyActivator extends AbstractCyActivator implements CnSEventListener
 	public static final int GET_TASK_OBSERVER = 9;
 	public static final int GET_APPLICATION_MANAGER = 10;
 	public static final int GET_LAYOUT_ALGORITHM_MANAGER = 11;
+	public static final int GET_RENDERING_ENGINE_MANAGER = 12; 
+	public static final int GET_CY_EVENT_HELPER = 13;
 	
 	private BundleContext bc = null;
+	
 	
 	@Override
 	public void start(BundleContext context) throws Exception {
 		bc = context;
 		
-		// Get the CyAppAdapter
-        CyAppAdapter appAdapter = getService( context, CyAppAdapter.class);
-		
 		// Definit le menu item
-		MenuActionClustnsee clustnsee = new MenuActionClustnsee("Clustnsee", context, appAdapter, this);
+		MenuActionClustnsee clustnsee = new MenuActionClustnsee("Clustnsee", context, this);
 		registerAllServices(context, clustnsee, new Properties());
-				
+		
+		CyNodeViewContextMenuFactory myNodeViewContextMenuFactory  = new CnSNodeContextMenuFactory();
+		Properties myNodeViewContextMenuFactoryProps = new Properties();
+		myNodeViewContextMenuFactoryProps.put("preferredMenu", "ClustnSee");
+		registerAllServices(context, myNodeViewContextMenuFactory, myNodeViewContextMenuFactoryProps);
+		
+		//context.ungetService(context.getServiceReference(myNodeViewContextMenuFactory.getClass().getName()));
 		/*CyApplicationManager cyApplicationManager = getService(context, CyApplicationManager.class);
 		
 		MenuAction action = new MenuAction(cyApplicationManager, "Hello World App");
@@ -94,6 +102,12 @@ public class CyActivator extends AbstractCyActivator implements CnSEventListener
 				break;
 			case GET_LAYOUT_ALGORITHM_MANAGER :
 				ret = getService(bc, CyLayoutAlgorithmManager.class);
+				break;
+			case GET_RENDERING_ENGINE_MANAGER :
+				ret = getService(bc, RenderingEngineManager.class);
+				break;
+			case GET_CY_EVENT_HELPER :
+				ret = getService(bc, CyEventHelper.class);
 				break;
 		}
 		return ret;

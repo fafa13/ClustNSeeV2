@@ -5,8 +5,8 @@ import java.awt.event.ActionListener;
 
 import org.cytoscape.clustnsee3.internal.gui.widget.CnSPanel;
 import org.cytoscape.model.CyNetwork;
-import org.cytoscape.app.CyAppAdapter;
-import org.cytoscape.clustnsee3.internal.CnSClustnseePlugin;
+import org.cytoscape.application.CyApplicationManager;
+import org.cytoscape.clustnsee3.internal.CyActivator;
 import org.cytoscape.clustnsee3.internal.algorithm.CnSAlgorithm;
 import org.cytoscape.clustnsee3.internal.algorithm.CnSAlgorithmEngine;
 import org.cytoscape.clustnsee3.internal.algorithm.CnSAlgorithmManager;
@@ -64,10 +64,11 @@ public class CnSControlActionPanel extends CnSPanel {
 	    		/**
 	    		 * initialize result panel
 	    		 */
-	    		ev = new CnSEvent(CnSClustnseePlugin.GET_ADAPTER, CnSEventManager.CLUSTNSEE_PLUGIN);
-	    		CyAppAdapter ad = (CyAppAdapter)CnSEventManager.handleMessage(ev);
-	    		CyNetwork network = ad.getCyApplicationManager().getCurrentNetwork();
-	    		ev = new CnSEvent(CnSResultsPanel.INIT, CnSEventManager.RESULTS_PANEL);
+	    		ev = new CnSEvent(CyActivator.GET_APPLICATION_MANAGER, CnSEventManager.CY_ACTIVATOR);
+	    		CyApplicationManager cam = (CyApplicationManager)CnSEventManager.handleMessage(ev);
+	    		CyNetwork network = cam.getCurrentNetwork();
+	    		
+	    		ev = new CnSEvent(CnSResultsPanel.ADD_PARTITION, CnSEventManager.RESULTS_PANEL);
 				ev.addParameter(CnSResultsPanel.RESULT, result);
 				ev.addParameter(CnSResultsPanel.ALGO, algo);
 				ev.addParameter(CnSResultsPanel.NETWORK, network);

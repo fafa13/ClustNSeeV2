@@ -11,8 +11,9 @@
 /* Philippe Gambette (LIGM, Marne-la-Vallée)
  */
 
-package org.cytoscape.clustnsee3.internal.analysis;
+package org.cytoscape.clustnsee3.internal.analysis.node;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Vector;
 
@@ -23,13 +24,19 @@ import org.cytoscape.model.CyNode;
  */
 public class CnSNodeS implements Iterable<CnSNode> {
 	private Vector<CnSNode> nodes;
+	private HashMap<CnSNode, CyNode> cnsnode2cynodeMap;
+	private HashMap<CyNode, CnSNode> cynode2cnsnodeMap;
 	
 	public CnSNodeS() {
 		super();
 		nodes = new Vector<CnSNode>();
+		cnsnode2cynodeMap = new HashMap<CnSNode, CyNode>();
+		cynode2cnsnodeMap = new HashMap<CyNode, CnSNode>();
 	}
 	public void addNode(CnSNode node) {
 		nodes.addElement(node);
+		cnsnode2cynodeMap.putIfAbsent(node, node.getCyNode());
+		cynode2cnsnodeMap.putIfAbsent(node.getCyNode(), node);
 	}
 	/* (non-Javadoc)
 	 * @see java.lang.Iterable#iterator()
@@ -76,7 +83,28 @@ public class CnSNodeS implements Iterable<CnSNode> {
 	 * @param
 	 * @return
 	 */
-	public void remove(CnSNode cnsNode) {
+	public void removeNode(CnSNode cnsNode) {
 		nodes.remove(cnsNode);
+		cynode2cnsnodeMap.remove(cnsnode2cynodeMap.get(cnsNode));
+		cnsnode2cynodeMap.remove(cnsNode);
+	}
+	/**
+	 * 
+	 * @param
+	 * @return
+	 */
+	public CnSNode getNode(Long suid) {
+		CnSNode node = null;
+		
+		for (CnSNode n : nodes) {
+			if (n.getCyNode().getSUID() == suid) {
+				node = n;
+				break;
+			}
+		}
+		return node;
+	}
+	public CnSNode getNode(CyNode cyNode) {
+		return cynode2cnsnodeMap.get(cyNode);
 	}
 }

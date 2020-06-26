@@ -20,10 +20,10 @@ import java.util.Vector;
 import org.cytoscape.clustnsee3.internal.algorithm.CnSAlgorithmParameters;
 import org.cytoscape.clustnsee3.internal.analysis.CnSCluster;
 import org.cytoscape.clustnsee3.internal.analysis.CnSClusterLink;
-import org.cytoscape.clustnsee3.internal.analysis.CnSNode;
-import org.cytoscape.clustnsee3.internal.analysis.CnSNodeS;
 import org.cytoscape.clustnsee3.internal.analysis.edge.CnSEdge;
 import org.cytoscape.clustnsee3.internal.analysis.edge.CnSEdgeS;
+import org.cytoscape.clustnsee3.internal.analysis.node.CnSNode;
+import org.cytoscape.clustnsee3.internal.analysis.node.CnSNodeS;
 import org.cytoscape.model.CyEdge;
 import org.cytoscape.model.CyNode;
 
@@ -33,26 +33,31 @@ import org.cytoscape.model.CyNode;
 public class CnSPartition {
 	private Vector<CnSCluster> clusters;
 	private CnSNodeS nodes;
+	private CnSNodeS clusterNodes;
 	private CnSEdgeS edges;
-	private String algorithmName, networkName;
+	private CnSEdgeS clusterEdges;
+	private String algorithmName;
 	private CnSAlgorithmParameters algorithmParameters;
 	private Vector<CnSClusterLink> clusterLinks;
+	private String name;
 	
-	public CnSPartition(String networkName, String algorithmName, CnSAlgorithmParameters algorithmParameters) {
+	public CnSPartition(String name, String algorithmName, CnSAlgorithmParameters algorithmParameters) {
 		super();
 		clusters = new Vector<CnSCluster>();
 		clusterLinks = new Vector<CnSClusterLink>();
 		nodes = new CnSNodeS();
+		clusterNodes = new CnSNodeS();
 		edges = new CnSEdgeS();
+		clusterEdges = new CnSEdgeS();
 		this.algorithmName = algorithmName;
+		this.name = name;
 		this.algorithmParameters = algorithmParameters;
-		this.networkName = networkName;
 	}
 	public String getAlgorithmName() {
 		return algorithmName;
 	}
-	public String getNetworkName() {
-		return networkName;
+	public String getName() {
+		return name;
 	}
 	public CnSAlgorithmParameters getAlgorithmParameters() {
 		return algorithmParameters;
@@ -69,14 +74,29 @@ public class CnSPartition {
 	public boolean containsNode(CyNode node) {
 		return nodes.contains(node);
 	}
+	public boolean containsClusterNode(CyNode node) {
+		return clusterNodes.contains(node);
+	}
 	public boolean containsEdge(CyEdge edge) {
 		return edges.contains(edge);
+	}
+	public boolean containsClusterEdge(CyEdge edge) {
+		return clusterEdges.contains(edge);
 	}
 	public boolean containsNode(CnSNode node) {
 		return nodes.contains(node);
 	}
+	public boolean containsClusterNode(CnSNode node) {
+		return clusterNodes.contains(node);
+	}
 	public boolean containsEdge(CnSEdge edge) {
 		return edges.contains(edge);
+	}
+	public boolean containsClusterEdge(CnSEdge edge) {
+		return clusterEdges.contains(edge);
+	}
+	public boolean containsCluster(CnSCluster c) {
+		return clusters.contains(c);
 	}
 	public CnSNode addNode(CyNode node, CnSCluster cluster) {
 		CnSNode cnsNode = null;
@@ -90,27 +110,54 @@ public class CnSPartition {
 		}
 		return cnsNode;
 	}
+	public CnSNode addClusterNode(CyNode node) {
+		CnSNode cnsNode = null;
+		if (clusterNodes.contains(node)) {
+			cnsNode = clusterNodes.get(node);
+		}
+		else {
+			cnsNode = new CnSNode(node, null);
+			clusterNodes.addNode(cnsNode);
+		}
+		return cnsNode;
+	}
 	public void removeNode(CyNode node, CnSCluster cluster) {
 		CnSNode cnsNode = null;
 		if (nodes.contains(node)) {
 			cnsNode = nodes.get(node);
 			cnsNode.removeCluster(cluster);
-			if (cnsNode.getNbClusters() == 0) nodes.remove(cnsNode);
+			if (cnsNode.getNbClusters() == 0) nodes.removeNode(cnsNode);
 		}
 	}
-	public CnSEdge addEdge(CyEdge edge, CnSCluster cluster) {
+	public void removeClusterNode(CyNode node) {
+		CnSNode cnsNode = null;
+		if (clusterNodes.contains(node)) {
+			cnsNode = clusterNodes.get(node);
+			clusterNodes.removeNode(cnsNode);
+		}
+	}
+	public CnSEdge addEdge(CyEdge edge) {
 		CnSEdge cnsEdge = null;
 		if (edges.contains(edge)) {
 			cnsEdge = edges.get(edge);
-			cnsEdge.addCluster(cluster);
 		}
 		else {
-			cnsEdge = new CnSEdge(edge, cluster);
+			cnsEdge = new CnSEdge(edge);
 			edges.addEdge(cnsEdge);
 		}
 		return cnsEdge;
 	}
-	
+	public CnSEdge addClusterEdge(CyEdge edge) {
+		CnSEdge cnsEdge = null;
+		if (clusterEdges.contains(edge)) {
+			cnsEdge = clusterEdges.get(edge);
+		}
+		else {
+			cnsEdge = new CnSEdge(edge);
+			clusterEdges.addEdge(cnsEdge);
+		}
+		return cnsEdge;
+	}
 	public void sortClusters() {
 		Collections.sort(clusters);
 	}
@@ -145,5 +192,31 @@ public class CnSPartition {
 	
 	public Vector<CnSClusterLink> getClusterLinks() {
 		return clusterLinks;	
+	}
+	
+	/**
+	 * 
+	 * @param
+	 * @return
+	 */
+	public CnSNode getNode(Long suid) {
+		CnSNode ret = null;
+		ret = nodes.getNode(suid);
+		return ret;
+	}
+	public CnSNode getNode(CyNode cyNode) {
+		CnSNode ret = null;
+		ret = nodes.getNode(cyNode);
+		return ret;
+	}
+	public CnSNode getClusterNode(Long suid) {
+		CnSNode ret = null;
+		ret = clusterNodes.getNode(suid);
+		return ret;
+	}
+	public CnSNode getClusterNode(CyNode cyNode) {
+		CnSNode ret = null;
+		ret = clusterNodes.getNode(cyNode);
+		return ret;
 	}
 }

@@ -24,7 +24,6 @@ import org.cytoscape.clustnsee3.internal.analysis.CnSCluster;
 public class CnSResultsTableModel extends AbstractTableModel {
 	private static final long serialVersionUID = 288902092163456192L;
 	private String colName[] = {"Snapshot", "Details"};
-	//private ImageIcon snapshot[];
 	private CnSCluster[] cluster;
 	private int nb;
 	
@@ -94,14 +93,24 @@ public class CnSResultsTableModel extends AbstractTableModel {
 	}
 	public void addCluster(CnSCluster cluster) {
 		this.cluster[nb] = cluster;
-		/*detail[nb][0] = "Name : " + cluster.getName();
-		detail[nb][1] = "Nodes : " + cluster.getNodes().size();
-		detail[nb][2] = "Intra cluster edges : " + cluster.getInDegree();
-		detail[nb][3] = "Extra cluster edges : " + cluster.getOutDegree();
-		detail[nb][4] = "Intra/Extra edges ration : " + cluster.getModularity();*/
 		nb++;
 	}
 	public CnSCluster getCluster(int i) {
 		return cluster[i];
+	}
+
+	/**
+	 * 
+	 * @param
+	 * @return
+	 */
+	public int getClusterIndex(long nodeId) {
+		int ret = -1;
+		for (int i = 0; i < cluster.length; i++)
+			if (cluster[i].getCyNode().getSUID() == nodeId) {
+				ret = i;
+				break;
+			}
+		return ret;
 	}
 }

@@ -11,10 +11,11 @@
 /* Philippe Gambette (LIGM, Marne-la-Vallée)
  */
 
-package org.cytoscape.clustnsee3.internal.analysis;
+package org.cytoscape.clustnsee3.internal.analysis.node;
 
 import java.util.Vector;
 
+import org.cytoscape.clustnsee3.internal.analysis.CnSCluster;
 import org.cytoscape.model.CyNode;
 
 /**
@@ -28,7 +29,7 @@ public class CnSNode {
 		super();
 		this.cyNode = cyNode;
 		clusters = new Vector<CnSCluster>();
-		clusters.addElement(cluster);
+		if (cluster != null) clusters.addElement(cluster);
 	}
 	
 	public long getSUID() {

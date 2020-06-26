@@ -25,13 +25,13 @@ import java.util.Iterator;
 
 import javax.swing.ImageIcon;
 
-import org.cytoscape.app.CyAppAdapter;
-import org.cytoscape.clustnsee3.internal.CnSClustnseePlugin;
+import org.cytoscape.clustnsee3.internal.CyActivator;
 import org.cytoscape.clustnsee3.internal.analysis.CnSCluster;
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
 import org.cytoscape.view.model.CyNetworkView;
 import org.cytoscape.view.presentation.RenderingEngine;
+import org.cytoscape.view.presentation.RenderingEngineManager;
 import org.cytoscape.work.FinishStatus;
 import org.cytoscape.work.ObservableTask;
 import org.cytoscape.work.TaskObserver;
@@ -52,10 +52,10 @@ public class FTTaskObserver implements TaskObserver {
 		super();
 		cluster = c;
 		view = v;
-		CnSEvent ev = new CnSEvent(CnSClustnseePlugin.GET_ADAPTER, CnSEventManager.CLUSTNSEE_PLUGIN);
-		CyAppAdapter aa = (CyAppAdapter)CnSEventManager.handleMessage(ev);
-		
-		Iterator<RenderingEngine<?>> it = aa.getRenderingEngineManager().getAllRenderingEngines().iterator();
+		CnSEvent ev = new CnSEvent(CyActivator.GET_RENDERING_ENGINE_MANAGER, CnSEventManager.CY_ACTIVATOR);
+		RenderingEngineManager rem = (RenderingEngineManager)CnSEventManager.handleMessage(ev);
+	
+		Iterator<RenderingEngine<?>> it = rem.getAllRenderingEngines().iterator();
 		while (it.hasNext()) {
 			re = it.next();
 			if (re.getViewModel() == view) break;

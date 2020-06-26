@@ -13,8 +13,8 @@
 
 package org.cytoscape.clustnsee3.internal.algorithm;
 
-import org.cytoscape.app.CyAppAdapter;
-import org.cytoscape.clustnsee3.internal.CnSClustnseePlugin;
+import org.cytoscape.application.CyApplicationManager;
+import org.cytoscape.clustnsee3.internal.CyActivator;
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventListener;
 import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
@@ -52,9 +52,9 @@ public class CnSAlgorithmEngine implements CnSEventListener {
 	}
 	
 	public CnSAlgorithmResult start(CnSAlgorithm algo) {
-		CnSEvent ev = new CnSEvent(CnSClustnseePlugin.GET_ADAPTER, CnSEventManager.CLUSTNSEE_PLUGIN);
-		CyAppAdapter ad = (CyAppAdapter)CnSEventManager.handleMessage(ev);
-		CyNetwork network = ad.getCyApplicationManager().getCurrentNetwork();
+		CnSEvent ev = new CnSEvent(CyActivator.GET_APPLICATION_MANAGER, CnSEventManager.CY_ACTIVATOR);
+		CyApplicationManager cam = (CyApplicationManager)CnSEventManager.handleMessage(ev);
+		CyNetwork network = cam.getCurrentNetwork();
 		return algo.execute(network);
 	}
 	
