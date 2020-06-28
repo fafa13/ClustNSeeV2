@@ -19,12 +19,12 @@ import java.awt.event.ActionListener;
 import javax.swing.JMenuItem;
 import org.cytoscape.application.swing.CyMenuItem;
 import org.cytoscape.application.swing.CyNodeViewContextMenuFactory;
+import org.cytoscape.clustnsee3.internal.analysis.node.CnSNode;
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
 import org.cytoscape.clustnsee3.internal.gui.menu.action.CnSCompressClusterNodeAction;
 import org.cytoscape.clustnsee3.internal.gui.menu.action.CnSExpandClusterNodeAction;
-import org.cytoscape.clustnsee3.internal.view.CnSView;
-import org.cytoscape.clustnsee3.internal.view.CnSViewManager;
+import org.cytoscape.clustnsee3.internal.partition.CnSPartitionManager;
 import org.cytoscape.model.CyNode;
 import org.cytoscape.view.model.CyNetworkView;
 import org.cytoscape.view.model.View;
@@ -44,10 +44,7 @@ public class CnSNodeContextMenuFactory implements CyNodeViewContextMenuFactory {
 	public CyMenuItem createMenuItem(CyNetworkView netView, final View<CyNode> nodeView) {
 		CyMenuItem cyMenuItem = null;
 		
-		CnSEvent ev =  new CnSEvent(CnSViewManager.GET_SELECTED_VIEW, CnSEventManager.VIEW_MANAGER);
-		final CnSView view = (CnSView)CnSEventManager.handleMessage(ev);
-		
-		expandCompressText = view.getExpandCompressText(nodeView, netView);
+		expandCompressText = getExpandCompressText(nodeView, netView);
 		if (expandCompressText != null) {
 			JMenuItem menuItem = new JMenuItem(expandCompressText);
 			if (expandCompressText.contentEquals(CnSExpandClusterNodeAction.ACTION))
@@ -65,5 +62,25 @@ public class CnSNodeContextMenuFactory implements CyNodeViewContextMenuFactory {
 			cyMenuItem = new CyMenuItem(menuItem, 0);
 		}
 		return cyMenuItem;
+	}
+	
+	/**
+	 * 
+	 * @param
+	 * @return
+	 */
+	private String getExpandCompressText(View<CyNode> nodeView, CyNetworkView netView) {
+		String ret = null;
+		
+		CnSEvent ev = new CnSEvent(CnSPartitionManager.GET_NODE, CnSEventManager.PARTITION_MANAGER);
+		ev.addParameter(CnSPartitionManager.CY_NODE, nodeView.getModel());
+		CnSNode cnsNode = (CnSNode)CnSEventManager.handleMessage(ev);
+		
+		if (cnsNode != null)
+			if (cnsNode.getNbClusters() > 0)
+				ret = CnSCompressClusterNodeAction.ACTION;
+			else
+				ret = CnSExpandClusterNodeAction.ACTION;
+		return ret;
 	}
 }

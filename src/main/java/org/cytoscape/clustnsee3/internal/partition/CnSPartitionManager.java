@@ -16,13 +16,10 @@ package org.cytoscape.clustnsee3.internal.partition;
 import java.util.HashMap;
 import java.util.Vector;
 
-import javax.swing.JOptionPane;
-
 import org.cytoscape.clustnsee3.internal.analysis.CnSCluster;
 import org.cytoscape.clustnsee3.internal.analysis.node.CnSNode;
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventListener;
-import org.cytoscape.clustnsee3.internal.gui.menu.action.CnSCompressClusterNodeAction;
 import org.cytoscape.clustnsee3.internal.network.CnSNetwork;
 import org.cytoscape.clustnsee3.internal.view.CnSView;
 import org.cytoscape.model.CyNode;

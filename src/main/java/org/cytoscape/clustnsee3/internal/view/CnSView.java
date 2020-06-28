@@ -66,25 +66,7 @@ public class CnSView {
 	public void updateNodeContextMenu() {
 		state.updateNodeContextMenu();
 	}
-	/**
-	 * 
-	 * @param
-	 * @return
-	 */
-	public String getExpandCompressText(View<CyNode> nodeView, CyNetworkView netView) {
-		String ret = null;
-		
-		CnSEvent ev = new CnSEvent(CnSPartitionManager.GET_NODE, CnSEventManager.PARTITION_MANAGER);
-		ev.addParameter(CnSPartitionManager.CY_NODE, nodeView.getModel());
-		CnSNode cnsNode = (CnSNode)CnSEventManager.handleMessage(ev);
-		
-		if (cnsNode != null)
-			if (cnsNode.getNbClusters() > 0)
-				ret = CnSCompressClusterNodeAction.ACTION;
-			else
-				ret = CnSExpandClusterNodeAction.ACTION;
-		return ret;
-	}
+	
 	public void setModifCluster(boolean b) {
 		modifCluster = b;
 	}
