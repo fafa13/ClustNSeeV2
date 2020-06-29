@@ -13,16 +13,11 @@
 
 package org.cytoscape.clustnsee3.internal.view;
 
-import org.cytoscape.clustnsee3.internal.analysis.node.CnSNode;
-import org.cytoscape.clustnsee3.internal.event.CnSEvent;
-import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
-import org.cytoscape.clustnsee3.internal.gui.menu.action.CnSCompressClusterNodeAction;
-import org.cytoscape.clustnsee3.internal.gui.menu.action.CnSExpandClusterNodeAction;
-import org.cytoscape.clustnsee3.internal.partition.CnSPartitionManager;
+import java.util.HashMap;
+
+import org.cytoscape.clustnsee3.internal.analysis.CnSCluster;
 import org.cytoscape.clustnsee3.internal.view.state.CnSViewState;
-import org.cytoscape.model.CyNode;
 import org.cytoscape.view.model.CyNetworkView;
-import org.cytoscape.view.model.View;
 
 /**
  * 
@@ -31,11 +26,13 @@ public class CnSView {
 	private CnSViewState state;
 	private CyNetworkView view;
 	private boolean modifCluster;
+	private HashMap<CnSCluster, Boolean> isExpanded;
 	
 	public CnSView(CyNetworkView view, CnSViewState state) {
 		super();
 		this.view = view;
 		modifCluster = false;
+		isExpanded = new HashMap<CnSCluster, Boolean>();
 		setViewState(state);
 	}
 	public void setViewState(CnSViewState state) {
@@ -72,5 +69,14 @@ public class CnSView {
 	}
 	public boolean getModifCluster() {
 		return modifCluster;
+	}
+	public boolean isExpanded(CnSCluster c) {
+		if (isExpanded.containsKey(c))
+			return isExpanded.get(c);
+		return false;
+	}
+	public void setExpanded (CnSCluster c, boolean b) {
+		if (isExpanded.containsKey(c)) isExpanded.remove(c);
+		isExpanded.put(c, b);
 	}
 }

@@ -13,6 +13,11 @@
 
 package org.cytoscape.clustnsee3.internal.gui.menu.action;
 
+import java.util.Collection;
+import java.util.Vector;
+
+import javax.swing.JOptionPane;
+
 import org.cytoscape.clustnsee3.internal.CyActivator;
 import org.cytoscape.clustnsee3.internal.analysis.CnSCluster;
 import org.cytoscape.clustnsee3.internal.analysis.CnSClusterLink;
@@ -37,6 +42,7 @@ public class CnSExpandClusterNodeAction {
 	public static final String ACTION = "Expand cluster";
 	
 	public void doAction(Long suid) {
+		boolean expanded;
 		CnSEvent ev = new CnSEvent(CnSViewManager.GET_SELECTED_VIEW, CnSEventManager.VIEW_MANAGER);
 		CnSView view = (CnSView)CnSEventManager.handleMessage(ev);
 		
@@ -101,14 +107,96 @@ public class CnSExpandClusterNodeAction {
 			for (CnSNode cnsnode : cluster.getNodes())
 				network.getNetwork().getRow(cnsnode.getCyNode()).set("selected", true);
 			eh.flushPayloadEvents();
+			Vector<CyNode> toRemove = new Vector<CyNode>();
+			toRemove.addElement(node.getCyNode());
+			network.getNetwork().removeNodes(toRemove);
 			for (CnSClusterLink cl : partition.getClusterLinks()) {
-				
+				//String l = "";
+				ev = new CnSEvent(CnSViewManager.IS_EXPANDED, CnSEventManager.VIEW_MANAGER);
+				ev.addParameter(CnSViewManager.VIEW, view);
+				if (cl.getSource() == cluster) {
+					ev.addParameter(CnSViewManager.CLUSTER, cl.getTarget());
+					expanded = (Boolean)CnSEventManager.handleMessage(ev);
+					//JOptionPane.showMessageDialog(null, "SOURCE " + expanded);
+					for (CnSEdge ce : cl.getEdges()) {
+						if (expanded) {
+							network.getNetwork().addEdge(ce.getCyEdge());
+							//l += ce.getCyEdge().getSource().getSUID() + " -> " + ce.getCyEdge().getTarget().getSUID() + "\n";
+						}
+						else {
+							CyNode n2 = null;
+							for (CnSNode n : cluster.getNodes()) {
+								if (n.getCyNode() == ce.getCyEdge().getSource()) {
+									n2 = ce.getCyEdge().getSource();
+									break;
+								}
+								else if (n.getCyNode() == ce.getCyEdge().getTarget()) {
+									n2 = ce.getCyEdge().getTarget();
+									break;
+								}
+							}
+							if (n2 != null) {
+								try {
+									//l += cl.getTarget().getCyNode().getSUID() + " -> " + n2.getSUID() + "\n";
+									network.getNetwork().addEdge(cl.getTarget().getCyNode(), n2, false);
+								}
+								catch (Exception ex) {
+									//l += "ERROR\n";
+								}
+								
+							}
+						}
+					}
+					//JOptionPane.showMessageDialog(null,  l);
+				}
+				else if (cl.getTarget() == cluster) {
+					ev.addParameter(CnSViewManager.CLUSTER, cl.getSource());
+					expanded = (Boolean)CnSEventManager.handleMessage(ev);
+					//JOptionPane.showMessageDialog(null, "TARGET " + expanded);
+					for (CnSEdge ce : cl.getEdges()) {
+						if (expanded) {
+							network.getNetwork().addEdge(ce.getCyEdge());
+							//l += ce.getCyEdge().getSource().getSUID() + " -> " + ce.getCyEdge().getTarget().getSUID() + "\n";	
+						}
+						else {
+							CyNode n2 = null;
+							for (CnSNode n : cluster.getNodes()) {
+								if (n.getCyNode() == ce.getCyEdge().getSource()) {
+									n2 = ce.getCyEdge().getSource();
+									break;
+								}
+								else if (n.getCyNode() == ce.getCyEdge().getTarget()) {
+									n2 = ce.getCyEdge().getTarget();
+									break;
+								}
+							}
+							if (n2 != null) {
+								try {
+									//l += cl.getSource().getCyNode().getSUID() + " -> " + n2.getSUID() + "\n";
+									network.getNetwork().addEdge(cl.getSource().getCyNode(), n2, false);
+								}
+								catch (Exception ex) {
+									//l += "ERROR\n";
+								}
+							}
+						}
+						
+					}
+					//JOptionPane.showMessageDialog(null,  l);
+				}
 			}
-			for (CnSEdge cnsedge : cluster.getExtEdges()) {
+			/*for (CnSEdge cnsedge : cluster.getExtEdges()) {
 				
 				network.getNetwork().addEdge(cnsedge.getCyEdge());
-			}
+			}*/
 			eh.flushPayloadEvents();
+			
+			ev = new CnSEvent(CnSViewManager.SET_EXPANDED, CnSEventManager.VIEW_MANAGER);
+			ev.addParameter(CnSViewManager.CLUSTER, cluster);
+			ev.addParameter(CnSViewManager.VIEW, view);
+			ev.addParameter(CnSViewManager.EXPANDED, true);
+			CnSEventManager.handleMessage(ev);
+			
 			view.setModifCluster(false);
 		}
 	}

@@ -7,6 +7,7 @@ import org.cytoscape.application.swing.CyNodeViewContextMenuFactory;
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventListener;
 import org.cytoscape.clustnsee3.internal.gui.menu.factory.CnSNodeContextMenuFactory;
+import org.cytoscape.clustnsee3.internal.gui.menu.factory.CyNodeViewShowClusterlinksMenuFactory;
 import org.cytoscape.event.CyEventHelper;
 import org.cytoscape.model.CyNetworkFactory;
 import org.cytoscape.model.CyNetworkManager;
@@ -52,6 +53,10 @@ public class CyActivator extends AbstractCyActivator implements CnSEventListener
 		myNodeViewContextMenuFactoryProps.put("preferredMenu", "ClustnSee");
 		registerAllServices(context, myNodeViewContextMenuFactory, myNodeViewContextMenuFactoryProps);
 		
+		CyNodeViewShowClusterlinksMenuFactory myNodeViewShowClusterlinksMenuFactory = new CyNodeViewShowClusterlinksMenuFactory();
+		Properties myNodeViewShowClusterlinksMenuFactoryProps = new Properties();
+		myNodeViewShowClusterlinksMenuFactoryProps.put("preferredMenu", "ClustnSee");
+		registerAllServices(context, myNodeViewShowClusterlinksMenuFactory, myNodeViewShowClusterlinksMenuFactoryProps);
 		//context.ungetService(context.getServiceReference(myNodeViewContextMenuFactory.getClass().getName()));
 		/*CyApplicationManager cyApplicationManager = getService(context, CyApplicationManager.class);
 		

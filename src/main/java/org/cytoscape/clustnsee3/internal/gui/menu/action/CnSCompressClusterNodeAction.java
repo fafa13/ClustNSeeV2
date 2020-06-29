@@ -13,23 +13,14 @@
 
 package org.cytoscape.clustnsee3.internal.gui.menu.action;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import javax.swing.JOptionPane;
-
 /**
  * 
  */
-public class CnSCompressClusterNodeAction implements ActionListener {
+public class CnSCompressClusterNodeAction {
 	public static final String ACTION = "Compress cluster";
 	
-	/* (non-Javadoc)
-	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
-	 */
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		JOptionPane.showMessageDialog(null, "Compressing cluster node");
+	public void doAction(Long suid) {
+		
 	}
 
 }

@@ -70,12 +70,15 @@ UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, RowsSetListener, S
 	public static final int GET_VIEW = 6;
 	public static final int SELECT_CLUSTER = 7;
 	public static final int GET_NETWORK = 8;
+	public static final int IS_EXPANDED = 9;
+	public static final int SET_EXPANDED = 10;
 	
 	public static final int VIEW = 1000;
 	public static final int STATE = 1001;
 	public static final int REFERENCE = 1002;
 	public static final int CLUSTER = 1003;
 	public static final int NETWORK = 1004;
+	public static final int EXPANDED = 1005;
 	
 	private Vector<CnSView> views;
 	private CnSView selectedView;
@@ -124,6 +127,7 @@ UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, RowsSetListener, S
 		CnSNetwork network;
 		CnSViewState state = null;
 		CnSCluster cluster;
+		boolean expanded;
 		
 		switch(event.getAction()) {
 			case ADD_VIEW :
@@ -210,6 +214,19 @@ UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, RowsSetListener, S
 			case GET_NETWORK :
 				view = (CnSView)event.getParameter(VIEW);
 				ret = view2networkMap.get(view);
+				break;
+				
+			case SET_EXPANDED :
+				cluster = (CnSCluster)event.getParameter(CLUSTER);
+				view = (CnSView)event.getParameter(VIEW);
+				expanded = (Boolean)event.getParameter(EXPANDED);
+				view.setExpanded(cluster, expanded);
+				break;
+				
+			case IS_EXPANDED :
+				cluster = (CnSCluster)event.getParameter(CLUSTER);
+				view = (CnSView)event.getParameter(VIEW);
+				ret = view.isExpanded(cluster);
 				break;
 		}
 		return ret;
@@ -328,7 +345,7 @@ UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, RowsSetListener, S
 			}
 			else {
 				CnSEvent ev = new CnSEvent(CnSResultsPanel.SELECT_CLUSTER, CnSEventManager.RESULTS_PANEL);
-				ev.addParameter(CnSResultsPanel.CLUSTER, null);
+				//ev.addParameter(CnSResultsPanel.CLUSTER, null);
 				CnSEventManager.handleMessage(ev);
 			}
 		}
@@ -341,7 +358,7 @@ UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, RowsSetListener, S
 	public void handleEvent(SetCurrentNetworkViewEvent e) {
 		if (e.getNetworkView() != null) {
 			selectedView = getView(e.getNetworkView());
-			selectedView.updateNodeContextMenu();
+			if (selectedView != null) selectedView.updateNodeContextMenu();
 		}
 		else
 			selectedView = null;

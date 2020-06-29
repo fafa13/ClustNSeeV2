@@ -36,6 +36,7 @@ public class CnSNodeContextMenuFactory implements CyNodeViewContextMenuFactory {
 	private String expandCompressText = "";
 	
 	private CnSExpandClusterNodeAction expandAction = new CnSExpandClusterNodeAction();
+	private CnSCompressClusterNodeAction compressAction = new CnSCompressClusterNodeAction();
 	
 	/* (non-Javadoc)
 	 * @see org.cytoscape.application.swing.CyNodeViewContextMenuFactory#createMenuItem(org.cytoscape.view.model.CyNetworkView, org.cytoscape.view.model.View)
@@ -58,7 +59,15 @@ public class CnSNodeContextMenuFactory implements CyNodeViewContextMenuFactory {
 				});
 			
 			else if (expandCompressText.contentEquals(CnSCompressClusterNodeAction.ACTION))
-				menuItem.addActionListener(new CnSCompressClusterNodeAction());
+				menuItem.addActionListener(new ActionListener() {
+
+					@Override
+					public void actionPerformed(ActionEvent arg0) {
+						compressAction.doAction(nodeView.getModel().getSUID());
+					}
+					
+				});
+			
 			cyMenuItem = new CyMenuItem(menuItem, 0);
 		}
 		return cyMenuItem;
