@@ -79,11 +79,17 @@ public class CyNodeViewShowClusterlinksMenuFactory implements CyNodeViewContextM
 							for (CnSEdge ce : cl.getEdges()) {
 								l += "  " + ce.getCyEdge().getSource().getSUID() + " -> " + ce.getCyEdge().getTarget().getSUID() + "\n";
 							}
+							for (CnSNode cn : cl.getNodes()) {
+								l += "++" + cn.getCyNode().getSUID() + " -> " + cl.getTarget().getCyNode().getSUID() + "\n";
+							}
 						}
 						else if (cl.getTarget() == cluster) {
 							l += cl.getSource().getName() + "\n";
 							for (CnSEdge ce : cl.getEdges()) {
 								l += "  " + ce.getCyEdge().getSource().getSUID() + " -> " + ce.getCyEdge().getTarget().getSUID() + "\n";
+							}
+							for (CnSNode cn : cl.getNodes()) {
+								l += "++" + cn.getCyNode().getSUID() + " -> " + cl.getSource().getCyNode().getSUID() + "\n";
 							}
 						}
 						

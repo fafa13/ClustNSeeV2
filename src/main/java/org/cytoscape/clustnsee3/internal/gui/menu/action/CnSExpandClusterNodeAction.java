@@ -13,7 +13,9 @@
 
 package org.cytoscape.clustnsee3.internal.gui.menu.action;
 
+import java.awt.Color;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Vector;
 
 import javax.swing.JOptionPane;
@@ -31,6 +33,7 @@ import org.cytoscape.clustnsee3.internal.partition.CnSPartitionManager;
 import org.cytoscape.clustnsee3.internal.view.CnSView;
 import org.cytoscape.clustnsee3.internal.view.CnSViewManager;
 import org.cytoscape.event.CyEventHelper;
+import org.cytoscape.model.CyEdge;
 import org.cytoscape.model.CyNode;
 import org.cytoscape.view.model.View;
 import org.cytoscape.view.presentation.property.BasicVisualLexicon;
@@ -42,9 +45,11 @@ public class CnSExpandClusterNodeAction {
 	public static final String ACTION = "Expand cluster";
 	
 	public void doAction(Long suid) {
-		boolean expanded;
+		boolean expanded = false;
+		CyNode n2;
 		CnSEvent ev = new CnSEvent(CnSViewManager.GET_SELECTED_VIEW, CnSEventManager.VIEW_MANAGER);
 		CnSView view = (CnSView)CnSEventManager.handleMessage(ev);
+		HashMap<CyNode, CyEdge> node2edgeMap = new HashMap<CyNode, CyEdge>();
 		
 		ev = new CnSEvent(CnSViewManager.GET_NETWORK, CnSEventManager.VIEW_MANAGER);
 		ev.addParameter(CnSViewManager.VIEW, view);
@@ -55,7 +60,7 @@ public class CnSExpandClusterNodeAction {
 		CnSPartition partition = (CnSPartition)CnSEventManager.handleMessage(ev);
 		CnSNode node = partition.getClusterNode(suid);
 		
-		CnSCluster cluster = null;
+		CnSCluster cluster = null, linkedCluster;
 		for (CnSCluster c : partition.getClusters()) {
 			if (c.getCyNode() == node.getCyNode()) {
 				cluster = c;
@@ -112,87 +117,54 @@ public class CnSExpandClusterNodeAction {
 			Vector<CyNode> toRemove = new Vector<CyNode>();
 			toRemove.addElement(node.getCyNode());
 			network.getNetwork().removeNodes(toRemove);
+			eh.flushPayloadEvents();
 			for (CnSClusterLink cl : partition.getClusterLinks()) {
-				//String l = "";
 				ev = new CnSEvent(CnSViewManager.IS_EXPANDED, CnSEventManager.VIEW_MANAGER);
 				ev.addParameter(CnSViewManager.VIEW, view);
-				if (cl.getSource() == cluster) {
-					ev.addParameter(CnSViewManager.CLUSTER, cl.getTarget());
+				linkedCluster = null;
+				if (cl.getSource() == cluster)
+					linkedCluster = cl.getTarget();	
+				else if (cl.getTarget() == cluster)
+					linkedCluster = cl.getSource();
+				if (linkedCluster != null) {
+					ev.addParameter(CnSViewManager.CLUSTER, linkedCluster);
 					expanded = (Boolean)CnSEventManager.handleMessage(ev);
-					//JOptionPane.showMessageDialog(null, "SOURCE " + expanded);
-					if (cl.getEdges().size() > 0) {
-						for (CnSEdge ce : cl.getEdges()) {
-							if (expanded) {
-								network.getNetwork().addEdge(ce.getCyEdge());
-								//l += ce.getCyEdge().getSource().getSUID() + " -> " + ce.getCyEdge().getTarget().getSUID() + "\n";
+					node2edgeMap.clear();
+					
+					for (CnSEdge ce : cl.getEdges())
+						if (expanded)
+							network.getNetwork().addEdge(ce.getCyEdge());
+						else {
+							n2 = null;
+							for (CnSNode n : cluster.getNodes())
+								if ((n.getCyNode() == ce.getCyEdge().getSource()) || (n.getCyNode() == ce.getCyEdge().getTarget())) {
+									n2 = n.getCyNode();
+									break;
+								}
+							if (node2edgeMap.get(n2) == null) {
+								node2edgeMap.put(n2, network.getNetwork().addEdge(linkedCluster.getCyNode(), n2, false));
+								eh.flushPayloadEvents();
 							}
 							else {
-								CyNode n2 = null;
-								for (CnSNode n : cluster.getNodes()) {
-									if (n.getCyNode() == ce.getCyEdge().getSource()) {
-										n2 = ce.getCyEdge().getSource();
-										break;
-									}
-									else if (n.getCyNode() == ce.getCyEdge().getTarget()) {
-										n2 = ce.getCyEdge().getTarget();
-										break;
-									}
-								}
-								if (n2 != null) {
-									try {
-										//l += cl.getTarget().getCyNode().getSUID() + " -> " + n2.getSUID() + "\n";
-										network.getNetwork().addEdge(cl.getTarget().getCyNode(), n2, false);
-									}
-									catch (Exception ex) {
-										//l += "ERROR\n";
-									}
-								}
+								double d = view.getView().getEdgeView(node2edgeMap.get(n2)).getVisualProperty(BasicVisualLexicon.EDGE_WIDTH);
+								view.getView().getEdgeView(node2edgeMap.get(n2)).setVisualProperty(BasicVisualLexicon.EDGE_WIDTH, d < 10.0 ? d + 1.0 : d);
+								eh.flushPayloadEvents();
 							}
 						}
-						//JOptionPane.showMessageDialog(null,  l);
-					}
-				}
-				else if (cl.getTarget() == cluster) {
-					ev.addParameter(CnSViewManager.CLUSTER, cl.getSource());
-					expanded = (Boolean)CnSEventManager.handleMessage(ev);
-					//JOptionPane.showMessageDialog(null, "TARGET " + expanded);
-					if (cl.getEdges().size() > 0) {
-						for (CnSEdge ce : cl.getEdges()) {
-							if (expanded) {
-								network.getNetwork().addEdge(ce.getCyEdge());
-								//l += ce.getCyEdge().getSource().getSUID() + " -> " + ce.getCyEdge().getTarget().getSUID() + "\n";	
-							}
-							else {
-								CyNode n2 = null;
-								for (CnSNode n : cluster.getNodes()) {
-									if (n.getCyNode() == ce.getCyEdge().getSource()) {
-										n2 = ce.getCyEdge().getSource();
-										break;
-									}
-									else if (n.getCyNode() == ce.getCyEdge().getTarget()) {
-										n2 = ce.getCyEdge().getTarget();
-										break;
-									}
-								}
-								if (n2 != null) {
-									try {
-										//l += cl.getSource().getCyNode().getSUID() + " -> " + n2.getSUID() + "\n";
-										network.getNetwork().addEdge(cl.getSource().getCyNode(), n2, false);
-									}
-									catch (Exception ex) {
-										//l += "ERROR\n";
-									}
-								}
-							}
+					//System.err.println("coucou");
+					for (CnSNode n : cl.getNodes()) {
+						//System.err.println("Node : " + n.getCyNode().toString());
+						if (!expanded) {
+							CyEdge cyEdge = network.getNetwork().addEdge(linkedCluster.getCyNode(), n.getCyNode(), false);
+							eh.flushPayloadEvents();
+							//JOptionPane.showMessageDialog(null, "  Edge : " + cyEdge.toString());
+							view.getView().getEdgeView(cyEdge).setVisualProperty(BasicVisualLexicon.EDGE_STROKE_UNSELECTED_PAINT, Color.green);
+							eh.flushPayloadEvents();
 						}
-						//JOptionPane.showMessageDialog(null,  l);
 					}
 				}
 			}
-			/*for (CnSEdge cnsedge : cluster.getExtEdges()) {
-				
-				network.getNetwork().addEdge(cnsedge.getCyEdge());
-			}*/
+			
 			eh.flushPayloadEvents();
 			
 			ev = new CnSEvent(CnSViewManager.SET_EXPANDED, CnSEventManager.VIEW_MANAGER);

@@ -27,6 +27,7 @@ import org.cytoscape.application.swing.CytoPanelComponent;
 import org.cytoscape.application.swing.CytoPanelName;
 import org.cytoscape.clustnsee3.internal.CyActivator;
 import org.cytoscape.clustnsee3.internal.algorithm.CnSAlgorithm;
+import org.cytoscape.clustnsee3.internal.algorithm.CnSAlgorithmEngine;
 import org.cytoscape.clustnsee3.internal.algorithm.CnSAlgorithmResult;
 import org.cytoscape.clustnsee3.internal.algorithm.FTTaskObserver;
 import org.cytoscape.clustnsee3.internal.analysis.CnSCluster;
@@ -197,6 +198,16 @@ public class CnSResultsPanel extends CnSPanel implements CytoPanelComponent, CnS
         int[] Kard = result.getCard();
         int[][] Cl = result.getClasses();
         HashMap<Integer, Long> algo_to_cyto = result.getAlgoToCyto();
+        Vector<CyNode> cynodes_to_keep = new Vector<CyNode>();
+        for( int k = 0; k < NbClas; k++) {
+        	while (Kard[kk] == 0) kk++;
+            for (int index_in_class = 0; index_in_class < Kard[kk]; index_in_class++) {
+            	int mod_clust_index = Cl[kk][ index_in_class];
+            	Long cyto_index = algo_to_cyto.get(mod_clust_index);
+            	if( cyto_index != null) cynodes_to_keep.addElement(inputNetwork.getNode(cyto_index));
+            }
+        }
+        kk = 0;
         for( int k = 0; k < NbClas; k++) {
             CnSCluster newCluster = new CnSCluster();
             Vector<CnSNode> alNodes = new Vector<CnSNode>();
@@ -218,13 +229,13 @@ public class CnSResultsPanel extends CnSPanel implements CytoPanelComponent, CnS
             Iterator<CnSNode> nodesIterator = alNodes.iterator();
             while (nodesIterator.hasNext()) {
             	CyNode cnode = nodesIterator.next().getCyNode();
-            	cedges = crn.getAdjacentEdgeList(cnode, CyEdge.Type.ANY);
+            	cedges = inputNetwork.getAdjacentEdgeList(cnode, CyEdge.Type.ANY);
             	for (CyEdge ce : cedges) {
             		if (newCluster.contains(ce.getSource()) && newCluster.contains(ce.getTarget())) {
             			CnSEdge cnsEdge = newPartition.addEdge(ce);
                     	if (!alEdges.contains(cnsEdge)) alEdges.addElement(cnsEdge);
             		}
-            		else {
+            		else if (cynodes_to_keep.contains(ce.getSource()) && cynodes_to_keep.contains(ce.getTarget())) {
             			extEdges.addElement(new CnSEdge(ce));
             		}
             	}
