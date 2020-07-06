@@ -20,8 +20,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.JOptionPane;
-
 import org.cytoscape.clustnsee3.internal.algorithm.CnSAlgorithm;
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
@@ -503,7 +501,20 @@ public class CnSOCGAlgorithm extends CnSAlgorithm {
             	LOGGER.error("The class " + k + " is void");
             }
         }*/
+        Logger LOGGER = LoggerFactory.getLogger(this.getClass());
         
+        String l = "";
+        LOGGER.info("*** Nb class : " + NbClas);
+        for (int i = 0; i < N; i++) if (Kard[i] > 0) l += i + " ";
+        LOGGER.info("*** " + l);
+        for (int i = 0; i < NbClas; i++) {
+        		LOGGER.info("*** Cluster #" + i + " : " + Kard[i] + " nodes");
+        		l = "*** ";
+        		for (int j = 0; j < Kard[i]; j++) l += modClust_to_cyto.get(Cl[i][j]) + " ";
+        		LOGGER.info(l);
+        		LOGGER.info("***");
+        		LOGGER.info("***");
+        }
         return new CnSAlgorithmResult(Cl, Kard, NbClas, modClust_to_cyto);
     }
 

@@ -23,7 +23,7 @@ public class CnSClusterLink {
 	private CnSCluster source, target;
 	private Vector<CnSEdge> edges;
 	private Vector<CnSNode> nodes;
-	private CyEdge cyEdge;
+	private CyEdge interactionEdge, multiclassEdge;
 	
 	public CnSClusterLink(CnSCluster source, CnSCluster target) {
 		super();
@@ -60,10 +60,16 @@ public class CnSClusterLink {
 		CnSClusterLink e = (CnSClusterLink)o;
 		return (e.getSource() == source && e.getTarget() == target) || (e.getSource() == target && e.getTarget() == source);
 	}
-	public void setCyEdge(CyEdge ce) {
-		cyEdge = ce;
+	public void setInteractionEdge(CyEdge ce) {
+		interactionEdge = ce;
 	}
-	public CyEdge getCyEdge() {
-		return cyEdge;
+	public CyEdge getInteractionEdge() {
+		return interactionEdge;
+	}
+	public void setMulticlassEdge(CyEdge ce) {
+		multiclassEdge = ce;
+	}
+	public CyEdge getMulticlassEdge() {
+		return multiclassEdge;
 	}
 }

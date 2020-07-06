@@ -26,6 +26,8 @@ import org.cytoscape.clustnsee3.internal.analysis.node.CnSNode;
 import org.cytoscape.clustnsee3.internal.analysis.node.CnSNodeS;
 import org.cytoscape.model.CyEdge;
 import org.cytoscape.model.CyNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 
@@ -169,25 +171,46 @@ public class CnSPartition {
 	public void makeClusterLinks(CnSCluster cluster) {
 		Vector<CnSEdge> commonEdges = null;
 		Vector<CnSNode> commonNodes = null;
-		for (CnSCluster cl : clusters) {
+		Vector<CyNode> commonCyNodes = null;
+		Logger LOGGER = LoggerFactory.getLogger(this.getClass());
+		
+		for (CnSCluster cl : clusters)
 			if (cl != cluster) {
-				commonEdges = (Vector<CnSEdge>)cluster.getExtEdges().clone();
-				commonEdges.retainAll(cl.getExtEdges());
-				if (commonEdges.size() > 0) {
-					CnSClusterLink clusterLink = new CnSClusterLink(cluster, cl);
-					for (CnSEdge e : commonEdges) clusterLink.addEdge(e);
-					if (!clusterLinks.contains(clusterLink)) clusterLinks.addElement(clusterLink);
-				}
+				CnSClusterLink clusterLink = new CnSClusterLink(cluster, cl);
+				if (!clusterLinks.contains(clusterLink)) {
+					commonNodes = (Vector<CnSNode>)cluster.getNodes().clone();
+					commonNodes.retainAll(cl.getNodes());
+					commonCyNodes = new Vector<CyNode>();
+					if (commonNodes.size() > 0)
+						for (CnSNode n : commonNodes) {
+							//JOptionPane.showMessageDialog(null, "coucou");
+							clusterLink.addNode(n);
+							commonCyNodes.addElement(n.getCyNode());
+						}
 				
-				commonNodes = (Vector<CnSNode>)cluster.getNodes().clone();
-				commonNodes.retainAll(cl.getNodes());
-				if (commonNodes.size() > 0) {
-					CnSClusterLink clusterLink = new CnSClusterLink(cluster, cl);
-					for (CnSNode n : commonNodes) clusterLink.addNode(n);
-					if (!clusterLinks.contains(clusterLink)) clusterLinks.addElement(clusterLink);
+					commonEdges = (Vector<CnSEdge>)cluster.getExtEdges().clone();
+					commonEdges.retainAll(cl.getExtEdges());
+					if (commonEdges.size() > 0)
+						for (CnSEdge e : commonEdges)
+							if (!commonCyNodes.contains(e.getCyEdge().getSource()) && 
+									!commonCyNodes.contains(e.getCyEdge().getTarget())) {
+								LOGGER.info("--- commonNodes doesn't contain " + e.getCyEdge().getSource().getSUID() + " and " + e.getCyEdge().getTarget().getSUID());
+								clusterLink.addEdge(e);
+							}
+					if ((clusterLink.getEdges().size() > 0) || (clusterLink.getNodes().size() > 0)) {
+						clusterLinks.addElement(clusterLink);
+						LOGGER.info("--- Addding link between clusters " + cl.getName() + " and " + cluster.getName());
+						LOGGER.info("--- Common nodes (" + clusterLink.getNodes().size() + ") :");
+						for (CnSNode n : clusterLink.getNodes()) 
+							LOGGER.info("--- " + n.getSUID());
+						LOGGER.info("\n");
+						LOGGER.info("--- Edges (" + clusterLink.getEdges().size() + ") :");
+						for (CnSEdge e : clusterLink.getEdges())
+							LOGGER.info("--- " + e.getCyEdge().getSource().getSUID() + " - " + e.getCyEdge().getTarget().getSUID());
+						LOGGER.info("--- \n");
+					}
 				}
 			}
-		}
 	}
 	
 	public Vector<CnSClusterLink> getClusterLinks() {

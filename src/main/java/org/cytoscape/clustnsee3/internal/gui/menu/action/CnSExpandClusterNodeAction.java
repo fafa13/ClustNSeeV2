@@ -14,11 +14,8 @@
 package org.cytoscape.clustnsee3.internal.gui.menu.action;
 
 import java.awt.Color;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Vector;
-
-import javax.swing.JOptionPane;
 
 import org.cytoscape.clustnsee3.internal.CyActivator;
 import org.cytoscape.clustnsee3.internal.analysis.CnSCluster;
@@ -85,8 +82,8 @@ public class CnSExpandClusterNodeAction {
 				if (x_max < x) x_max = x;
 				if (y_max < y) y_max = y;
 			}
-			double x_size = x_max - x_min;
-			double y_size = y_max - y_min;
+			double x_size = x_max - x_min + 1;
+			double y_size = y_max - y_min + 1;
 			double ratio = (Math.min(cluster.getNbNodes(), 100) * (50 - 4750 / 99) + 4750 / 99) / Math.max(x_size, y_size);
 			
 			view.setModifCluster(true);

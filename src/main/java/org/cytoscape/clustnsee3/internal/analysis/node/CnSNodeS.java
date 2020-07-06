@@ -60,7 +60,7 @@ public class CnSNodeS implements Iterable<CnSNode> {
 		CyNode n;
 		while (it.hasNext()) {
 			n = it.next().getCyNode();
-			ret = (node.getSUID() == n.getSUID());
+			ret = (node == n);
 			if (ret) break;
 		}
 		return ret;

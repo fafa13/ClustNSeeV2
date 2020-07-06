@@ -54,4 +54,14 @@ public class CnSNode {
 	public void removeCluster(CnSCluster cluster) {
 		clusters.removeElement(cluster);
 	}
+	public boolean equals(Object o) {
+		boolean ret = false;
+		CnSNode node = (CnSNode)o;
+		
+		ret = (node.getSUID() == getSUID());
+		return ret;
+	}
+	public Vector<CnSCluster> getClusters() {
+		return clusters;
+	}
 }

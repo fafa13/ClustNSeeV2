@@ -13,6 +13,7 @@
 
 package org.cytoscape.clustnsee3.internal.view;
 
+import java.awt.geom.Point2D;
 import java.util.HashMap;
 
 import org.cytoscape.clustnsee3.internal.analysis.CnSCluster;
@@ -27,15 +28,17 @@ public class CnSView {
 	private CyNetworkView view;
 	private boolean modifCluster;
 	private HashMap<CnSCluster, Boolean> isExpanded;
+	private HashMap<CnSCluster, Point2D.Double> clusterLocation;
 	
 	public CnSView(CyNetworkView view, CnSViewState state) {
 		super();
 		this.view = view;
 		modifCluster = false;
 		isExpanded = new HashMap<CnSCluster, Boolean>();
+		clusterLocation = new HashMap<CnSCluster, Point2D.Double>();
 		setViewState(state);
 	}
-	public void setViewState(CnSViewState state) {
+	protected void setViewState(CnSViewState state) {
 		this.state = state;
 	}
 	public CyNetworkView getView() {
@@ -44,7 +47,7 @@ public class CnSView {
 	public Object getReference() {
 		return state.getReference();
 	}
-	public CnSViewState getState() {
+	protected CnSViewState getState() {
 		return state;
 	}
 	public boolean equals(Object o) {
@@ -60,23 +63,29 @@ public class CnSView {
 	public boolean isUserView() {
 		return state.isUserView();
 	}
-	public void updateNodeContextMenu() {
+	protected void updateNodeContextMenu() {
 		state.updateNodeContextMenu();
 	}
 	
 	public void setModifCluster(boolean b) {
 		modifCluster = b;
 	}
-	public boolean getModifCluster() {
+	protected boolean getModifCluster() {
 		return modifCluster;
 	}
-	public boolean isExpanded(CnSCluster c) {
+	protected boolean isExpanded(CnSCluster c) {
 		if (isExpanded.containsKey(c))
 			return isExpanded.get(c);
 		return false;
 	}
-	public void setExpanded (CnSCluster c, boolean b) {
+	protected void setExpanded (CnSCluster c, boolean b) {
 		if (isExpanded.containsKey(c)) isExpanded.remove(c);
 		isExpanded.put(c, b);
+	}
+	protected void setLocation(CnSCluster cluster, Double x, Double y) {
+		clusterLocation.putIfAbsent(cluster, new Point2D.Double(x, y));
+	}
+	protected Point2D.Double getClusterLocation(CnSCluster cluster) {
+		return clusterLocation.get(cluster);
 	}
 }

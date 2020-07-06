@@ -13,6 +13,7 @@
 
 package org.cytoscape.clustnsee3.internal.view;
 
+import java.awt.geom.Point2D;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -31,6 +32,8 @@ import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
 import org.cytoscape.clustnsee3.internal.gui.results.CnSResultsPanel;
 import org.cytoscape.clustnsee3.internal.network.CnSNetwork;
 import org.cytoscape.clustnsee3.internal.network.CnSNetworkManager;
+import org.cytoscape.clustnsee3.internal.partition.CnSPartition;
+import org.cytoscape.clustnsee3.internal.partition.CnSPartitionManager;
 import org.cytoscape.clustnsee3.internal.view.state.CnSUserViewState;
 import org.cytoscape.clustnsee3.internal.view.state.CnSViewState;
 import org.cytoscape.event.AbstractCyEvent;
@@ -55,6 +58,7 @@ import org.cytoscape.view.model.CyNetworkView;
 import org.cytoscape.view.model.CyNetworkViewManager;
 import org.cytoscape.view.model.events.NetworkViewAboutToBeDestroyedEvent;
 import org.cytoscape.view.model.events.NetworkViewAboutToBeDestroyedListener;
+import org.cytoscape.view.presentation.property.BasicVisualLexicon;
 
 /**
  * 
@@ -72,6 +76,9 @@ UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, RowsSetListener, S
 	public static final int GET_NETWORK = 8;
 	public static final int IS_EXPANDED = 9;
 	public static final int SET_EXPANDED = 10;
+	public static final int GET_CLUSTER_LOCATION = 11;
+	public static final int SET_CLUSTER_LOCATION = 12;
+	public static final int RECORD_CLUSTERS_LOCATION = 13;
 	
 	public static final int VIEW = 1000;
 	public static final int STATE = 1001;
@@ -79,6 +86,7 @@ UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, RowsSetListener, S
 	public static final int CLUSTER = 1003;
 	public static final int NETWORK = 1004;
 	public static final int EXPANDED = 1005;
+	public static final int CLUSTER_LOCATION = 1006;
 	
 	private Vector<CnSView> views;
 	private CnSView selectedView;
@@ -128,6 +136,10 @@ UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, RowsSetListener, S
 		CnSViewState state = null;
 		CnSCluster cluster;
 		boolean expanded;
+		Double x, y;
+		Point2D.Double location;
+		CnSEvent ev;
+		CnSPartition partition;
 		
 		switch(event.getAction()) {
 			case ADD_VIEW :
@@ -227,6 +239,31 @@ UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, RowsSetListener, S
 				cluster = (CnSCluster)event.getParameter(CLUSTER);
 				view = (CnSView)event.getParameter(VIEW);
 				ret = view.isExpanded(cluster);
+				break;
+				
+			case GET_CLUSTER_LOCATION :
+				view = (CnSView)event.getParameter(VIEW);
+				cluster = (CnSCluster)event.getParameter(CLUSTER);
+				ret = view.getClusterLocation(cluster);
+				break;
+				
+			case SET_CLUSTER_LOCATION :
+				view = (CnSView)event.getParameter(VIEW);
+				cluster = (CnSCluster)event.getParameter(CLUSTER);
+				location = (Point2D.Double)event.getParameter(CLUSTER_LOCATION);
+				view.setLocation(cluster, location.x, location.y);
+				break;
+				
+			case RECORD_CLUSTERS_LOCATION :
+				view = (CnSView)event.getParameter(VIEW);
+				ev = new CnSEvent(CnSPartitionManager.GET_PARTITION, CnSEventManager.PARTITION_MANAGER);
+				ev.addParameter(CnSPartitionManager.VIEW, view);
+				partition = (CnSPartition)CnSEventManager.handleMessage(ev);
+				for (CnSCluster cl : partition.getClusters()) {
+					x = view.getView().getNodeView(cl.getCyNode()).getVisualProperty(BasicVisualLexicon.NODE_X_LOCATION);
+					y = view.getView().getNodeView(cl.getCyNode()).getVisualProperty(BasicVisualLexicon.NODE_Y_LOCATION);
+					view.setLocation(cl, x, y);
+				}
 				break;
 		}
 		return ret;

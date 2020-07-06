@@ -269,10 +269,6 @@ public class CnSResultsCommandPanel extends CnSPanel {
 							ev.addParameter(CnSViewManager.CLUSTER, cluster);
 							CnSEventManager.handleMessage(ev);
 							
-							//ev = new CnSEvent(CnSViewManager.ADD_VIEW, CnSEventManager.VIEW_MANAGER);
-							//ev.addParameter(CnSViewManager.VIEW, view);
-							//CnSEventManager.handleMessage(ev);
-		            
 							// apply cluster view style
 							for (CnSNode node : cluster.getNodes())
 								clView.getNodeView(node.getCyNode()).setVisualProperty(BasicVisualLexicon.NODE_FILL_COLOR, Color.BLUE);
@@ -301,35 +297,43 @@ public class CnSResultsCommandPanel extends CnSPanel {
 						
 						// Set nested network
 						clNode.setNetworkPointer(clNet);
-						
-						
 					}
 					// Add links between cluster nodes
 					for (CnSClusterLink clusterLink : partition.getClusterLinks()) {
-						if (clusterLink.getCyEdge() == null) {
+						if ((clusterLink.getInteractionEdge() == null) && (clusterLink.getEdges().size() > 0)) {
 							CyEdge ce = partNet.addEdge(clusterLink.getSource().getCyNode(), clusterLink.getTarget().getCyNode(), false);
-							clusterLink.setCyEdge(ce);
+							clusterLink.setInteractionEdge(ce);
 							newPartition.addClusterEdge(ce);
+							partNet.addEdge(clusterLink.getInteractionEdge());
 						}
-						else {
-							partNet.addEdge(clusterLink.getCyEdge());
+						else if (clusterLink.getEdges().size() > 0) {
+							partNet.addEdge(clusterLink.getInteractionEdge());
+						}
+						if ((clusterLink.getMulticlassEdge() == null) && (clusterLink.getNodes().size() > 0)) {
+							CyEdge ce = partNet.addEdge(clusterLink.getSource().getCyNode(), clusterLink.getTarget().getCyNode(), false);
+							clusterLink.setMulticlassEdge(ce);
+							newPartition.addClusterEdge(ce);
+							partNet.addEdge(clusterLink.getMulticlassEdge());
+						}
+						else if (clusterLink.getNodes().size() > 0) {
+							partNet.addEdge(clusterLink.getMulticlassEdge());
 						}
 					}
-					
 					
 					// create a new view for my network
 					CyNetworkView cyView = cnvf.createNetworkView(partNet);
 					networkViewManager.addNetworkView(cyView);
 	            
 					for (CnSClusterLink clusterLink : partition.getClusterLinks()) {
-						CyEdge ce = clusterLink.getCyEdge();
-						if (clusterLink.getNodes().size() > 0) {
-							cyView.getEdgeView(ce).setVisualProperty(BasicVisualLexicon.EDGE_WIDTH, Double.valueOf(Math.min(clusterLink.getNodes().size(), 16)));
-							cyView.getEdgeView(ce).setVisualProperty(BasicVisualLexicon.EDGE_STROKE_UNSELECTED_PAINT, Color.green);
-						}
-						else {
+						CyEdge ce = clusterLink.getInteractionEdge();
+						if (ce != null) {
 							cyView.getEdgeView(ce).setVisualProperty(BasicVisualLexicon.EDGE_WIDTH, Double.valueOf(Math.min(clusterLink.getEdges().size(), 16)));
 							cyView.getEdgeView(ce).setVisualProperty(BasicVisualLexicon.EDGE_STROKE_UNSELECTED_PAINT, Color.blue);
+						}
+						ce = clusterLink.getMulticlassEdge();
+						if (ce != null) {
+							cyView.getEdgeView(ce).setVisualProperty(BasicVisualLexicon.EDGE_WIDTH, Double.valueOf(Math.min(clusterLink.getNodes().size(), 16)));
+							cyView.getEdgeView(ce).setVisualProperty(BasicVisualLexicon.EDGE_STROKE_UNSELECTED_PAINT, Color.green);
 						}
 					}
 					for (CyNode no : partNet.getNodeList()) {
@@ -360,6 +364,10 @@ public class CnSResultsCommandPanel extends CnSPanel {
 					ev = new CnSEvent(CnSPartitionManager.SET_PARTITION_VIEW, CnSEventManager.PARTITION_MANAGER);
 					ev.addParameter(CnSPartitionManager.VIEW, myView);
 					ev.addParameter(CnSPartitionManager.PARTITION, newPartition);
+					CnSEventManager.handleMessage(ev);
+					
+					ev = new CnSEvent(CnSViewManager.RECORD_CLUSTERS_LOCATION, CnSEventManager.VIEW_MANAGER);
+					ev.addParameter(CnSViewManager.VIEW, myView);
 					CnSEventManager.handleMessage(ev);
 					
 					ev = new CnSEvent(CnSViewManager.SET_SELECTED_VIEW, CnSEventManager.VIEW_MANAGER);

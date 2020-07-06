@@ -36,6 +36,7 @@ public class CnSPartitionManager implements CnSEventListener {
 	public static final int SET_PARTITION_VIEW = 6;
 	public static final int GET_VIEW = 7;
 	public static final int REMOVE_PARTITION = 8;
+	public static final int GET_CLUSTERS = 9;
 	
 	public static final int PARTITION = 1000;
 	public static final int INDEX = 1001;
@@ -172,6 +173,13 @@ public class CnSPartitionManager implements CnSEventListener {
 						break;
 					}
 				partition2networkMap.remove(p);
+				break;
+				
+			case GET_CLUSTERS :
+				p = (CnSPartition)event.getParameter(PARTITION);
+				cyNode = (CyNode)event.getParameter(CY_NODE);
+				cnsNode = p.getNode(cyNode);
+				ret = cnsNode.getClusters();
 				break;
 		}
 		return ret;

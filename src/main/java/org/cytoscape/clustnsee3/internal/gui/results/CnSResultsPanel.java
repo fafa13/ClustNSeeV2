@@ -27,7 +27,6 @@ import org.cytoscape.application.swing.CytoPanelComponent;
 import org.cytoscape.application.swing.CytoPanelName;
 import org.cytoscape.clustnsee3.internal.CyActivator;
 import org.cytoscape.clustnsee3.internal.algorithm.CnSAlgorithm;
-import org.cytoscape.clustnsee3.internal.algorithm.CnSAlgorithmEngine;
 import org.cytoscape.clustnsee3.internal.algorithm.CnSAlgorithmResult;
 import org.cytoscape.clustnsee3.internal.algorithm.FTTaskObserver;
 import org.cytoscape.clustnsee3.internal.analysis.CnSCluster;
@@ -193,29 +192,26 @@ public class CnSResultsPanel extends CnSPanel implements CytoPanelComponent, CnS
         CySubNetwork myNet = null;
         CyNetwork currentNetwork = applicationManager.getCurrentNetwork();
         CnSPartition newPartition = new CnSPartition(inputNetwork.getRow(inputNetwork).get(CyNetwork.NAME, String.class), algo.getName(), algo.getParameters());
-        int kk = 0;
         int NbClas = result.getNbClass();
         int[] Kard = result.getCard();
         int[][] Cl = result.getClasses();
         HashMap<Integer, Long> algo_to_cyto = result.getAlgoToCyto();
         Vector<CyNode> cynodes_to_keep = new Vector<CyNode>();
         for( int k = 0; k < NbClas; k++) {
-        	while (Kard[kk] == 0) kk++;
-            for (int index_in_class = 0; index_in_class < Kard[kk]; index_in_class++) {
-            	int mod_clust_index = Cl[kk][ index_in_class];
+        	for (int index_in_class = 0; index_in_class < Kard[k]; index_in_class++) {
+            	int mod_clust_index = Cl[k][ index_in_class];
             	Long cyto_index = algo_to_cyto.get(mod_clust_index);
             	if( cyto_index != null) cynodes_to_keep.addElement(inputNetwork.getNode(cyto_index));
             }
         }
-        kk = 0;
         for( int k = 0; k < NbClas; k++) {
             CnSCluster newCluster = new CnSCluster();
             Vector<CnSNode> alNodes = new Vector<CnSNode>();
             Vector<CnSEdge> alEdges = new Vector<CnSEdge>();
             Vector<CnSEdge> extEdges = new Vector<CnSEdge>();
-            while (Kard[kk] == 0) kk++;
-            for (int index_in_class = 0; index_in_class < Kard[kk]; index_in_class++) {
-            	int mod_clust_index = Cl[kk][ index_in_class];
+            //while (Kard[kk] == 0) kk++;
+            for (int index_in_class = 0; index_in_class < Kard[k]; index_in_class++) {
+            	int mod_clust_index = Cl[k][ index_in_class];
             	Long cyto_index = algo_to_cyto.get(mod_clust_index);
             	CnSNode cnsNode;
             	if( cyto_index != null){
@@ -224,7 +220,7 @@ public class CnSResultsPanel extends CnSPanel implements CytoPanelComponent, CnS
             	}
             }
             newCluster.setNodes(alNodes);
-            kk++;
+            //kk++;
             List<CyEdge> cedges;
             Iterator<CnSNode> nodesIterator = alNodes.iterator();
             while (nodesIterator.hasNext()) {
@@ -291,7 +287,7 @@ public class CnSResultsPanel extends CnSPanel implements CytoPanelComponent, CnS
             newPartition.addCluster(newCluster);
         }
         newPartition.sortClusters();
-        
+
         clusterListPanel = new CnSClusterListPanel();
 		jtp.add(newPartition.getName() + ":" + newPartition.getAlgorithmName(), clusterListPanel);
 		

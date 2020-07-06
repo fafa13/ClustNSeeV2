@@ -37,8 +37,9 @@ public class CnSEdge {
 	public boolean equals(Object o) {
 		CnSEdge e = (CnSEdge)o;
 		boolean ret = false;
-		ret = e.getCyEdge().getSource().getSUID() == cyEdge.getSource().getSUID() && e.getCyEdge().getTarget().getSUID() == cyEdge.getTarget().getSUID();
-		ret = ret || (e.getCyEdge().getSource().getSUID() == cyEdge.getTarget().getSUID() && e.getCyEdge().getTarget().getSUID() == cyEdge.getSource().getSUID());
+		ret = e.getCyEdge() == cyEdge;
+		//ret = e.getCyEdge().getSource().getSUID() == cyEdge.getSource().getSUID() && e.getCyEdge().getTarget().getSUID() == cyEdge.getTarget().getSUID();
+		//ret = ret || (e.getCyEdge().getSource().getSUID() == cyEdge.getTarget().getSUID() && e.getCyEdge().getTarget().getSUID() == cyEdge.getSource().getSUID());
 		return ret;
 	}
 }
