@@ -19,7 +19,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 
-
 import org.cytoscape.application.events.SetCurrentNetworkViewEvent;
 import org.cytoscape.application.events.SetCurrentNetworkViewListener;
 import org.cytoscape.application.events.SetSelectedNetworkViewsEvent;

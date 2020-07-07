@@ -14,6 +14,7 @@
 package org.cytoscape.clustnsee3.internal.gui.menu.action;
 
 import java.awt.Color;
+import java.awt.geom.Point2D;
 import java.util.HashMap;
 import java.util.Vector;
 
@@ -111,10 +112,18 @@ public class CnSExpandClusterNodeAction {
 			for (CnSNode cnsnode : cluster.getNodes())
 				network.getNetwork().getRow(cnsnode.getCyNode()).set("selected", true);
 			eh.flushPayloadEvents();
+			
+			ev = new CnSEvent(CnSViewManager.SET_CLUSTER_LOCATION, CnSEventManager.VIEW_MANAGER);
+			ev.addParameter(CnSViewManager.VIEW, view);
+			ev.addParameter(CnSViewManager.CLUSTER, cluster);
+			ev.addParameter(CnSViewManager.CLUSTER_LOCATION, new Point2D.Double(x0, y0));
+			CnSEventManager.handleMessage(ev);
+			
 			Vector<CyNode> toRemove = new Vector<CyNode>();
 			toRemove.addElement(node.getCyNode());
 			network.getNetwork().removeNodes(toRemove);
 			eh.flushPayloadEvents();
+			
 			for (CnSClusterLink cl : partition.getClusterLinks()) {
 				ev = new CnSEvent(CnSViewManager.IS_EXPANDED, CnSEventManager.VIEW_MANAGER);
 				ev.addParameter(CnSViewManager.VIEW, view);
@@ -152,11 +161,14 @@ public class CnSExpandClusterNodeAction {
 					for (CnSNode n : cl.getNodes()) {
 						//System.err.println("Node : " + n.getCyNode().toString());
 						if (!expanded) {
-							CyEdge cyEdge = network.getNetwork().addEdge(linkedCluster.getCyNode(), n.getCyNode(), false);
-							eh.flushPayloadEvents();
-							//JOptionPane.showMessageDialog(null, "  Edge : " + cyEdge.toString());
-							view.getView().getEdgeView(cyEdge).setVisualProperty(BasicVisualLexicon.EDGE_STROKE_UNSELECTED_PAINT, Color.green);
-							eh.flushPayloadEvents();
+							if (!network.getNetwork().containsEdge(linkedCluster.getCyNode(), n.getCyNode()) && 
+									!network.getNetwork().containsEdge(n.getCyNode(), linkedCluster.getCyNode())) {
+								CyEdge cyEdge = network.getNetwork().addEdge(linkedCluster.getCyNode(), n.getCyNode(), false);
+								eh.flushPayloadEvents();
+								//JOptionPane.showMessageDialog(null, "  Edge : " + cyEdge.toString());
+								view.getView().getEdgeView(cyEdge).setVisualProperty(BasicVisualLexicon.EDGE_STROKE_UNSELECTED_PAINT, Color.green);
+								eh.flushPayloadEvents();
+							}
 						}
 					}
 				}

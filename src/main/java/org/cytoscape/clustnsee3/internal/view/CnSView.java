@@ -83,7 +83,7 @@ public class CnSView {
 		isExpanded.put(c, b);
 	}
 	protected void setLocation(CnSCluster cluster, Double x, Double y) {
-		clusterLocation.putIfAbsent(cluster, new Point2D.Double(x, y));
+		clusterLocation.put(cluster, new Point2D.Double(x, y));
 	}
 	protected Point2D.Double getClusterLocation(CnSCluster cluster) {
 		return clusterLocation.get(cluster);

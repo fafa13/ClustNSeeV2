@@ -374,6 +374,9 @@ public class CnSResultsCommandPanel extends CnSPanel {
 					ev.addParameter(CnSViewManager.VIEW, myView);
 					CnSEventManager.handleMessage(ev);
 				}
+				
+				myView.getView().updateView();
+				
 				ev = new CnSEvent(CnSViewManager.GET_NETWORK, CnSEventManager.VIEW_MANAGER);
 				ev.addParameter(CnSViewManager.VIEW, myView);
 				CnSNetwork network = (CnSNetwork)CnSEventManager.handleMessage(ev);
@@ -386,7 +389,16 @@ public class CnSResultsCommandPanel extends CnSPanel {
 		discardPartitionButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				CnSEvent ev = new CnSEvent(CnSResultsPanel.GET_SELECTED_PARTITION, CnSEventManager.RESULTS_PANEL);
+				CnSPartition partition = (CnSPartition)CnSEventManager.handleMessage(ev);
+		        
+				ev = new CnSEvent(CnSPartitionManager.REMOVE_PARTITION, CnSEventManager.PARTITION_MANAGER);
+				ev.addParameter(CnSPartitionManager.PARTITION, partition);
+				CnSEventManager.handleMessage(ev);
 				
+				ev = new CnSEvent(CnSResultsPanel.DISCARD_PARTITION, CnSEventManager.RESULTS_PANEL);
+				ev.addParameter(CnSResultsPanel.PARTITION, partition);
+				CnSEventManager.handleMessage(ev);
 			}
 		});
 	}
