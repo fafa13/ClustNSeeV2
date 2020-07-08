@@ -45,6 +45,7 @@ public class CnSExpandClusterNodeAction {
 	public void doAction(Long suid) {
 		boolean expanded = false;
 		CyNode n2;
+		
 		CnSEvent ev = new CnSEvent(CnSViewManager.GET_SELECTED_VIEW, CnSEventManager.VIEW_MANAGER);
 		CnSView view = (CnSView)CnSEventManager.handleMessage(ev);
 		HashMap<CyNode, CyEdge> node2edgeMap = new HashMap<CyNode, CyEdge>();
@@ -56,6 +57,12 @@ public class CnSExpandClusterNodeAction {
 		ev = new CnSEvent(CnSPartitionManager.GET_PARTITION, CnSEventManager.PARTITION_MANAGER);
 		ev.addParameter(CnSPartitionManager.NETWORK, network);
 		CnSPartition partition = (CnSPartition)CnSEventManager.handleMessage(ev);
+		if (partition == null) {
+			ev = new CnSEvent(CnSViewManager.GET_VIEW_PARTITION, CnSEventManager.VIEW_MANAGER);
+			ev.addParameter(CnSViewManager.VIEW, view);
+			partition = (CnSPartition)CnSEventManager.handleMessage(ev);
+		}
+		
 		CnSNode node = partition.getClusterNode(suid);
 		
 		CnSCluster cluster = null, linkedCluster;
@@ -65,6 +72,7 @@ public class CnSExpandClusterNodeAction {
 				break;
 			}
 		}
+		
 		if (cluster != null) {
 			ev = new CnSEvent(CnSViewManager.GET_VIEW, CnSEventManager.VIEW_MANAGER);
 			ev.addParameter(CnSViewManager.REFERENCE, cluster);
@@ -123,7 +131,6 @@ public class CnSExpandClusterNodeAction {
 			toRemove.addElement(node.getCyNode());
 			network.getNetwork().removeNodes(toRemove);
 			eh.flushPayloadEvents();
-			
 			for (CnSClusterLink cl : partition.getClusterLinks()) {
 				ev = new CnSEvent(CnSViewManager.IS_EXPANDED, CnSEventManager.VIEW_MANAGER);
 				ev.addParameter(CnSViewManager.VIEW, view);
@@ -132,7 +139,7 @@ public class CnSExpandClusterNodeAction {
 					linkedCluster = cl.getTarget();	
 				else if (cl.getTarget() == cluster)
 					linkedCluster = cl.getSource();
-				if (linkedCluster != null) {
+				if (linkedCluster != null && view.getView().getModel().containsNode(linkedCluster.getCyNode())) {
 					ev.addParameter(CnSViewManager.CLUSTER, linkedCluster);
 					expanded = (Boolean)CnSEventManager.handleMessage(ev);
 					node2edgeMap.clear();
@@ -181,7 +188,6 @@ public class CnSExpandClusterNodeAction {
 			ev.addParameter(CnSViewManager.VIEW, view);
 			ev.addParameter(CnSViewManager.EXPANDED, true);
 			CnSEventManager.handleMessage(ev);
-			
 			view.setModifCluster(false);
 		}
 	}

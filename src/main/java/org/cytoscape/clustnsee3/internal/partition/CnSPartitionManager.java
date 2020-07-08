@@ -61,6 +61,7 @@ public class CnSPartitionManager implements CnSEventListener {
 	public static final int REMOVE_PARTITION = 8;
 	public static final int GET_CLUSTERS = 9;
 	public static final int CREATE_PARTITION = 10;
+	public static final int GET_PARTITION_NETWORK = 11;
 	
 	public static final int PARTITION = 1000;
 	public static final int INDEX = 1001;
@@ -219,6 +220,11 @@ public class CnSPartitionManager implements CnSEventListener {
 				cnsNode = p.getNode(cyNode);
 				ret = cnsNode.getClusters();
 				break;
+				
+			case GET_PARTITION_NETWORK :
+				p = (CnSPartition)event.getParameter(PARTITION);
+				ret = partition2networkMap.get(p);
+				break;
 		}
 		return ret;
 	}
@@ -244,7 +250,7 @@ public class CnSPartitionManager implements CnSEventListener {
         TaskManager<?, ?> tm = (TaskManager<?, ?>)CnSEventManager.handleMessage(ev);
         
         CySubNetwork myNet = null;
-        CnSPartition newPartition = new CnSPartition(inputNetwork.getRow(inputNetwork).get(CyNetwork.NAME, String.class), algorithm.getName(), algorithm.getParameters());
+        CnSPartition newPartition = new CnSPartition(algorithm.getName(), algorithm.getParameters(), inputNetwork);
         int NbClas = algoResults.getNbClass();
         int[] Kard = algoResults.getCard();
         int[][] Cl = algoResults.getClasses();
@@ -316,7 +322,6 @@ public class CnSPartitionManager implements CnSEventListener {
         	TaskIterator tit = apltf.createTaskIterator(networkViewManager.getNetworkViews(myNet));
             FTTaskObserver to = new FTTaskObserver(myView, newCluster);
             tm.execute(tit, to);
-            
             
             CnSNetwork network = new CnSNetwork(myNet);
             ev = new CnSEvent(CnSNetworkManager.ADD_NETWORK, CnSEventManager.NETWORK_MANAGER);

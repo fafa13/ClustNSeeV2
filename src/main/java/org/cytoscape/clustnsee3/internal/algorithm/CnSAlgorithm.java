@@ -19,8 +19,8 @@ import org.cytoscape.model.CyNetwork;
  * The clustering algorithms implemented with the Strategy pattern
  */
 public abstract class CnSAlgorithm {
-	private String NAME = "";
-    protected CnSAlgorithmParameters parameters;
+	protected String NAME = "";
+	protected CnSAlgorithmParameters parameters;
 	
 	public CnSAlgorithmParameters getParameters() {
 		return parameters;

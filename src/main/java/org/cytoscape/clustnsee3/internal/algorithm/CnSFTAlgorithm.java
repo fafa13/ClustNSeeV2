@@ -194,7 +194,7 @@ public class CnSFTAlgorithm extends CnSAlgorithm {
         	LOGGER.info("***");
         	LOGGER.info("***");
         }
-        return new CnSAlgorithmResult(classes, card, NbClas, algo_to_cyto);
+        return new CnSAlgorithmResult(classes, card, NbClas, algo_to_cyto, inputNetwork);
     }
     
     int Newman( int typ) {

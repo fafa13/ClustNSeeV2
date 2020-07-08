@@ -55,6 +55,7 @@ import org.cytoscape.model.events.UnsetNetworkPointerEvent;
 import org.cytoscape.model.events.UnsetNetworkPointerListener;
 import org.cytoscape.view.model.CyNetworkView;
 import org.cytoscape.view.model.CyNetworkViewManager;
+import org.cytoscape.view.model.View;
 import org.cytoscape.view.model.events.NetworkViewAboutToBeDestroyedEvent;
 import org.cytoscape.view.model.events.NetworkViewAboutToBeDestroyedListener;
 import org.cytoscape.view.presentation.property.BasicVisualLexicon;
@@ -78,6 +79,8 @@ UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, RowsSetListener, S
 	public static final int GET_CLUSTER_LOCATION = 11;
 	public static final int SET_CLUSTER_LOCATION = 12;
 	public static final int RECORD_CLUSTERS_LOCATION = 13;
+	public static final int SET_VIEW_PARTITION = 14;
+	public static final int GET_VIEW_PARTITION = 15;
 	
 	public static final int VIEW = 1000;
 	public static final int STATE = 1001;
@@ -86,6 +89,7 @@ UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, RowsSetListener, S
 	public static final int NETWORK = 1004;
 	public static final int EXPANDED = 1005;
 	public static final int CLUSTER_LOCATION = 1006;
+	public static final int PARTITION = 1007;
 	
 	private Vector<CnSView> views;
 	private CnSView selectedView;
@@ -93,6 +97,8 @@ UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, RowsSetListener, S
 	private HashMap<CnSNetwork, CnSView> network2viewMap;
 	private HashMap<CnSView, CnSCluster> view2clusterMap;
 	private HashMap<CnSCluster, CnSView> cluster2viewMap;
+	private HashMap<CnSView, CnSPartition> view2partitionMap;
+	private HashMap<CnSPartition, CnSView> partition2viewMap;
 	
 	private static CnSViewManager instance = null;
 	
@@ -104,6 +110,8 @@ UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, RowsSetListener, S
 		network2viewMap = new HashMap<CnSNetwork, CnSView>();
 		view2clusterMap = new HashMap<CnSView, CnSCluster>();
 		cluster2viewMap = new HashMap<CnSCluster, CnSView>();
+		view2partitionMap = new HashMap<CnSView, CnSPartition>();
+		partition2viewMap = new HashMap<CnSPartition, CnSView>();
 	}
 	
 	public static CnSViewManager getInstance() {
@@ -139,6 +147,7 @@ UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, RowsSetListener, S
 		Point2D.Double location;
 		CnSEvent ev;
 		CnSPartition partition;
+		View<CyNode> cnv;
 		
 		switch(event.getAction()) {
 			case ADD_VIEW :
@@ -258,11 +267,33 @@ UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, RowsSetListener, S
 				ev = new CnSEvent(CnSPartitionManager.GET_PARTITION, CnSEventManager.PARTITION_MANAGER);
 				ev.addParameter(CnSPartitionManager.VIEW, view);
 				partition = (CnSPartition)CnSEventManager.handleMessage(ev);
-				for (CnSCluster cl : partition.getClusters()) {
-					x = view.getView().getNodeView(cl.getCyNode()).getVisualProperty(BasicVisualLexicon.NODE_X_LOCATION);
-					y = view.getView().getNodeView(cl.getCyNode()).getVisualProperty(BasicVisualLexicon.NODE_Y_LOCATION);
-					view.setLocation(cl, x, y);
+				if (partition == null) {
+					ev = new CnSEvent(CnSViewManager.GET_VIEW_PARTITION, CnSEventManager.VIEW_MANAGER);
+					ev.addParameter(CnSViewManager.VIEW, view);
+					partition = (CnSPartition)CnSEventManager.handleMessage(ev);
 				}
+				for (CnSCluster cl : partition.getClusters()) {
+					if (cl.getCyNode() != null) { 
+						cnv = view.getView().getNodeView(cl.getCyNode());
+						if (cnv != null) {
+							x = cnv.getVisualProperty(BasicVisualLexicon.NODE_X_LOCATION);
+							y = cnv.getVisualProperty(BasicVisualLexicon.NODE_Y_LOCATION);
+							view.setLocation(cl, x, y);
+						}
+					}
+				}
+				break;
+				
+			case SET_VIEW_PARTITION :
+				view = (CnSView)event.getParameter(VIEW);
+				partition = (CnSPartition)event.getParameter(PARTITION);
+				view2partitionMap.putIfAbsent(view, partition);
+				partition2viewMap.putIfAbsent(partition, view);
+				break;
+				
+			case GET_VIEW_PARTITION :
+				view = (CnSView)event.getParameter(VIEW);
+				ret = view2partitionMap.get(view);
 				break;
 		}
 		return ret;
@@ -278,7 +309,7 @@ UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, RowsSetListener, S
         	if (cnsv != null) break;
         }
         if (cnsv != null) {
-        	if (!cnsv.getModifCluster()) {
+        	if (!cnsv.isUserView() && !cnsv.getModifCluster()) {
         		cnsv.setViewState(new CnSUserViewState());
         		ev = new CnSEvent(CnSNetworkManager.RENAME_NETWORK, CnSEventManager.NETWORK_MANAGER);
         		ev.addParameter(CnSNetworkManager.NETWORK, view2networkMap.get(cnsv));
@@ -379,9 +410,8 @@ UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, RowsSetListener, S
 						}
 				}
 			}
-			else {
+			else if (cn.size() >= 2) {
 				CnSEvent ev = new CnSEvent(CnSResultsPanel.SELECT_CLUSTER, CnSEventManager.RESULTS_PANEL);
-				//ev.addParameter(CnSResultsPanel.CLUSTER, null);
 				CnSEventManager.handleMessage(ev);
 			}
 		}

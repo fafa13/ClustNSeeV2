@@ -515,7 +515,7 @@ public class CnSOCGAlgorithm extends CnSAlgorithm {
         		LOGGER.info("***");
         		LOGGER.info("***");
         }
-        return new CnSAlgorithmResult(Cl, Kard, NbClas, modClust_to_cyto);
+        return new CnSAlgorithmResult(Cl, Kard, NbClas, modClust_to_cyto, inputNetwork);
     }
 
 	/**

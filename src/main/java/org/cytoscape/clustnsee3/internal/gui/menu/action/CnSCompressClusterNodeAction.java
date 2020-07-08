@@ -17,8 +17,6 @@ import java.awt.Color;
 import java.awt.geom.Point2D;
 import java.util.Vector;
 
-import javax.swing.JOptionPane;
-
 import org.cytoscape.clustnsee3.internal.analysis.CnSCluster;
 import org.cytoscape.clustnsee3.internal.analysis.CnSClusterLink;
 import org.cytoscape.clustnsee3.internal.analysis.edge.CnSEdge;
@@ -52,6 +50,11 @@ public class CnSCompressClusterNodeAction {
 		ev = new CnSEvent(CnSPartitionManager.GET_PARTITION, CnSEventManager.PARTITION_MANAGER);
 		ev.addParameter(CnSPartitionManager.NETWORK, network);
 		CnSPartition partition = (CnSPartition)CnSEventManager.handleMessage(ev);
+		if (partition == null) {
+			ev = new CnSEvent(CnSViewManager.GET_VIEW_PARTITION, CnSEventManager.VIEW_MANAGER);
+			ev.addParameter(CnSViewManager.VIEW, view);
+			partition = (CnSPartition)CnSEventManager.handleMessage(ev);
+		}
 		ev = new CnSEvent(CnSPartitionManager.GET_CLUSTERS, CnSEventManager.PARTITION_MANAGER);
 		ev.addParameter(CnSPartitionManager.PARTITION, partition);
 		ev.addParameter(CnSPartitionManager.CY_NODE, network.getNetwork().getNode(suid));
@@ -66,13 +69,11 @@ public class CnSCompressClusterNodeAction {
 		Vector<CyNode> toRemove;
 		
 		for (CnSCluster c : clusters) { // for each cluster to compress
-			
 			// gget the location of the cluster (before it was expanded)
 			ev = new CnSEvent(CnSViewManager.GET_CLUSTER_LOCATION, CnSEventManager.VIEW_MANAGER);
 			ev.addParameter(CnSViewManager.VIEW, view);
 			ev.addParameter(CnSViewManager.CLUSTER, c);
 			Point2D.Double pos = (Point2D.Double)CnSEventManager.handleMessage(ev);
-			
 			// initialize the list of nodes to remove after the cluster is compressed
 			toRemove = new Vector<CyNode>();
 			
@@ -82,7 +83,6 @@ public class CnSCompressClusterNodeAction {
 			ev.addParameter(CnSViewManager.VIEW, view);
 			ev.addParameter(CnSViewManager.CLUSTER, c);
 			b = (Boolean)CnSEventManager.handleMessage(ev);
-			
 			if (b) { // the cluster is expanded; it has to be compressed
 				
 				// make the list of nodes to remove = those that are in the cluster but not in another expanded cluster

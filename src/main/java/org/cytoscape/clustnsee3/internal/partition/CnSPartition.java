@@ -25,6 +25,7 @@ import org.cytoscape.clustnsee3.internal.analysis.edge.CnSEdgeS;
 import org.cytoscape.clustnsee3.internal.analysis.node.CnSNode;
 import org.cytoscape.clustnsee3.internal.analysis.node.CnSNodeS;
 import org.cytoscape.model.CyEdge;
+import org.cytoscape.model.CyNetwork;
 import org.cytoscape.model.CyNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,8 +43,9 @@ public class CnSPartition {
 	private CnSAlgorithmParameters algorithmParameters;
 	private Vector<CnSClusterLink> clusterLinks;
 	private String name;
+	private CyNetwork inputNetwork;
 	
-	public CnSPartition(String name, String algorithmName, CnSAlgorithmParameters algorithmParameters) {
+	public CnSPartition(String algorithmName, CnSAlgorithmParameters algorithmParameters, CyNetwork inputNetwork) {
 		super();
 		clusters = new Vector<CnSCluster>();
 		clusterLinks = new Vector<CnSClusterLink>();
@@ -52,8 +54,12 @@ public class CnSPartition {
 		edges = new CnSEdgeS();
 		clusterEdges = new CnSEdgeS();
 		this.algorithmName = algorithmName;
-		this.name = name;
+		this.name = inputNetwork.getRow(inputNetwork).get(CyNetwork.NAME, String.class);
 		this.algorithmParameters = algorithmParameters;
+		this.inputNetwork = inputNetwork;
+	}
+	public CyNetwork getInputNetwork() {
+		return inputNetwork;
 	}
 	public String getAlgorithmName() {
 		return algorithmName;

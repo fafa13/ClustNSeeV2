@@ -15,6 +15,8 @@ package org.cytoscape.clustnsee3.internal.algorithm;
 
 import java.util.HashMap;
 
+import org.cytoscape.model.CyNetwork;
+
 /**
  * 
  */
@@ -23,13 +25,15 @@ public class CnSAlgorithmResult {
 	private int[] card;
 	private int nb_class;
 	private HashMap<Integer, Long> algo_to_cyto;
+	private CyNetwork inputNetwork;
 	
-	public CnSAlgorithmResult(int[][] classes, int[] card, int nb_class, HashMap<Integer, Long> algo_to_cyto) {
+	public CnSAlgorithmResult(int[][] classes, int[] card, int nb_class, HashMap<Integer, Long> algo_to_cyto, CyNetwork inputNetwork) {
 		super();
 		this.classes = classes;
 		this.card = card;
 		this.nb_class = nb_class;
 		this.algo_to_cyto = algo_to_cyto;
+		this.inputNetwork = inputNetwork;
 	}
 	public int[][] getClasses() {
 		return classes;
@@ -42,5 +46,8 @@ public class CnSAlgorithmResult {
 	}
 	public HashMap<Integer, Long> getAlgoToCyto() {
 		return algo_to_cyto;
+	}
+	public CyNetwork getInputNetwork() {
+		return inputNetwork;
 	}
 }
