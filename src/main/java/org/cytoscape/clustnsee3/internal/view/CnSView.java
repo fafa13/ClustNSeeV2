@@ -15,6 +15,7 @@ package org.cytoscape.clustnsee3.internal.view;
 
 import java.awt.geom.Point2D;
 import java.util.HashMap;
+import java.util.Vector;
 
 import org.cytoscape.clustnsee3.internal.analysis.CnSCluster;
 import org.cytoscape.clustnsee3.internal.view.state.CnSViewState;
@@ -49,6 +50,12 @@ public class CnSView {
 	}
 	protected CnSViewState getState() {
 		return state;
+	}
+	public Vector<CnSCluster> getClusters() {
+		return state.getClusters();
+	}
+	public void addCluster(CnSCluster c) {
+		state.addCluster(c);
 	}
 	public boolean equals(Object o) {
 		if (o == null) return false;

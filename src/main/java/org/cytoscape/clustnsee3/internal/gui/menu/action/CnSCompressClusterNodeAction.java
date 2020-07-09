@@ -69,7 +69,7 @@ public class CnSCompressClusterNodeAction {
 		Vector<CyNode> toRemove;
 		
 		for (CnSCluster c : clusters) { // for each cluster to compress
-			// gget the location of the cluster (before it was expanded)
+			// get the location of the cluster (before it was expanded)
 			ev = new CnSEvent(CnSViewManager.GET_CLUSTER_LOCATION, CnSEventManager.VIEW_MANAGER);
 			ev.addParameter(CnSViewManager.VIEW, view);
 			ev.addParameter(CnSViewManager.CLUSTER, c);

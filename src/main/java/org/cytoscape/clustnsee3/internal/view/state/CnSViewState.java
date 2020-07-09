@@ -13,6 +13,10 @@
 
 package org.cytoscape.clustnsee3.internal.view.state;
 
+import java.util.Vector;
+
+import org.cytoscape.clustnsee3.internal.analysis.CnSCluster;
+
 /**
  * 
  */
@@ -43,5 +47,12 @@ public abstract class CnSViewState {
 	
 	public void updateNodeContextMenu() {
 		
+	}
+	public Vector<CnSCluster> getClusters() {
+		return null;
+	}
+	public void addCluster(CnSCluster c) {
+	}
+	public void removeCluster(CnSCluster c) {
 	}
 }
