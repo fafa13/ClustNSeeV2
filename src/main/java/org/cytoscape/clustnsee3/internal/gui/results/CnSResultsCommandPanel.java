@@ -509,6 +509,9 @@ public class CnSResultsCommandPanel extends CnSPanel {
 									}
 									else if (cl.getEdges().size() > 0) {
 										clNet.getNetwork().addEdge(cl.getInteractionEdge());
+										currentView.getView().getEdgeView(cl.getInteractionEdge()).setVisualProperty(BasicVisualLexicon.EDGE_WIDTH, Double.valueOf(Math.min(cl.getEdges().size(), 16)));
+										currentView.getView().getEdgeView(cl.getInteractionEdge()).setVisualProperty(BasicVisualLexicon.EDGE_STROKE_UNSELECTED_PAINT, Color.blue);
+									
 									}
 									JOptionPane.showMessageDialog(null, "interaction links done");
 									if ((cl.getMulticlassEdge() == null) && (cl.getNodes().size() > 0)) {
@@ -522,6 +525,9 @@ public class CnSResultsCommandPanel extends CnSPanel {
 									}
 									else if (cl.getNodes().size() > 0) {
 										clNet.getNetwork().addEdge(cl.getMulticlassEdge());
+										currentView.getView().getEdgeView(cl.getMulticlassEdge()).setVisualProperty(BasicVisualLexicon.EDGE_WIDTH, Double.valueOf(Math.min(cl.getNodes().size(), 16)));
+										currentView.getView().getEdgeView(cl.getMulticlassEdge()).setVisualProperty(BasicVisualLexicon.EDGE_STROKE_UNSELECTED_PAINT, Color.green);
+									
 									}
 									JOptionPane.showMessageDialog(null, "multiclass links done");
 									currentView.getView().updateView();
