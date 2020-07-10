@@ -13,11 +13,20 @@
 
 package org.cytoscape.clustnsee3.internal.view.state;
 
+import java.util.Vector;
+
+import org.cytoscape.clustnsee3.internal.analysis.CnSCluster;
+
 /**
  * 
  */
 public class CnSClusterViewState extends CnSViewState {
 	public CnSClusterViewState(Object cluster) {
 		super(cluster);
+	}
+	public Vector<CnSCluster> getClusters() {
+		Vector<CnSCluster> clusters = new Vector<CnSCluster>();
+		clusters.addElement((CnSCluster)getReference());
+		return clusters;
 	}
 }

@@ -131,6 +131,7 @@ public class CnSExpandClusterNodeAction {
 			toRemove.addElement(node.getCyNode());
 			network.getNetwork().removeNodes(toRemove);
 			eh.flushPayloadEvents();
+			
 			for (CnSClusterLink cl : partition.getClusterLinks()) {
 				ev = new CnSEvent(CnSViewManager.IS_EXPANDED, CnSEventManager.VIEW_MANAGER);
 				ev.addParameter(CnSViewManager.VIEW, view);
@@ -139,7 +140,7 @@ public class CnSExpandClusterNodeAction {
 					linkedCluster = cl.getTarget();	
 				else if (cl.getTarget() == cluster)
 					linkedCluster = cl.getSource();
-				if (linkedCluster != null && view.getView().getModel().containsNode(linkedCluster.getCyNode())) {
+				if (linkedCluster != null && view.getClusters().contains(linkedCluster)) {
 					ev.addParameter(CnSViewManager.CLUSTER, linkedCluster);
 					expanded = (Boolean)CnSEventManager.handleMessage(ev);
 					node2edgeMap.clear();

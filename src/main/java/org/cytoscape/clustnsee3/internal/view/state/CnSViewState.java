@@ -22,10 +22,12 @@ import org.cytoscape.clustnsee3.internal.analysis.CnSCluster;
  */
 public abstract class CnSViewState {
 	private Object reference;
+	protected Vector<CnSCluster> clusters;
 	
 	public CnSViewState(Object reference) {
 		super();
 		this.reference = reference;
+		clusters = new Vector<CnSCluster>();
 	}
 	
 	public Object getReference() {
@@ -48,11 +50,13 @@ public abstract class CnSViewState {
 	public void updateNodeContextMenu() {
 		
 	}
-	public Vector<CnSCluster> getClusters() {
-		return null;
-	}
 	public void addCluster(CnSCluster c) {
+		if (!clusters.contains(c)) clusters.addElement(c);
+	}
+	public Vector<CnSCluster> getClusters() {
+		return clusters;
 	}
 	public void removeCluster(CnSCluster c) {
+		clusters.removeElement(c);
 	}
 }

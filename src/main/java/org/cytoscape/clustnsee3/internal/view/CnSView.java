@@ -39,7 +39,7 @@ public class CnSView {
 		clusterLocation = new HashMap<CnSCluster, Point2D.Double>();
 		setViewState(state);
 	}
-	protected void setViewState(CnSViewState state) {
+	public void setViewState(CnSViewState state) {
 		this.state = state;
 	}
 	public CyNetworkView getView() {
