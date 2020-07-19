@@ -25,7 +25,7 @@ public class CnSEventManager {
 	public static final int CLUSTNSEE_PLUGIN = 1;
 	public static final int ANALYSIS_MANAGER = 2;
 	public static final int CLUSTNSEE_MENU_MANAGER = 3;
-	public static final int DATA_PANEL = 4;
+	public static final int INFO_PANEL = 4;
 	public static final int ALGORITHM_MANAGER = 5;
 	public static final int ALGORITHM_ENGINE = 6;
 	public static final int RESULTS_PANEL = 7;
@@ -89,7 +89,7 @@ public class CnSEventManager {
 	      		if (clustnseeMenuManager != null) ret = clustnseeMenuManager.cnsEventOccured(event);
 	      		break;
 	      		
-	      	case DATA_PANEL:
+	      	case INFO_PANEL:
 	      		if (dataPanel != null) ret = dataPanel.cnsEventOccured(event);
 	      		break;
 	      		

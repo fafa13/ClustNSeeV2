@@ -14,11 +14,13 @@
 package org.cytoscape.clustnsee3.internal.analysis;
 
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Vector;
 
 import javax.swing.ImageIcon;
 
+import org.cytoscape.clustnsee3.internal.analysis.annotation.CnSClusterAnnotation;
 import org.cytoscape.clustnsee3.internal.analysis.edge.CnSEdge;
 import org.cytoscape.clustnsee3.internal.analysis.node.CnSNode;
 import org.cytoscape.model.CyEdge;
@@ -41,6 +43,16 @@ public class CnSCluster implements Comparable<CnSCluster> {
 	private Vector<CnSEdge> extEdges;
 	
 	private CyNode cyNode;
+	
+	private ArrayList<CnSClusterAnnotation> annotations;
+	
+	public CnSCluster() {
+		super();
+		alNodes = null;
+		alEdges = null;
+		extEdges = null;
+		annotations = new ArrayList<CnSClusterAnnotation>();
+	}
 	
 	public CySubNetwork getNetwork() {
 		return network;
@@ -182,5 +194,16 @@ public class CnSCluster implements Comparable<CnSCluster> {
 	
 	public CyNode getCyNode() {
 		return cyNode;
+	}
+	
+	public void addAnnotation(CnSClusterAnnotation annotation) {
+		annotations.add(annotation);
+	}
+	public void removeAnnotation(int index) {
+		if (annotations.size() > index)
+			annotations.remove(index);
+	}
+	public ArrayList<CnSClusterAnnotation> getAnnotations() {
+		return annotations;
 	}
 }

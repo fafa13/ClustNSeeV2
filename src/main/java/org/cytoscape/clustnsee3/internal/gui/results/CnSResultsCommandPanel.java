@@ -20,7 +20,6 @@ import java.util.HashSet;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
-import javax.swing.JOptionPane;
 //import javax.swing.JOptionPane;
 import javax.swing.border.BevelBorder;
 

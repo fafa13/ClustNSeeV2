@@ -32,7 +32,7 @@ import org.cytoscape.view.model.View;
 /**
  * 
  */
-public class CnSNodeContextMenuFactory implements CyNodeViewContextMenuFactory {
+public class CnSExpandCompressClusterNodeMenuFactory implements CyNodeViewContextMenuFactory {
 	private String expandCompressText = "";
 	
 	private CnSExpandClusterNodeAction expandAction = new CnSExpandClusterNodeAction();

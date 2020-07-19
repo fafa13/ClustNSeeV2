@@ -26,7 +26,7 @@ import javax.swing.event.ListSelectionListener;
 import org.cytoscape.clustnsee3.internal.analysis.CnSCluster;
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
-import org.cytoscape.clustnsee3.internal.gui.data.CnSpartitionDetailsPanel;
+import org.cytoscape.clustnsee3.internal.gui.info.CnSInfoPanel;
 import org.cytoscape.clustnsee3.internal.gui.widget.CnSPanel;
 import org.cytoscape.clustnsee3.internal.view.CnSViewManager;
 
@@ -47,7 +47,6 @@ public class CnSClusterListPanel extends CnSPanel {
 		Iterator<CnSCluster> itClusters = clusters.iterator();
 		while (itClusters.hasNext()) model.addCluster(itClusters.next());
 
-		//JOptionPane.showMessageDialog(null, "nb class = " + clusters.size());
 		table = new JTable(model);
 		table.setRowHeight(116);
 		table.setBackground(Color.white);
@@ -59,12 +58,21 @@ public class CnSClusterListPanel extends CnSPanel {
 				if (!e.getValueIsAdjusting())
 					if (table.getSelectionModel().getMaxSelectionIndex() != -1) {
 						CnSCluster cluster = (CnSCluster)model.getValueAt(table.getSelectionModel().getMaxSelectionIndex(), 1);
-						CnSEvent ev = new CnSEvent(CnSpartitionDetailsPanel.INIT, CnSEventManager.DATA_PANEL);
-						ev.addParameter(CnSpartitionDetailsPanel.CLUSTER, cluster);
+						CnSEvent ev = new CnSEvent(CnSInfoPanel.INIT, CnSEventManager.INFO_PANEL);
+						ev.addParameter(CnSInfoPanel.CLUSTER, cluster);
+						ev.addParameter(CnSInfoPanel.PANEL, CnSInfoPanel.CLUSTER_DETAILS);
+						CnSEventManager.handleMessage(ev);
+						
+						ev = new CnSEvent(CnSInfoPanel.SELECT_PANEL, CnSEventManager.INFO_PANEL);
+						ev.addParameter(CnSInfoPanel.PANEL, CnSInfoPanel.CLUSTER_DETAILS);
 						CnSEventManager.handleMessage(ev);
 						
 						ev = new CnSEvent(CnSViewManager.SELECT_CLUSTER, CnSEventManager.VIEW_MANAGER);
 						ev.addParameter(CnSViewManager.CLUSTER, cluster);
+						CnSEventManager.handleMessage(ev);
+					}
+					else {
+						CnSEvent ev = new CnSEvent(CnSInfoPanel.CLEAR, CnSEventManager.INFO_PANEL);
 						CnSEventManager.handleMessage(ev);
 					}
 			}

@@ -3,11 +3,11 @@ package org.cytoscape.clustnsee3.internal;
 import java.util.Properties;
 
 import org.cytoscape.application.CyApplicationManager;
-import org.cytoscape.application.swing.CyNodeViewContextMenuFactory;
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventListener;
-import org.cytoscape.clustnsee3.internal.gui.menu.factory.CnSNodeContextMenuFactory;
-import org.cytoscape.clustnsee3.internal.gui.menu.factory.CyNodeViewShowClusterlinksMenuFactory;
+import org.cytoscape.clustnsee3.internal.gui.menu.factory.CnSAnnotateClusterMenuFactory;
+import org.cytoscape.clustnsee3.internal.gui.menu.factory.CnSExpandCompressClusterNodeMenuFactory;
+import org.cytoscape.clustnsee3.internal.gui.menu.factory.CnSShowClusterlinksMenuFactory;
 import org.cytoscape.event.CyEventHelper;
 import org.cytoscape.model.CyNetworkFactory;
 import org.cytoscape.model.CyNetworkManager;
@@ -48,15 +48,21 @@ public class CyActivator extends AbstractCyActivator implements CnSEventListener
 		MenuActionClustnsee clustnsee = new MenuActionClustnsee("Clustnsee", context, this);
 		registerAllServices(context, clustnsee, new Properties());
 		
-		CyNodeViewContextMenuFactory myNodeViewContextMenuFactory  = new CnSNodeContextMenuFactory();
-		Properties myNodeViewContextMenuFactoryProps = new Properties();
-		myNodeViewContextMenuFactoryProps.put("preferredMenu", "ClustnSee");
-		registerAllServices(context, myNodeViewContextMenuFactory, myNodeViewContextMenuFactoryProps);
+		CnSExpandCompressClusterNodeMenuFactory expandCompressClusterNodeMenuFactory  = new CnSExpandCompressClusterNodeMenuFactory();
+		Properties expandCompressClusterNodeMenuFactoryProps = new Properties();
+		expandCompressClusterNodeMenuFactoryProps.put("preferredMenu", "ClustnSee");
+		registerAllServices(context, expandCompressClusterNodeMenuFactory, expandCompressClusterNodeMenuFactoryProps);
 		
-		CyNodeViewShowClusterlinksMenuFactory myNodeViewShowClusterlinksMenuFactory = new CyNodeViewShowClusterlinksMenuFactory();
-		Properties myNodeViewShowClusterlinksMenuFactoryProps = new Properties();
-		myNodeViewShowClusterlinksMenuFactoryProps.put("preferredMenu", "ClustnSee");
-		registerAllServices(context, myNodeViewShowClusterlinksMenuFactory, myNodeViewShowClusterlinksMenuFactoryProps);
+		CnSShowClusterlinksMenuFactory showClusterlinksMenuFactory = new CnSShowClusterlinksMenuFactory();
+		Properties showClusterlinksMenuFactoryProps = new Properties();
+		showClusterlinksMenuFactoryProps.put("preferredMenu", "ClustnSee");
+		registerAllServices(context, showClusterlinksMenuFactory, showClusterlinksMenuFactoryProps);
+		
+		CnSAnnotateClusterMenuFactory annotateClusterMenuFactory = new CnSAnnotateClusterMenuFactory();
+		Properties annotateClusterMenuFactoryProps = new Properties();
+		annotateClusterMenuFactoryProps.put("preferredMenu", "ClustnSee");
+		registerAllServices(context, annotateClusterMenuFactory, annotateClusterMenuFactoryProps);
+		
 		//context.ungetService(context.getServiceReference(myNodeViewContextMenuFactory.getClass().getName()));
 		/*CyApplicationManager cyApplicationManager = getService(context, CyApplicationManager.class);
 		

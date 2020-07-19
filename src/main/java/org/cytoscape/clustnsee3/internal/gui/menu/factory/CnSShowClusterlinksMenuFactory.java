@@ -39,7 +39,7 @@ import org.cytoscape.view.model.View;
 /**
  * 
  */
-public class CyNodeViewShowClusterlinksMenuFactory implements CyNodeViewContextMenuFactory {
+public class CnSShowClusterlinksMenuFactory implements CyNodeViewContextMenuFactory {
 
 	/* (non-Javadoc)
 	 * @see org.cytoscape.application.swing.CyNodeViewContextMenuFactory#createMenuItem(org.cytoscape.view.model.CyNetworkView, org.cytoscape.view.model.View)

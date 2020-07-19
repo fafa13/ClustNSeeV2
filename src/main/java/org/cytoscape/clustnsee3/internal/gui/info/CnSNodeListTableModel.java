@@ -11,7 +11,7 @@
 /* Philippe Gambette (LIGM, Marne-la-Vallée)
  */
 
-package org.cytoscape.clustnsee3.internal.gui.data;
+package org.cytoscape.clustnsee3.internal.gui.info;
 
 import javax.swing.table.AbstractTableModel;
 
@@ -39,7 +39,9 @@ public class CnSNodeListTableModel extends AbstractTableModel {
 	 */
 	@Override
 	public int getRowCount() {
-		return cluster.getNodes().size();
+		if (cluster != null)
+			return cluster.getNodes().size();
+		return 0;
 	}
 
 	/* (non-Javadoc)
@@ -55,13 +57,13 @@ public class CnSNodeListTableModel extends AbstractTableModel {
 	 */
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
-		// TODO Auto-generated method stub
-		if (columnIndex == 0)
-			return cluster.getNetwork().getRootNetwork().getRow(cluster.getNodes().get(rowIndex).getCyNode()).get(CyNetwork.NAME, String.class);
-		else if (columnIndex == 1)
-			return cluster.getNodes().get(rowIndex).getNbClusters();
-		else if (columnIndex == 2)
-			return cluster.getNodeDegree(cluster.getNodes().get(rowIndex));
+		if (cluster != null)
+			if (columnIndex == 0)
+				return cluster.getNetwork().getRootNetwork().getRow(cluster.getNodes().get(rowIndex).getCyNode()).get(CyNetwork.NAME, String.class);
+			else if (columnIndex == 1)
+				return cluster.getNodes().get(rowIndex).getNbClusters();
+			else if (columnIndex == 2)
+				return cluster.getNodeDegree(cluster.getNodes().get(rowIndex));
 		return null;
 	}
 	

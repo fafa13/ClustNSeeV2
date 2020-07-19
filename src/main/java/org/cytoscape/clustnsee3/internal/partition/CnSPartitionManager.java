@@ -23,6 +23,7 @@ import org.cytoscape.clustnsee3.internal.algorithm.CnSAlgorithm;
 import org.cytoscape.clustnsee3.internal.algorithm.CnSAlgorithmResult;
 import org.cytoscape.clustnsee3.internal.algorithm.FTTaskObserver;
 import org.cytoscape.clustnsee3.internal.analysis.CnSCluster;
+import org.cytoscape.clustnsee3.internal.analysis.CnSClusterLink;
 import org.cytoscape.clustnsee3.internal.analysis.edge.CnSEdge;
 import org.cytoscape.clustnsee3.internal.analysis.node.CnSNode;
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
@@ -62,6 +63,7 @@ public class CnSPartitionManager implements CnSEventListener {
 	public static final int GET_CLUSTERS = 9;
 	public static final int CREATE_PARTITION = 10;
 	public static final int GET_PARTITION_NETWORK = 11;
+	public static final int GET_CLUSTER_LINK = 12;
 	
 	public static final int PARTITION = 1000;
 	public static final int INDEX = 1001;
@@ -72,6 +74,7 @@ public class CnSPartitionManager implements CnSEventListener {
 	public static final int CY_NODE = 1006;
 	public static final int ALGORITHM_RESULTS = 1007;
 	public static final int ALGORITHM = 1008;
+	public static final int CY_EDGE = 1009;
 	
 	private static CnSPartitionManager instance;
 	private Vector<CnSPartition> partitions;
@@ -106,6 +109,7 @@ public class CnSPartitionManager implements CnSEventListener {
 		Integer index;
 		CnSCluster c;
 		CyNode cyNode;
+		CyEdge cyEdge;
 		CnSNode cnsNode;
 		CyNetwork inputNetwork;
 		CnSAlgorithmResult algoResults;
@@ -224,6 +228,18 @@ public class CnSPartitionManager implements CnSEventListener {
 			case GET_PARTITION_NETWORK :
 				p = (CnSPartition)event.getParameter(PARTITION);
 				ret = partition2networkMap.get(p);
+				break;
+				
+			case GET_CLUSTER_LINK :
+				cyEdge = (CyEdge)event.getParameter(CY_EDGE);
+				for (CnSPartition part : partitions) {
+					for (CnSClusterLink cl : part.getClusterLinks()) {
+						if (cyEdge == cl.getInteractionEdge() || cyEdge == cl.getMulticlassEdge()) {
+							ret = cl;
+							break;
+						}
+					}
+				}
 				break;
 		}
 		return ret;
