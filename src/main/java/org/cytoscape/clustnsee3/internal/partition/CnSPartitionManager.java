@@ -64,6 +64,7 @@ public class CnSPartitionManager implements CnSEventListener {
 	public static final int CREATE_PARTITION = 10;
 	public static final int GET_PARTITION_NETWORK = 11;
 	public static final int GET_CLUSTER_LINK = 12;
+	public static final int GET_NB_MULTICLASS_NODES = 13;
 	
 	public static final int PARTITION = 1000;
 	public static final int INDEX = 1001;
@@ -241,6 +242,19 @@ public class CnSPartitionManager implements CnSEventListener {
 					}
 				}
 				break;
+				
+			case GET_NB_MULTICLASS_NODES :
+				p = (CnSPartition)event.getParameter(PARTITION);
+				c = (CnSCluster)event.getParameter(CLUSTER);
+				Vector<CnSNode> multiclassNodes = new Vector<CnSNode>();
+				
+				for (CnSClusterLink cl : p.getClusterLinks())
+					if (cl.getNodes().size() > 0 && (cl.getSource() == c || cl.getTarget() == c))
+						for (CnSNode node : cl.getNodes())
+							if (!multiclassNodes.contains(node))
+								multiclassNodes.addElement(node);
+				ret = new Integer(multiclassNodes.size());
+				break;
 		}
 		return ret;
 	}
@@ -266,7 +280,7 @@ public class CnSPartitionManager implements CnSEventListener {
         TaskManager<?, ?> tm = (TaskManager<?, ?>)CnSEventManager.handleMessage(ev);
         
         CySubNetwork myNet = null;
-        CnSPartition newPartition = new CnSPartition(algorithm.getName(), algorithm.getParameters(), inputNetwork);
+        CnSPartition newPartition = new CnSPartition(algorithm.getName(), algorithm.getParameters(), inputNetwork, algoResults.getScope());
         int NbClas = algoResults.getNbClass();
         int[] Kard = algoResults.getCard();
         int[][] Cl = algoResults.getClasses();

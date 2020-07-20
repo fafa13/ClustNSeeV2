@@ -96,7 +96,9 @@ public class CnSResultsTableModel extends AbstractTableModel {
 		nb++;
 	}
 	public CnSCluster getCluster(int i) {
-		return cluster[i];
+		if (i != -1)
+			return cluster[i];
+		return null;
 	}
 
 	/**

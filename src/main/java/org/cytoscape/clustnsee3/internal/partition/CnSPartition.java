@@ -42,10 +42,10 @@ public class CnSPartition {
 	private String algorithmName;
 	private CnSAlgorithmParameters algorithmParameters;
 	private Vector<CnSClusterLink> clusterLinks;
-	private String name;
+	private String name, scope;
 	private CyNetwork inputNetwork;
 	
-	public CnSPartition(String algorithmName, CnSAlgorithmParameters algorithmParameters, CyNetwork inputNetwork) {
+	public CnSPartition(String algorithmName, CnSAlgorithmParameters algorithmParameters, CyNetwork inputNetwork, String scope) {
 		super();
 		clusters = new Vector<CnSCluster>();
 		clusterLinks = new Vector<CnSClusterLink>();
@@ -57,6 +57,7 @@ public class CnSPartition {
 		this.name = inputNetwork.getRow(inputNetwork).get(CyNetwork.NAME, String.class);
 		this.algorithmParameters = algorithmParameters;
 		this.inputNetwork = inputNetwork;
+		this.scope = scope;
 	}
 	public CyNetwork getInputNetwork() {
 		return inputNetwork;
@@ -247,5 +248,8 @@ public class CnSPartition {
 		CnSNode ret = null;
 		ret = clusterNodes.getNode(cyNode);
 		return ret;
+	}
+	public String getScope() {
+		return scope;
 	}
 }

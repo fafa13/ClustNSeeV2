@@ -21,13 +21,9 @@ import javax.swing.JMenuItem;
 import org.cytoscape.application.swing.CyMenuItem;
 import org.cytoscape.application.swing.CyNodeViewContextMenuFactory;
 import org.cytoscape.clustnsee3.internal.analysis.CnSCluster;
-import org.cytoscape.clustnsee3.internal.analysis.node.CnSNode;
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
 import org.cytoscape.clustnsee3.internal.gui.menu.action.CnSAnnotateClusterAction;
-import org.cytoscape.clustnsee3.internal.network.CnSNetwork;
-import org.cytoscape.clustnsee3.internal.partition.CnSPartition;
-import org.cytoscape.clustnsee3.internal.partition.CnSPartitionManager;
 import org.cytoscape.clustnsee3.internal.view.CnSView;
 import org.cytoscape.clustnsee3.internal.view.CnSViewManager;
 import org.cytoscape.model.CyNode;
@@ -56,17 +52,8 @@ public class CnSAnnotateClusterMenuFactory implements CyNodeViewContextMenuFacto
 		CnSEvent ev = new CnSEvent(CnSViewManager.GET_SELECTED_VIEW, CnSEventManager.VIEW_MANAGER);
 		CnSView view = (CnSView)CnSEventManager.handleMessage(ev);
 		
-		ev = new CnSEvent(CnSViewManager.GET_NETWORK, CnSEventManager.VIEW_MANAGER);
-		ev.addParameter(CnSViewManager.VIEW, view);
-		CnSNetwork network = (CnSNetwork)CnSEventManager.handleMessage(ev);
-		
-		ev = new CnSEvent(CnSPartitionManager.GET_PARTITION, CnSEventManager.PARTITION_MANAGER);
-		ev.addParameter(CnSPartitionManager.NETWORK, network);
-		CnSPartition partition = (CnSPartition)CnSEventManager.handleMessage(ev);
-		CnSNode node = partition.getClusterNode(nodeView.getModel().getSUID());
-		
-		for (CnSCluster c : partition.getClusters())
-			if (c.getCyNode() == node.getCyNode()) {
+		for (CnSCluster c : view.getClusters())
+			if (c.getCyNode() == nodeView.getModel()) {
 				cluster = c;
 				break;
 			}

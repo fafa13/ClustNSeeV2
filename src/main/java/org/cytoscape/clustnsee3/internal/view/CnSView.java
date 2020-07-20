@@ -57,6 +57,9 @@ public class CnSView {
 	public void addCluster(CnSCluster c) {
 		state.addCluster(c);
 	}
+	public void removeCluster(CnSCluster c) {
+		state.removeCluster(c);
+	}
 	public boolean equals(Object o) {
 		if (o == null) return false;
 		CnSView v = (CnSView)o;

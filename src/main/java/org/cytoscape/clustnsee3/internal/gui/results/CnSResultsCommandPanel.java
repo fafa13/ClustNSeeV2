@@ -16,12 +16,19 @@ package org.cytoscape.clustnsee3.internal.gui.results;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
-//import javax.swing.JOptionPane;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.border.BevelBorder;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.cytoscape.application.CyApplicationManager;
 import org.cytoscape.clustnsee3.internal.CyActivator;
@@ -336,7 +343,77 @@ public class CnSResultsCommandPanel extends CnSPanel {
 				CnSEventManager.handleMessage(ev);
 			}
 		});
-	}
+		
+		exportPartitionButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JFileChooser jfc = new JFileChooser();
+				jfc.addChoosableFileFilter(new FileNameExtensionFilter("Clust&See file", "cns"));
+				int ret = jfc.showSaveDialog(null);
+				boolean tosave =false;
+				File file = null;
+				if (ret == JFileChooser.APPROVE_OPTION) {
+					tosave =true;
+					file = jfc.getSelectedFile();
+					if (file.exists()) {
+						ret = JOptionPane.showConfirmDialog(null, "The file " + file.getName() + " already exists. Are you sure you want to owerwrite it ?");
+						tosave =  (ret == JOptionPane.YES_OPTION);
+					}	
+				}
+				if (tosave) {
+					try {
+						CnSEvent ev = new CnSEvent(CnSResultsPanel.GET_SELECTED_PARTITION, CnSEventManager.RESULTS_PANEL);
+						CnSPartition partition = (CnSPartition)CnSEventManager.handleMessage(ev);
+				        
+						BufferedWriter br= new BufferedWriter(new FileWriter(file));
+						br.write("#ClustnSee analysis export");
+						br.newLine();
+						br.write("#Algorithm:" + partition.getAlgorithmName());
+						br.newLine();
+						br.write("#Network:" + partition.getInputNetwork().getRow(partition.getInputNetwork()).get(CyNetwork.NAME, String.class));
+						br.newLine();
+						br.write("#Scope:" + partition.getScope());
+						br.newLine();
+						br.write("#Cluster Name (nb nodes in cluster, nb multi-classed nodes in cluster):");
+						br.newLine();
+						br.write("#");
+						for (CnSCluster cluster : partition.getClusters()) {
+							ev = new CnSEvent(CnSPartitionManager.GET_NB_MULTICLASS_NODES, CnSEventManager.PARTITION_MANAGER);
+							ev.addParameter(CnSPartitionManager.PARTITION, partition);
+							ev.addParameter(CnSPartitionManager.CLUSTER, cluster);
+							Integer nb = (Integer)CnSEventManager.handleMessage(ev);
+							br.write(cluster.getName() + "(" + cluster.getNbNodes() + "," + nb.intValue() + "), ");
+						}
+						br.newLine();
+						Iterator<Integer> k = partition.getAlgorithmParameters().iterator();
+						while (k.hasNext()) {
+							int key = k.next();
+							br.write("#Parameter:" + partition.getAlgorithmParameters().getParameter(key).getName() + "=" + partition.getAlgorithmParameters().getParameter(key).getValue());
+							br.newLine();
+						}
+						br.newLine();
+						br.newLine();
+						for (CnSCluster cluster : partition.getClusters()) {
+							br.write(">" + cluster.getName() + "||");
+							for (int i = 0; i < cluster.getAnnotations().size(); i++)
+								br.write(cluster.getAnnotations().get(i).getAnnotation() + "||");
+							br.newLine();
+							for (CnSNode node : cluster.getNodes()) {
+								br.write(partition.getInputNetwork().getRow(node.getCyNode()).get(CyNetwork.NAME, String.class));
+								br.newLine();
+							}
+							br.newLine();
+						}
+						
+						br.close();
+					}
+					catch (IOException e1) {
+						e1.printStackTrace();
+					}
+				}
+			}
+		});
+	}		
 
 	/**
 	 * 

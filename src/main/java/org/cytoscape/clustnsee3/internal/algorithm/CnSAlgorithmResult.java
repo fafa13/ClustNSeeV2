@@ -26,14 +26,16 @@ public class CnSAlgorithmResult {
 	private int nb_class;
 	private HashMap<Integer, Long> algo_to_cyto;
 	private CyNetwork inputNetwork;
+	private String scope;
 	
-	public CnSAlgorithmResult(int[][] classes, int[] card, int nb_class, HashMap<Integer, Long> algo_to_cyto, CyNetwork inputNetwork) {
+	public CnSAlgorithmResult(int[][] classes, int[] card, int nb_class, HashMap<Integer, Long> algo_to_cyto, CyNetwork inputNetwork, String scope) {
 		super();
 		this.classes = classes;
 		this.card = card;
 		this.nb_class = nb_class;
 		this.algo_to_cyto = algo_to_cyto;
 		this.inputNetwork = inputNetwork;
+		this.scope = scope;
 	}
 	public int[][] getClasses() {
 		return classes;
@@ -49,5 +51,8 @@ public class CnSAlgorithmResult {
 	}
 	public CyNetwork getInputNetwork() {
 		return inputNetwork;
+	}
+	public String getScope() {
+		return scope;
 	}
 }

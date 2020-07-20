@@ -515,7 +515,10 @@ public class CnSOCGAlgorithm extends CnSAlgorithm {
         		LOGGER.info("***");
         		LOGGER.info("***");
         }
-        return new CnSAlgorithmResult(Cl, Kard, NbClas, modClust_to_cyto, inputNetwork);
+        CnSEvent ev = new CnSEvent(CnSAlgorithmEngine.GET_SCOPE, CnSEventManager.ALGORITHM_ENGINE);
+        String scope = (String)CnSEventManager.handleMessage(ev);
+
+        return new CnSAlgorithmResult(Cl, Kard, NbClas, modClust_to_cyto, inputNetwork, scope);
     }
 
 	/**

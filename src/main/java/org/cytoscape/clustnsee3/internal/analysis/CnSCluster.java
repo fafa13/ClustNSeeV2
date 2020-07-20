@@ -199,6 +199,9 @@ public class CnSCluster implements Comparable<CnSCluster> {
 	public void addAnnotation(CnSClusterAnnotation annotation) {
 		annotations.add(annotation);
 	}
+	public void addAnnotation(CnSClusterAnnotation annotation, int index) {
+		annotations.add(index, annotation);
+	}
 	public void removeAnnotation(int index) {
 		if (annotations.size() > index)
 			annotations.remove(index);

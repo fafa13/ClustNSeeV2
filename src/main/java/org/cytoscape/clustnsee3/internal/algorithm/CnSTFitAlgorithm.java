@@ -225,7 +225,7 @@ public class CnSTFitAlgorithm extends CnSAlgorithm {
         	LOGGER.info("***");
         	LOGGER.info("***");
         }
-        return new CnSAlgorithmResult(classes, card, clusterNumber, modClust_to_cyto, inputNetwork);
+        return new CnSAlgorithmResult(classes, card, clusterNumber, modClust_to_cyto, inputNetwork, scope);
     }
 
     private int Louv1() {

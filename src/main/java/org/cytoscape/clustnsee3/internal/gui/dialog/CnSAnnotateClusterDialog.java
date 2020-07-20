@@ -22,10 +22,10 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
 import javax.swing.border.BevelBorder;
 
 import org.cytoscape.clustnsee3.internal.analysis.CnSCluster;
@@ -79,6 +79,7 @@ public class CnSAnnotateClusterDialog extends JDialog implements ActionListener 
 			data.addElement(v);
 		}
 		annotationTable = new JTable(data, columnNames);
+		annotationTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		JScrollPane scrollPane = new JScrollPane(annotationTable);
 		scrollPane.setPreferredSize(new Dimension(300, 150));
 		annotationListPanel.addComponent(scrollPane, 0, 1, 1, 1, 1.0, 1.0, CnSPanel.NORTHWEST, CnSPanel.BOTH, 5, 5, 0, 5, 0, 0);
@@ -102,7 +103,7 @@ public class CnSAnnotateClusterDialog extends JDialog implements ActionListener 
 		getContentPane().add(panel);
 	}
 	
-	private void initListeners(CnSCluster cluster) {
+	private void initListeners(final CnSCluster cluster) {
 		addButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -120,16 +121,66 @@ public class CnSAnnotateClusterDialog extends JDialog implements ActionListener 
 		upButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				
+				int toUp = annotationTable.getSelectedRow();
+				if (toUp > 0) {
+					Vector<String> annotation = data.get(toUp);
+					data.removeElementAt(toUp);
+					data.add(toUp - 1, annotation);
+					annotationTable.getSelectionModel().setSelectionInterval(toUp - 1, toUp - 1);
+					CnSClusterAnnotation ca = cluster.getAnnotations().get(toUp); 
+					cluster.removeAnnotation(toUp);
+					cluster.addAnnotation(ca, toUp - 1);
+					annotationTable.updateUI();
+					annotationTable.repaint();
+				}
 			}
 		});
 		downButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				
+				int toDown = annotationTable.getSelectedRow();
+				if (toDown >= 0 && toDown < (data.size() - 1)) {
+					Vector<String> annotation = data.get(toDown);
+					data.removeElementAt(toDown);
+					data.add(toDown + 1, annotation);
+					annotationTable.getSelectionModel().setSelectionInterval(toDown + 1, toDown + 1);
+					CnSClusterAnnotation ca = cluster.getAnnotations().get(toDown); 
+					cluster.removeAnnotation(toDown);
+					cluster.addAnnotation(ca, toDown + 1);
+					annotationTable.updateUI();
+					annotationTable.repaint();
+				}
 			}
 		});
+		removeButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int toRemove = annotationTable.getSelectedRow();
+				if (toRemove >= 0) {
+					data.removeElementAt(toRemove);
+					cluster.removeAnnotation(toRemove);
+					annotationTable.updateUI();
+					annotationTable.repaint();
+				}
+			}
+		});
+		
 		closeButton.addActionListener(this);
+		
+		annotationTextField.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (!annotationTextField.getText().equals("")) {
+					cluster.addAnnotation(new CnSClusterAnnotation(annotationTextField.getText()));
+					Vector<String> v  = new Vector<String>();
+					v.addElement(annotationTextField.getText());
+					data.addElement(v);
+					annotationTextField.setText("");
+					annotationTable.updateUI();
+					annotationTable.repaint();
+				}
+			}
+		});
 	}
 
 	/* (non-Javadoc)
