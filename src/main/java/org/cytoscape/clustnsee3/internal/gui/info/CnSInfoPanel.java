@@ -78,6 +78,7 @@ public class CnSInfoPanel extends CnSPanel implements CytoPanelComponent, CnSEve
 				if (((String)event.getParameter(PANEL)).equals(CLUSTER_DETAILS)) {
 					CnSCluster cluster = (CnSCluster)event.getParameter(CLUSTER);
 					clusterDetailsPanel.init(cluster);
+					clusterDetailsPanel.repaint();
 				}
 				else if (((String)event.getParameter(PANEL)).equals(EDGE_DETAILS)) {
 					CyEdge edge = (CyEdge)event.getParameter(EDGE);
@@ -89,8 +90,12 @@ public class CnSInfoPanel extends CnSPanel implements CytoPanelComponent, CnSEve
 						edgeDetailsPanel.init(clusterLink, edge);
 						
 					}
-					else
-						JOptionPane.showMessageDialog(null, "Multiclass edge selected : " + clusterLink.getNodes().size());
+					else {
+						edgeDetailsPanel.init(clusterLink, edge);
+						
+						//JOptionPane.showMessageDialog(null, "Multiclass edge selected : " + clusterLink.getNodes().size());
+					}
+					edgeDetailsPanel.repaint();
 				}
 				break;
 			
@@ -101,8 +106,8 @@ public class CnSInfoPanel extends CnSPanel implements CytoPanelComponent, CnSEve
 			case CLEAR :
 				if (((String)event.getParameter(PANEL)).equals(CLUSTER_DETAILS))
 					clusterDetailsPanel.clear();
-				//else if (((String)event.getParameter(PANEL)).equals(EDGE_DETAILS))
-					//edgeDetailsPanel.clear();
+				else if (((String)event.getParameter(PANEL)).equals(EDGE_DETAILS))
+					edgeDetailsPanel.clear();
 				break;
 		}
 		return null;

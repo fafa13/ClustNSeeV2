@@ -84,7 +84,6 @@ public class CnSClustnseePlugin implements CnSEventListener {
 		context.registerService(NetworkViewAboutToBeDestroyedListener.class.getName(), viewManager, new Properties());
 		context.registerService(NetworkAboutToBeDestroyedListener.class.getName(), networkManager, new Properties());
 		context.registerService(UnsetNetworkPointerListener.class.getName(), viewManager, new Properties());
-		context.registerService(RowsSetListener.class.getName(), viewManager, new Properties());
 		context.registerService(SetCurrentNetworkViewListener.class.getName(), viewManager, new Properties());
 		context.registerService(SelectedNodesAndEdgesListener.class.getName(), viewManager, new Properties());
 	}

@@ -140,6 +140,7 @@ public class CnSExpandClusterNodeAction {
 					linkedCluster = cl.getTarget();	
 				else if (cl.getTarget() == cluster)
 					linkedCluster = cl.getSource();
+				//if (linkedCluster != null) System.err.println("linkedCluster = " + linkedCluster.getName() + "  -  " + view.getClusters().contains(linkedCluster));
 				if (linkedCluster != null && view.getClusters().contains(linkedCluster)) {
 					ev.addParameter(CnSViewManager.CLUSTER, linkedCluster);
 					expanded = (Boolean)CnSEventManager.handleMessage(ev);
@@ -165,7 +166,7 @@ public class CnSExpandClusterNodeAction {
 								eh.flushPayloadEvents();
 							}
 						}
-					//System.err.println("coucou");
+				//System.err.println("coucou");
 					for (CnSNode n : cl.getNodes()) {
 						//System.err.println("Node : " + n.getCyNode().toString());
 						if (!expanded) {

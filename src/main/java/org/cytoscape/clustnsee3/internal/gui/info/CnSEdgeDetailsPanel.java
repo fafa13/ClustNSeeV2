@@ -68,10 +68,23 @@ public class CnSEdgeDetailsPanel extends CnSPanel {
 			mainPanel.addComponent(interactionsPanel, 1, 0, 1, 1, 1.0, 1.0, WEST, BOTH, 5, 5, 5, 5, 0, 0);
 		}
 		else {
-			//multiclassPanel.init(clusterLink);
+			multiclassPanel.init(clusterLink);
 			mainPanel.remove(interactionsPanel);
 			mainPanel.remove(multiclassPanel);
 			mainPanel.addComponent(multiclassPanel, 1, 0, 1, 1, 1.0, 1.0, WEST, BOTH, 5, 5, 5, 5, 0, 0);
 		}
+	}
+
+	/**
+	 * 
+	 * @param
+	 * @return
+	 */
+	public void clear() {
+		linkNameLabel.setText("");
+		sourcePanel.clear();
+		targetPanel.clear();
+		mainPanel.remove(interactionsPanel);
+		mainPanel.remove(multiclassPanel);
 	}
 }

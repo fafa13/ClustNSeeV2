@@ -118,11 +118,12 @@ public class CnSClusterDetailsPanel extends CnSPanel {
 			v.addElement(cluster.getAnnotations().get(i).getAnnotation());
 			data.addElement(v);
 		}
-		annotationTable.updateUI();
+		//annotationTable.updateUI();
 		annotationTable.repaint();
 	}
 
 	public void clear() {
+		clusterNameLabel.setText("");
 		nodesInClusterLabel.setText("");
 		multiClusteredNodesLabel.setText("");
 		monoClusteredNodesLabel.setText("");

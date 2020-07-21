@@ -209,6 +209,9 @@ public class CnSResultsCommandPanel extends CnSPanel {
 						// Set name for new node
 						partNet.getRow(clNode).set(CyNetwork.NAME, cluster.getName());
 						
+						// make the view up to date
+						partitionView.getView().updateView();
+						
 						// Set nested network
 						clNode.setNetworkPointer(clNet);
 					}

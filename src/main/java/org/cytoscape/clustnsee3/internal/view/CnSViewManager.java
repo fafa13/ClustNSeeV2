@@ -60,6 +60,8 @@ import org.cytoscape.model.events.RemovedEdgesListener;
 import org.cytoscape.model.events.RowSetRecord;
 import org.cytoscape.model.events.RowsSetEvent;
 import org.cytoscape.model.events.RowsSetListener;
+import org.cytoscape.model.events.SelectedNodesAndEdgesEvent;
+import org.cytoscape.model.events.SelectedNodesAndEdgesListener;
 import org.cytoscape.model.events.UnsetNetworkPointerEvent;
 import org.cytoscape.model.events.UnsetNetworkPointerListener;
 import org.cytoscape.view.model.CyNetworkView;
@@ -74,7 +76,7 @@ import org.cytoscape.view.presentation.property.BasicVisualLexicon;
  */
 public class CnSViewManager implements CnSEventListener, AboutToRemoveNodesListener, AddedNodesListener, 
 RemovedEdgesListener, AddedEdgesListener, NetworkViewAboutToBeDestroyedListener, 
-UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, RowsSetListener, SetCurrentNetworkViewListener {
+UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, SelectedNodesAndEdgesListener, SetCurrentNetworkViewListener {
 	public static final int ADD_VIEW = 1;
 	public static final int DELETE_VIEW = 2;
 	public static final int SET_SELECTED_VIEW = 3;
@@ -398,7 +400,7 @@ UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, RowsSetListener, S
 	/* (non-Javadoc)
 	 * @see org.cytoscape.model.events.RowsSetListener#handleEvent(org.cytoscape.model.events.RowsSetEvent)
 	 */
-	@Override
+/*	@Override
 	public void handleEvent(RowsSetEvent e) {
 		Collection<RowSetRecord> rsr = e.getColumnRecords("selected");
 		String primaryKeyColname = e.getSource().getPrimaryKey().getName();
@@ -408,6 +410,7 @@ UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, RowsSetListener, S
 				if (rsr.size() > 0)
 					for (RowSetRecord r : rsr) {
 						Long nodeId = r.getRow().get(primaryKeyColname, Long.class);
+						System.err.println("select cluster : " + nodeId);
 						if (nodeId == null) continue;
 						CyNode node = view2networkMap.get(selectedView).getNetwork().getNode(nodeId);
 						if (node != null)
@@ -428,15 +431,18 @@ UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, RowsSetListener, S
 					}
 			}
 			else if (cn.size() >= 2 || cn.size() == 0) {
+				System.err.println("clear results selection : ");
 				CnSEvent ev = new CnSEvent(CnSResultsPanel.SELECT_CLUSTER, CnSEventManager.RESULTS_PANEL);
 				CnSEventManager.handleMessage(ev);
 			}
+			System.err.println("COUCOU");
 			
 			List<CyEdge> ce = CyTableUtil.getEdgesInState(view2networkMap.get(selectedView).getNetwork(), "selected", true);
 			if (ce.size() == 1) {
 				if (rsr.size() > 0)
 					for (RowSetRecord r : rsr) {
 						Long edgeId = r.getRow().get(primaryKeyColname, Long.class);
+						System.err.println("select edge : " + edgeId);
 						if (edgeId == null) continue;
 						CyEdge edge = view2networkMap.get(selectedView).getNetwork().getEdge(edgeId);
 						if (edge != null)
@@ -467,7 +473,7 @@ UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, RowsSetListener, S
 			}
 		}
 	}
-
+*/
 	/* (non-Javadoc)
 	 * @see org.cytoscape.application.events.SetCurrentNetworkViewListener#handleEvent(org.cytoscape.application.events.SetCurrentNetworkViewEvent)
 	 */
@@ -649,7 +655,7 @@ UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, RowsSetListener, S
 						cluster = cnsCluster;
 						break;
 					}
-				if (cluster != null) cnsv.removeCluster(cluster);
+        		if (!cnsv.getModifCluster() && cluster != null) cnsv.removeCluster(cluster);
         	}
         	if (!cnsv.isUserView() && !cnsv.getModifCluster()) {
         		cnsv.setViewState(new CnSUserViewState());
@@ -659,5 +665,53 @@ UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, RowsSetListener, S
         		CnSEventManager.handleMessage(ev);
         	}	
         }
+	}
+
+	/* (non-Javadoc)
+	 * @see org.cytoscape.model.events.SelectedNodesAndEdgesListener#handleEvent(org.cytoscape.model.events.SelectedNodesAndEdgesEvent)
+	 */
+	@Override
+	public void handleEvent(SelectedNodesAndEdgesEvent e) {
+		if (selectedView != null) {
+			Collection<CyNode> cn = e.getSelectedNodes();
+			if (cn.size() == 1) {
+				for (CyNode node : cn) {
+					CnSEvent ev = new CnSEvent(CnSResultsPanel.SELECT_CLUSTER, CnSEventManager.RESULTS_PANEL);
+					ev.addParameter(CnSResultsPanel.CLUSTER, node.getSUID());
+					CnSEventManager.handleMessage(ev);
+				}
+			}
+			else if (cn.size() >= 2 || cn.size() == 0) {
+				CnSEvent ev = new CnSEvent(CnSResultsPanel.SELECT_CLUSTER, CnSEventManager.RESULTS_PANEL);
+				CnSEventManager.handleMessage(ev);
+			}
+			
+			Collection<CyEdge> ce = e.getSelectedEdges();
+			if (ce.size() == 1) {
+				for (CyEdge edge : ce) {
+					CnSEvent ev = new CnSEvent(CnSPartitionManager.GET_CLUSTER_LINK, CnSEventManager.PARTITION_MANAGER);
+					ev.addParameter(CnSPartitionManager.CY_EDGE, edge);
+					CnSClusterLink clusterLink = (CnSClusterLink)CnSEventManager.handleMessage(ev);
+								
+					if (clusterLink != null) {
+						ev = new CnSEvent(CnSInfoPanel.INIT, CnSEventManager.INFO_PANEL);
+						ev.addParameter(CnSInfoPanel.EDGE, edge);
+						ev.addParameter(CnSInfoPanel.CLUSTER_LINK, clusterLink);
+						ev.addParameter(CnSInfoPanel.PANEL, CnSInfoPanel.EDGE_DETAILS);
+						ev.addParameter(CnSInfoPanel.NETWORK, view2networkMap.get(selectedView));
+						CnSEventManager.handleMessage(ev);
+								
+						ev = new CnSEvent(CnSInfoPanel.SELECT_PANEL, CnSEventManager.INFO_PANEL);
+						ev.addParameter(CnSInfoPanel.PANEL, CnSInfoPanel.EDGE_DETAILS);
+						CnSEventManager.handleMessage(ev);
+					}
+				}
+			}
+			else if (ce.size() >= 2 || ce.size() == 0) {
+				CnSEvent ev = new CnSEvent(CnSInfoPanel.CLEAR, CnSEventManager.INFO_PANEL);
+				ev.addParameter(CnSInfoPanel.PANEL, CnSInfoPanel.EDGE_DETAILS);
+				CnSEventManager.handleMessage(ev);
+			}
+		}
 	}
 }

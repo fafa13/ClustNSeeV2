@@ -16,7 +16,6 @@ package org.cytoscape.clustnsee3.internal.gui.info;
 import java.util.Vector;
 
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
@@ -65,17 +64,14 @@ public class CnSInteractionsPanel extends CnSPanel {
 	 * @return
 	 */
 	public void init(CnSClusterLink clusterLink) {
-		//JOptionPane.showMessageDialog(null, "coucou :");
 		nbInteractionsLabel.setText(String.valueOf(clusterLink.getEdges().size()));
 		
-		//JOptionPane.showMessageDialog(null, "coucou :" + clusterLink.getEdges().size() + " - " + net);
 		data.clear();
 		CnSEvent ev = new CnSEvent(CnSPartitionManager.GET_PARTITION, CnSEventManager.PARTITION_MANAGER);
 		ev.addParameter(CnSPartitionManager.CLUSTER, clusterLink.getSource());
 		CnSPartition partition = (CnSPartition)CnSEventManager.handleMessage(ev);
 		
 		for (CnSEdge ed : clusterLink.getEdges()) {
-			//JOptionPane.showMessageDialog(null, "coucou :" + ed);
 			Vector<String> rv = new Vector<String>();
 			rv.addElement(partition.getInputNetwork().getRow(ed.getCyEdge().getSource()).get(CyNetwork.NAME, String.class));
 			rv.addElement(partition.getInputNetwork().getRow(ed.getCyEdge().getTarget()).get(CyNetwork.NAME, String.class));
@@ -83,6 +79,5 @@ public class CnSInteractionsPanel extends CnSPanel {
 		}
 		interactionsTable.updateUI();
 		interactionsTable.repaint();
-		
 	}
 }
