@@ -252,4 +252,13 @@ public class CnSPartition {
 	public String getScope() {
 		return scope;
 	}
+	public CnSCluster getCluster(CyNode cyNode) {
+		CnSCluster ret = null;
+		for (CnSCluster cl : clusters)
+			if (cl.getCyNode() == cyNode) {
+				ret = cl;
+				break;
+			}
+		return ret;
+	}
 }

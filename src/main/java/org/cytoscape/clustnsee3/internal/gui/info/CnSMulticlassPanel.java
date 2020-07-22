@@ -79,4 +79,14 @@ public class CnSMulticlassPanel extends CnSPanel {
 		nodesTable.updateUI();
 		nodesTable.repaint();
 	}
+
+	/**
+	 * 
+	 * @param
+	 * @return
+	 */
+	public void clear() {
+		nbNodesLabel.setText("");
+		data.clear();
+	}
 }

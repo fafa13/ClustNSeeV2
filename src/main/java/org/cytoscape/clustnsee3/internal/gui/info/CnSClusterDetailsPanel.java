@@ -91,7 +91,7 @@ public class CnSClusterDetailsPanel extends CnSPanel {
 	}
 	
 	public void init(CnSCluster cluster) {
-		clusterNameLabel.setText(cluster.getName());
+		clusterNameLabel.setText("Cluster #" + cluster.getName());
 		
 		nodesInClusterLabel.setText(String.valueOf(cluster.getNbNodes()));
 		

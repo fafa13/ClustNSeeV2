@@ -28,6 +28,7 @@ import org.cytoscape.clustnsee3.internal.event.CnSEventListener;
 import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
 import org.cytoscape.clustnsee3.internal.gui.widget.CnSPanel;
 import org.cytoscape.clustnsee3.internal.network.CnSNetwork;
+import org.cytoscape.clustnsee3.internal.view.CnSView;
 import org.cytoscape.model.CyEdge;
 
 /**
@@ -44,6 +45,7 @@ public class CnSInfoPanel extends CnSPanel implements CytoPanelComponent, CnSEve
 	public static final int EDGE = 1003;
 	public static final int CLUSTER_LINK = 1004;
 	public static final int NETWORK = 1005;
+	public static final int VIEW = 1006;
 	
 	public static final int INIT = 1;
 	public static final int SELECT_PANEL = 2;
@@ -83,18 +85,8 @@ public class CnSInfoPanel extends CnSPanel implements CytoPanelComponent, CnSEve
 				else if (((String)event.getParameter(PANEL)).equals(EDGE_DETAILS)) {
 					CyEdge edge = (CyEdge)event.getParameter(EDGE);
 					CnSClusterLink clusterLink = (CnSClusterLink)event.getParameter(CLUSTER_LINK);
-					CnSNetwork network = (CnSNetwork)event.getParameter(NETWORK);
-					if (clusterLink.getInteractionEdge() == edge) {
-						//JOptionPane.showMessageDialog(null, "Interaction edge selected : " + clusterLink.getEdges().size());
-						
-						edgeDetailsPanel.init(clusterLink, edge);
-						
-					}
-					else {
-						edgeDetailsPanel.init(clusterLink, edge);
-						
-						//JOptionPane.showMessageDialog(null, "Multiclass edge selected : " + clusterLink.getNodes().size());
-					}
+					CnSView view = (CnSView)event.getParameter(VIEW);
+					edgeDetailsPanel.init(clusterLink, edge, view);	
 					edgeDetailsPanel.repaint();
 				}
 				break;

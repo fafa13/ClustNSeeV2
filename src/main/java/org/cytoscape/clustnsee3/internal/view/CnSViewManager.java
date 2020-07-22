@@ -398,83 +398,6 @@ UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, SelectedNodesAndEd
 	}
 
 	/* (non-Javadoc)
-	 * @see org.cytoscape.model.events.RowsSetListener#handleEvent(org.cytoscape.model.events.RowsSetEvent)
-	 */
-/*	@Override
-	public void handleEvent(RowsSetEvent e) {
-		Collection<RowSetRecord> rsr = e.getColumnRecords("selected");
-		String primaryKeyColname = e.getSource().getPrimaryKey().getName();
-		if (selectedView != null) {
-			List<CyNode> cn = CyTableUtil.getNodesInState(view2networkMap.get(selectedView).getNetwork(), "selected", true);
-			if (cn.size() == 1) {
-				if (rsr.size() > 0)
-					for (RowSetRecord r : rsr) {
-						Long nodeId = r.getRow().get(primaryKeyColname, Long.class);
-						System.err.println("select cluster : " + nodeId);
-						if (nodeId == null) continue;
-						CyNode node = view2networkMap.get(selectedView).getNetwork().getNode(nodeId);
-						if (node != null)
-							if ((Boolean)r.getRawValue() == true) {
-								//CnSEvent ev = new CnSEvent(CnSResultsPanel.GET_SELECTED_CLUSTER, CnSEventManager.RESULTS_PANEL);
-								//CnSCluster selectedCluster = (CnSCluster)CnSEventManager.handleMessage(ev);
-								//if (selectedCluster == null) {
-								CnSEvent ev = new CnSEvent(CnSResultsPanel.SELECT_CLUSTER, CnSEventManager.RESULTS_PANEL);
-								ev.addParameter(CnSResultsPanel.CLUSTER, nodeId);
-								CnSEventManager.handleMessage(ev);
-								//}
-								//else if (selectedCluster.getCyNode().getSUID() != nodeId) {
-								//	ev = new CnSEvent(CnSResultsPanel.SELECT_CLUSTER, CnSEventManager.RESULTS_PANEL);
-								//	ev.addParameter(CnSResultsPanel.CLUSTER, nodeId);
-								//	CnSEventManager.handleMessage(ev);
-								//}
-							}
-					}
-			}
-			else if (cn.size() >= 2 || cn.size() == 0) {
-				System.err.println("clear results selection : ");
-				CnSEvent ev = new CnSEvent(CnSResultsPanel.SELECT_CLUSTER, CnSEventManager.RESULTS_PANEL);
-				CnSEventManager.handleMessage(ev);
-			}
-			System.err.println("COUCOU");
-			
-			List<CyEdge> ce = CyTableUtil.getEdgesInState(view2networkMap.get(selectedView).getNetwork(), "selected", true);
-			if (ce.size() == 1) {
-				if (rsr.size() > 0)
-					for (RowSetRecord r : rsr) {
-						Long edgeId = r.getRow().get(primaryKeyColname, Long.class);
-						System.err.println("select edge : " + edgeId);
-						if (edgeId == null) continue;
-						CyEdge edge = view2networkMap.get(selectedView).getNetwork().getEdge(edgeId);
-						if (edge != null)
-							if ((Boolean)r.getRawValue() == true) {
-								CnSEvent ev = new CnSEvent(CnSPartitionManager.GET_CLUSTER_LINK, CnSEventManager.PARTITION_MANAGER);
-								ev.addParameter(CnSPartitionManager.CY_EDGE, edge);
-								CnSClusterLink clusterLink = (CnSClusterLink)CnSEventManager.handleMessage(ev);
-								
-								if (clusterLink != null) {
-									ev = new CnSEvent(CnSInfoPanel.INIT, CnSEventManager.INFO_PANEL);
-									ev.addParameter(CnSInfoPanel.EDGE, edge);
-									ev.addParameter(CnSInfoPanel.CLUSTER_LINK, clusterLink);
-									ev.addParameter(CnSInfoPanel.PANEL, CnSInfoPanel.EDGE_DETAILS);
-									ev.addParameter(CnSInfoPanel.NETWORK, view2networkMap.get(selectedView));
-									CnSEventManager.handleMessage(ev);
-								
-									ev = new CnSEvent(CnSInfoPanel.SELECT_PANEL, CnSEventManager.INFO_PANEL);
-									ev.addParameter(CnSInfoPanel.PANEL, CnSInfoPanel.EDGE_DETAILS);
-									CnSEventManager.handleMessage(ev);
-								}
-							}
-					}
-			}
-			else if (ce.size() >= 2 || ce.size() == 0) {
-				CnSEvent ev = new CnSEvent(CnSInfoPanel.CLEAR, CnSEventManager.INFO_PANEL);
-				ev.addParameter(CnSInfoPanel.PANEL, CnSInfoPanel.EDGE_DETAILS);
-				CnSEventManager.handleMessage(ev);
-			}
-		}
-	}
-*/
-	/* (non-Javadoc)
 	 * @see org.cytoscape.application.events.SetCurrentNetworkViewListener#handleEvent(org.cytoscape.application.events.SetCurrentNetworkViewEvent)
 	 */
 	@Override
@@ -693,29 +616,17 @@ UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, SelectedNodesAndEd
 					ev.addParameter(CnSPartitionManager.CY_EDGE, edge);
 					CnSClusterLink clusterLink = (CnSClusterLink)CnSEventManager.handleMessage(ev);
 								
-					if (clusterLink != null) {
-						ev = new CnSEvent(CnSInfoPanel.INIT, CnSEventManager.INFO_PANEL);
-						ev.addParameter(CnSInfoPanel.EDGE, edge);
-						ev.addParameter(CnSInfoPanel.CLUSTER_LINK, clusterLink);
-						ev.addParameter(CnSInfoPanel.PANEL, CnSInfoPanel.EDGE_DETAILS);
-						ev.addParameter(CnSInfoPanel.NETWORK, view2networkMap.get(selectedView));
-						CnSEventManager.handleMessage(ev);
+					ev = new CnSEvent(CnSInfoPanel.INIT, CnSEventManager.INFO_PANEL);
+					ev.addParameter(CnSInfoPanel.EDGE, edge);
+					if (clusterLink != null) ev.addParameter(CnSInfoPanel.CLUSTER_LINK, clusterLink);
+					ev.addParameter(CnSInfoPanel.PANEL, CnSInfoPanel.EDGE_DETAILS);
+					ev.addParameter(CnSInfoPanel.VIEW, selectedView);
+					ev.addParameter(CnSInfoPanel.NETWORK, view2networkMap.get(selectedView));
+					CnSEventManager.handleMessage(ev);
 								
-						ev = new CnSEvent(CnSInfoPanel.SELECT_PANEL, CnSEventManager.INFO_PANEL);
-						ev.addParameter(CnSInfoPanel.PANEL, CnSInfoPanel.EDGE_DETAILS);
-						CnSEventManager.handleMessage(ev);
-					}
-					else {
-						ev = new CnSEvent(CnSPartitionManager.GET_NODE, CnSEventManager.PARTITION_MANAGER);
-						ev.addParameter(CnSPartitionManager.CY_NODE, edge.getSource());
-						CnSNode node1 = (CnSNode)CnSEventManager.handleMessage(ev);
-						ev.addParameter(CnSPartitionManager.CY_NODE, edge.getTarget());
-						CnSNode node2 = (CnSNode)CnSEventManager.handleMessage(ev);
-						String name1 = selectedView.getView().getModel().getRow(node1.getCyNode()).get(CyNetwork.NAME, String.class);
-						String name2 = selectedView.getView().getModel().getRow(node2.getCyNode()).get(CyNetwork.NAME, String.class);
-						
-						System.err.println("Link : " + name1 + " _> " + name2);
-					}
+					ev = new CnSEvent(CnSInfoPanel.SELECT_PANEL, CnSEventManager.INFO_PANEL);
+					ev.addParameter(CnSInfoPanel.PANEL, CnSInfoPanel.EDGE_DETAILS);
+					CnSEventManager.handleMessage(ev);
 				}
 			}
 			else if (ce.size() >= 2 || ce.size() == 0) {

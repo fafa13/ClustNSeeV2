@@ -116,7 +116,7 @@ public class CnSCompressClusterNodeAction {
 				view.getView().getNodeView(c.getCyNode()).setVisualProperty(BasicVisualLexicon.NODE_Y_LOCATION, pos.y);
 				view.getView().getNodeView(c.getCyNode()).setVisualProperty(BasicVisualLexicon.NODE_SHAPE, NodeShapeVisualProperty.ROUND_RECTANGLE);
 				view.getView().getNodeView(c.getCyNode()).setVisualProperty(BasicVisualLexicon.NODE_FILL_COLOR, Color.PINK);
-			
+				view.getView().getNodeView(c.getCyNode()).setVisualProperty(BasicVisualLexicon.NODE_LABEL, c.getName());
 				
 				CnSCluster partner;
 				for (CnSClusterLink cl : partition.getClusterLinks()) {

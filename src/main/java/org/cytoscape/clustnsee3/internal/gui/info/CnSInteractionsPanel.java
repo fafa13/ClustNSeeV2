@@ -80,4 +80,14 @@ public class CnSInteractionsPanel extends CnSPanel {
 		interactionsTable.updateUI();
 		interactionsTable.repaint();
 	}
+
+	/**
+	 * 
+	 * @param
+	 * @return
+	 */
+	public void clear() {
+		nbInteractionsLabel.setText("");
+		data.clear();
+	}
 }

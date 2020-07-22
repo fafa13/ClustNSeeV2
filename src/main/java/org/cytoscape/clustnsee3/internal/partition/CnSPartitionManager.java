@@ -65,6 +65,7 @@ public class CnSPartitionManager implements CnSEventListener {
 	public static final int GET_PARTITION_NETWORK = 11;
 	public static final int GET_CLUSTER_LINK = 12;
 	public static final int GET_NB_MULTICLASS_NODES = 13;
+	public static final int GET_CLUSTER = 14;
 	
 	public static final int PARTITION = 1000;
 	public static final int INDEX = 1001;
@@ -254,6 +255,17 @@ public class CnSPartitionManager implements CnSEventListener {
 							if (!multiclassNodes.contains(node))
 								multiclassNodes.addElement(node);
 				ret = new Integer(multiclassNodes.size());
+				break;
+				
+			case GET_CLUSTER :
+				cyNode = (CyNode)event.getParameter(CY_NODE);
+				for (CnSPartition part : partitions) {
+					CnSCluster cc = part.getCluster(cyNode);
+					if (cc != null) {
+						ret = cc;
+						break;
+					}
+				}
 				break;
 		}
 		return ret;
