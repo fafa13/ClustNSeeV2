@@ -257,6 +257,12 @@ public class CnSResultsCommandPanel extends CnSPanel {
 					for (CyNode no : partNet.getNodeList()) {
 						partitionView.getView().getNodeView(no).setVisualProperty(BasicVisualLexicon.NODE_SHAPE, NodeShapeVisualProperty.ROUND_RECTANGLE);
 						partitionView.getView().getNodeView(no).setVisualProperty(BasicVisualLexicon.NODE_FILL_COLOR, Color.PINK);
+						partitionView.getView().getNodeView(no).setVisualProperty(BasicVisualLexicon.NODE_LABEL, partNet.getRow(no).get(CyNetwork.NAME, String.class));
+						partitionView.getView().getNodeView(no).setVisualProperty(BasicVisualLexicon.NODE_TOOLTIP, partNet.getRow(no).get(CyNetwork.NAME, String.class));
+						
+						partNet.getRow(no).set("canonicalName", inputNetwork.getRow(inputNetwork).get(CyNetwork.NAME, String.class) + ":" + partNet.getRow(no).get(CyNetwork.NAME, String.class));
+						partNet.getRow(no).set("shared name", "Cluster #" + partNet.getRow(no).get(CyNetwork.NAME, String.class));
+						
 					}
 					// make the view up to date
 					partitionView.getView().updateView();

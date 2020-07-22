@@ -705,6 +705,17 @@ UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, SelectedNodesAndEd
 						ev.addParameter(CnSInfoPanel.PANEL, CnSInfoPanel.EDGE_DETAILS);
 						CnSEventManager.handleMessage(ev);
 					}
+					else {
+						ev = new CnSEvent(CnSPartitionManager.GET_NODE, CnSEventManager.PARTITION_MANAGER);
+						ev.addParameter(CnSPartitionManager.CY_NODE, edge.getSource());
+						CnSNode node1 = (CnSNode)CnSEventManager.handleMessage(ev);
+						ev.addParameter(CnSPartitionManager.CY_NODE, edge.getTarget());
+						CnSNode node2 = (CnSNode)CnSEventManager.handleMessage(ev);
+						String name1 = selectedView.getView().getModel().getRow(node1.getCyNode()).get(CyNetwork.NAME, String.class);
+						String name2 = selectedView.getView().getModel().getRow(node2.getCyNode()).get(CyNetwork.NAME, String.class);
+						
+						System.err.println("Link : " + name1 + " _> " + name2);
+					}
 				}
 			}
 			else if (ce.size() >= 2 || ce.size() == 0) {
