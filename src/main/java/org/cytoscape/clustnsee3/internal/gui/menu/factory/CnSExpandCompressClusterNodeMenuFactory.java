@@ -24,7 +24,11 @@ import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
 import org.cytoscape.clustnsee3.internal.gui.menu.action.CnSCompressClusterNodeAction;
 import org.cytoscape.clustnsee3.internal.gui.menu.action.CnSExpandClusterNodeAction;
+import org.cytoscape.clustnsee3.internal.network.CnSNetwork;
+import org.cytoscape.clustnsee3.internal.network.CnSNetworkManager;
 import org.cytoscape.clustnsee3.internal.partition.CnSPartitionManager;
+import org.cytoscape.clustnsee3.internal.view.CnSView;
+import org.cytoscape.clustnsee3.internal.view.CnSViewManager;
 import org.cytoscape.model.CyNode;
 import org.cytoscape.view.model.CyNetworkView;
 import org.cytoscape.view.model.View;
@@ -85,7 +89,11 @@ public class CnSExpandCompressClusterNodeMenuFactory implements CyNodeViewContex
 		ev.addParameter(CnSPartitionManager.CY_NODE, nodeView.getModel());
 		CnSNode cnsNode = (CnSNode)CnSEventManager.handleMessage(ev);
 		
-		if (cnsNode != null)
+		ev = new CnSEvent(CnSNetworkManager.GET_NETWORK, CnSEventManager.NETWORK_MANAGER);
+		ev.addParameter(CnSNetworkManager.NETWORK, netView.getModel());
+		CnSNetwork cnsNetwork = (CnSNetwork)CnSEventManager.handleMessage(ev);
+		
+		if (cnsNode != null && cnsNetwork != null)
 			if (cnsNode.getNbClusters() > 0)
 				ret = CnSCompressClusterNodeAction.ACTION;
 			else

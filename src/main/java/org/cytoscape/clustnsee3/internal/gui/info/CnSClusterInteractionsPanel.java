@@ -21,7 +21,6 @@ import javax.swing.JTable;
 
 import org.cytoscape.clustnsee3.internal.analysis.CnSClusterLink;
 import org.cytoscape.clustnsee3.internal.analysis.edge.CnSEdge;
-import org.cytoscape.clustnsee3.internal.analysis.node.CnSNode;
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
 import org.cytoscape.clustnsee3.internal.gui.widget.CnSPanel;
@@ -32,52 +31,54 @@ import org.cytoscape.model.CyNetwork;
 /**
  * 
  */
-public class CnSMulticlassPanel extends CnSPanel {
-	private static final long serialVersionUID = -6650107681589813963L;
-	private JTable nodesTable;
-	private JLabel nbNodesLabel;
+public class CnSClusterInteractionsPanel extends CnSPanel {
+	private static final long serialVersionUID = -57773180407559986L;
+	private JLabel nbInteractionsLabel;
+	private JTable interactionsTable;
 	private JScrollPane scrollPane;
 	private Vector<String> columnNames;
 	private Vector<Vector<String>> data;
 	
-	public CnSMulticlassPanel() {
+	public CnSClusterInteractionsPanel() {
 		super();
 		data = new Vector<Vector<String>>();
 		columnNames = new Vector<>();
+		columnNames.addElement("Node name");
 		columnNames.addElement("Node name");
 		initGraphics();
 	}
 	
 	protected void initGraphics() {
-		addComponent(new JLabel("Multiclassed nodes :"), 0, 0, 1, 1, 1.0, 0.0, EAST, NONE, 5, 5, 5, 5, 0, 0);
-		nbNodesLabel = new JLabel();
-		addComponent(nbNodesLabel, 1, 0, 1, 1, 1.0, 0.0, WEST, NONE, 5, 5, 5, 5, 0, 0);
+		addComponent(new JLabel("Number of interactions :"), 0, 0, 1, 1, 1.0, 0.0, EAST, NONE, 5, 5, 5, 5, 0, 0);
+		nbInteractionsLabel = new JLabel();
+		addComponent(nbInteractionsLabel, 1, 0, 1, 1, 1.0, 0.0, WEST, NONE, 5, 5, 5, 5, 0, 0);
 		
-		nodesTable = new JTable(data, columnNames);
-		scrollPane = new JScrollPane(nodesTable);
+		interactionsTable = new JTable(data, columnNames);
+		scrollPane = new JScrollPane(interactionsTable);
 		addComponent(scrollPane, 0, 1, 2, 1, 1.0, 1.0, CENTER, BOTH, 5, 5, 5, 5, 0, 0);
 	}
-	
+
 	/**
 	 * 
 	 * @param
 	 * @return
 	 */
 	public void init(CnSClusterLink clusterLink) {
-		nbNodesLabel.setText(String.valueOf(clusterLink.getNodes().size()));
+		nbInteractionsLabel.setText(String.valueOf(clusterLink.getEdges().size()));
 		
 		data.clear();
 		CnSEvent ev = new CnSEvent(CnSPartitionManager.GET_PARTITION, CnSEventManager.PARTITION_MANAGER);
 		ev.addParameter(CnSPartitionManager.CLUSTER, clusterLink.getSource());
 		CnSPartition partition = (CnSPartition)CnSEventManager.handleMessage(ev);
 		
-		for (CnSNode n : clusterLink.getNodes()) {
+		for (CnSEdge ed : clusterLink.getEdges()) {
 			Vector<String> rv = new Vector<String>();
-			rv.addElement(partition.getInputNetwork().getRow(n.getCyNode()).get(CyNetwork.NAME, String.class));
+			rv.addElement(partition.getInputNetwork().getRow(ed.getCyEdge().getSource()).get(CyNetwork.NAME, String.class));
+			rv.addElement(partition.getInputNetwork().getRow(ed.getCyEdge().getTarget()).get(CyNetwork.NAME, String.class));
 			data.addElement(rv);
 		}
-		nodesTable.updateUI();
-		nodesTable.repaint();
+		interactionsTable.updateUI();
+		interactionsTable.repaint();
 	}
 
 	/**
@@ -86,7 +87,7 @@ public class CnSMulticlassPanel extends CnSPanel {
 	 * @return
 	 */
 	public void clear() {
-		nbNodesLabel.setText("");
+		nbInteractionsLabel.setText("");
 		data.clear();
 	}
 }

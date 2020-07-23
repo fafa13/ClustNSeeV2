@@ -28,6 +28,7 @@ import org.cytoscape.clustnsee3.internal.analysis.node.CnSNode;
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
 import org.cytoscape.clustnsee3.internal.network.CnSNetwork;
+import org.cytoscape.clustnsee3.internal.network.CnSNetworkManager;
 import org.cytoscape.clustnsee3.internal.partition.CnSPartition;
 import org.cytoscape.clustnsee3.internal.partition.CnSPartitionManager;
 import org.cytoscape.clustnsee3.internal.view.CnSView;
@@ -45,11 +46,14 @@ public class CnSShowClusterlinksMenuFactory implements CyNodeViewContextMenuFact
 	 * @see org.cytoscape.application.swing.CyNodeViewContextMenuFactory#createMenuItem(org.cytoscape.view.model.CyNetworkView, org.cytoscape.view.model.View)
 	 */
 	@Override
-	public CyMenuItem createMenuItem(CyNetworkView netView, final View<CyNode> nodeView) {
+	public CyMenuItem createMenuItem(final CyNetworkView netView, final View<CyNode> nodeView) {
 		CyMenuItem cyMenuItem = null;
 		JMenuItem menuItem = new JMenuItem("Show cluster links");
+		CnSEvent ev = new CnSEvent(CnSNetworkManager.GET_NETWORK, CnSEventManager.NETWORK_MANAGER);
+		ev.addParameter(CnSNetworkManager.NETWORK, netView.getModel());
+		CnSNetwork cnsNetwork = (CnSNetwork)CnSEventManager.handleMessage(ev);
+		
 		menuItem.addActionListener(new ActionListener() {
-
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				CnSEvent ev = new CnSEvent(CnSViewManager.GET_SELECTED_VIEW, CnSEventManager.VIEW_MANAGER);
@@ -99,9 +103,8 @@ public class CnSShowClusterlinksMenuFactory implements CyNodeViewContextMenuFact
 					l = "Cluster not found !";
 				JOptionPane.showMessageDialog(null,  l);
 			}
-			
 		});
-		cyMenuItem = new CyMenuItem(menuItem, 0);
+		if (cnsNetwork != null) cyMenuItem = new CyMenuItem(menuItem, 0);
 		return cyMenuItem;
 	}
 

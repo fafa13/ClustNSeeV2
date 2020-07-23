@@ -16,6 +16,7 @@ package org.cytoscape.clustnsee3.internal.gui.menu.action;
 import java.awt.Color;
 import java.awt.geom.Point2D;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Vector;
 
 import org.cytoscape.clustnsee3.internal.CyActivator;
@@ -44,7 +45,6 @@ public class CnSExpandClusterNodeAction {
 	
 	public void doAction(Long suid) {
 		boolean expanded = false;
-		CyNode n2;
 		
 		CnSEvent ev = new CnSEvent(CnSViewManager.GET_SELECTED_VIEW, CnSEventManager.VIEW_MANAGER);
 		CnSView view = (CnSView)CnSEventManager.handleMessage(ev);
@@ -140,41 +140,55 @@ public class CnSExpandClusterNodeAction {
 					linkedCluster = cl.getTarget();	
 				else if (cl.getTarget() == cluster)
 					linkedCluster = cl.getSource();
-				//if (linkedCluster != null) System.err.println("linkedCluster = " + linkedCluster.getName() + "  -  " + view.getClusters().contains(linkedCluster));
 				if (linkedCluster != null && view.getClusters().contains(linkedCluster)) {
 					ev.addParameter(CnSViewManager.CLUSTER, linkedCluster);
 					expanded = (Boolean)CnSEventManager.handleMessage(ev);
 					node2edgeMap.clear();
+					HashMap<CyEdge, Double> edgeWidth = new HashMap<CyEdge, Double>();
+					CyNode clusterNode = null;
+					CyEdge edge = null;
+					List<CyEdge> lce;
 					
 					for (CnSEdge ce : cl.getEdges())
 						if (expanded)
 							network.getNetwork().addEdge(ce.getCyEdge());
 						else {
-							n2 = null;
+							clusterNode = null;
 							for (CnSNode n : cluster.getNodes())
 								if ((n.getCyNode() == ce.getCyEdge().getSource()) || (n.getCyNode() == ce.getCyEdge().getTarget())) {
-									n2 = n.getCyNode();
+									clusterNode = n.getCyNode();
 									break;
 								}
-							if (node2edgeMap.get(n2) == null) {
-								node2edgeMap.put(n2, network.getNetwork().addEdge(linkedCluster.getCyNode(), n2, false));
+							if (!network.getNetwork().containsEdge(linkedCluster.getCyNode(), clusterNode) &&
+									!network.getNetwork().containsEdge(clusterNode, linkedCluster.getCyNode())) {
+								edge = network.getNetwork().addEdge(linkedCluster.getCyNode(), clusterNode, false);
+								view.getView().updateView();
+								edgeWidth.putIfAbsent(edge, 1.0);
 								eh.flushPayloadEvents();
 							}
 							else {
-								double d = view.getView().getEdgeView(node2edgeMap.get(n2)).getVisualProperty(BasicVisualLexicon.EDGE_WIDTH);
-								view.getView().getEdgeView(node2edgeMap.get(n2)).setVisualProperty(BasicVisualLexicon.EDGE_WIDTH, d < 10.0 ? d + 1.0 : d);
-								eh.flushPayloadEvents();
+								lce = network.getNetwork().getConnectingEdgeList(linkedCluster.getCyNode(), clusterNode, CyEdge.Type.ANY);
+								lce.addAll(network.getNetwork().getConnectingEdgeList(clusterNode, linkedCluster.getCyNode(), CyEdge.Type.ANY));
+								for (CyEdge e : lce)
+									if ((e.getSource() == linkedCluster.getCyNode() && e.getTarget() == clusterNode) ||
+											(e.getSource() == clusterNode && e.getTarget() == linkedCluster.getCyNode())) {
+										edge = e;
+										break;
+									}
+								if (edgeWidth.get(edge) != null)
+									edgeWidth.put(edge, edgeWidth.get(edge) + 1);
+								else
+									edgeWidth.putIfAbsent(edge, view.getView().getEdgeView(edge).getVisualProperty(BasicVisualLexicon.EDGE_WIDTH) + 1.0);
 							}
+							for (CyEdge e : edgeWidth.keySet())
+								view.getView().getEdgeView(e).setVisualProperty(BasicVisualLexicon.EDGE_WIDTH, Math.min(10.0, Double.valueOf(edgeWidth.get(e))));
 						}
-				//System.err.println("coucou");
 					for (CnSNode n : cl.getNodes()) {
-						//System.err.println("Node : " + n.getCyNode().toString());
 						if (!expanded) {
 							if (!network.getNetwork().containsEdge(linkedCluster.getCyNode(), n.getCyNode()) && 
 									!network.getNetwork().containsEdge(n.getCyNode(), linkedCluster.getCyNode())) {
 								CyEdge cyEdge = network.getNetwork().addEdge(linkedCluster.getCyNode(), n.getCyNode(), false);
 								eh.flushPayloadEvents();
-								//JOptionPane.showMessageDialog(null, "  Edge : " + cyEdge.toString());
 								view.getView().getEdgeView(cyEdge).setVisualProperty(BasicVisualLexicon.EDGE_STROKE_UNSELECTED_PAINT, Color.green);
 								eh.flushPayloadEvents();
 							}

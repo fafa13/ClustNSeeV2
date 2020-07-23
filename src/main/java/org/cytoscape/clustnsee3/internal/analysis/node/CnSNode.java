@@ -16,7 +16,6 @@ package org.cytoscape.clustnsee3.internal.analysis.node;
 import java.util.Vector;
 
 import org.cytoscape.clustnsee3.internal.analysis.CnSCluster;
-import org.cytoscape.model.CyNetwork;
 import org.cytoscape.model.CyNode;
 
 /**

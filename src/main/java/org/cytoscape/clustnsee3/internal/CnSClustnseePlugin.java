@@ -35,7 +35,6 @@ import org.cytoscape.model.events.AddedEdgesListener;
 import org.cytoscape.model.events.AddedNodesListener;
 import org.cytoscape.model.events.NetworkAboutToBeDestroyedListener;
 import org.cytoscape.model.events.RemovedEdgesListener;
-import org.cytoscape.model.events.RowsSetListener;
 import org.cytoscape.model.events.SelectedNodesAndEdgesListener;
 import org.cytoscape.model.events.UnsetNetworkPointerListener;
 import org.cytoscape.view.model.events.NetworkViewAboutToBeDestroyedListener;

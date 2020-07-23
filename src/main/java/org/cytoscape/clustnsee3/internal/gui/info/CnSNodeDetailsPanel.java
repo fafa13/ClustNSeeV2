@@ -13,6 +13,7 @@
 
 package org.cytoscape.clustnsee3.internal.gui.info;
 
+import java.awt.Font;
 import java.util.Vector;
 
 import javax.swing.JLabel;
@@ -31,13 +32,14 @@ import org.cytoscape.model.CyNode;
 public class CnSNodeDetailsPanel extends CnSPanel {
 	private static final long serialVersionUID = -7395889517315642188L;
 	private JTable clusterListTable, propertiesTable;
-	private JLabel nodeInteractionsLabel;
+	private JLabel nodeInteractionsLabel, nodeNameLabel;
 	private Vector<Vector<String>> dataClusterListTable, dataPropertiesTable;
 	
 	public CnSNodeDetailsPanel() {
 		super();
 		nodeInteractionsLabel = new JLabel();
-		
+		nodeNameLabel = new JLabel();
+		nodeNameLabel.setFont(nodeNameLabel.getFont().deriveFont(Font.BOLD));
 		clusterListTable = new JTable();
 		Vector<String> columnNamesClusterListTable = new Vector<String>();
 		columnNamesClusterListTable.addElement("Node cluster list");
@@ -57,9 +59,10 @@ public class CnSNodeDetailsPanel extends CnSPanel {
 	protected void initGraphics() {
 		super.initGraphics();
 		CnSPanel leftPanel = new CnSPanel();
-		leftPanel.addComponent(new JLabel("Node interactions :"), 0, 0, 1, 1, 1.0, 1.0, NORTHWEST, BOTH, 0, 0, 0, 0, 0, 0);
-		leftPanel.addComponent(nodeInteractionsLabel, 1, 0, 1, 1, 1.0, 1.0, NORTHWEST, BOTH, 0, 5, 0, 0, 0, 0);
-		leftPanel.addComponent(new JScrollPane(clusterListTable), 0, 1, 2, 1, 1.0, 1.0, NORTHWEST, BOTH, 5, 0, 0, 0, 0, 0);
+		//leftPanel.addComponent(nodeNameLabel, 0, 0, 2, 1, 1.0, 0.0, NORTHWEST, NONE, 0, 5, 0, 0, 0, 0);
+		leftPanel.addComponent(new JLabel("Node interactions :"), 0, 1, 1, 1, 0.0, 0.0, NORTHWEST, NONE, 0, 0, 0, 0, 0, 0);
+		leftPanel.addComponent(nodeInteractionsLabel, 1, 1, 1, 1, 1.0, 0.0, NORTHWEST, HORIZONTAL, 0, 5, 0, 0, 0, 0);
+		leftPanel.addComponent(new JScrollPane(clusterListTable), 0, 2, 2, 1, 1.0, 1.0, NORTHWEST, BOTH, 5, 0, 0, 0, 0, 0);
 		addComponent(leftPanel, 0, 0, 1, 1, 1.0, 1.0, NORTHWEST, BOTH, 5, 5, 5, 0, 0, 0);
 		
 		CnSPanel rightPanel = new CnSPanel();
@@ -96,5 +99,14 @@ public class CnSNodeDetailsPanel extends CnSPanel {
 				}
 		}
 		nodeInteractionsLabel.setText(String.valueOf(links.size()));
+		nodeNameLabel.setText(node.getClusters().firstElement().getNetwork().getRootNetwork().getRow(node.getCyNode()).get("shared name", String.class));
+		dataClusterListTable.clear();
+		for (CnSCluster cl : node.getClusters()) {
+			Vector<String> v = new Vector<>();
+			v.addElement(cl.getName());
+			dataClusterListTable.addElement(v);
+		}
+		//clusterListTable.updateUI();
+		clusterListTable.repaint();
 	}
 }

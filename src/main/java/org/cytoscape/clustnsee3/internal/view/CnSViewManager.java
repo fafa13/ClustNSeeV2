@@ -17,10 +17,7 @@ import java.awt.Color;
 import java.awt.geom.Point2D;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Vector;
-
-import javax.swing.JOptionPane;
 
 import org.cytoscape.application.events.SetCurrentNetworkViewEvent;
 import org.cytoscape.application.events.SetCurrentNetworkViewListener;
@@ -48,7 +45,6 @@ import org.cytoscape.model.CyEdge;
 import org.cytoscape.model.CyNetwork;
 import org.cytoscape.model.CyNode;
 import org.cytoscape.model.CyRow;
-import org.cytoscape.model.CyTableUtil;
 import org.cytoscape.model.events.AboutToRemoveNodesEvent;
 import org.cytoscape.model.events.AboutToRemoveNodesListener;
 import org.cytoscape.model.events.AddedEdgesEvent;
@@ -57,9 +53,6 @@ import org.cytoscape.model.events.AddedNodesEvent;
 import org.cytoscape.model.events.AddedNodesListener;
 import org.cytoscape.model.events.RemovedEdgesEvent;
 import org.cytoscape.model.events.RemovedEdgesListener;
-import org.cytoscape.model.events.RowSetRecord;
-import org.cytoscape.model.events.RowsSetEvent;
-import org.cytoscape.model.events.RowsSetListener;
 import org.cytoscape.model.events.SelectedNodesAndEdgesEvent;
 import org.cytoscape.model.events.SelectedNodesAndEdgesListener;
 import org.cytoscape.model.events.UnsetNetworkPointerEvent;
@@ -326,7 +319,9 @@ UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, SelectedNodesAndEd
         if (cnsv != null) {
         	
         	if (!cnsv.isUserView() && !cnsv.getModifCluster()) {
+        		Vector<CnSCluster> cls = cnsv.getState().getClusters();
         		cnsv.setViewState(new CnSUserViewState());
+        		cnsv.getState().getClusters().addAll(cls);
         		ev = new CnSEvent(CnSNetworkManager.RENAME_NETWORK, CnSEventManager.NETWORK_MANAGER);
         		ev.addParameter(CnSNetworkManager.NETWORK, view2networkMap.get(cnsv));
         		ev.addParameter(CnSNetworkManager.NETWORK_NAME, "Copy of " + view2networkMap.get(cnsv).getName());
@@ -379,7 +374,9 @@ UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, SelectedNodesAndEd
 		for (CnSView v : views) {
 			if (v.getView().getNodeView(e.getNode()) != null) {
 				if (!v.isUserView() && !v.getModifCluster()) {
-					v.setViewState(new CnSUserViewState());
+					Vector<CnSCluster> cls = v.getState().getClusters();
+	        		v.setViewState(new CnSUserViewState());
+	        		v.getState().getClusters().addAll(cls);
 					ev.addParameter(CnSNetworkManager.NETWORK, view2networkMap.get(v));
 					ev.addParameter(CnSNetworkManager.NETWORK_NAME, "Copy of " + view2networkMap.get(v).getName());
 					CnSEventManager.handleMessage(ev);
@@ -581,7 +578,9 @@ UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, SelectedNodesAndEd
         		if (!cnsv.getModifCluster() && cluster != null) cnsv.removeCluster(cluster);
         	}
         	if (!cnsv.isUserView() && !cnsv.getModifCluster()) {
+        		Vector<CnSCluster> cls = cnsv.getState().getClusters();
         		cnsv.setViewState(new CnSUserViewState());
+        		cnsv.getState().getClusters().addAll(cls);
         		ev = new CnSEvent(CnSNetworkManager.RENAME_NETWORK, CnSEventManager.NETWORK_MANAGER);
         		ev.addParameter(CnSNetworkManager.NETWORK, view2networkMap.get(cnsv));
         		ev.addParameter(CnSNetworkManager.NETWORK_NAME, "Copy of " + view2networkMap.get(cnsv).getName());
