@@ -215,10 +215,9 @@ UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, SelectedNodesAndEd
 					if (v != null)
 						if (v.getView().getNodeView(cluster.getCyNode()) != null) {
 							Collection<CyRow> matchingRows = view2networkMap.get(v).getNetwork().getTable(CyNode.class, CyNetwork.LOCAL_ATTRS).getMatchingRows("selected", true);
-							if (matchingRows.size() > 0) {
+							if (matchingRows.size() > 0)
 								for (CyRow row : matchingRows) row.set("selected", false);
-								view2networkMap.get(v).getNetwork().getRow(cluster.getCyNode()).set("selected", true);
-							}
+							view2networkMap.get(v).getNetwork().getRow(cluster.getCyNode()).set("selected", true);
 						}
 				break;
 				
@@ -598,13 +597,42 @@ UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, SelectedNodesAndEd
 			Collection<CyNode> cn = e.getSelectedNodes();
 			if (cn.size() == 1) {
 				for (CyNode node : cn) {
-					CnSEvent ev = new CnSEvent(CnSResultsPanel.SELECT_CLUSTER, CnSEventManager.RESULTS_PANEL);
-					ev.addParameter(CnSResultsPanel.CLUSTER, node.getSUID());
-					CnSEventManager.handleMessage(ev);
+					CnSEvent ev = new CnSEvent(CnSPartitionManager.GET_PARTITION, CnSEventManager.PARTITION_MANAGER);
+					ev.addParameter(CnSPartitionManager.VIEW, selectedView);
+					CnSPartition p = (CnSPartition)CnSEventManager.handleMessage(ev);
+					
+					ev = new CnSEvent(CnSPartitionManager.GET_CLUSTER_NODE, CnSEventManager.PARTITION_MANAGER);
+					ev.addParameter(CnSPartitionManager.PARTITION, p);
+					ev.addParameter(CnSPartitionManager.CY_NODE, node);
+					CnSNode cnsn = (CnSNode)CnSEventManager.handleMessage(ev);
+					
+					if (cnsn != null) {
+						ev = new CnSEvent(CnSResultsPanel.SELECT_CLUSTER, CnSEventManager.RESULTS_PANEL);
+						ev.addParameter(CnSResultsPanel.CLUSTER, node.getSUID());
+						CnSEventManager.handleMessage(ev);
+					}
+					else {
+						ev = new CnSEvent(CnSPartitionManager.GET_NODE, CnSEventManager.PARTITION_MANAGER);
+						ev.addParameter(CnSPartitionManager.CY_NODE, node);
+						cnsn = (CnSNode)CnSEventManager.handleMessage(ev);
+						if (cnsn != null) {
+							ev = new CnSEvent(CnSInfoPanel.INIT, CnSEventManager.INFO_PANEL);
+							ev.addParameter(CnSInfoPanel.NODE, cnsn);
+							ev.addParameter(CnSInfoPanel.PANEL, CnSInfoPanel.NODE_DETAILS);
+							CnSEventManager.handleMessage(ev);
+							
+							ev = new CnSEvent(CnSInfoPanel.SELECT_PANEL, CnSEventManager.INFO_PANEL);
+							ev.addParameter(CnSInfoPanel.PANEL, CnSInfoPanel.NODE_DETAILS);
+							CnSEventManager.handleMessage(ev);
+						}
+					}
 				}
 			}
 			else if (cn.size() >= 2 || cn.size() == 0) {
 				CnSEvent ev = new CnSEvent(CnSResultsPanel.SELECT_CLUSTER, CnSEventManager.RESULTS_PANEL);
+				CnSEventManager.handleMessage(ev);
+				ev = new CnSEvent(CnSInfoPanel.CLEAR, CnSEventManager.INFO_PANEL);
+				ev.addParameter(CnSInfoPanel.PANEL, CnSInfoPanel.NODE_DETAILS);
 				CnSEventManager.handleMessage(ev);
 			}
 			

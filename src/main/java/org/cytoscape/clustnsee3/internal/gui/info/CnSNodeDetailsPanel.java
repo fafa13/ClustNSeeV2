@@ -59,15 +59,15 @@ public class CnSNodeDetailsPanel extends CnSPanel {
 	protected void initGraphics() {
 		super.initGraphics();
 		CnSPanel leftPanel = new CnSPanel();
-		//leftPanel.addComponent(nodeNameLabel, 0, 0, 2, 1, 1.0, 0.0, NORTHWEST, NONE, 0, 5, 0, 0, 0, 0);
+		addComponent(nodeNameLabel, 0, 0, 2, 1, 1.0, 0.0, NORTHWEST, NONE, 5, 5, 0, 5, 0, 0);
 		leftPanel.addComponent(new JLabel("Node interactions :"), 0, 1, 1, 1, 0.0, 0.0, NORTHWEST, NONE, 0, 0, 0, 0, 0, 0);
 		leftPanel.addComponent(nodeInteractionsLabel, 1, 1, 1, 1, 1.0, 0.0, NORTHWEST, HORIZONTAL, 0, 5, 0, 0, 0, 0);
 		leftPanel.addComponent(new JScrollPane(clusterListTable), 0, 2, 2, 1, 1.0, 1.0, NORTHWEST, BOTH, 5, 0, 0, 0, 0, 0);
-		addComponent(leftPanel, 0, 0, 1, 1, 1.0, 1.0, NORTHWEST, BOTH, 5, 5, 5, 0, 0, 0);
+		addComponent(leftPanel, 0, 1, 1, 1, 1.0, 1.0, NORTHWEST, BOTH, 5, 5, 5, 0, 0, 0);
 		
 		CnSPanel rightPanel = new CnSPanel();
 		rightPanel.addComponent(new JScrollPane(propertiesTable), 0, 0, 1, 1, 1.0, 1.0, NORTHWEST, BOTH, 5, 0, 0, 0, 0, 0);
-		addComponent(rightPanel, 1, 0, 1, 1, 1.0, 1.0, NORTHWEST, BOTH, 5, 5, 5, 5, 0, 0);
+		addComponent(rightPanel, 1, 1, 1, 1, 1.0, 1.0, NORTHWEST, BOTH, 5, 5, 5, 5, 0, 0);
 	}
 
 	/**
@@ -108,5 +108,19 @@ public class CnSNodeDetailsPanel extends CnSPanel {
 		}
 		//clusterListTable.updateUI();
 		clusterListTable.repaint();
+	}
+
+	/**
+	 * 
+	 * @param
+	 * @return
+	 */
+	public void clear() {
+		nodeInteractionsLabel.setText("");
+		nodeNameLabel.setText("");
+		dataClusterListTable.clear();
+		dataPropertiesTable.clear();
+		clusterListTable.repaint();
+		propertiesTable.repaint();
 	}
 }

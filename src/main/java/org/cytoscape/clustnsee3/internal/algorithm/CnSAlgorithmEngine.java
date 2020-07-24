@@ -55,7 +55,8 @@ public class CnSAlgorithmEngine implements CnSEventListener {
 		CnSEvent ev = new CnSEvent(CyActivator.GET_APPLICATION_MANAGER, CnSEventManager.CY_ACTIVATOR);
 		CyApplicationManager cam = (CyApplicationManager)CnSEventManager.handleMessage(ev);
 		CyNetwork network = cam.getCurrentNetwork();
-		return algo.execute(network);
+		if (network != null) return algo.execute(network);
+		return null;
 	}
 	
 	/* (non-Javadoc)

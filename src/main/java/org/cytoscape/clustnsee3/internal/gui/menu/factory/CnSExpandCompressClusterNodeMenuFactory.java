@@ -27,8 +27,6 @@ import org.cytoscape.clustnsee3.internal.gui.menu.action.CnSExpandClusterNodeAct
 import org.cytoscape.clustnsee3.internal.network.CnSNetwork;
 import org.cytoscape.clustnsee3.internal.network.CnSNetworkManager;
 import org.cytoscape.clustnsee3.internal.partition.CnSPartitionManager;
-import org.cytoscape.clustnsee3.internal.view.CnSView;
-import org.cytoscape.clustnsee3.internal.view.CnSViewManager;
 import org.cytoscape.model.CyNode;
 import org.cytoscape.view.model.CyNetworkView;
 import org.cytoscape.view.model.View;

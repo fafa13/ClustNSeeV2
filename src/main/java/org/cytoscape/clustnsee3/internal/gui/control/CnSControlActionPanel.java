@@ -3,6 +3,8 @@ package org.cytoscape.clustnsee3.internal.gui.control;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.JOptionPane;
+
 import org.cytoscape.clustnsee3.internal.gui.widget.CnSPanel;
 import org.cytoscape.model.CyNetwork;
 import org.cytoscape.application.CyApplicationManager;
@@ -64,15 +66,19 @@ public class CnSControlActionPanel extends CnSPanel {
 	    		/**
 	    		 * initialize result panel
 	    		 */
-	    		ev = new CnSEvent(CyActivator.GET_APPLICATION_MANAGER, CnSEventManager.CY_ACTIVATOR);
-	    		CyApplicationManager cam = (CyApplicationManager)CnSEventManager.handleMessage(ev);
-	    		CyNetwork network = cam.getCurrentNetwork();
+	    		if (result != null) {
+	    			ev = new CnSEvent(CyActivator.GET_APPLICATION_MANAGER, CnSEventManager.CY_ACTIVATOR);
+	    			CyApplicationManager cam = (CyApplicationManager)CnSEventManager.handleMessage(ev);
+	    			CyNetwork network = cam.getCurrentNetwork();
 	    		
-	    		ev = new CnSEvent(CnSResultsPanel.ADD_PARTITION, CnSEventManager.RESULTS_PANEL);
-				ev.addParameter(CnSResultsPanel.RESULT, result);
-				ev.addParameter(CnSResultsPanel.ALGO, algo);
-				ev.addParameter(CnSResultsPanel.NETWORK, network);
-	    		CnSEventManager.handleMessage(ev);
+	    			ev = new CnSEvent(CnSResultsPanel.ADD_PARTITION, CnSEventManager.RESULTS_PANEL);
+	    			ev.addParameter(CnSResultsPanel.RESULT, result);
+	    			ev.addParameter(CnSResultsPanel.ALGO, algo);
+	    			ev.addParameter(CnSResultsPanel.NETWORK, network);
+	    			CnSEventManager.handleMessage(ev);
+	    		}
+	    		else
+	    			JOptionPane.showMessageDialog(null, "You must select a network !");
 			}
 		});
 	}

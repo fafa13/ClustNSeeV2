@@ -102,8 +102,11 @@ public class CnSClusterListPanel extends CnSPanel {
 		}
 		else {
 			int clusterIndex = model.getClusterIndex(nodeId);
-			if (clusterIndex >= 0 && clusterIndex < table.getModel().getRowCount()) table.setRowSelectionInterval(clusterIndex, clusterIndex);
-			scrollPane.scrollRectToVisible(table.getCellRect(clusterIndex, 0, true));
+			if (clusterIndex >= 0 && clusterIndex < table.getModel().getRowCount()) {
+				table.setRowSelectionInterval(clusterIndex, clusterIndex);
+				table.scrollRectToVisible(table.getCellRect(clusterIndex, 0, true));
+				table.repaint();
+			}
 		}
 	}
 }

@@ -117,9 +117,11 @@ public class CnSResultsCommandPanel extends CnSPanel {
 			public void actionPerformed(ActionEvent e) {
 				CnSEvent ev = new CnSEvent(CnSResultsPanel.GET_SELECTED_CLUSTER, CnSEventManager.RESULTS_PANEL);
 		        CnSCluster cluster = (CnSCluster)CnSEventManager.handleMessage(ev);
-				ev = new CnSEvent(CnSViewManager.EXPAND_CLUSTER, CnSEventManager.VIEW_MANAGER);
-				ev.addParameter(CnSViewManager.SUID, makeClusterView(cluster));
-				CnSEventManager.handleMessage(ev);
+		        if (cluster != null) {
+		        	ev = new CnSEvent(CnSViewManager.EXPAND_CLUSTER, CnSEventManager.VIEW_MANAGER);
+		        	ev.addParameter(CnSViewManager.SUID, makeClusterView(cluster));
+		        	CnSEventManager.handleMessage(ev);
+		        }
 	        }
 		});
 		newClusterViewButton.addActionListener(new ActionListener() {
@@ -127,7 +129,7 @@ public class CnSResultsCommandPanel extends CnSPanel {
 			public void actionPerformed(ActionEvent arg0) {
 				CnSEvent ev = new CnSEvent(CnSResultsPanel.GET_SELECTED_CLUSTER, CnSEventManager.RESULTS_PANEL);
 		        CnSCluster cluster = (CnSCluster)CnSEventManager.handleMessage(ev);
-				makeClusterView(cluster);
+				if (cluster != null) makeClusterView(cluster);
 			}
 		});
 		partitionViewButton.addActionListener(new ActionListener() {
@@ -339,7 +341,7 @@ public class CnSResultsCommandPanel extends CnSPanel {
 			public void actionPerformed(ActionEvent arg0) {
 				CnSEvent ev = new CnSEvent(CnSResultsPanel.GET_SELECTED_CLUSTER, CnSEventManager.RESULTS_PANEL);
 		        CnSCluster cluster = (CnSCluster)CnSEventManager.handleMessage(ev);
-				addClusterToView(cluster);
+				if (cluster != null) addClusterToView(cluster);
 			}
 		});
 		addClusterNetworkToViewButton.addActionListener(new ActionListener() {		
@@ -347,9 +349,11 @@ public class CnSResultsCommandPanel extends CnSPanel {
 			public void actionPerformed(ActionEvent e) {
 				CnSEvent ev = new CnSEvent(CnSResultsPanel.GET_SELECTED_CLUSTER, CnSEventManager.RESULTS_PANEL);
 		        CnSCluster cluster = (CnSCluster)CnSEventManager.handleMessage(ev);
-				ev = new CnSEvent(CnSViewManager.EXPAND_CLUSTER, CnSEventManager.VIEW_MANAGER);
-				ev.addParameter(CnSViewManager.SUID, addClusterToView(cluster));
-				CnSEventManager.handleMessage(ev);
+		        if (cluster != null) {
+		        	ev = new CnSEvent(CnSViewManager.EXPAND_CLUSTER, CnSEventManager.VIEW_MANAGER);
+		        	ev.addParameter(CnSViewManager.SUID, addClusterToView(cluster));
+		        	CnSEventManager.handleMessage(ev);
+		        }
 			}
 		});
 		
