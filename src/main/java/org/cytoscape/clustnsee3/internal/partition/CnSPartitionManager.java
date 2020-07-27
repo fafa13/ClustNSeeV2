@@ -348,7 +348,7 @@ public class CnSPartitionManager implements CnSEventListener {
             networkManager.addNetwork(myNet);
             
             // Set name for network
-            myNet.getRow(myNet).set(CyNetwork.NAME, inputNetwork.getRow(inputNetwork).get(CyNetwork.NAME, String.class) + ":Cluster #" + (k + 1));
+            myNet.getRow(myNet).set(CyNetwork.NAME, /*inputNetwork.getRow(inputNetwork).get(CyNetwork.NAME, String.class) + ":Cluster #" + */String.valueOf(k + 1));
             newCluster.setName(/*inputNetwork.getRow(inputNetwork).get(CyNetwork.NAME, String.class) + ":" + Cluster #" + */String.valueOf(k + 1));
             
             // Fill network with cluster nodes and relevant edges 

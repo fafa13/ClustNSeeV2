@@ -116,9 +116,9 @@ public class CnSCompressClusterNodeAction {
 				// fill some cosmetic needs 
 				view.getView().getNodeView(c.getCyNode()).setVisualProperty(BasicVisualLexicon.NODE_X_LOCATION, pos.x);
 				view.getView().getNodeView(c.getCyNode()).setVisualProperty(BasicVisualLexicon.NODE_Y_LOCATION, pos.y);
-				view.getView().getNodeView(c.getCyNode()).setVisualProperty(BasicVisualLexicon.NODE_SHAPE, NodeShapeVisualProperty.ROUND_RECTANGLE);
-				view.getView().getNodeView(c.getCyNode()).setVisualProperty(BasicVisualLexicon.NODE_FILL_COLOR, Color.PINK);
-				view.getView().getNodeView(c.getCyNode()).setVisualProperty(BasicVisualLexicon.NODE_LABEL, c.getName());
+				//view.getView().getNodeView(c.getCyNode()).setVisualProperty(BasicVisualLexicon.NODE_SHAPE, NodeShapeVisualProperty.ROUND_RECTANGLE);
+				//view.getView().getNodeView(c.getCyNode()).setVisualProperty(BasicVisualLexicon.NODE_FILL_COLOR, Color.PINK);
+				//view.getView().getNodeView(c.getCyNode()).setVisualProperty(BasicVisualLexicon.NODE_LABEL, c.getName());
 				
 				CnSCluster partner;
 				for (CnSClusterLink cl : partition.getClusterLinks()) {
@@ -156,12 +156,12 @@ public class CnSCompressClusterNodeAction {
 								view.getView().updateView();
 					
 								if (ie != null) {
-									view.getView().getEdgeView(ie).setVisualProperty(BasicVisualLexicon.EDGE_WIDTH, Double.valueOf(Math.min(cl.getEdges().size(), 16)));
-									view.getView().getEdgeView(ie).setVisualProperty(BasicVisualLexicon.EDGE_STROKE_UNSELECTED_PAINT, Color.blue);
+									//view.getView().getEdgeView(ie).setVisualProperty(BasicVisualLexicon.EDGE_WIDTH, Double.valueOf(Math.min(cl.getEdges().size(), 16)));
+									//view.getView().getEdgeView(ie).setVisualProperty(BasicVisualLexicon.EDGE_STROKE_UNSELECTED_PAINT, Color.blue);
 								}
 								if (me != null) {
-									view.getView().getEdgeView(me).setVisualProperty(BasicVisualLexicon.EDGE_WIDTH, Double.valueOf(Math.min(cl.getNodes().size(), 16)));
-									view.getView().getEdgeView(me).setVisualProperty(BasicVisualLexicon.EDGE_STROKE_UNSELECTED_PAINT, Color.green);
+									//view.getView().getEdgeView(me).setVisualProperty(BasicVisualLexicon.EDGE_WIDTH, Double.valueOf(Math.min(cl.getNodes().size(), 16)));
+									//view.getView().getEdgeView(me).setVisualProperty(BasicVisualLexicon.EDGE_STROKE_UNSELECTED_PAINT, Color.green);
 								}
 								view.getView().updateView();
 								ev = new CnSEvent(CnSViewManager.SET_EXPANDED, CnSEventManager.VIEW_MANAGER);
@@ -201,14 +201,14 @@ public class CnSCompressClusterNodeAction {
 											edgeWidth.putIfAbsent(edge, view.getView().getEdgeView(edge).getVisualProperty(BasicVisualLexicon.EDGE_WIDTH) + 1.0);
 									}
 								}
-								for (CyEdge e : edgeWidth.keySet())
-									view.getView().getEdgeView(e).setVisualProperty(BasicVisualLexicon.EDGE_WIDTH, Math.min(10.0, Double.valueOf(edgeWidth.get(e))));
+								//for (CyEdge e : edgeWidth.keySet())
+								//	view.getView().getEdgeView(e).setVisualProperty(BasicVisualLexicon.EDGE_WIDTH, Math.min(10.0, Double.valueOf(edgeWidth.get(e))));
 								for (CnSNode cnsn : cl.getNodes())
 									if (!network.getNetwork().containsEdge(c.getCyNode(), cnsn.getCyNode()) && 
 											!network.getNetwork().containsEdge(cnsn.getCyNode(), c.getCyNode())) {
 										CyEdge ce = network.getNetwork().addEdge(c.getCyNode(), cnsn.getCyNode(), false);
 										view.getView().updateView();
-										view.getView().getEdgeView(ce).setVisualProperty(BasicVisualLexicon.EDGE_STROKE_UNSELECTED_PAINT, Color.green);
+										//view.getView().getEdgeView(ce).setVisualProperty(BasicVisualLexicon.EDGE_STROKE_UNSELECTED_PAINT, Color.green);
 									}
 								view.getView().updateView();
 								ev = new CnSEvent(CnSViewManager.SET_EXPANDED, CnSEventManager.VIEW_MANAGER);

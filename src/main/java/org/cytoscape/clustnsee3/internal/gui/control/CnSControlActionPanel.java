@@ -99,13 +99,13 @@ public class CnSControlActionPanel extends CnSPanel {
 			public void actionPerformed(ActionEvent e) {
 				CnSEvent ev = new CnSEvent(CyActivator.GET_EXPORT_STYLE_FACTORY, CnSEventManager.CY_ACTIVATOR);
 				ExportVizmapTaskFactory evtf = (ExportVizmapTaskFactory)CnSEventManager.handleMessage(ev);
-				TaskIterator ti = evtf.createTaskIterator(new File("/home/fafa/Documents/default.style"));
+				TaskIterator ti = evtf.createTaskIterator(new File("/home/fafa/Documents/cns.style"));
 				ev = new CnSEvent(CyActivator.GET_SYNCHRONOUS_TASK_MANAGER, CnSEventManager.CY_ACTIVATOR);
 				TaskManager<?, ?> tm = (TaskManager<?, ?>)CnSEventManager.handleMessage(ev);
 				tm.execute(ti);
 				
 				ev = new CnSEvent(CyActivator.GET_VISUAL_STYLE_FACTORY, CnSEventManager.CY_ACTIVATOR);
-				VisualStyle vs = ((VisualStyleFactory)CnSEventManager.handleMessage(ev)).createVisualStyle("Clustnsee visual style");
+				VisualStyle vs = ((VisualStyleFactory)CnSEventManager.handleMessage(ev)).createVisualStyle("Clust'n'see");
 				
 				//Use pass-through mapping
 				String ctrAttrName1 = "SUID";
