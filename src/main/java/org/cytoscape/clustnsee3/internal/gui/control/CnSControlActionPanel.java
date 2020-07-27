@@ -2,11 +2,24 @@ package org.cytoscape.clustnsee3.internal.gui.control;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 
 import javax.swing.JOptionPane;
 
 import org.cytoscape.clustnsee3.internal.gui.widget.CnSPanel;
+import org.cytoscape.clustnsee3.internal.view.CnSView;
+import org.cytoscape.clustnsee3.internal.view.CnSViewManager;
 import org.cytoscape.model.CyNetwork;
+import org.cytoscape.task.write.ExportVizmapTaskFactory;
+import org.cytoscape.view.model.CyNetworkView;
+import org.cytoscape.view.presentation.property.BasicVisualLexicon;
+import org.cytoscape.view.vizmap.VisualMappingFunctionFactory;
+import org.cytoscape.view.vizmap.VisualMappingManager;
+import org.cytoscape.view.vizmap.VisualStyle;
+import org.cytoscape.view.vizmap.VisualStyleFactory;
+import org.cytoscape.view.vizmap.mappings.PassthroughMapping;
+import org.cytoscape.work.TaskIterator;
+import org.cytoscape.work.TaskManager;
 import org.cytoscape.application.CyApplicationManager;
 import org.cytoscape.clustnsee3.internal.CyActivator;
 import org.cytoscape.clustnsee3.internal.algorithm.CnSAlgorithm;
@@ -79,6 +92,37 @@ public class CnSControlActionPanel extends CnSPanel {
 	    		}
 	    		else
 	    			JOptionPane.showMessageDialog(null, "You must select a network !");
+			}
+		});
+		closeButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				CnSEvent ev = new CnSEvent(CyActivator.GET_EXPORT_STYLE_FACTORY, CnSEventManager.CY_ACTIVATOR);
+				ExportVizmapTaskFactory evtf = (ExportVizmapTaskFactory)CnSEventManager.handleMessage(ev);
+				TaskIterator ti = evtf.createTaskIterator(new File("/home/fafa/Documents/default.style"));
+				ev = new CnSEvent(CyActivator.GET_SYNCHRONOUS_TASK_MANAGER, CnSEventManager.CY_ACTIVATOR);
+				TaskManager<?, ?> tm = (TaskManager<?, ?>)CnSEventManager.handleMessage(ev);
+				tm.execute(ti);
+				
+				ev = new CnSEvent(CyActivator.GET_VISUAL_STYLE_FACTORY, CnSEventManager.CY_ACTIVATOR);
+				VisualStyle vs = ((VisualStyleFactory)CnSEventManager.handleMessage(ev)).createVisualStyle("Clustnsee visual style");
+				
+				//Use pass-through mapping
+				String ctrAttrName1 = "SUID";
+				ev = new CnSEvent(CyActivator.GET_PASSTHROUGH_VISUAL_MAPPING_FUNCTION_FACTORY, CnSEventManager.CY_ACTIVATOR);
+				
+				PassthroughMapping<String, ?> pMapping = (PassthroughMapping<String, ?>) ((VisualMappingFunctionFactory)CnSEventManager.handleMessage(ev)).createVisualMappingFunction(ctrAttrName1, String.class, BasicVisualLexicon.NODE_LABEL);
+				vs.addVisualMappingFunction(pMapping);                        
+				
+				// Add the new style to the VisualMappingManager
+				ev = new CnSEvent(CyActivator.GET_VISUAL_MAPPING_MANAGER, CnSEventManager.CY_ACTIVATOR);
+				((VisualMappingManager)CnSEventManager.handleMessage(ev)).addVisualStyle(vs);
+				  
+				// Apply the visual style to a NetwokView
+				ev = new CnSEvent(CnSViewManager.GET_SELECTED_VIEW, CnSEventManager.VIEW_MANAGER);
+				CyNetworkView v = ((CnSView)CnSEventManager.handleMessage(ev)).getView();
+				vs.apply(v);
+				v.updateView();
 			}
 		});
 	}

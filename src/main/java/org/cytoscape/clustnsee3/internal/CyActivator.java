@@ -14,10 +14,14 @@ import org.cytoscape.model.CyNetworkManager;
 import org.cytoscape.model.subnetwork.CyRootNetworkManager;
 import org.cytoscape.service.util.AbstractCyActivator;
 import org.cytoscape.task.visualize.ApplyPreferredLayoutTaskFactory;
+import org.cytoscape.task.write.ExportVizmapTaskFactory;
 import org.cytoscape.view.layout.CyLayoutAlgorithmManager;
 import org.cytoscape.view.model.CyNetworkViewFactory;
 import org.cytoscape.view.model.CyNetworkViewManager;
 import org.cytoscape.view.presentation.RenderingEngineManager;
+import org.cytoscape.view.vizmap.VisualMappingFunctionFactory;
+import org.cytoscape.view.vizmap.VisualMappingManager;
+import org.cytoscape.view.vizmap.VisualStyleFactory;
 import org.cytoscape.work.SynchronousTaskManager;
 import org.cytoscape.work.TaskObserver;
 import org.osgi.framework.BundleContext;
@@ -36,6 +40,12 @@ public class CyActivator extends AbstractCyActivator implements CnSEventListener
 	public static final int GET_LAYOUT_ALGORITHM_MANAGER = 11;
 	public static final int GET_RENDERING_ENGINE_MANAGER = 12; 
 	public static final int GET_CY_EVENT_HELPER = 13;
+	public static final int GET_EXPORT_STYLE_FACTORY = 14;
+	public static final int GET_VISUAL_MAPPING_MANAGER = 15;
+	public static final int GET_VISUAL_STYLE_FACTORY = 16;
+	public static final int GET_CONTINUOUS_VISUAL_MAPPING_FUNCTION_FACTORY = 17; 
+	public static final int GET_DISCRETE_VISUAL_MAPPING_FUNCTION_FACTORY = 18;
+	public static final int GET_PASSTHROUGH_VISUAL_MAPPING_FUNCTION_FACTORY = 19;
 	
 	private BundleContext bc = null;
 	
@@ -120,6 +130,25 @@ public class CyActivator extends AbstractCyActivator implements CnSEventListener
 			case GET_CY_EVENT_HELPER :
 				ret = getService(bc, CyEventHelper.class);
 				break;
+			case GET_EXPORT_STYLE_FACTORY :
+				ret = getService(bc, ExportVizmapTaskFactory.class);
+				break;
+			
+			case GET_VISUAL_MAPPING_MANAGER :
+				ret = getService(bc,VisualMappingManager.class);
+                break;
+			case GET_VISUAL_STYLE_FACTORY :
+				ret = getService(bc,VisualStyleFactory.class);
+				break;
+			case GET_CONTINUOUS_VISUAL_MAPPING_FUNCTION_FACTORY :	
+				ret = getService(bc,VisualMappingFunctionFactory.class, "(mapping.type=continuous)");
+				break;
+			case GET_DISCRETE_VISUAL_MAPPING_FUNCTION_FACTORY :
+				ret = getService(bc,VisualMappingFunctionFactory.class, "(mapping.type=discrete)");
+				break;
+			case GET_PASSTHROUGH_VISUAL_MAPPING_FUNCTION_FACTORY :
+				ret = getService(bc,VisualMappingFunctionFactory.class, "(mapping.type=passthrough)");
+				break;		
 		}
 		return ret;
 	}

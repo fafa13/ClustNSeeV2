@@ -599,7 +599,8 @@ UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, SelectedNodesAndEd
 				for (CyNode node : cn) {
 					CnSEvent ev = new CnSEvent(CnSPartitionManager.GET_PARTITION, CnSEventManager.PARTITION_MANAGER);
 					ev.addParameter(CnSPartitionManager.VIEW, selectedView);
-					CnSPartition p = (CnSPartition)CnSEventManager.handleMessage(ev);
+					CnSPartition p = view2partitionMap.get(selectedView);
+					if (p == null) p = (CnSPartition)CnSEventManager.handleMessage(ev);
 					
 					ev = new CnSEvent(CnSPartitionManager.GET_CLUSTER_NODE, CnSEventManager.PARTITION_MANAGER);
 					ev.addParameter(CnSPartitionManager.PARTITION, p);
