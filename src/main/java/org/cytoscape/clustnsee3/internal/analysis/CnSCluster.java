@@ -15,6 +15,7 @@ package org.cytoscape.clustnsee3.internal.analysis;
 
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Vector;
 
@@ -29,6 +30,7 @@ import org.cytoscape.model.CyNode;
 import org.cytoscape.model.subnetwork.CySubNetwork;
 
 /**
+ * @param <T>
  * 
  */
 public class CnSCluster implements Comparable<CnSCluster> {
@@ -46,12 +48,17 @@ public class CnSCluster implements Comparable<CnSCluster> {
 	
 	private ArrayList<CnSClusterAnnotation> annotations;
 	
+	private HashMap<String, Object> attributes;
+	private HashMap<String, Class> attributeTypes;
+	
 	public CnSCluster() {
 		super();
 		alNodes = null;
 		alEdges = null;
 		extEdges = null;
 		annotations = new ArrayList<CnSClusterAnnotation>();
+		attributes = new HashMap<String, Object>();
+		attributeTypes = new HashMap<String, Class>();
 	}
 	
 	public CySubNetwork getNetwork() {
@@ -208,5 +215,12 @@ public class CnSCluster implements Comparable<CnSCluster> {
 	}
 	public ArrayList<CnSClusterAnnotation> getAnnotations() {
 		return annotations;
+	}
+	public void setAttribute(String name, Object value, Class type) {
+		attributes.put(name, value);
+		attributeTypes.put(name, type);
+	}
+	public HashMap<String, Object> getAttributes() {
+		return attributes;
 	}
 }

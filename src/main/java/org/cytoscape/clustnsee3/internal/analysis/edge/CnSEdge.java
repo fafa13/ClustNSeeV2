@@ -13,6 +13,8 @@
 
 package org.cytoscape.clustnsee3.internal.analysis.edge;
 
+import java.util.HashMap;
+
 import org.cytoscape.model.CyEdge;
 
 /**
@@ -20,12 +22,19 @@ import org.cytoscape.model.CyEdge;
  */
 public class CnSEdge {
 	private CyEdge cyEdge;
+	private HashMap<String, Object> attributes;
+	private HashMap<String, Class> attributeTypes;
 	
-	public CnSEdge(CyEdge cyEdge) {
+	public CnSEdge() {
 		super();
-		this.cyEdge = cyEdge;
+		//this.cyEdge = cyEdge;
+		attributes = new HashMap<String, Object>();
+		attributeTypes = new HashMap<String, Class>();
 	}
 	
+	public void setCyEdge(CyEdge ce) {
+		cyEdge = ce;
+	}
 	public long getSUID() {
 		return cyEdge.getSUID();
 	}
@@ -41,5 +50,12 @@ public class CnSEdge {
 		//ret = e.getCyEdge().getSource().getSUID() == cyEdge.getSource().getSUID() && e.getCyEdge().getTarget().getSUID() == cyEdge.getTarget().getSUID();
 		//ret = ret || (e.getCyEdge().getSource().getSUID() == cyEdge.getTarget().getSUID() && e.getCyEdge().getTarget().getSUID() == cyEdge.getSource().getSUID());
 		return ret;
+	}
+	public void setAttribute(String name, Object value, Class type) {
+		attributes.put(name, value);
+		attributeTypes.put(name, type);
+	}
+	public HashMap<String, Object> getAttributes() {
+		return attributes;
 	}
 }

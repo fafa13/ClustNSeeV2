@@ -24,4 +24,7 @@ public class CnSPartitionViewState extends CnSViewState {
 	public void updateNodeContextMenu() {
 		
 	}
+	public String getstate() {
+		return "partition";
+	}
 }

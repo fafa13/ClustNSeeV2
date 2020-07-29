@@ -13,6 +13,7 @@
 
 package org.cytoscape.clustnsee3.internal.analysis;
 
+import java.util.HashMap;
 import java.util.Vector;
 
 import org.cytoscape.clustnsee3.internal.analysis.edge.CnSEdge;
@@ -23,7 +24,7 @@ public class CnSClusterLink {
 	private CnSCluster source, target;
 	private Vector<CnSEdge> edges;
 	private Vector<CnSNode> nodes;
-	private CyEdge interactionEdge, multiclassEdge;
+	private CnSEdge interactionEdge, multiclassEdge;
 	
 	public CnSClusterLink(CnSCluster source, CnSCluster target) {
 		super();
@@ -61,15 +62,25 @@ public class CnSClusterLink {
 		return (e.getSource() == source && e.getTarget() == target) || (e.getSource() == target && e.getTarget() == source);
 	}
 	public void setInteractionEdge(CyEdge ce) {
-		interactionEdge = ce;
+		interactionEdge = new CnSEdge();
+		interactionEdge.setCyEdge(ce);
 	}
-	public CyEdge getInteractionEdge() {
+	public CnSEdge getInteractionEdge() {
 		return interactionEdge;
 	}
 	public void setMulticlassEdge(CyEdge ce) {
-		multiclassEdge = ce;
+		multiclassEdge = new CnSEdge();
+		multiclassEdge.setCyEdge(ce);
 	}
-	public CyEdge getMulticlassEdge() {
+	public CnSEdge getMulticlassEdge() {
 		return multiclassEdge;
+	}
+	public HashMap<String, Object> getInteractionAttributes() {
+		if (interactionEdge != null) return interactionEdge.getAttributes();
+		return null;
+	}
+	public HashMap<String, Object> getMulticlassAttributes() {
+		if (multiclassEdge != null) return multiclassEdge.getAttributes();
+		return null;
 	}
 }

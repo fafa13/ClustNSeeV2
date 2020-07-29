@@ -59,13 +59,14 @@ public class CnSShowClusterlinksMenuFactory implements CyNodeViewContextMenuFact
 				CnSEvent ev = new CnSEvent(CnSViewManager.GET_SELECTED_VIEW, CnSEventManager.VIEW_MANAGER);
 				CnSView view = (CnSView)CnSEventManager.handleMessage(ev);
 				
-				ev = new CnSEvent(CnSViewManager.GET_NETWORK, CnSEventManager.VIEW_MANAGER);
-				ev.addParameter(CnSViewManager.VIEW, view);
-				CnSNetwork network = (CnSNetwork)CnSEventManager.handleMessage(ev);
-				
 				ev = new CnSEvent(CnSPartitionManager.GET_PARTITION, CnSEventManager.PARTITION_MANAGER);
-				ev.addParameter(CnSPartitionManager.NETWORK, network);
+				ev.addParameter(CnSPartitionManager.VIEW, view);
 				CnSPartition partition = (CnSPartition)CnSEventManager.handleMessage(ev);
+				if (partition == null) {
+					ev = new CnSEvent(CnSViewManager.GET_VIEW_PARTITION, CnSEventManager.VIEW_MANAGER);
+					ev.addParameter(CnSViewManager.VIEW, view);
+					partition = (CnSPartition)CnSEventManager.handleMessage(ev);
+				}
 				CnSNode node = partition.getClusterNode(nodeView.getModel().getSUID());
 				
 				CnSCluster cluster = null;

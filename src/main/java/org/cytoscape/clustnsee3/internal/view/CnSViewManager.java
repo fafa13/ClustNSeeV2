@@ -13,7 +13,6 @@
 
 package org.cytoscape.clustnsee3.internal.view;
 
-import java.awt.Color;
 import java.awt.geom.Point2D;
 import java.util.Collection;
 import java.util.HashMap;
@@ -26,12 +25,12 @@ import org.cytoscape.application.events.SetSelectedNetworkViewsListener;
 import org.cytoscape.clustnsee3.internal.CyActivator;
 import org.cytoscape.clustnsee3.internal.analysis.CnSCluster;
 import org.cytoscape.clustnsee3.internal.analysis.CnSClusterLink;
-import org.cytoscape.clustnsee3.internal.analysis.edge.CnSEdge;
 import org.cytoscape.clustnsee3.internal.analysis.node.CnSNode;
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventListener;
 import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
 import org.cytoscape.clustnsee3.internal.gui.info.CnSInfoPanel;
+import org.cytoscape.clustnsee3.internal.gui.menu.action.CnSExpandClusterNodeAction;
 import org.cytoscape.clustnsee3.internal.gui.results.CnSResultsPanel;
 import org.cytoscape.clustnsee3.internal.network.CnSNetwork;
 import org.cytoscape.clustnsee3.internal.network.CnSNetworkManager;
@@ -40,7 +39,6 @@ import org.cytoscape.clustnsee3.internal.partition.CnSPartitionManager;
 import org.cytoscape.clustnsee3.internal.view.state.CnSUserViewState;
 import org.cytoscape.clustnsee3.internal.view.state.CnSViewState;
 import org.cytoscape.event.AbstractCyEvent;
-import org.cytoscape.event.CyEventHelper;
 import org.cytoscape.model.CyEdge;
 import org.cytoscape.model.CyNetwork;
 import org.cytoscape.model.CyNode;
@@ -211,14 +209,15 @@ UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, SelectedNodesAndEd
 					
 			case SELECT_CLUSTER :
 				cluster = (CnSCluster)event.getParameter(CLUSTER);
-				for (CnSView v : views)
-					if (v != null)
-						if (v.getView().getNodeView(cluster.getCyNode()) != null) {
-							Collection<CyRow> matchingRows = view2networkMap.get(v).getNetwork().getTable(CyNode.class, CyNetwork.LOCAL_ATTRS).getMatchingRows("selected", true);
-							if (matchingRows.size() > 0)
-								for (CyRow row : matchingRows) row.set("selected", false);
-							view2networkMap.get(v).getNetwork().getRow(cluster.getCyNode()).set("selected", true);
-						}
+				if (cluster.getCyNode() != null)
+					for (CnSView v : views)
+						if (v != null)
+							if (v.getView().getNodeView(cluster.getCyNode()) != null) {
+								Collection<CyRow> matchingRows = view2networkMap.get(v).getNetwork().getTable(CyNode.class, CyNetwork.LOCAL_ATTRS).getMatchingRows("selected", true);
+								if (matchingRows.size() > 0)
+									for (CyRow row : matchingRows) row.set("selected", false);
+								view2networkMap.get(v).getNetwork().getRow(cluster.getCyNode()).set("selected", true);
+							}
 				break;
 				
 			case GET_NETWORK :
@@ -288,7 +287,8 @@ UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, SelectedNodesAndEd
 				
 			case EXPAND_CLUSTER :
 				Long suid = (Long)event.getParameter(SUID);
-				expandCluster(suid);
+				CnSExpandClusterNodeAction action = new CnSExpandClusterNodeAction();
+				action.doAction(suid);
 				break;
 				
 			case GET_CLUSTER_FROM_CY_NODE:
@@ -406,131 +406,6 @@ UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, SelectedNodesAndEd
 			selectedView = null;
 	}
 	
-	private void expandCluster(Long suid) {
-		boolean expanded = false;
-		CyNode n2;
-		HashMap<CyNode, CyEdge> node2edgeMap = new HashMap<CyNode, CyEdge>();
-		CnSNetwork network = view2networkMap.get(selectedView);
-		
-		CnSEvent ev = new CnSEvent(CnSPartitionManager.GET_PARTITION, CnSEventManager.PARTITION_MANAGER);
-		ev.addParameter(CnSPartitionManager.NETWORK, network);
-		CnSPartition partition = (CnSPartition)CnSEventManager.handleMessage(ev);
-		
-		if (partition == null) partition = view2partitionMap.get(selectedView);
-		
-		CnSNode node = partition.getClusterNode(suid);
-		
-		CnSCluster cluster = null, linkedCluster;
-		for (CnSCluster c : partition.getClusters()) {
-			if (c.getCyNode() == node.getCyNode()) {
-				cluster = c;
-				break;
-			}
-		}
-		
-		if (cluster != null) {
-			CnSView clusterView = getView(null, null, cluster);
-			
-			double x0, y0, x, y, x_min = 1000000, y_min = 1000000, x_max = 0, y_max = 0;
-			
-			x0 = selectedView.getView().getNodeView(cluster.getCyNode()).getVisualProperty(BasicVisualLexicon.NODE_X_LOCATION);
-			y0 = selectedView.getView().getNodeView(cluster.getCyNode()).getVisualProperty(BasicVisualLexicon.NODE_Y_LOCATION);
-			
-			for (CnSNode cnsnode : cluster.getNodes()) {
-				x = clusterView.getView().getNodeView(cnsnode.getCyNode()).getVisualProperty(BasicVisualLexicon.NODE_X_LOCATION);
-				y = clusterView.getView().getNodeView(cnsnode.getCyNode()).getVisualProperty(BasicVisualLexicon.NODE_Y_LOCATION);
-				if (x_min > x) x_min = x;
-				if (y_min > y) y_min = y;
-				if (x_max < x) x_max = x;
-				if (y_max < y) y_max = y;
-			}
-			double x_size = x_max - x_min + 1;
-			double y_size = y_max - y_min + 1;
-			double ratio = (Math.min(cluster.getNbNodes(), 100) * (50 - 4750 / 99) + 4750 / 99) / Math.max(x_size, y_size);
-			
-			selectedView.setModifCluster(true);
-			
-			ev = new CnSEvent(CyActivator.GET_CY_EVENT_HELPER, CnSEventManager.CY_ACTIVATOR);
-			CyEventHelper eh = (CyEventHelper)CnSEventManager.handleMessage(ev);
-			for (CnSNode cnsnode : cluster.getNodes()) {
-				if (!selectedView.getView().getModel().containsNode(cnsnode.getCyNode())) {
-					network.getNetwork().addNode(cnsnode.getCyNode());
-					selectedView.getView().updateView();
-					View<CyNode> nodeView = selectedView.getView().getNodeView(cnsnode.getCyNode());
-					x = (x0 - ratio * (x_max + x_min) / 2) + ratio * clusterView.getView().getNodeView(cnsnode.getCyNode()).getVisualProperty(BasicVisualLexicon.NODE_X_LOCATION);
-					y = (y0 - ratio * (y_max + y_min) / 2) + ratio * clusterView.getView().getNodeView(cnsnode.getCyNode()).getVisualProperty(BasicVisualLexicon.NODE_Y_LOCATION);
-					nodeView.setVisualProperty(BasicVisualLexicon.NODE_X_LOCATION, x);
-					nodeView.setVisualProperty(BasicVisualLexicon.NODE_Y_LOCATION, y);
-					nodeView.setVisualProperty(BasicVisualLexicon.NODE_WIDTH, 10.0);
-					nodeView.setVisualProperty(BasicVisualLexicon.NODE_HEIGHT, 10.0);
-				}
-			}
-			eh.flushPayloadEvents();
-			for (CnSEdge cnsedge : cluster.getEdges())
-				network.getNetwork().addEdge(cnsedge.getCyEdge());
-			eh.flushPayloadEvents();
-			network.getNetwork().getRow(cluster.getCyNode()).set("selected", false);
-			for (CnSNode cnsnode : cluster.getNodes())
-				network.getNetwork().getRow(cnsnode.getCyNode()).set("selected", true);
-			eh.flushPayloadEvents();
-			
-			selectedView.setLocation(cluster, x0, y0);
-			
-			Vector<CyNode> toRemove = new Vector<CyNode>();
-			toRemove.addElement(node.getCyNode());
-			network.getNetwork().removeNodes(toRemove);
-			eh.flushPayloadEvents();
-			
-			for (CnSClusterLink cl : partition.getClusterLinks()) {
-				linkedCluster = null;
-				if (cl.getSource() == cluster)
-					linkedCluster = cl.getTarget();	
-				else if (cl.getTarget() == cluster)
-					linkedCluster = cl.getSource();
-				if (linkedCluster != null && selectedView.getClusters().contains(linkedCluster)) {
-					expanded = selectedView.isExpanded(linkedCluster);
-					node2edgeMap.clear();
-					
-					for (CnSEdge ce : cl.getEdges())
-						if (expanded)
-							network.getNetwork().addEdge(ce.getCyEdge());
-						else {
-							n2 = null;
-							for (CnSNode n : cluster.getNodes())
-								if ((n.getCyNode() == ce.getCyEdge().getSource()) || (n.getCyNode() == ce.getCyEdge().getTarget())) {
-									n2 = n.getCyNode();
-									break;
-								}
-							if (node2edgeMap.get(n2) == null) {
-								node2edgeMap.put(n2, network.getNetwork().addEdge(linkedCluster.getCyNode(), n2, false));
-								eh.flushPayloadEvents();
-							}
-							else {
-								double d = selectedView.getView().getEdgeView(node2edgeMap.get(n2)).getVisualProperty(BasicVisualLexicon.EDGE_WIDTH);
-								selectedView.getView().getEdgeView(node2edgeMap.get(n2)).setVisualProperty(BasicVisualLexicon.EDGE_WIDTH, d < 10.0 ? d + 1.0 : d);
-								eh.flushPayloadEvents();
-							}
-						}
-					for (CnSNode n : cl.getNodes()) {
-						if (!expanded) {
-							if (!network.getNetwork().containsEdge(linkedCluster.getCyNode(), n.getCyNode()) && 
-									!network.getNetwork().containsEdge(n.getCyNode(), linkedCluster.getCyNode())) {
-								CyEdge cyEdge = network.getNetwork().addEdge(linkedCluster.getCyNode(), n.getCyNode(), false);
-								eh.flushPayloadEvents();
-								selectedView.getView().getEdgeView(cyEdge).setVisualProperty(BasicVisualLexicon.EDGE_STROKE_UNSELECTED_PAINT, Color.green);
-								eh.flushPayloadEvents();
-							}
-						}
-					}
-				}
-			}
-			
-			eh.flushPayloadEvents();
-			
-			selectedView.setExpanded(cluster, true);
-			selectedView.setModifCluster(false);
-		}
-	}
 	private CnSView getView(Object reference, CnSNetwork network, CnSCluster cluster) {
 		CnSView ret = null;
 		
@@ -643,7 +518,8 @@ UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, SelectedNodesAndEd
 					CnSEvent ev = new CnSEvent(CnSPartitionManager.GET_CLUSTER_LINK, CnSEventManager.PARTITION_MANAGER);
 					ev.addParameter(CnSPartitionManager.CY_EDGE, edge);
 					CnSClusterLink clusterLink = (CnSClusterLink)CnSEventManager.handleMessage(ev);
-								
+					System.err.println("clusterlink = " + clusterLink);
+					
 					ev = new CnSEvent(CnSInfoPanel.INIT, CnSEventManager.INFO_PANEL);
 					ev.addParameter(CnSInfoPanel.EDGE, edge);
 					if (clusterLink != null) ev.addParameter(CnSInfoPanel.CLUSTER_LINK, clusterLink);

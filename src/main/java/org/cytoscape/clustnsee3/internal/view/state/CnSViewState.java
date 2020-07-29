@@ -59,4 +59,7 @@ public abstract class CnSViewState {
 	public void removeCluster(CnSCluster c) {
 		clusters.removeElement(c);
 	}
+	public String getState() {
+		return null;
+	}
 }

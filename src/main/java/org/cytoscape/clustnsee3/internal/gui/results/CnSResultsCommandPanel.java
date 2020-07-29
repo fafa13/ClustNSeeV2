@@ -53,7 +53,6 @@ import org.cytoscape.model.CyEdge;
 import org.cytoscape.model.CyNetwork;
 import org.cytoscape.model.CyNetworkManager;
 import org.cytoscape.model.CyNode;
-import org.cytoscape.model.CyRow;
 import org.cytoscape.model.CyTable;
 import org.cytoscape.model.subnetwork.CyRootNetwork;
 import org.cytoscape.model.subnetwork.CyRootNetworkManager;
@@ -66,7 +65,6 @@ import org.cytoscape.view.model.CyNetworkViewFactory;
 import org.cytoscape.view.model.CyNetworkViewManager;
 import org.cytoscape.view.model.View;
 import org.cytoscape.view.presentation.property.BasicVisualLexicon;
-import org.cytoscape.view.presentation.property.NodeShapeVisualProperty;
 import org.cytoscape.work.TaskIterator;
 import org.cytoscape.work.TaskManager;
 
@@ -120,8 +118,10 @@ public class CnSResultsCommandPanel extends CnSPanel {
 				CnSEvent ev = new CnSEvent(CnSResultsPanel.GET_SELECTED_CLUSTER, CnSEventManager.RESULTS_PANEL);
 		        CnSCluster cluster = (CnSCluster)CnSEventManager.handleMessage(ev);
 		        if (cluster != null) {
+		        	Long suid = makeClusterView(cluster);
+		        	
 		        	ev = new CnSEvent(CnSViewManager.EXPAND_CLUSTER, CnSEventManager.VIEW_MANAGER);
-		        	ev.addParameter(CnSViewManager.SUID, makeClusterView(cluster));
+		        	ev.addParameter(CnSViewManager.SUID, suid);
 		        	CnSEventManager.handleMessage(ev);
 		        }
 	        }
@@ -131,7 +131,19 @@ public class CnSResultsCommandPanel extends CnSPanel {
 			public void actionPerformed(ActionEvent arg0) {
 				CnSEvent ev = new CnSEvent(CnSResultsPanel.GET_SELECTED_CLUSTER, CnSEventManager.RESULTS_PANEL);
 		        CnSCluster cluster = (CnSCluster)CnSEventManager.handleMessage(ev);
-				if (cluster != null) makeClusterView(cluster);
+				if (cluster != null) {
+					makeClusterView(cluster);
+					
+					// create CnS attributes in the partition network table
+					ev = new CnSEvent(CnSViewManager.GET_SELECTED_VIEW, CnSEventManager.VIEW_MANAGER);
+					CnSView sView = (CnSView)CnSEventManager.handleMessage(ev);
+					ev = new CnSEvent(CnSViewManager.GET_NETWORK, CnSEventManager.VIEW_MANAGER);
+					ev.addParameter(CnSViewManager.VIEW, sView);
+					CnSNetwork sNetwork = (CnSNetwork)CnSEventManager.handleMessage(ev);
+			        CyTable networkTable = sNetwork.getNetwork().getDefaultNetworkTable();
+	                if (networkTable.getColumn("CnS:viewState") == null) networkTable.createColumn("CnS:viewState", String.class, true);
+	                sNetwork.getNetwork().getRow(sNetwork.getNetwork()).set("CnS:viewState", "user");
+	            }
 			}
 		});
 		partitionViewButton.addActionListener(new ActionListener() {
@@ -173,10 +185,11 @@ public class CnSResultsCommandPanel extends CnSPanel {
 					// create a new view for my network
 					CyNetworkView partCyView = cnvf.createNetworkView(partNet);
 					networkViewManager.addNetworkView(partCyView);
-					
+
 					// register the partition network
 					partitionView = new CnSView(partCyView, new CnSPartitionViewState(partition));
 					CnSNetwork partNetwork = new CnSNetwork(partNet);
+					
 	                ev = new CnSEvent(CnSNetworkManager.ADD_NETWORK, CnSEventManager.NETWORK_MANAGER);
 	                ev.addParameter(CnSNetworkManager.NETWORK, partNetwork);
 	                CnSEventManager.handleMessage(ev);
@@ -184,13 +197,8 @@ public class CnSResultsCommandPanel extends CnSPanel {
 	                // create CnS attributes in the partition network table
 	                CyTable networkTable = partNet.getDefaultNetworkTable();
 	                if (networkTable.getColumn("CnS:viewState") == null) networkTable.createColumn("CnS:viewState", String.class, true);
-	                partNet.getRow(partNet).set("CnS:viewState", "partition");
-					
-	                // create CnS attributes in the partition subnetwork node table
-	                CyTable nodeTable = partNet.getDefaultNodeTable();
-	                if (nodeTable.getColumn("CnS:isCluster") == null) nodeTable.createColumn("CnS:isCluster", Boolean.class, true);
-					if (nodeTable.getColumn("CnS:size") == null) nodeTable.createColumn("CnS:size", Integer.class, true);
-					
+	                partNet.getRow(partNet).set("CnS:viewState", partitionView.getStateValue());
+						
 					// Fill partition network with cluster nodes
 					for (CnSCluster cluster : partition.getClusters()) {
 						ev = new CnSEvent(CnSViewManager.GET_VIEW, CnSEventManager.VIEW_MANAGER);
@@ -224,8 +232,8 @@ public class CnSResultsCommandPanel extends CnSPanel {
 						partNet.getRow(clNode).set(CyNetwork.NAME, cluster.getName());
 						
 						// fill CnS attributes
-						partNet.getRow(clNode).set("CnS:isCluster", true);
-						partNet.getRow(clNode).set("CnS:size", cluster.getNbNodes());
+						for (String key : partNetwork.getNodeColumns().keySet())
+							partNet.getRow(clNode).set(key, cluster.getAttributes().get(key));
 						
 						// make the view up to date
 						partitionView.getView().updateView();
@@ -234,47 +242,48 @@ public class CnSResultsCommandPanel extends CnSPanel {
 						clNode.setNetworkPointer(clNet);
 					}
 					
-					// create CnS attributes in the partition subnetwork edge table
-	                CyTable edgeTable = partNet.getDefaultEdgeTable();
-	                if (edgeTable.getColumn("CnS:isInteraction") == null) edgeTable.createColumn("CnS:isInteraction", Boolean.class, true);
-					if (edgeTable.getColumn("CnS:size") == null) edgeTable.createColumn("CnS:size", Integer.class, true);
 					
 					// Add links between cluster nodes
 					for (CnSClusterLink clusterLink : partition.getClusterLinks()) {
 						CyEdge ce = null;
-						if ((clusterLink.getInteractionEdge() == null) && (clusterLink.getEdges().size() > 0)) {
-							ce = partNet.addEdge(clusterLink.getSource().getCyNode(), clusterLink.getTarget().getCyNode(), false);
-							clusterLink.setInteractionEdge(ce);
-							partition.addClusterEdge(ce);
-							partNet.addEdge(clusterLink.getInteractionEdge());
-							partNet.getRow(ce).set("CnS:isInteraction", true);
-							partNet.getRow(ce).set("CnS:size", clusterLink.getEdges().size());
-							partNet.getRow(ce).set("name", clusterLink.getSource().getName() + " - " + clusterLink.getTarget().getName());
-							//partNet.getRow(ce).set("shared name", "Cluster #" + clusterLink.getSource().getName() + " - Cluster#" + clusterLink.getTarget().getName());
-							partNet.getRow(ce).set("canonicalName", partition.getName() + ":" + clusterLink.getSource().getName() + " - " + clusterLink.getTarget().getName());
-							partNet.getRow(ce).set("interaction", "pp");
+						if (clusterLink.getEdges().size() > 0) {
+							if (clusterLink.getInteractionEdge().getCyEdge() == null) {
+								ce = partNet.addEdge(clusterLink.getSource().getCyNode(), clusterLink.getTarget().getCyNode(), false);
+								clusterLink.getInteractionEdge().setCyEdge(ce);;
+								partition.addClusterEdge(ce);
 							
-						}
-						else if (clusterLink.getEdges().size() > 0) {
-							ce = clusterLink.getInteractionEdge();
-							partNet.addEdge(clusterLink.getInteractionEdge());
-						}
-						if ((clusterLink.getMulticlassEdge() == null) && (clusterLink.getNodes().size() > 0)) {
-							ce = partNet.addEdge(clusterLink.getSource().getCyNode(), clusterLink.getTarget().getCyNode(), false);
-							clusterLink.setMulticlassEdge(ce);
-							partition.addClusterEdge(ce);
-							partNet.addEdge(clusterLink.getMulticlassEdge());
-							partNet.getRow(ce).set("CnS:isInteraction", false);
-							partNet.getRow(ce).set("CnS:size", clusterLink.getNodes().size());
-							partNet.getRow(ce).set("name", clusterLink.getSource().getName() + " ~ " + clusterLink.getTarget().getName());
-							//partNet.getRow(ce).set("shared name", "Cluster #" + clusterLink.getSource().getName() + " ~ Cluster#" + clusterLink.getTarget().getName());
-							partNet.getRow(ce).set("canonicalName", partition.getName() + ":" + clusterLink.getSource().getName() + " ~ " + clusterLink.getTarget().getName());
-							partNet.getRow(ce).set("interaction", "multiclass");
+								for (String key : partNetwork.getEdgeColumns().keySet())
+									partNet.getRow(ce).set(key, clusterLink.getInteractionEdge().getAttributes().get(key));
 							
+								partNet.getRow(ce).set("name", clusterLink.getSource().getName() + " - " + clusterLink.getTarget().getName());
+								partNet.getRow(ce).set("canonicalName", partition.getName() + ":" + clusterLink.getSource().getName() + " - " + clusterLink.getTarget().getName());
+								partNet.getRow(ce).set("interaction", "pp");
+							}
+							else {
+								ce = clusterLink.getInteractionEdge().getCyEdge();
+								partNet.addEdge(ce);
+								for (String key : partNetwork.getEdgeColumns().keySet())
+									partNet.getRow(ce).set(key, clusterLink.getInteractionEdge().getAttributes().get(key));
+							}
 						}
-						else if (clusterLink.getNodes().size() > 0) {
-							ce = clusterLink.getMulticlassEdge();
-							partNet.addEdge(clusterLink.getMulticlassEdge());
+						if (clusterLink.getNodes().size() > 0) {
+							if (clusterLink.getMulticlassEdge().getCyEdge() == null) {
+								ce = partNet.addEdge(clusterLink.getSource().getCyNode(), clusterLink.getTarget().getCyNode(), false);
+								clusterLink.getMulticlassEdge().setCyEdge(ce);
+								partition.addClusterEdge(ce);
+								for (String key : partNetwork.getEdgeColumns().keySet())
+									partNet.getRow(ce).set(key, clusterLink.getMulticlassEdge().getAttributes().get(key));
+							
+								partNet.getRow(ce).set("name", clusterLink.getSource().getName() + " ~ " + clusterLink.getTarget().getName());
+								partNet.getRow(ce).set("canonicalName", partition.getName() + ":" + clusterLink.getSource().getName() + " ~ " + clusterLink.getTarget().getName());
+								partNet.getRow(ce).set("interaction", "multiclass");	
+							}
+							else {
+								ce = clusterLink.getMulticlassEdge().getCyEdge();
+								partNet.addEdge(ce);
+								for (String key : partNetwork.getEdgeColumns().keySet())
+									partNet.getRow(ce).set(key, clusterLink.getMulticlassEdge().getAttributes().get(key));
+							}
 						}
 					}
 					
@@ -282,27 +291,9 @@ public class CnSResultsCommandPanel extends CnSPanel {
 					partitionView.getView().updateView();
 					
 					// set visual properties of nodes and edges
-					for (CnSClusterLink clusterLink : partition.getClusterLinks()) {
-						CyEdge ce = clusterLink.getInteractionEdge();
-						if (ce != null) {
-							//partitionView.getView().getEdgeView(ce).setVisualProperty(BasicVisualLexicon.EDGE_WIDTH, Double.valueOf(Math.min(clusterLink.getEdges().size(), 16)));
-							//partitionView.getView().getEdgeView(ce).setVisualProperty(BasicVisualLexicon.EDGE_STROKE_UNSELECTED_PAINT, Color.blue);
-						}
-						ce = clusterLink.getMulticlassEdge();
-						if (ce != null) {
-							//partitionView.getView().getEdgeView(ce).setVisualProperty(BasicVisualLexicon.EDGE_WIDTH, Double.valueOf(Math.min(clusterLink.getNodes().size(), 16)));
-							//partitionView.getView().getEdgeView(ce).setVisualProperty(BasicVisualLexicon.EDGE_STROKE_UNSELECTED_PAINT, Color.green);
-						}
-					}
 					for (CyNode no : partNet.getNodeList()) {
-						//partitionView.getView().getNodeView(no).setVisualProperty(BasicVisualLexicon.NODE_SHAPE, NodeShapeVisualProperty.ROUND_RECTANGLE);
-						//partitionView.getView().getNodeView(no).setVisualProperty(BasicVisualLexicon.NODE_FILL_COLOR, Color.PINK);
-						//partitionView.getView().getNodeView(no).setVisualProperty(BasicVisualLexicon.NODE_LABEL, partNet.getRow(no).get(CyNetwork.NAME, String.class));
 						partitionView.getView().getNodeView(no).setVisualProperty(BasicVisualLexicon.NODE_TOOLTIP, partNet.getRow(no).get(CyNetwork.NAME, String.class));
-						
 						partNet.getRow(no).set("canonicalName", inputNetwork.getRow(inputNetwork).get(CyNetwork.NAME, String.class) + ":" + partNet.getRow(no).get(CyNetwork.NAME, String.class));
-						//partNet.getRow(no).set("shared name", "Cluster #" + partNet.getRow(no).get(CyNetwork.NAME, String.class));
-						
 					}
 					// make the view up to date
 					partitionView.getView().updateView();
@@ -617,9 +608,11 @@ public class CnSResultsCommandPanel extends CnSPanel {
 		networkViewManager.addNetworkView(cyView);
 		
 		// set visual properties for the node
-		cyView.getNodeView(clNode).setVisualProperty(BasicVisualLexicon.NODE_SHAPE, NodeShapeVisualProperty.ROUND_RECTANGLE);
-		cyView.getNodeView(clNode).setVisualProperty(BasicVisualLexicon.NODE_FILL_COLOR, Color.PINK);
+		clNet.getRow(cluster.getCyNode()).set("CnS:isCluster", true);
+		clNet.getRow(cluster.getCyNode()).set("CnS:size", cluster.getNbNodes());
+		clNet.getRow(cluster.getCyNode()).set("canonicalName", partition.getName() + ":" + cluster.getName());
 		
+        
 		// register network
 		CnSNetwork partNetwork = new CnSNetwork(clNet);
 		ev = new CnSEvent(CnSNetworkManager.ADD_NETWORK, CnSEventManager.NETWORK_MANAGER);
@@ -648,6 +641,7 @@ public class CnSResultsCommandPanel extends CnSPanel {
 		ev.addParameter(CnSViewManager.VIEW, myView);
 		CnSEventManager.handleMessage(ev);
 		
+		myView.getView().updateView();
 		return clNode.getSUID();
 	}
 	
@@ -658,6 +652,7 @@ public class CnSResultsCommandPanel extends CnSPanel {
 		CnSEvent ev = new CnSEvent(CnSViewManager.GET_SELECTED_VIEW, CnSEventManager.VIEW_MANAGER);
 		CnSView currentView = (CnSView)CnSEventManager.handleMessage(ev);
 		
+		if (currentView != null)
 		if (!currentView.getClusters().contains(cluster)) {
 			// get the selected partition and his associated view if exists
 			ev = new CnSEvent(CnSResultsPanel.GET_SELECTED_PARTITION, CnSEventManager.RESULTS_PANEL);
@@ -703,9 +698,10 @@ public class CnSResultsCommandPanel extends CnSPanel {
 				currentView.getView().updateView();
 				
 				// set visual properties for the node
-				currentView.getView().getNodeView(clNode).setVisualProperty(BasicVisualLexicon.NODE_SHAPE, NodeShapeVisualProperty.ROUND_RECTANGLE);
-				currentView.getView().getNodeView(clNode).setVisualProperty(BasicVisualLexicon.NODE_FILL_COLOR, Color.PINK);
-			
+				clNet.getNetwork().getRow(cluster.getCyNode()).set("CnS:isCluster", true);
+				clNet.getNetwork().getRow(cluster.getCyNode()).set("CnS:size", cluster.getNbNodes());
+				clNet.getNetwork().getRow(cluster.getCyNode()).set("canonicalName", partition.getName() + ":" + cluster.getName());
+				
 				// make the needed links
 				CnSCluster partner;
 				for (CnSClusterLink cl : partition.getClusterLinks()) {
@@ -722,38 +718,52 @@ public class CnSResultsCommandPanel extends CnSPanel {
 							ev.addParameter(CnSViewManager.CLUSTER, partner);
 							ev.addParameter(CnSViewManager.VIEW, currentView);
 							b = (Boolean)CnSEventManager.handleMessage(ev);
-				
+							
 							if (!b.booleanValue()) {
-								if ((cl.getInteractionEdge() == null) && (cl.getEdges().size() > 0)) {
-									CyEdge ce = clNet.getNetwork().addEdge(cluster.getCyNode(), partner.getCyNode(), false);
-									cl.setInteractionEdge(ce);
-									currentView.getView().updateView();
-									if (ce != null) {
-										currentView.getView().getEdgeView(ce).setVisualProperty(BasicVisualLexicon.EDGE_WIDTH, Double.valueOf(Math.min(cl.getEdges().size(), 16)));
-										currentView.getView().getEdgeView(ce).setVisualProperty(BasicVisualLexicon.EDGE_STROKE_UNSELECTED_PAINT, Color.blue);
+								if (cl.getEdges().size() > 0) {
+									if (cl.getInteractionEdge().getCyEdge() == null) {
+										CyEdge ce = clNet.getNetwork().addEdge(cluster.getCyNode(), partner.getCyNode(), false);
+										cl.getInteractionEdge().setCyEdge(ce);;
+										partition.addClusterEdge(ce);
+										currentView.getView().updateView();
+										clNet.getNetwork().getRow(ce).set("name", cl.getSource().getName() + " - " + cl.getTarget().getName());
+										clNet.getNetwork().getRow(ce).set("canonicalName", partition.getName() + ":" + cl.getSource().getName() + " - " + cl.getTarget().getName());
+										clNet.getNetwork().getRow(ce).set("interaction", "pp");
+										for (String key : clNet.getEdgeColumns().keySet())
+											clNet.getNetwork().getRow(ce).set(key, cl.getInteractionEdge().getAttributes().get(key));
+									}
+									else {
+										clNet.getNetwork().addEdge(cl.getInteractionEdge().getCyEdge());
+										currentView.getView().updateView();
+										for (String key : clNet.getEdgeColumns().keySet())
+											clNet.getNetwork().getRow(cl.getInteractionEdge().getCyEdge()).set(key, cl.getInteractionEdge().getAttributes().get(key));
+										clNet.getNetwork().getRow(cl.getInteractionEdge().getCyEdge()).set("name", cl.getSource().getName() + " - " + cl.getTarget().getName());
+										clNet.getNetwork().getRow(cl.getInteractionEdge().getCyEdge()).set("canonicalName", partition.getName() + ":" + cl.getSource().getName() + " - " + cl.getTarget().getName());
+										clNet.getNetwork().getRow(cl.getInteractionEdge().getCyEdge()).set("interaction", "pp");
 									}
 								}
-								else if (cl.getEdges().size() > 0) {
-									clNet.getNetwork().addEdge(cl.getInteractionEdge());
-									currentView.getView().updateView();
-									currentView.getView().getEdgeView(cl.getInteractionEdge()).setVisualProperty(BasicVisualLexicon.EDGE_WIDTH, Double.valueOf(Math.min(cl.getEdges().size(), 16)));
-									currentView.getView().getEdgeView(cl.getInteractionEdge()).setVisualProperty(BasicVisualLexicon.EDGE_STROKE_UNSELECTED_PAINT, Color.blue);			
-								}
+								
 								currentView.getView().updateView();
-								if ((cl.getMulticlassEdge() == null) && (cl.getNodes().size() > 0)) {
-									CyEdge ce = clNet.getNetwork().addEdge(cluster.getCyNode(), partner.getCyNode(), false);
-									cl.setMulticlassEdge(ce);
-									currentView.getView().updateView();
-									if (ce != null) {
-										currentView.getView().getEdgeView(ce).setVisualProperty(BasicVisualLexicon.EDGE_WIDTH, Double.valueOf(Math.min(cl.getNodes().size(), 16)));
-										currentView.getView().getEdgeView(ce).setVisualProperty(BasicVisualLexicon.EDGE_STROKE_UNSELECTED_PAINT, Color.green);
+								if (cl.getNodes().size() > 0) {
+									if (cl.getMulticlassEdge().getCyEdge() == null) {
+										CyEdge ce = clNet.getNetwork().addEdge(cluster.getCyNode(), partner.getCyNode(), false);
+										cl.getMulticlassEdge().setCyEdge(ce);;
+										currentView.getView().updateView();
+										clNet.getNetwork().getRow(ce).set("name", cl.getSource().getName() + " ~ " + cl.getTarget().getName());
+										clNet.getNetwork().getRow(ce).set("canonicalName", partition.getName() + ":" + cl.getSource().getName() + " ~ " + cl.getTarget().getName());
+										clNet.getNetwork().getRow(ce).set("interaction", "multiclass");
+										for (String key : clNet.getEdgeColumns().keySet())
+											clNet.getNetwork().getRow(ce).set(key, cl.getMulticlassEdge().getAttributes().get(key));
 									}
-								}
-								else if (cl.getNodes().size() > 0) {
-									clNet.getNetwork().addEdge(cl.getMulticlassEdge());
-									currentView.getView().updateView();
-									currentView.getView().getEdgeView(cl.getMulticlassEdge()).setVisualProperty(BasicVisualLexicon.EDGE_WIDTH, Double.valueOf(Math.min(cl.getNodes().size(), 16)));
-									currentView.getView().getEdgeView(cl.getMulticlassEdge()).setVisualProperty(BasicVisualLexicon.EDGE_STROKE_UNSELECTED_PAINT, Color.green);		
+									else {
+										clNet.getNetwork().addEdge(cl.getMulticlassEdge().getCyEdge());
+										currentView.getView().updateView();
+										clNet.getNetwork().getRow(cl.getMulticlassEdge().getCyEdge()).set("name", cl.getSource().getName() + " ~ " + cl.getTarget().getName());
+										clNet.getNetwork().getRow(cl.getMulticlassEdge().getCyEdge()).set("canonicalName", partition.getName() + ":" + cl.getSource().getName() + " ~ " + cl.getTarget().getName());
+										clNet.getNetwork().getRow(cl.getMulticlassEdge().getCyEdge()).set("interaction", "multiclass");
+										for (String key : clNet.getEdgeColumns().keySet())
+											clNet.getNetwork().getRow(cl.getMulticlassEdge().getCyEdge()).set(key, cl.getMulticlassEdge().getAttributes().get(key));
+									}
 								}
 								currentView.getView().updateView();
 							}
@@ -768,17 +778,11 @@ public class CnSResultsCommandPanel extends CnSPanel {
 								for (CnSNode cnsn : cl.getNodes()) {
 									if (!clNet.getNetwork().containsEdge(cluster.getCyNode(), cnsn.getCyNode()) && 
 											!clNet.getNetwork().containsEdge(cnsn.getCyNode(), cluster.getCyNode())) {
-										CyEdge ce = clNet.getNetwork().addEdge(cluster.getCyNode(), cnsn.getCyNode(), false);
+										clNet.getNetwork().addEdge(cluster.getCyNode(), cnsn.getCyNode(), false);
 										currentView.getView().updateView();
-										currentView.getView().getEdgeView(ce).setVisualProperty(BasicVisualLexicon.EDGE_STROKE_UNSELECTED_PAINT, Color.green);
 									}
 								}
 								currentView.getView().updateView();
-								ev = new CnSEvent(CnSViewManager.SET_EXPANDED, CnSEventManager.VIEW_MANAGER);
-								ev.addParameter(CnSViewManager.CLUSTER, cluster);
-								ev.addParameter(CnSViewManager.VIEW, currentView);
-								ev.addParameter(CnSViewManager.EXPANDED, false);
-								CnSEventManager.handleMessage(ev);
 							}
 						}
 					}					
@@ -793,10 +797,6 @@ public class CnSResultsCommandPanel extends CnSPanel {
 			// Set nested network
 			clNode.setNetworkPointer(network.getNetwork());
 		
-			// set visual properties for the node
-			currentView.getView().getNodeView(clNode).setVisualProperty(BasicVisualLexicon.NODE_SHAPE, NodeShapeVisualProperty.ROUND_RECTANGLE);
-			currentView.getView().getNodeView(clNode).setVisualProperty(BasicVisualLexicon.NODE_FILL_COLOR, Color.PINK);
-        
 			// make the view up to date
 			currentView.getView().updateView();
 			

@@ -23,4 +23,7 @@ public class CnSUserViewState extends CnSViewState {
 	public boolean isUserView() {
 		return true;
 	}
+	public String getstate() {
+		return "user";
+	}
 }

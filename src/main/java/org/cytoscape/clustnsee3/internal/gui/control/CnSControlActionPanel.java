@@ -3,6 +3,8 @@ package org.cytoscape.clustnsee3.internal.gui.control;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.InputStream;
+import java.util.Set;
 
 import javax.swing.JOptionPane;
 
@@ -10,6 +12,7 @@ import org.cytoscape.clustnsee3.internal.gui.widget.CnSPanel;
 import org.cytoscape.clustnsee3.internal.view.CnSView;
 import org.cytoscape.clustnsee3.internal.view.CnSViewManager;
 import org.cytoscape.model.CyNetwork;
+import org.cytoscape.task.read.LoadVizmapFileTaskFactory;
 import org.cytoscape.task.write.ExportVizmapTaskFactory;
 import org.cytoscape.view.model.CyNetworkView;
 import org.cytoscape.view.presentation.property.BasicVisualLexicon;
@@ -97,7 +100,24 @@ public class CnSControlActionPanel extends CnSPanel {
 		closeButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				CnSEvent ev = new CnSEvent(CyActivator.GET_EXPORT_STYLE_FACTORY, CnSEventManager.CY_ACTIVATOR);
+				CnSEvent ev = new CnSEvent(CyActivator.GET_LOAD_VIZMAP_FILE_TASK_FACTORY, CnSEventManager.CY_ACTIVATOR);
+				LoadVizmapFileTaskFactory lvtf = (LoadVizmapFileTaskFactory)CnSEventManager.handleMessage(ev);
+				InputStream is = getClass().getResourceAsStream("/cns.xml");
+				
+				System.err.println("input stream = " + is);
+				
+				Set<VisualStyle> vsSet = lvtf.loadStyles(is);
+				
+				VisualStyle vs = vsSet.iterator().next();
+				
+				// Apply the visual style to a NetwokView
+				ev = new CnSEvent(CnSViewManager.GET_SELECTED_VIEW, CnSEventManager.VIEW_MANAGER);
+				CyNetworkView v = ((CnSView)CnSEventManager.handleMessage(ev)).getView();
+				vs.apply(v);
+				v.updateView();
+				
+				/*
+				ev = new CnSEvent(CyActivator.GET_EXPORT_STYLE_FACTORY, CnSEventManager.CY_ACTIVATOR);
 				ExportVizmapTaskFactory evtf = (ExportVizmapTaskFactory)CnSEventManager.handleMessage(ev);
 				TaskIterator ti = evtf.createTaskIterator(new File("/home/fafa/Documents/cns.style"));
 				ev = new CnSEvent(CyActivator.GET_SYNCHRONOUS_TASK_MANAGER, CnSEventManager.CY_ACTIVATOR);
@@ -122,7 +142,7 @@ public class CnSControlActionPanel extends CnSPanel {
 				ev = new CnSEvent(CnSViewManager.GET_SELECTED_VIEW, CnSEventManager.VIEW_MANAGER);
 				CyNetworkView v = ((CnSView)CnSEventManager.handleMessage(ev)).getView();
 				vs.apply(v);
-				v.updateView();
+				v.updateView();*/
 			}
 		});
 	}

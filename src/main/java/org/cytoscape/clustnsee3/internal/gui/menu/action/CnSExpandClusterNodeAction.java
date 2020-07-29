@@ -13,7 +13,6 @@
 
 package org.cytoscape.clustnsee3.internal.gui.menu.action;
 
-import java.awt.Color;
 import java.awt.geom.Point2D;
 import java.util.HashMap;
 import java.util.List;
@@ -108,8 +107,8 @@ public class CnSExpandClusterNodeAction {
 					y = (y0 - ratio * (y_max + y_min) / 2) + ratio * clusterView.getView().getNodeView(cnsnode.getCyNode()).getVisualProperty(BasicVisualLexicon.NODE_Y_LOCATION);
 					nodeView.setVisualProperty(BasicVisualLexicon.NODE_X_LOCATION, x);
 					nodeView.setVisualProperty(BasicVisualLexicon.NODE_Y_LOCATION, y);
-					nodeView.setVisualProperty(BasicVisualLexicon.NODE_WIDTH, 10.0);
-					nodeView.setVisualProperty(BasicVisualLexicon.NODE_HEIGHT, 10.0);
+					//nodeView.setVisualProperty(BasicVisualLexicon.NODE_WIDTH, 10.0);
+					//nodeView.setVisualProperty(BasicVisualLexicon.NODE_HEIGHT, 10.0);
 				}
 			}
 			eh.flushPayloadEvents();
@@ -162,9 +161,9 @@ public class CnSExpandClusterNodeAction {
 							if (!network.getNetwork().containsEdge(linkedCluster.getCyNode(), clusterNode) &&
 									!network.getNetwork().containsEdge(clusterNode, linkedCluster.getCyNode())) {
 								edge = network.getNetwork().addEdge(linkedCluster.getCyNode(), clusterNode, false);
-								view.getView().updateView();
+								//view.getView().updateView();
 								edgeWidth.putIfAbsent(edge, 1.0);
-								eh.flushPayloadEvents();
+								//eh.flushPayloadEvents();
 							}
 							else {
 								lce = network.getNetwork().getConnectingEdgeList(linkedCluster.getCyNode(), clusterNode, CyEdge.Type.ANY);
@@ -177,11 +176,14 @@ public class CnSExpandClusterNodeAction {
 									}
 								if (edgeWidth.get(edge) != null)
 									edgeWidth.put(edge, edgeWidth.get(edge) + 1);
-								else
+								else {
 									edgeWidth.putIfAbsent(edge, view.getView().getEdgeView(edge).getVisualProperty(BasicVisualLexicon.EDGE_WIDTH) + 1.0);
+								}
 							}
-							for (CyEdge e : edgeWidth.keySet())
-								view.getView().getEdgeView(e).setVisualProperty(BasicVisualLexicon.EDGE_WIDTH, Math.min(10.0, Double.valueOf(edgeWidth.get(e))));
+							for (CyEdge e : edgeWidth.keySet()) {
+								//view.getView().getEdgeView(e).setVisualProperty(BasicVisualLexicon.EDGE_WIDTH, Math.min(10.0, Double.valueOf(edgeWidth.get(e))));
+								network.getNetwork().getRow(e).set("CnS:size", (int)edgeWidth.get(e).doubleValue());
+							}
 						}
 					for (CnSNode n : cl.getNodes()) {
 						if (!expanded) {
@@ -189,7 +191,8 @@ public class CnSExpandClusterNodeAction {
 									!network.getNetwork().containsEdge(n.getCyNode(), linkedCluster.getCyNode())) {
 								CyEdge cyEdge = network.getNetwork().addEdge(linkedCluster.getCyNode(), n.getCyNode(), false);
 								eh.flushPayloadEvents();
-								view.getView().getEdgeView(cyEdge).setVisualProperty(BasicVisualLexicon.EDGE_STROKE_UNSELECTED_PAINT, Color.green);
+								//view.getView().getEdgeView(cyEdge).setVisualProperty(BasicVisualLexicon.EDGE_STROKE_UNSELECTED_PAINT, Color.green);
+								network.getNetwork().getRow(cyEdge).set("CnS:isInteraction", false);
 								eh.flushPayloadEvents();
 							}
 						}

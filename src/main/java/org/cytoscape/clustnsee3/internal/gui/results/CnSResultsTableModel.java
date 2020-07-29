@@ -109,10 +109,11 @@ public class CnSResultsTableModel extends AbstractTableModel {
 	public int getClusterIndex(long nodeId) {
 		int ret = -1;
 		for (int i = 0; i < cluster.length; i++)
-			if (cluster[i].getCyNode().getSUID() == nodeId) {
-				ret = i;
-				break;
-			}
+			if (cluster[i].getCyNode() != null)
+				if (cluster[i].getCyNode().getSUID() == nodeId) {
+					ret = i;
+					break;
+				}
 		return ret;
 	}
 }

@@ -13,6 +13,7 @@ import org.cytoscape.model.CyNetworkFactory;
 import org.cytoscape.model.CyNetworkManager;
 import org.cytoscape.model.subnetwork.CyRootNetworkManager;
 import org.cytoscape.service.util.AbstractCyActivator;
+import org.cytoscape.task.read.LoadVizmapFileTaskFactory;
 import org.cytoscape.task.visualize.ApplyPreferredLayoutTaskFactory;
 import org.cytoscape.task.write.ExportVizmapTaskFactory;
 import org.cytoscape.view.layout.CyLayoutAlgorithmManager;
@@ -46,6 +47,7 @@ public class CyActivator extends AbstractCyActivator implements CnSEventListener
 	public static final int GET_CONTINUOUS_VISUAL_MAPPING_FUNCTION_FACTORY = 17; 
 	public static final int GET_DISCRETE_VISUAL_MAPPING_FUNCTION_FACTORY = 18;
 	public static final int GET_PASSTHROUGH_VISUAL_MAPPING_FUNCTION_FACTORY = 19;
+	public static final int GET_LOAD_VIZMAP_FILE_TASK_FACTORY = 20;
 	
 	private BundleContext bc = null;
 	
@@ -148,7 +150,11 @@ public class CyActivator extends AbstractCyActivator implements CnSEventListener
 				break;
 			case GET_PASSTHROUGH_VISUAL_MAPPING_FUNCTION_FACTORY :
 				ret = getService(bc,VisualMappingFunctionFactory.class, "(mapping.type=passthrough)");
-				break;		
+				break;
+			case GET_LOAD_VIZMAP_FILE_TASK_FACTORY :
+				ret = getService(bc,LoadVizmapFileTaskFactory.class);
+				break;
+			
 		}
 		return ret;
 	}

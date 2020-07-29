@@ -236,10 +236,16 @@ public class CnSPartitionManager implements CnSEventListener {
 				cyEdge = (CyEdge)event.getParameter(CY_EDGE);
 				for (CnSPartition part : partitions) {
 					for (CnSClusterLink cl : part.getClusterLinks()) {
-						if (cyEdge == cl.getInteractionEdge() || cyEdge == cl.getMulticlassEdge()) {
-							ret = cl;
-							break;
-						}
+						if (cl.getInteractionEdge() != null)
+							if (cyEdge == cl.getInteractionEdge().getCyEdge()) {
+								ret = cl;
+								break;
+							}
+						if (cl.getMulticlassEdge() != null)
+							if (cyEdge == cl.getMulticlassEdge().getCyEdge()) {
+								ret = cl;
+								break;
+							}
 					}
 				}
 				break;
@@ -333,7 +339,9 @@ public class CnSPartitionManager implements CnSEventListener {
                     	if (!alEdges.contains(cnsEdge)) alEdges.addElement(cnsEdge);
             		}
             		else if (cynodes_to_keep.contains(ce.getSource()) && cynodes_to_keep.contains(ce.getTarget())) {
-            			extEdges.addElement(new CnSEdge(ce));
+            			CnSEdge e = new CnSEdge();
+            			e.setCyEdge(ce);
+            			extEdges.addElement(e);
             		}
             	}
             }
@@ -354,9 +362,14 @@ public class CnSPartitionManager implements CnSEventListener {
             // Fill network with cluster nodes and relevant edges 
             for (CnSNode node : newCluster.getNodes()) myNet.addNode(node.getCyNode());
             for (CnSEdge edge : newCluster.getEdges()) myNet.addEdge(edge.getCyEdge());
-            	
+            
+            // Set cluster attributes
+            newCluster.setAttribute("CnS:isCluster", true, Boolean.class);
+			newCluster.setAttribute("CnS:size", newCluster.getNbNodes(), Integer.class);
+			
             // create a new view for my network
             CyNetworkView myView = cnvf.createNetworkView(myNet);
+            myView.updateView();
             networkViewManager.addNetworkView(myView);
             
             newCluster.calModularity(myNet);
@@ -385,7 +398,8 @@ public class CnSPartitionManager implements CnSEventListener {
             newPartition.addCluster(newCluster);
         }
         newPartition.sortClusters();
-		return newPartition;
+		
+        return newPartition;
 	}
 
 	/**

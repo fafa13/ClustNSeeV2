@@ -29,4 +29,7 @@ public class CnSClusterViewState extends CnSViewState {
 		clusters.addElement((CnSCluster)getReference());
 		return clusters;
 	}
+	public String getstate() {
+		return "cluster";
+	}
 }

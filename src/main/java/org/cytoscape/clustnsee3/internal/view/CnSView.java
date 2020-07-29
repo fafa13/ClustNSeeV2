@@ -98,4 +98,7 @@ public class CnSView {
 	protected Point2D.Double getClusterLocation(CnSCluster cluster) {
 		return clusterLocation.get(cluster);
 	}
+	public String getStateValue() {
+		return state.getState();
+	}
 }

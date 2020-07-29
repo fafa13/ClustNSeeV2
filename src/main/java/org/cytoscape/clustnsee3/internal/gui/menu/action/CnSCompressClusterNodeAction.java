@@ -13,7 +13,6 @@
 
 package org.cytoscape.clustnsee3.internal.gui.menu.action;
 
-import java.awt.Color;
 import java.awt.geom.Point2D;
 import java.util.Vector;
 import java.util.HashMap;
@@ -33,7 +32,6 @@ import org.cytoscape.clustnsee3.internal.view.CnSViewManager;
 import org.cytoscape.model.CyEdge;
 import org.cytoscape.model.CyNode;
 import org.cytoscape.view.presentation.property.BasicVisualLexicon;
-import org.cytoscape.view.presentation.property.NodeShapeVisualProperty;
 
 /**
  * 
@@ -137,21 +135,23 @@ public class CnSCompressClusterNodeAction {
 							b = (Boolean)CnSEventManager.handleMessage(ev);
 					
 							if (!b.booleanValue()) {
-								CyEdge ie = cl.getInteractionEdge();
-								if (ie != null) 
-									network.getNetwork().addEdge(ie);
-								else if (cl.getEdges().size() > 0){
-									ie = network.getNetwork().addEdge(cl.getSource().getCyNode(), cl.getTarget().getCyNode(), false);
-									cl.setInteractionEdge(ie);
-									network.getNetwork().addEdge(ie);
+								CnSEdge ie = cl.getInteractionEdge();
+								if (ie != null) {	
+									if (ie.getCyEdge() != null)
+										network.getNetwork().addEdge(ie.getCyEdge());
+									else if (cl.getEdges().size() > 0){
+										cl.setInteractionEdge(network.getNetwork().addEdge(cl.getSource().getCyNode(), cl.getTarget().getCyNode(), false));
+										network.getNetwork().addEdge(cl.getInteractionEdge().getCyEdge());
+									}
 								}
-								CyEdge me = cl.getMulticlassEdge();
-								if (me != null) 
-									network.getNetwork().addEdge(me);
-								else if (cl.getNodes().size() > 0){
-									me = network.getNetwork().addEdge(cl.getSource().getCyNode(), cl.getTarget().getCyNode(), false);
-									cl.setMulticlassEdge(me);
-									network.getNetwork().addEdge(me);
+								CnSEdge me = cl.getMulticlassEdge();
+								if (me != null) {
+									if (me.getCyEdge() != null)
+										network.getNetwork().addEdge(me.getCyEdge());
+									else if (cl.getNodes().size() > 0) {
+										cl.setMulticlassEdge(network.getNetwork().addEdge(cl.getSource().getCyNode(), cl.getTarget().getCyNode(), false));
+										network.getNetwork().addEdge(cl.getMulticlassEdge().getCyEdge());
+									}
 								}
 								view.getView().updateView();
 					
@@ -164,11 +164,11 @@ public class CnSCompressClusterNodeAction {
 									//view.getView().getEdgeView(me).setVisualProperty(BasicVisualLexicon.EDGE_STROKE_UNSELECTED_PAINT, Color.green);
 								}
 								view.getView().updateView();
-								ev = new CnSEvent(CnSViewManager.SET_EXPANDED, CnSEventManager.VIEW_MANAGER);
+								/*ev = new CnSEvent(CnSViewManager.SET_EXPANDED, CnSEventManager.VIEW_MANAGER);
 								ev.addParameter(CnSViewManager.CLUSTER, c);
 								ev.addParameter(CnSViewManager.VIEW, view);
 								ev.addParameter(CnSViewManager.EXPANDED, false);
-								CnSEventManager.handleMessage(ev);
+								CnSEventManager.handleMessage(ev);*/
 							}
 							else {
 								CyEdge edge = null;
@@ -206,20 +206,25 @@ public class CnSCompressClusterNodeAction {
 								for (CnSNode cnsn : cl.getNodes())
 									if (!network.getNetwork().containsEdge(c.getCyNode(), cnsn.getCyNode()) && 
 											!network.getNetwork().containsEdge(cnsn.getCyNode(), c.getCyNode())) {
-										CyEdge ce = network.getNetwork().addEdge(c.getCyNode(), cnsn.getCyNode(), false);
+										/*CyEdge ce =*/ network.getNetwork().addEdge(c.getCyNode(), cnsn.getCyNode(), false);
 										view.getView().updateView();
 										//view.getView().getEdgeView(ce).setVisualProperty(BasicVisualLexicon.EDGE_STROKE_UNSELECTED_PAINT, Color.green);
 									}
 								view.getView().updateView();
-								ev = new CnSEvent(CnSViewManager.SET_EXPANDED, CnSEventManager.VIEW_MANAGER);
+								/*ev = new CnSEvent(CnSViewManager.SET_EXPANDED, CnSEventManager.VIEW_MANAGER);
 								ev.addParameter(CnSViewManager.CLUSTER, c);
 								ev.addParameter(CnSViewManager.VIEW, view);
 								ev.addParameter(CnSViewManager.EXPANDED, false);
-								CnSEventManager.handleMessage(ev);
+								CnSEventManager.handleMessage(ev);*/
 							}					
 						}
 					}
 				}
+				ev = new CnSEvent(CnSViewManager.SET_EXPANDED, CnSEventManager.VIEW_MANAGER);
+				ev.addParameter(CnSViewManager.CLUSTER, c);
+				ev.addParameter(CnSViewManager.VIEW, view);
+				ev.addParameter(CnSViewManager.EXPANDED, false);
+				CnSEventManager.handleMessage(ev);
 			}
 		}
 		view.setModifCluster(false);
