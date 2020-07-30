@@ -4,7 +4,6 @@ import java.awt.event.ActionEvent;
 import java.util.Properties;
 
 import org.cytoscape.application.swing.AbstractCyAction;
-import org.cytoscape.application.swing.CytoPanelComponent;
 import org.osgi.framework.BundleContext;
 
 
@@ -26,6 +25,6 @@ public class MenuActionClustnsee extends AbstractCyAction {
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		context.registerService(CytoPanelComponent.class.getName(), CnSClustnseePlugin.getInstance(context, cyActivator), new Properties());
+		context.registerService(CnSClustnseePlugin.class.getName(), CnSClustnseePlugin.getInstance(context, cyActivator), new Properties());
     }
 }

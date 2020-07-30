@@ -49,6 +49,7 @@ import org.cytoscape.clustnsee3.internal.view.CnSViewManager;
 import org.cytoscape.clustnsee3.internal.view.state.CnSClusterViewState;
 import org.cytoscape.clustnsee3.internal.view.state.CnSPartitionViewState;
 import org.cytoscape.clustnsee3.internal.view.state.CnSUserViewState;
+import org.cytoscape.clustnsee3.internal.view.style.CnSStyleManager;
 import org.cytoscape.model.CyEdge;
 import org.cytoscape.model.CyNetwork;
 import org.cytoscape.model.CyNetworkManager;
@@ -123,6 +124,10 @@ public class CnSResultsCommandPanel extends CnSPanel {
 		        	ev = new CnSEvent(CnSViewManager.EXPAND_CLUSTER, CnSEventManager.VIEW_MANAGER);
 		        	ev.addParameter(CnSViewManager.SUID, suid);
 		        	CnSEventManager.handleMessage(ev);
+		        	
+		        	// Apply the CnS visual style to the view
+		        	ev = new CnSEvent(CnSStyleManager.APPLY_CURRENT_STYLE, CnSEventManager.STYLE_MANAGER);
+					CnSEventManager.handleMessage(ev);
 		        }
 	        }
 		});
@@ -143,6 +148,10 @@ public class CnSResultsCommandPanel extends CnSPanel {
 			        CyTable networkTable = sNetwork.getNetwork().getDefaultNetworkTable();
 	                if (networkTable.getColumn("CnS:viewState") == null) networkTable.createColumn("CnS:viewState", String.class, true);
 	                sNetwork.getNetwork().getRow(sNetwork.getNetwork()).set("CnS:viewState", "user");
+	                
+	                // Apply the CnS visual style to the view
+					ev = new CnSEvent(CnSStyleManager.APPLY_CURRENT_STYLE, CnSEventManager.STYLE_MANAGER);
+					CnSEventManager.handleMessage(ev);
 	            }
 			}
 		});
@@ -306,7 +315,7 @@ public class CnSResultsCommandPanel extends CnSPanel {
 					// make the view up to date
 					partitionView.getView().updateView();
 					
-	                // associate the partition with her network
+					// associate the partition with her network
 	                ev = new CnSEvent(CnSPartitionManager.SET_PARTITION_NETWORK, CnSEventManager.PARTITION_MANAGER);
 					ev.addParameter(CnSPartitionManager.NETWORK, partNetwork);
 					ev.addParameter(CnSPartitionManager.PARTITION, partition);
@@ -345,6 +354,10 @@ public class CnSResultsCommandPanel extends CnSPanel {
 				ev = new CnSEvent(CyActivator.GET_APPLICATION_MANAGER, CnSEventManager.CY_ACTIVATOR);
 				CyApplicationManager applicationManager = (CyApplicationManager)CnSEventManager.handleMessage(ev);
 				applicationManager.setCurrentNetwork(network.getNetwork());
+				
+				// Apply the CnS visual style to the view
+				ev = new CnSEvent(CnSStyleManager.APPLY_CURRENT_STYLE, CnSEventManager.STYLE_MANAGER);
+				CnSEventManager.handleMessage(ev);
 			}
 		});
 		discardPartitionButton.addActionListener(new ActionListener() {
@@ -370,7 +383,12 @@ public class CnSResultsCommandPanel extends CnSPanel {
 			public void actionPerformed(ActionEvent arg0) {
 				CnSEvent ev = new CnSEvent(CnSResultsPanel.GET_SELECTED_CLUSTER, CnSEventManager.RESULTS_PANEL);
 		        CnSCluster cluster = (CnSCluster)CnSEventManager.handleMessage(ev);
-				if (cluster != null) addClusterToView(cluster);
+				if (cluster != null) {
+					addClusterToView(cluster);
+					// Apply the CnS visual style to the view
+					ev = new CnSEvent(CnSStyleManager.APPLY_CURRENT_STYLE, CnSEventManager.STYLE_MANAGER);
+					CnSEventManager.handleMessage(ev);
+				}
 			}
 		});
 		addClusterNetworkToViewButton.addActionListener(new ActionListener() {		
@@ -382,6 +400,9 @@ public class CnSResultsCommandPanel extends CnSPanel {
 		        	ev = new CnSEvent(CnSViewManager.EXPAND_CLUSTER, CnSEventManager.VIEW_MANAGER);
 		        	ev.addParameter(CnSViewManager.SUID, addClusterToView(cluster));
 		        	CnSEventManager.handleMessage(ev);
+		        	// Apply the CnS visual style to the view
+		        	ev = new CnSEvent(CnSStyleManager.APPLY_CURRENT_STYLE, CnSEventManager.STYLE_MANAGER);
+					CnSEventManager.handleMessage(ev);
 		        }
 			}
 		});

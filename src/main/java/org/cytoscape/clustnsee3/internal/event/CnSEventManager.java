@@ -16,6 +16,7 @@ package org.cytoscape.clustnsee3.internal.event;
 import org.cytoscape.clustnsee3.internal.CyActivator;
 import org.cytoscape.clustnsee3.internal.network.CnSNetworkManager;
 import org.cytoscape.clustnsee3.internal.partition.CnSPartitionManager;
+import org.cytoscape.clustnsee3.internal.view.style.CnSStyleManager;
 
 /**
  * This class is an implementation of the Mediator pattern. It's goal is to organize the 
@@ -33,6 +34,7 @@ public class CnSEventManager {
 	public static final int VIEW_MANAGER = 9;
 	public static final int NETWORK_MANAGER = 10;
 	public static final int PARTITION_MANAGER = 11;
+	public static final int STYLE_MANAGER = 12;
 	
 	private static CnSEventListener plugin;
 	private static CnSEventListener analysisManager;
@@ -45,6 +47,7 @@ public class CnSEventManager {
 	private static CnSEventListener viewManager;
 	private static CnSNetworkManager networkManager;
 	private static CnSPartitionManager partitionManager;
+	private static CnSStyleManager styleManager;
 	
 	private static CnSEventManager instance;
 
@@ -55,7 +58,7 @@ public class CnSEventManager {
 	public static CnSEventManager getCnsEventManager(CnSEventListener _plugin, 
 			CnSEventListener _analysisManager, CnSEventListener _clustnseeMenuManager,
 			CnSEventListener _dataPanel, CnSEventListener _resultsPanel, CnSEventListener _algorithmManager, 
-			CnSEventListener _algorithmEngine, CnSEventListener _viewManager, CnSNetworkManager _networkManager, CnSPartitionManager _partitionManager, CyActivator ca) {
+			CnSEventListener _algorithmEngine, CnSEventListener _viewManager, CnSNetworkManager _networkManager, CnSPartitionManager _partitionManager, CnSStyleManager _styleManager, CyActivator ca) {
 		if (instance == null) {
 			instance = new CnSEventManager();
 			plugin = _plugin;
@@ -68,6 +71,7 @@ public class CnSEventManager {
 			viewManager = _viewManager;
 			networkManager = _networkManager;
 			partitionManager = _partitionManager;
+			styleManager = _styleManager;
 			cyActivator = ca;
 		}
 		return instance;
@@ -115,6 +119,10 @@ public class CnSEventManager {
 	    	  
 	      	case PARTITION_MANAGER :
 	      		if (partitionManager != null) ret = partitionManager.cnsEventOccured(event);
+	      		break;
+	      		
+	      	case STYLE_MANAGER :
+	      		if (styleManager != null) ret = styleManager.cnsEventOccured(event);
 	      		break;
 	      		
 	      	case CY_ACTIVATOR:

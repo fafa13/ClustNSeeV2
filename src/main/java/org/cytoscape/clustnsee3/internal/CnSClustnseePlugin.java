@@ -30,6 +30,7 @@ import org.cytoscape.clustnsee3.internal.gui.results.CnSResultsPanel;
 import org.cytoscape.clustnsee3.internal.network.CnSNetworkManager;
 import org.cytoscape.clustnsee3.internal.partition.CnSPartitionManager;
 import org.cytoscape.clustnsee3.internal.view.CnSViewManager;
+import org.cytoscape.clustnsee3.internal.view.style.CnSStyleManager;
 import org.cytoscape.model.events.AboutToRemoveNodesListener;
 import org.cytoscape.model.events.AddedEdgesListener;
 import org.cytoscape.model.events.AddedNodesListener;
@@ -53,6 +54,7 @@ public class CnSClustnseePlugin implements CnSEventListener {
 	private CnSViewManager viewManager;
 	private CnSNetworkManager networkManager;
 	private CnSPartitionManager partitionManager;
+	private CnSStyleManager styleManager;
 	
 	private static CnSClustnseePlugin instance;
 	public static final int GET_PANEL = 1;
@@ -68,11 +70,13 @@ public class CnSClustnseePlugin implements CnSEventListener {
 		viewManager = CnSViewManager.getInstance();
 		networkManager = CnSNetworkManager.getInstance();
 		partitionManager = CnSPartitionManager.getInstance();
-		CnSEventManager.getCnsEventManager(this, analysisManager, menuManager, dataPanel, resultsPanel, algorithmManager, algorithmEngine, viewManager, networkManager, partitionManager, ca);
+		styleManager = CnSStyleManager.getInstance();
+		CnSEventManager.getCnsEventManager(this, analysisManager, menuManager, dataPanel, resultsPanel, algorithmManager, algorithmEngine, viewManager, networkManager, partitionManager, styleManager, ca);
 		CnSEvent ev = new CnSEvent(CnSAlgorithmManager.INIT, CnSEventManager.ALGORITHM_MANAGER);
 		CnSEventManager.handleMessage(ev);
 		ev = new CnSEvent(CnSClustnseePlugin.GET_PANEL, CnSEventManager.CLUSTNSEE_PLUGIN);
 		CnSControlPanel controlPanel = (CnSControlPanel)CnSEventManager.handleMessage(ev);
+		styleManager.init();
 		context.registerService(CytoPanelComponent.class.getName(), controlPanel, new Properties());
 		context.registerService(CytoPanelComponent.class.getName(), resultsPanel, new Properties());
 		context.registerService(CytoPanelComponent.class.getName(), dataPanel, new Properties());

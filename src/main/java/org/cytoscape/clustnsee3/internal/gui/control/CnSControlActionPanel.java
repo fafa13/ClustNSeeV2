@@ -2,7 +2,6 @@ package org.cytoscape.clustnsee3.internal.gui.control;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
 import java.io.InputStream;
 import java.util.Set;
 
@@ -13,16 +12,8 @@ import org.cytoscape.clustnsee3.internal.view.CnSView;
 import org.cytoscape.clustnsee3.internal.view.CnSViewManager;
 import org.cytoscape.model.CyNetwork;
 import org.cytoscape.task.read.LoadVizmapFileTaskFactory;
-import org.cytoscape.task.write.ExportVizmapTaskFactory;
 import org.cytoscape.view.model.CyNetworkView;
-import org.cytoscape.view.presentation.property.BasicVisualLexicon;
-import org.cytoscape.view.vizmap.VisualMappingFunctionFactory;
-import org.cytoscape.view.vizmap.VisualMappingManager;
 import org.cytoscape.view.vizmap.VisualStyle;
-import org.cytoscape.view.vizmap.VisualStyleFactory;
-import org.cytoscape.view.vizmap.mappings.PassthroughMapping;
-import org.cytoscape.work.TaskIterator;
-import org.cytoscape.work.TaskManager;
 import org.cytoscape.application.CyApplicationManager;
 import org.cytoscape.clustnsee3.internal.CyActivator;
 import org.cytoscape.clustnsee3.internal.algorithm.CnSAlgorithm;

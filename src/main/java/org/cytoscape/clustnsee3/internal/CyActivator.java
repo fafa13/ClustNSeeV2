@@ -48,7 +48,8 @@ public class CyActivator extends AbstractCyActivator implements CnSEventListener
 	public static final int GET_DISCRETE_VISUAL_MAPPING_FUNCTION_FACTORY = 18;
 	public static final int GET_PASSTHROUGH_VISUAL_MAPPING_FUNCTION_FACTORY = 19;
 	public static final int GET_LOAD_VIZMAP_FILE_TASK_FACTORY = 20;
-	
+	public static final int GET_VIZMAP_MANAGER = 21;
+
 	private BundleContext bc = null;
 	
 	
@@ -154,7 +155,9 @@ public class CyActivator extends AbstractCyActivator implements CnSEventListener
 			case GET_LOAD_VIZMAP_FILE_TASK_FACTORY :
 				ret = getService(bc,LoadVizmapFileTaskFactory.class);
 				break;
-			
+			case GET_VIZMAP_MANAGER :
+				ret = getService(bc, VisualMappingManager.class);
+				break;
 		}
 		return ret;
 	}
