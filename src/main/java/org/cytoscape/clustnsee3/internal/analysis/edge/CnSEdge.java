@@ -27,7 +27,6 @@ public class CnSEdge {
 	
 	public CnSEdge() {
 		super();
-		//this.cyEdge = cyEdge;
 		attributes = new HashMap<String, Object>();
 		attributeTypes = new HashMap<String, Class>();
 	}
@@ -45,10 +44,10 @@ public class CnSEdge {
 
 	public boolean equals(Object o) {
 		CnSEdge e = (CnSEdge)o;
-		boolean ret = false;
-		ret = e.getCyEdge() == cyEdge;
-		//ret = e.getCyEdge().getSource().getSUID() == cyEdge.getSource().getSUID() && e.getCyEdge().getTarget().getSUID() == cyEdge.getTarget().getSUID();
-		//ret = ret || (e.getCyEdge().getSource().getSUID() == cyEdge.getTarget().getSUID() && e.getCyEdge().getTarget().getSUID() == cyEdge.getSource().getSUID());
+		long sourceSUID = e.getCyEdge().getSource().getSUID().longValue();
+		long targetSUID = e.getCyEdge().getTarget().getSUID().longValue();
+		boolean ret = sourceSUID == cyEdge.getSource().getSUID() && targetSUID == cyEdge.getTarget().getSUID();
+		ret = ret || (sourceSUID == cyEdge.getTarget().getSUID() && targetSUID == cyEdge.getSource().getSUID());
 		return ret;
 	}
 	public void setAttribute(String name, Object value, Class type) {

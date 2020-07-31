@@ -237,9 +237,6 @@ public class CnSResultsCommandPanel extends CnSPanel {
 						// add the cluster in the partition view
 						partitionView.addCluster(cluster);
 						
-						// Set name for new node
-						partNet.getRow(clNode).set(CyNetwork.NAME, cluster.getName());
-						
 						// fill CnS attributes
 						for (String key : partNetwork.getNodeColumns().keySet())
 							partNet.getRow(clNode).set(key, cluster.getAttributes().get(key));
@@ -263,10 +260,6 @@ public class CnSResultsCommandPanel extends CnSPanel {
 							
 								for (String key : partNetwork.getEdgeColumns().keySet())
 									partNet.getRow(ce).set(key, clusterLink.getInteractionEdge().getAttributes().get(key));
-							
-								partNet.getRow(ce).set("name", clusterLink.getSource().getName() + " - " + clusterLink.getTarget().getName());
-								partNet.getRow(ce).set("canonicalName", partition.getName() + ":" + clusterLink.getSource().getName() + " - " + clusterLink.getTarget().getName());
-								partNet.getRow(ce).set("interaction", "pp");
 							}
 							else {
 								ce = clusterLink.getInteractionEdge().getCyEdge();
@@ -282,10 +275,6 @@ public class CnSResultsCommandPanel extends CnSPanel {
 								partition.addClusterEdge(ce);
 								for (String key : partNetwork.getEdgeColumns().keySet())
 									partNet.getRow(ce).set(key, clusterLink.getMulticlassEdge().getAttributes().get(key));
-							
-								partNet.getRow(ce).set("name", clusterLink.getSource().getName() + " ~ " + clusterLink.getTarget().getName());
-								partNet.getRow(ce).set("canonicalName", partition.getName() + ":" + clusterLink.getSource().getName() + " ~ " + clusterLink.getTarget().getName());
-								partNet.getRow(ce).set("interaction", "multiclass");	
 							}
 							else {
 								ce = clusterLink.getMulticlassEdge().getCyEdge();
@@ -300,10 +289,9 @@ public class CnSResultsCommandPanel extends CnSPanel {
 					partitionView.getView().updateView();
 					
 					// set visual properties of nodes and edges
-					for (CyNode no : partNet.getNodeList()) {
+					for (CyNode no : partNet.getNodeList())
 						partitionView.getView().getNodeView(no).setVisualProperty(BasicVisualLexicon.NODE_TOOLTIP, partNet.getRow(no).get(CyNetwork.NAME, String.class));
-						partNet.getRow(no).set("canonicalName", inputNetwork.getRow(inputNetwork).get(CyNetwork.NAME, String.class) + ":" + partNet.getRow(no).get(CyNetwork.NAME, String.class));
-					}
+
 					// make the view up to date
 					partitionView.getView().updateView();
 					
@@ -608,9 +596,6 @@ public class CnSResultsCommandPanel extends CnSPanel {
 			clNet.addNode(clNode);
 		}
 		
-		// Set name for new node
-		clNet.getRow(clNode).set(CyNetwork.NAME, cluster.getName());
-		
 		// Set nested network
 		clNode.setNetworkPointer(network.getNetwork());
 		
@@ -628,12 +613,6 @@ public class CnSResultsCommandPanel extends CnSPanel {
 		CyNetworkViewManager networkViewManager = (CyNetworkViewManager)CnSEventManager.handleMessage(ev);
 		networkViewManager.addNetworkView(cyView);
 		
-		// set visual properties for the node
-		clNet.getRow(cluster.getCyNode()).set("CnS:isCluster", true);
-		clNet.getRow(cluster.getCyNode()).set("CnS:size", cluster.getNbNodes());
-		clNet.getRow(cluster.getCyNode()).set("canonicalName", partition.getName() + ":" + cluster.getName());
-		
-        
 		// register network
 		CnSNetwork partNetwork = new CnSNetwork(clNet);
 		ev = new CnSEvent(CnSNetworkManager.ADD_NETWORK, CnSEventManager.NETWORK_MANAGER);
@@ -674,163 +653,145 @@ public class CnSResultsCommandPanel extends CnSPanel {
 		CnSView currentView = (CnSView)CnSEventManager.handleMessage(ev);
 		
 		if (currentView != null)
-		if (!currentView.getClusters().contains(cluster)) {
-			// get the selected partition and his associated view if exists
-			ev = new CnSEvent(CnSResultsPanel.GET_SELECTED_PARTITION, CnSEventManager.RESULTS_PANEL);
-			CnSPartition partition = (CnSPartition)CnSEventManager.handleMessage(ev);
-			ev = new CnSEvent(CnSViewManager.GET_VIEW, CnSEventManager.VIEW_MANAGER);
-			ev.addParameter(CnSViewManager.REFERENCE, cluster);
-			CnSView view = (CnSView)CnSEventManager.handleMessage(ev);
-		
-			// get the cluster network; create it if it doesn't exist
-			CnSNetwork network;
-			if (view == null) {
-				network = makeClusterNetworkAndView(cluster, partition);
+			if (!currentView.getClusters().contains(cluster)) {
+				// get the selected partition
+				ev = new CnSEvent(CnSResultsPanel.GET_SELECTED_PARTITION, CnSEventManager.RESULTS_PANEL);
+				CnSPartition partition = (CnSPartition)CnSEventManager.handleMessage(ev);
+				
+				// get the cluster view
 				ev = new CnSEvent(CnSViewManager.GET_VIEW, CnSEventManager.VIEW_MANAGER);
 				ev.addParameter(CnSViewManager.REFERENCE, cluster);
-				view = (CnSView)CnSEventManager.handleMessage(ev);
-			}
-			else {
-				ev = new CnSEvent(CnSViewManager.GET_NETWORK, CnSEventManager.VIEW_MANAGER);
-				ev.addParameter(CnSViewManager.VIEW, view);
-				network = (CnSNetwork)CnSEventManager.handleMessage(ev);
-			}
+				CnSView clView = (CnSView)CnSEventManager.handleMessage(ev);
 		
-			// get the selected network
-			ev = new CnSEvent(CnSViewManager.GET_NETWORK, CnSEventManager.VIEW_MANAGER);
-			ev.addParameter(CnSViewManager.VIEW, currentView);
-			CnSNetwork clNet = (CnSNetwork)CnSEventManager.handleMessage(ev);
-		
-			// stop listening to network changes
-			currentView.setModifCluster(true);
-		
-			CyNode clNode = null;
-			if (clNet != null) {
-				// Add a node in the current network
-				clNode = cluster.getCyNode();
-				if (clNode == null) {
-					clNode = clNet.getNetwork().addNode();
-					cluster.setCyNode(clNode);
-					partition.addClusterNode(clNode);
+				// get the cluster network; create it if it doesn't exist
+				CnSNetwork network;
+				if (clView == null) {
+					network = makeClusterNetworkAndView(cluster, partition);
+					ev = new CnSEvent(CnSViewManager.GET_VIEW, CnSEventManager.VIEW_MANAGER);
+					ev.addParameter(CnSViewManager.REFERENCE, cluster);
+					clView = (CnSView)CnSEventManager.handleMessage(ev);
 				}
 				else {
-					clNet.getNetwork().addNode(clNode);
+					ev = new CnSEvent(CnSViewManager.GET_NETWORK, CnSEventManager.VIEW_MANAGER);
+					ev.addParameter(CnSViewManager.VIEW, clView);
+					network = (CnSNetwork)CnSEventManager.handleMessage(ev);
 				}
-				currentView.getView().updateView();
+		
+				// get the selected network
+				ev = new CnSEvent(CnSViewManager.GET_NETWORK, CnSEventManager.VIEW_MANAGER);
+				ev.addParameter(CnSViewManager.VIEW, currentView);
+				CnSNetwork currentNet = (CnSNetwork)CnSEventManager.handleMessage(ev);
+		
+				// stop listening to network changes
+				currentView.setModifCluster(true);
+		
+				CyNode clNode = null;
+				if (currentNet != null) {
+					// Add a node in the current network
+					clNode = cluster.getCyNode();
+					if (clNode == null) {
+						clNode = currentNet.getNetwork().addNode();
+						cluster.setCyNode(clNode);
+						partition.addClusterNode(clNode);
+					}
+					else {
+						currentNet.getNetwork().addNode(clNode);
+					}
+					currentView.getView().updateView();
 				
-				// set visual properties for the node
-				clNet.getNetwork().getRow(cluster.getCyNode()).set("CnS:isCluster", true);
-				clNet.getNetwork().getRow(cluster.getCyNode()).set("CnS:size", cluster.getNbNodes());
-				clNet.getNetwork().getRow(cluster.getCyNode()).set("canonicalName", partition.getName() + ":" + cluster.getName());
-				
-				// make the needed links
-				CnSCluster partner;
-				for (CnSClusterLink cl : partition.getClusterLinks()) {
-					if (cl.getSource() == cluster)
-						partner = cl.getTarget();
-					else if (cl.getTarget() == cluster)
-						partner = cl.getSource();
-					else
-						partner = null;
-					if (partner != null) {
-						if (currentView.getClusters().contains(partner)) {
-							Boolean b = false;
-							ev = new CnSEvent(CnSViewManager.IS_EXPANDED, CnSEventManager.VIEW_MANAGER);
-							ev.addParameter(CnSViewManager.CLUSTER, partner);
-							ev.addParameter(CnSViewManager.VIEW, currentView);
-							b = (Boolean)CnSEventManager.handleMessage(ev);
+					// make the needed links
+					CnSCluster partner;
+					for (CnSClusterLink cl : partition.getClusterLinks()) {
+						if (cl.getSource() == cluster)
+							partner = cl.getTarget();
+						else if (cl.getTarget() == cluster)
+							partner = cl.getSource();
+						else
+							partner = null;
+						if (partner != null) {
+							if (currentView.getClusters().contains(partner)) {
+								Boolean b = false;
+								ev = new CnSEvent(CnSViewManager.IS_EXPANDED, CnSEventManager.VIEW_MANAGER);
+								ev.addParameter(CnSViewManager.CLUSTER, partner);
+								ev.addParameter(CnSViewManager.VIEW, currentView);
+								b = (Boolean)CnSEventManager.handleMessage(ev);
 							
-							if (!b.booleanValue()) {
-								if (cl.getEdges().size() > 0) {
-									if (cl.getInteractionEdge().getCyEdge() == null) {
-										CyEdge ce = clNet.getNetwork().addEdge(cluster.getCyNode(), partner.getCyNode(), false);
-										cl.getInteractionEdge().setCyEdge(ce);;
-										partition.addClusterEdge(ce);
-										currentView.getView().updateView();
-										clNet.getNetwork().getRow(ce).set("name", cl.getSource().getName() + " - " + cl.getTarget().getName());
-										clNet.getNetwork().getRow(ce).set("canonicalName", partition.getName() + ":" + cl.getSource().getName() + " - " + cl.getTarget().getName());
-										clNet.getNetwork().getRow(ce).set("interaction", "pp");
-										for (String key : clNet.getEdgeColumns().keySet())
-											clNet.getNetwork().getRow(ce).set(key, cl.getInteractionEdge().getAttributes().get(key));
+								if (!b.booleanValue()) {
+									if (cl.getEdges().size() > 0) {
+										if (cl.getInteractionEdge().getCyEdge() == null) {
+											CyEdge ce = currentNet.getNetwork().addEdge(cluster.getCyNode(), partner.getCyNode(), false);
+											cl.getInteractionEdge().setCyEdge(ce);;
+											partition.addClusterEdge(ce);
+											currentView.getView().updateView();
+											for (String key : currentNet.getEdgeColumns().keySet())
+												currentNet.getNetwork().getRow(ce).set(key, cl.getInteractionEdge().getAttributes().get(key));
+										}
+										else {
+											currentNet.getNetwork().addEdge(cl.getInteractionEdge().getCyEdge());
+											currentView.getView().updateView();
+											for (String key : currentNet.getEdgeColumns().keySet())
+												currentNet.getNetwork().getRow(cl.getInteractionEdge().getCyEdge()).set(key, cl.getInteractionEdge().getAttributes().get(key));
+										}
 									}
-									else {
-										clNet.getNetwork().addEdge(cl.getInteractionEdge().getCyEdge());
-										currentView.getView().updateView();
-										for (String key : clNet.getEdgeColumns().keySet())
-											clNet.getNetwork().getRow(cl.getInteractionEdge().getCyEdge()).set(key, cl.getInteractionEdge().getAttributes().get(key));
-										clNet.getNetwork().getRow(cl.getInteractionEdge().getCyEdge()).set("name", cl.getSource().getName() + " - " + cl.getTarget().getName());
-										clNet.getNetwork().getRow(cl.getInteractionEdge().getCyEdge()).set("canonicalName", partition.getName() + ":" + cl.getSource().getName() + " - " + cl.getTarget().getName());
-										clNet.getNetwork().getRow(cl.getInteractionEdge().getCyEdge()).set("interaction", "pp");
-									}
-								}
 								
-								currentView.getView().updateView();
-								if (cl.getNodes().size() > 0) {
-									if (cl.getMulticlassEdge().getCyEdge() == null) {
-										CyEdge ce = clNet.getNetwork().addEdge(cluster.getCyNode(), partner.getCyNode(), false);
-										cl.getMulticlassEdge().setCyEdge(ce);;
-										currentView.getView().updateView();
-										clNet.getNetwork().getRow(ce).set("name", cl.getSource().getName() + " ~ " + cl.getTarget().getName());
-										clNet.getNetwork().getRow(ce).set("canonicalName", partition.getName() + ":" + cl.getSource().getName() + " ~ " + cl.getTarget().getName());
-										clNet.getNetwork().getRow(ce).set("interaction", "multiclass");
-										for (String key : clNet.getEdgeColumns().keySet())
-											clNet.getNetwork().getRow(ce).set(key, cl.getMulticlassEdge().getAttributes().get(key));
+									currentView.getView().updateView();
+									if (cl.getNodes().size() > 0) {
+										if (cl.getMulticlassEdge().getCyEdge() == null) {
+											CyEdge ce = currentNet.getNetwork().addEdge(cluster.getCyNode(), partner.getCyNode(), false);
+											cl.getMulticlassEdge().setCyEdge(ce);;
+											currentView.getView().updateView();
+											for (String key : currentNet.getEdgeColumns().keySet())
+												currentNet.getNetwork().getRow(ce).set(key, cl.getMulticlassEdge().getAttributes().get(key));
+										}
+										else {
+											currentNet.getNetwork().addEdge(cl.getMulticlassEdge().getCyEdge());
+											currentView.getView().updateView();
+											for (String key : currentNet.getEdgeColumns().keySet())
+												currentNet.getNetwork().getRow(cl.getMulticlassEdge().getCyEdge()).set(key, cl.getMulticlassEdge().getAttributes().get(key));
+										}
 									}
-									else {
-										clNet.getNetwork().addEdge(cl.getMulticlassEdge().getCyEdge());
-										currentView.getView().updateView();
-										clNet.getNetwork().getRow(cl.getMulticlassEdge().getCyEdge()).set("name", cl.getSource().getName() + " ~ " + cl.getTarget().getName());
-										clNet.getNetwork().getRow(cl.getMulticlassEdge().getCyEdge()).set("canonicalName", partition.getName() + ":" + cl.getSource().getName() + " ~ " + cl.getTarget().getName());
-										clNet.getNetwork().getRow(cl.getMulticlassEdge().getCyEdge()).set("interaction", "multiclass");
-										for (String key : clNet.getEdgeColumns().keySet())
-											clNet.getNetwork().getRow(cl.getMulticlassEdge().getCyEdge()).set(key, cl.getMulticlassEdge().getAttributes().get(key));
-									}
+									currentView.getView().updateView();
 								}
-								currentView.getView().updateView();
+								else {
+									for (CnSEdge cnse : cl.getEdges()) {
+										if (partner.contains(cnse.getCyEdge().getSource()))
+											currentNet.getNetwork().addEdge(cluster.getCyNode(), cnse.getCyEdge().getSource(), false);
+										else
+											currentNet.getNetwork().addEdge(cluster.getCyNode(), cnse.getCyEdge().getTarget(), false);
+									}
+									currentView.getView().updateView();
+									for (CnSNode cnsn : cl.getNodes()) {
+										if (!currentNet.getNetwork().containsEdge(cluster.getCyNode(), cnsn.getCyNode()) && 
+												!currentNet.getNetwork().containsEdge(cnsn.getCyNode(), cluster.getCyNode())) {
+											currentNet.getNetwork().addEdge(cluster.getCyNode(), cnsn.getCyNode(), false);
+											currentView.getView().updateView();
+										}
+									}
+									currentView.getView().updateView();
+								}
 							}
-							else {
-								for (CnSEdge cnse : cl.getEdges()) {
-									if (partner.contains(cnse.getCyEdge().getSource()))
-										clNet.getNetwork().addEdge(cluster.getCyNode(), cnse.getCyEdge().getSource(), false);
-									else
-										clNet.getNetwork().addEdge(cluster.getCyNode(), cnse.getCyEdge().getTarget(), false);
-								}
-								currentView.getView().updateView();
-								for (CnSNode cnsn : cl.getNodes()) {
-									if (!clNet.getNetwork().containsEdge(cluster.getCyNode(), cnsn.getCyNode()) && 
-											!clNet.getNetwork().containsEdge(cnsn.getCyNode(), cluster.getCyNode())) {
-										clNet.getNetwork().addEdge(cluster.getCyNode(), cnsn.getCyNode(), false);
-										currentView.getView().updateView();
-									}
-								}
-								currentView.getView().updateView();
-							}
-						}
-					}					
+						}				
+					}
 				}
+			
+				currentView.addCluster(cluster);
+		
+				// Set nested network
+				clNode.setNetworkPointer(network.getNetwork());
+		
+				// make the view up to date
+				currentView.getView().updateView();
+			
+				// record cluster location
+				ev = new CnSEvent(CnSViewManager.RECORD_CLUSTERS_LOCATION, CnSEventManager.VIEW_MANAGER);
+				ev.addParameter(CnSViewManager.VIEW, currentView);
+				CnSEventManager.handleMessage(ev);
+			
+				// start listening to network changes
+				currentView.setModifCluster(false);
+			
+				ret = clNode.getSUID();
 			}
-			
-			currentView.addCluster(cluster);
-			
-			// Set name for new node
-			clNet.getNetwork().getRow(clNode).set(CyNetwork.NAME, cluster.getName());
-		
-			// Set nested network
-			clNode.setNetworkPointer(network.getNetwork());
-		
-			// make the view up to date
-			currentView.getView().updateView();
-			
-			// record cluster location
-			ev = new CnSEvent(CnSViewManager.RECORD_CLUSTERS_LOCATION, CnSEventManager.VIEW_MANAGER);
-			ev.addParameter(CnSViewManager.VIEW, currentView);
-			CnSEventManager.handleMessage(ev);
-		
-			// start listening to network changes
-			currentView.setModifCluster(false);
-			
-			ret = clNode.getSUID();
-		}
 		else
 			ret = cluster.getCyNode().getSUID();
 		return ret;

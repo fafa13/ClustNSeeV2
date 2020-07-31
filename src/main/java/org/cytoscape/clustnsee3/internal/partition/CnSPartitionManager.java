@@ -356,8 +356,8 @@ public class CnSPartitionManager implements CnSEventListener {
             networkManager.addNetwork(myNet);
             
             // Set name for network
-            myNet.getRow(myNet).set(CyNetwork.NAME, /*inputNetwork.getRow(inputNetwork).get(CyNetwork.NAME, String.class) + ":Cluster #" + */String.valueOf(k + 1));
-            newCluster.setName(/*inputNetwork.getRow(inputNetwork).get(CyNetwork.NAME, String.class) + ":" + Cluster #" + */String.valueOf(k + 1));
+            myNet.getRow(myNet).set(CyNetwork.NAME, String.valueOf(k + 1));
+            newCluster.setName(String.valueOf(k + 1));
             
             // Fill network with cluster nodes and relevant edges 
             for (CnSNode node : newCluster.getNodes()) myNet.addNode(node.getCyNode());
@@ -366,10 +366,12 @@ public class CnSPartitionManager implements CnSEventListener {
             // Set cluster attributes
             newCluster.setAttribute("CnS:isCluster", true, Boolean.class);
 			newCluster.setAttribute("CnS:size", newCluster.getNbNodes(), Integer.class);
+			newCluster.setAttribute(CyNetwork.NAME, newCluster.getName(), String.class);
+			newCluster.setAttribute("canonicalName", "Cluster #" + newCluster.getName(), String.class);
 			
             // create a new view for my network
             CyNetworkView myView = cnvf.createNetworkView(myNet);
-            myView.updateView();
+           // myView.updateView();
             networkViewManager.addNetworkView(myView);
             
             newCluster.calModularity(myNet);
@@ -395,6 +397,7 @@ public class CnSPartitionManager implements CnSEventListener {
             ev.addParameter(CnSViewManager.CLUSTER, newCluster);
             CnSEventManager.handleMessage(ev);
             
+            makeClusterLinks(newCluster, newPartition);
             newPartition.addCluster(newCluster);
         }
         newPartition.sortClusters();
@@ -411,6 +414,52 @@ public class CnSPartitionManager implements CnSEventListener {
 		if (instance == null)
 			instance = new CnSPartitionManager();
 		return instance;
+	}
+	
+	@SuppressWarnings("unchecked")
+	private void makeClusterLinks(CnSCluster cluster, CnSPartition partition) {
+		Vector<CnSEdge> commonEdges = null;
+		Vector<CnSNode> commonNodes = null;
+		Vector<CyNode> commonCyNodes = null;
+		
+		for (CnSCluster cl : partition.getClusters())
+			if (cl != cluster) {
+				CnSClusterLink clusterLink = new CnSClusterLink(cluster, cl);
+				if (!partition.getClusterLinks().contains(clusterLink)) {
+					commonNodes = (Vector<CnSNode>)cluster.getNodes().clone();
+					commonNodes.retainAll(cl.getNodes());
+					commonCyNodes = new Vector<CyNode>();
+					if (commonNodes.size() > 0) {
+						for (CnSNode n : commonNodes) {
+							clusterLink.addNode(n);
+							commonCyNodes.addElement(n.getCyNode());
+						}
+						clusterLink.setMulticlassEdge(null);
+						clusterLink.getMulticlassEdge().setAttribute("CnS:isInteraction", false, Boolean.class);
+						clusterLink.getMulticlassEdge().setAttribute("CnS:size", clusterLink.getNodes().size(), Integer.class);
+						clusterLink.getMulticlassEdge().setAttribute("interaction", "multiclass", String.class);
+						clusterLink.getMulticlassEdge().setAttribute("name", clusterLink.getSource().getName() + " ~ " + clusterLink.getTarget().getName(), String.class);
+						clusterLink.getMulticlassEdge().setAttribute("canonicalName", partition.getName() + ":" + clusterLink.getSource().getName() + " ~ " + clusterLink.getTarget().getName(), String.class);
+					}
+					commonEdges = (Vector<CnSEdge>)cluster.getExtEdges().clone();
+					commonEdges.retainAll(cl.getExtEdges());
+					if (commonEdges.size() > 0) {
+						for (CnSEdge e : commonEdges)
+							if (!commonCyNodes.contains(e.getCyEdge().getSource()) && !commonCyNodes.contains(e.getCyEdge().getTarget()))
+								clusterLink.addEdge(e);
+						clusterLink.setInteractionEdge(null);
+						clusterLink.getInteractionEdge().setAttribute("CnS:isInteraction", true, Boolean.class);
+						clusterLink.getInteractionEdge().setAttribute("CnS:size", clusterLink.getEdges().size(), Integer.class);
+						clusterLink.getInteractionEdge().setAttribute("interaction", "pp", String.class);
+						clusterLink.getInteractionEdge().setAttribute("name", clusterLink.getSource().getName() + " - " + clusterLink.getTarget().getName(), String.class);
+						clusterLink.getInteractionEdge().setAttribute("canonicalName", partition.getName() + ":" + clusterLink.getSource().getName() + " - " + clusterLink.getTarget().getName(), String.class);
+						
+					}
+					if ((clusterLink.getEdges().size() > 0) || (clusterLink.getNodes().size() > 0)) {
+						partition.getClusterLinks().addElement(clusterLink);
+					}
+				}
+			}
 	}
 }
 

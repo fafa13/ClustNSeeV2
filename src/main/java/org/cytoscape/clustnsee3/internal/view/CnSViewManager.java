@@ -518,7 +518,6 @@ UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, SelectedNodesAndEd
 					CnSEvent ev = new CnSEvent(CnSPartitionManager.GET_CLUSTER_LINK, CnSEventManager.PARTITION_MANAGER);
 					ev.addParameter(CnSPartitionManager.CY_EDGE, edge);
 					CnSClusterLink clusterLink = (CnSClusterLink)CnSEventManager.handleMessage(ev);
-					System.err.println("clusterlink = " + clusterLink);
 					
 					ev = new CnSEvent(CnSInfoPanel.INIT, CnSEventManager.INFO_PANEL);
 					ev.addParameter(CnSInfoPanel.EDGE, edge);

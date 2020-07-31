@@ -70,10 +70,7 @@ public class CnSPartition {
 		return algorithmParameters;
 	}
 	public void addCluster(CnSCluster cluster) {
-		if (cluster != null) {
-			clusters.addElement(cluster);
-			makeClusterLinks(cluster);
-		}
+		if (cluster != null) clusters.addElement(cluster);
 	}
 	public Iterator<CnSCluster> getClusterIterator() {
 		return clusters.iterator();
@@ -172,45 +169,6 @@ public class CnSPartition {
 	}
 	public Vector<CnSCluster> getClusters() {
 		return clusters;
-	}
-	
-	@SuppressWarnings("unchecked")
-	public void makeClusterLinks(CnSCluster cluster) {
-		Vector<CnSEdge> commonEdges = null;
-		Vector<CnSNode> commonNodes = null;
-		Vector<CyNode> commonCyNodes = null;
-		
-		for (CnSCluster cl : clusters)
-			if (cl != cluster) {
-				CnSClusterLink clusterLink = new CnSClusterLink(cluster, cl);
-				if (!clusterLinks.contains(clusterLink)) {
-					commonNodes = (Vector<CnSNode>)cluster.getNodes().clone();
-					commonNodes.retainAll(cl.getNodes());
-					commonCyNodes = new Vector<CyNode>();
-					if (commonNodes.size() > 0) {
-						for (CnSNode n : commonNodes) {
-							clusterLink.addNode(n);
-							commonCyNodes.addElement(n.getCyNode());
-						}
-						clusterLink.setMulticlassEdge(null);
-						clusterLink.getMulticlassEdge().setAttribute("CnS:isInteraction", false, Boolean.class);
-						clusterLink.getMulticlassEdge().setAttribute("CnS:size", clusterLink.getNodes().size(), Integer.class);
-					}
-					commonEdges = (Vector<CnSEdge>)cluster.getExtEdges().clone();
-					commonEdges.retainAll(cl.getExtEdges());
-					if (commonEdges.size() > 0) {
-						for (CnSEdge e : commonEdges)
-							if (!commonCyNodes.contains(e.getCyEdge().getSource()) && !commonCyNodes.contains(e.getCyEdge().getTarget()))
-								clusterLink.addEdge(e);
-						clusterLink.setInteractionEdge(null);
-						clusterLink.getInteractionEdge().setAttribute("CnS:isInteraction", true, Boolean.class);
-						clusterLink.getInteractionEdge().setAttribute("CnS:size", clusterLink.getEdges().size(), Integer.class);
-					}
-					if ((clusterLink.getEdges().size() > 0) || (clusterLink.getNodes().size() > 0)) {
-						clusterLinks.addElement(clusterLink);
-					}
-				}
-			}
 	}
 	
 	public Vector<CnSClusterLink> getClusterLinks() {

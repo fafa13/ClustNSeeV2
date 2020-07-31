@@ -15,10 +15,11 @@ package org.cytoscape.clustnsee3.internal.network;
 
 import java.util.HashMap;
 
+import org.cytoscape.model.CyNetwork;
 import org.cytoscape.model.subnetwork.CySubNetwork;
 
 /**
- * @param <T>
+ * 
  * 
  */
 public class CnSNetwork {
@@ -34,6 +35,8 @@ public class CnSNetwork {
 		cnsNodeColumns.put("CnS:size", Integer.class);
 		if (network.getDefaultNodeTable().getColumn("CnS:size") == null)
 			network.getDefaultNodeTable().createColumn("CnS:size", Integer.class, true, 0);
+		cnsNodeColumns.put(CyNetwork.NAME, String.class);
+		cnsNodeColumns.put("canonicalName", String.class);
 		
 		cnsEdgeColumns = new HashMap<String, Class>();
 		cnsEdgeColumns.put("CnS:isInteraction", Boolean.class);
@@ -42,6 +45,10 @@ public class CnSNetwork {
 		cnsEdgeColumns.put("CnS:size", Integer.class);
 		if (network.getDefaultEdgeTable().getColumn("CnS:size") == null)
 			network.getDefaultEdgeTable().createColumn("CnS:size", Integer.class, true, 1);
+		
+		cnsEdgeColumns.put("interaction", String.class);
+		cnsEdgeColumns.put("name", String.class);
+		cnsEdgeColumns.put("canonicalName", String.class);
 	}
 	public CySubNetwork getNetwork() {
 		return network;

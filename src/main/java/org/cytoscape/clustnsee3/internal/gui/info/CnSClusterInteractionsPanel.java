@@ -73,8 +73,15 @@ public class CnSClusterInteractionsPanel extends CnSPanel {
 		
 		for (CnSEdge ed : clusterLink.getEdges()) {
 			Vector<String> rv = new Vector<String>();
-			rv.addElement(partition.getInputNetwork().getRow(ed.getCyEdge().getSource()).get(CyNetwork.NAME, String.class));
-			rv.addElement(partition.getInputNetwork().getRow(ed.getCyEdge().getTarget()).get(CyNetwork.NAME, String.class));
+			
+			if (clusterLink.getSource().contains(ed.getCyEdge().getSource())) {
+				rv.addElement(partition.getInputNetwork().getRow(ed.getCyEdge().getSource()).get(CyNetwork.NAME, String.class));
+				rv.addElement(partition.getInputNetwork().getRow(ed.getCyEdge().getTarget()).get(CyNetwork.NAME, String.class));
+			}
+			else {
+				rv.addElement(partition.getInputNetwork().getRow(ed.getCyEdge().getTarget()).get(CyNetwork.NAME, String.class));
+				rv.addElement(partition.getInputNetwork().getRow(ed.getCyEdge().getSource()).get(CyNetwork.NAME, String.class));
+			}
 			data.addElement(rv);
 		}
 		interactionsTable.updateUI();
