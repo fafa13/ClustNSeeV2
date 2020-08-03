@@ -13,7 +13,6 @@
 
 package org.cytoscape.clustnsee3.internal.gui.results;
 
-import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedWriter;
@@ -373,6 +372,7 @@ public class CnSResultsCommandPanel extends CnSPanel {
 		        CnSCluster cluster = (CnSCluster)CnSEventManager.handleMessage(ev);
 				if (cluster != null) {
 					addClusterToView(cluster);
+					
 					// Apply the CnS visual style to the view
 					ev = new CnSEvent(CnSStyleManager.APPLY_CURRENT_STYLE, CnSEventManager.STYLE_MANAGER);
 					CnSEventManager.handleMessage(ev);
@@ -388,6 +388,7 @@ public class CnSResultsCommandPanel extends CnSPanel {
 		        	ev = new CnSEvent(CnSViewManager.EXPAND_CLUSTER, CnSEventManager.VIEW_MANAGER);
 		        	ev.addParameter(CnSViewManager.SUID, addClusterToView(cluster));
 		        	CnSEventManager.handleMessage(ev);
+		        	
 		        	// Apply the CnS visual style to the view
 		        	ev = new CnSEvent(CnSStyleManager.APPLY_CURRENT_STYLE, CnSEventManager.STYLE_MANAGER);
 					CnSEventManager.handleMessage(ev);
@@ -535,10 +536,6 @@ public class CnSResultsCommandPanel extends CnSPanel {
 		ev.addParameter(CnSViewManager.CLUSTER, cluster);
 		CnSEventManager.handleMessage(ev);
 		
-		// apply cluster view style
-		for (CnSNode node : cluster.getNodes())
-			clView.getNodeView(node.getCyNode()).setVisualProperty(BasicVisualLexicon.NODE_FILL_COLOR, Color.RED);
-		
 		// apply the preferred layout
 		Vector<CyNetworkView> v = new Vector<CyNetworkView>();
 		v.addElement(clView);
@@ -640,6 +637,10 @@ public class CnSResultsCommandPanel extends CnSPanel {
 		ev = new CnSEvent(CnSViewManager.SET_SELECTED_VIEW, CnSEventManager.VIEW_MANAGER);
 		ev.addParameter(CnSViewManager.VIEW, myView);
 		CnSEventManager.handleMessage(ev);
+		
+		// fill CnS attributes
+		for (String key : network.getNodeColumns().keySet())
+			clNet.getRow(cluster.getCyNode()).set(key, cluster.getAttributes().get(key));
 		
 		myView.getView().updateView();
 		return clNode.getSUID();
@@ -778,7 +779,11 @@ public class CnSResultsCommandPanel extends CnSPanel {
 		
 				// Set nested network
 				clNode.setNetworkPointer(network.getNetwork());
-		
+				
+				// fill CnS attributes
+				for (String key : currentNet.getNodeColumns().keySet())
+					currentNet.getNetwork().getRow(clNode).set(key, cluster.getAttributes().get(key));
+				
 				// make the view up to date
 				currentView.getView().updateView();
 			

@@ -369,6 +369,13 @@ public class CnSPartitionManager implements CnSEventListener {
 			newCluster.setAttribute(CyNetwork.NAME, newCluster.getName(), String.class);
 			newCluster.setAttribute("canonicalName", "Cluster #" + newCluster.getName(), String.class);
 			
+			System.err.println("Cluster #" + newCluster.getName());
+			System.err.println("  CnS:isCluster : " + newCluster.getAttributes().get("CnS:isCluster"));
+			System.err.println("  CnS:size : " + newCluster.getAttributes().get("CnS:size"));
+			System.err.println("  CyNetwork.NAME : " + newCluster.getAttributes().get(CyNetwork.NAME));
+			System.err.println("  canonicalName : " + newCluster.getAttributes().get("canonicalName"));
+			System.err.println();
+			
             // create a new view for my network
             CyNetworkView myView = cnvf.createNetworkView(myNet);
            // myView.updateView();

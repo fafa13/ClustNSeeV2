@@ -106,34 +106,6 @@ public class CnSControlActionPanel extends CnSPanel {
 				CyNetworkView v = ((CnSView)CnSEventManager.handleMessage(ev)).getView();
 				vs.apply(v);
 				v.updateView();
-				
-				/*
-				ev = new CnSEvent(CyActivator.GET_EXPORT_STYLE_FACTORY, CnSEventManager.CY_ACTIVATOR);
-				ExportVizmapTaskFactory evtf = (ExportVizmapTaskFactory)CnSEventManager.handleMessage(ev);
-				TaskIterator ti = evtf.createTaskIterator(new File("/home/fafa/Documents/cns.style"));
-				ev = new CnSEvent(CyActivator.GET_SYNCHRONOUS_TASK_MANAGER, CnSEventManager.CY_ACTIVATOR);
-				TaskManager<?, ?> tm = (TaskManager<?, ?>)CnSEventManager.handleMessage(ev);
-				tm.execute(ti);
-				
-				ev = new CnSEvent(CyActivator.GET_VISUAL_STYLE_FACTORY, CnSEventManager.CY_ACTIVATOR);
-				VisualStyle vs = ((VisualStyleFactory)CnSEventManager.handleMessage(ev)).createVisualStyle("Clust'n'see");
-				
-				//Use pass-through mapping
-				String ctrAttrName1 = "SUID";
-				ev = new CnSEvent(CyActivator.GET_PASSTHROUGH_VISUAL_MAPPING_FUNCTION_FACTORY, CnSEventManager.CY_ACTIVATOR);
-				
-				PassthroughMapping<String, ?> pMapping = (PassthroughMapping<String, ?>) ((VisualMappingFunctionFactory)CnSEventManager.handleMessage(ev)).createVisualMappingFunction(ctrAttrName1, String.class, BasicVisualLexicon.NODE_LABEL);
-				vs.addVisualMappingFunction(pMapping);                        
-				
-				// Add the new style to the VisualMappingManager
-				ev = new CnSEvent(CyActivator.GET_VISUAL_MAPPING_MANAGER, CnSEventManager.CY_ACTIVATOR);
-				((VisualMappingManager)CnSEventManager.handleMessage(ev)).addVisualStyle(vs);
-				  
-				// Apply the visual style to a NetwokView
-				ev = new CnSEvent(CnSViewManager.GET_SELECTED_VIEW, CnSEventManager.VIEW_MANAGER);
-				CyNetworkView v = ((CnSView)CnSEventManager.handleMessage(ev)).getView();
-				vs.apply(v);
-				v.updateView();*/
 			}
 		});
 	}
