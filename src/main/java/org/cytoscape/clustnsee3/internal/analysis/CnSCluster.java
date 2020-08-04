@@ -34,6 +34,15 @@ import org.cytoscape.model.subnetwork.CySubNetwork;
  * 
  */
 public class CnSCluster implements Comparable<CnSCluster> {
+	public static final int COMPARE_NO = 0;
+	public static final int COMPARE_NB_NODES_CRE = 1;
+	public static final int COMPARE_NB_NODES_DEC = 2;
+	public static final int COMPARE_RATIO_CRE = 3;
+	public static final int COMPARE_RATIO_DEC = 4;
+	public static final String[] COMPARE_NAME = new String[5];
+		
+	private static int compare_type;
+	
 	private int totalDegree, inDegree, outDegree;
 	private double modularity;
 	private ImageIcon snapshot = null;
@@ -51,6 +60,16 @@ public class CnSCluster implements Comparable<CnSCluster> {
 	private HashMap<String, Object> attributes;
 	private HashMap<String, Class> attributeTypes;
 	
+	static {
+		COMPARE_NAME[COMPARE_NO] = "----------";
+		COMPARE_NAME[COMPARE_NB_NODES_CRE] = "size (ascending)";
+		COMPARE_NAME[COMPARE_NB_NODES_DEC] = "size (descending)";
+		COMPARE_NAME[COMPARE_RATIO_CRE] = "int/ext edges ratio (ascending)";
+		COMPARE_NAME[COMPARE_RATIO_DEC] = "int/ext edges ratio (descending)";
+		
+		compare_type = COMPARE_NB_NODES_DEC;
+	}
+	
 	public CnSCluster() {
 		super();
 		alNodes = null;
@@ -59,6 +78,47 @@ public class CnSCluster implements Comparable<CnSCluster> {
 		annotations = new ArrayList<CnSClusterAnnotation>();
 		attributes = new HashMap<String, Object>();
 		attributeTypes = new HashMap<String, Class>();
+	}
+	
+	public static void setCompareType(String choice) {
+		int t = 0;
+		for (String s : COMPARE_NAME)
+			if (choice.equals(s)) {
+				compare_type = t;
+				break;
+			}
+			else
+				t++;
+	}
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 */
+	@Override
+	public int compareTo(CnSCluster o) {
+		switch (compare_type) {
+			case COMPARE_NB_NODES_CRE :
+				return alNodes.size() - o.getNbNodes();
+
+			case COMPARE_NB_NODES_DEC :
+				return o.getNbNodes() - alNodes.size();
+
+			case COMPARE_RATIO_CRE :
+				if (o.getExtEdges().size() > 0 && extEdges.size() > 0)
+					return inDegree / extEdges.size() - o.getInDegree() / o.getExtEdges().size();
+				else if (o.getExtEdges().size() > 0)
+					return -1000;
+				else return 1000;
+				
+			case COMPARE_RATIO_DEC :
+				if (o.getExtEdges().size() > 0 && extEdges.size() > 0)
+					return o.getInDegree() / o.getExtEdges().size() - inDegree / extEdges.size();
+				else if (o.getExtEdges().size() > 0)
+					return 1000;
+				else return -1000;
+					
+		}
+		return 0;
 	}
 	
 	public CySubNetwork getNetwork() {
@@ -165,13 +225,6 @@ public class CnSCluster implements Comparable<CnSCluster> {
 	}
 	public ImageIcon getSnapshot() {
 		return snapshot;
-	}
-	/* (non-Javadoc)
-	 * @see java.lang.Comparable#compareTo(java.lang.Object)
-	 */
-	@Override
-	public int compareTo(CnSCluster o) {
-		return alNodes.size() - o.getNbNodes();
 	}
 	
 	public int getNodeDegree(CnSNode node) {

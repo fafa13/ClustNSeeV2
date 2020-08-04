@@ -13,6 +13,9 @@
 
 package org.cytoscape.clustnsee3.internal.gui.results;
 
+import java.util.Collections;
+import java.util.Vector;
+
 import javax.swing.ImageIcon;
 import javax.swing.table.AbstractTableModel;
 
@@ -24,16 +27,15 @@ import org.cytoscape.clustnsee3.internal.analysis.CnSCluster;
 public class CnSResultsTableModel extends AbstractTableModel {
 	private static final long serialVersionUID = 288902092163456192L;
 	private String colName[] = {"Snapshot", "Details"};
-	private CnSCluster[] cluster;
-	private int nb;
+	private Vector<CnSCluster> cluster;
 	
 	/**
 	 * @param
 	 * @return
 	 */
-	public CnSResultsTableModel(int s) {
+	public CnSResultsTableModel() {
 		super();
-		cluster = new CnSCluster[s];
+		cluster = new Vector<CnSCluster>();
 	}
 	
 	/* (non-Javadoc)
@@ -41,7 +43,7 @@ public class CnSResultsTableModel extends AbstractTableModel {
 	 */
 	@Override
 	public int getRowCount() {
-		return nb;
+		return cluster.size();
 	}
 
 	/* (non-Javadoc)
@@ -86,18 +88,17 @@ public class CnSResultsTableModel extends AbstractTableModel {
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		if (columnIndex == 0)
-			return cluster[rowIndex].getSnapshot();
+			return cluster.elementAt(rowIndex).getSnapshot();
 		else if (columnIndex == 1)
-			return cluster[rowIndex];
+			return cluster.elementAt(rowIndex);
 		return null;
 	}
 	public void addCluster(CnSCluster cluster) {
-		this.cluster[nb] = cluster;
-		nb++;
+		this.cluster.addElement(cluster);
 	}
 	public CnSCluster getCluster(int i) {
 		if (i != -1)
-			return cluster[i];
+			return cluster.elementAt(i);
 		return null;
 	}
 
@@ -108,12 +109,21 @@ public class CnSResultsTableModel extends AbstractTableModel {
 	 */
 	public int getClusterIndex(long nodeId) {
 		int ret = -1;
-		for (int i = 0; i < cluster.length; i++)
-			if (cluster[i].getCyNode() != null)
-				if (cluster[i].getCyNode().getSUID() == nodeId) {
-					ret = i;
+		for (CnSCluster cl : cluster)
+			if (cl.getCyNode() != null)
+				if (cl.getCyNode().getSUID() == nodeId) {
+					ret = cluster.indexOf(cl);
 					break;
 				}
 		return ret;
+	}
+
+	/**
+	 * 
+	 * @param
+	 * @return
+	 */
+	public void sortClusters() {
+		Collections.sort(cluster);
 	}
 }

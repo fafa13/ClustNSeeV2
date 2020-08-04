@@ -34,6 +34,7 @@ import org.cytoscape.clustnsee3.internal.network.CnSNetworkManager;
 import org.cytoscape.clustnsee3.internal.view.CnSView;
 import org.cytoscape.clustnsee3.internal.view.CnSViewManager;
 import org.cytoscape.clustnsee3.internal.view.state.CnSClusterViewState;
+import org.cytoscape.clustnsee3.internal.view.style.CnSStyleManager;
 import org.cytoscape.model.CyEdge;
 import org.cytoscape.model.CyNetwork;
 import org.cytoscape.model.CyNetworkManager;
@@ -311,6 +312,11 @@ public class CnSPartitionManager implements CnSEventListener {
             	if( cyto_index != null) cynodes_to_keep.addElement(inputNetwork.getNode(cyto_index));
             }
         }
+        
+        ev = new CnSEvent(CnSStyleManager.SET_CURRENT_STYLE, CnSEventManager.STYLE_MANAGER);
+        ev.addParameter(CnSStyleManager.STYLE, CnSStyleManager.SNAPSHOT_STYLE);
+        CnSEventManager.handleMessage(ev);
+        
         for( int k = 0; k < NbClas; k++) {
             CnSCluster newCluster = new CnSCluster();
             Vector<CnSNode> alNodes = new Vector<CnSNode>();
@@ -378,10 +384,17 @@ public class CnSPartitionManager implements CnSEventListener {
 			
             // create a new view for my network
             CyNetworkView myView = cnvf.createNetworkView(myNet);
+            
            // myView.updateView();
             networkViewManager.addNetworkView(myView);
             
             newCluster.calModularity(myNet);
+            
+            // create the CnSView and apply the snapshot style
+            CnSView view = new CnSView(myView, new CnSClusterViewState(newCluster));
+            ev = new CnSEvent(CnSStyleManager.APPLY_CURRENT_STYLE, CnSEventManager.STYLE_MANAGER);
+            ev.addParameter(CnSStyleManager.VIEW, view);
+            CnSEventManager.handleMessage(ev);
             
         	TaskIterator tit = apltf.createTaskIterator(networkViewManager.getNetworkViews(myNet));
             FTTaskObserver to = new FTTaskObserver(myView, newCluster);
@@ -397,7 +410,6 @@ public class CnSPartitionManager implements CnSEventListener {
             ev.addParameter(CnSNetworkManager.CLUSTER, newCluster);
             CnSEventManager.handleMessage(ev);
             
-            CnSView view = new CnSView(myView, new CnSClusterViewState(newCluster));
             ev = new CnSEvent(CnSViewManager.ADD_VIEW, CnSEventManager.VIEW_MANAGER);
             ev.addParameter(CnSViewManager.VIEW, view);
             ev.addParameter(CnSViewManager.NETWORK, network);
@@ -407,7 +419,12 @@ public class CnSPartitionManager implements CnSEventListener {
             makeClusterLinks(newCluster, newPartition);
             newPartition.addCluster(newCluster);
         }
-        newPartition.sortClusters();
+        
+        ev = new CnSEvent(CnSStyleManager.SET_CURRENT_STYLE, CnSEventManager.STYLE_MANAGER);
+        ev.addParameter(CnSStyleManager.STYLE, CnSStyleManager.CNS_STYLE);
+        CnSEventManager.handleMessage(ev);
+        
+        //newPartition.sortClusters();
 		
         return newPartition;
 	}

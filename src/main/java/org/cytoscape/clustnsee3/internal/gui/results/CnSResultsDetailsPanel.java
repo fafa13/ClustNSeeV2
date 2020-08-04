@@ -61,7 +61,10 @@ public class CnSResultsDetailsPanel extends CnSPanel {
 		l = new JLabel("Intra/extra edges ratio :");
 		l.setForeground(Color.blue);
 		addComponent(l, 0, 4, 1, 1, 1.0, 1.0, CnSPanel.EAST, CnSPanel.NONE, 5, 5, 5, 0, 0, 0);
-		l = new JLabel(String.valueOf(data.getModularity()));
+		if (data.getExtEdges().size() > 0)
+			l = new JLabel(String.valueOf(Integer.valueOf(data.getInDegree()).doubleValue() / Integer.valueOf(data.getExtEdges().size()).doubleValue()));
+		else
+			l = new JLabel("-");
 		addComponent(l, 1, 4, 1, 1, 1.0, 1.0, CnSPanel.WEST, CnSPanel.NONE, 5, 5, 5, 5, 0, 0);
 	}
 }

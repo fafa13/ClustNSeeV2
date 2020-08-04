@@ -14,6 +14,7 @@
 package org.cytoscape.clustnsee3.internal.gui.results;
 
 import java.awt.Color;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.Vector;
 
@@ -41,9 +42,11 @@ public class CnSClusterListPanel extends CnSPanel {
 	private JTable table = null;
 	private CnSResultsTableModel model = null;
 	private JScrollPane scrollPane;
+	private Vector<CnSCluster> clusters;
 	
 	public void init (Vector<CnSCluster> clusters) {
-		model = new CnSResultsTableModel(clusters.size());
+		this.clusters = clusters;
+		model = new CnSResultsTableModel();
 		Iterator<CnSCluster> itClusters = clusters.iterator();
 		while (itClusters.hasNext()) model.addCluster(itClusters.next());
 
@@ -108,5 +111,14 @@ public class CnSClusterListPanel extends CnSPanel {
 				table.repaint();
 			}
 		}
+	}
+
+	/**
+	 * 
+	 * @param
+	 * @return
+	 */
+	public void sort() {
+		model.sortClusters();
 	}
 }

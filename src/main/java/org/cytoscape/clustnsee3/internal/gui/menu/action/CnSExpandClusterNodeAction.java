@@ -30,6 +30,7 @@ import org.cytoscape.clustnsee3.internal.partition.CnSPartition;
 import org.cytoscape.clustnsee3.internal.partition.CnSPartitionManager;
 import org.cytoscape.clustnsee3.internal.view.CnSView;
 import org.cytoscape.clustnsee3.internal.view.CnSViewManager;
+import org.cytoscape.clustnsee3.internal.view.style.CnSStyleManager;
 import org.cytoscape.event.CyEventHelper;
 import org.cytoscape.model.CyEdge;
 import org.cytoscape.model.CyNode;
@@ -110,8 +111,13 @@ public class CnSExpandClusterNodeAction {
 				}
 			}
 			eh.flushPayloadEvents();
-			for (CnSEdge cnsedge : cluster.getEdges())
+			
+			// adding cluster internal edges
+			for (CnSEdge cnsedge : cluster.getEdges()) {
 				network.getNetwork().addEdge(cnsedge.getCyEdge());
+				
+			}
+			
 			eh.flushPayloadEvents();
 			network.getNetwork().getRow(cluster.getCyNode()).set("selected", false);
 			for (CnSNode cnsnode : cluster.getNodes())
@@ -147,8 +153,9 @@ public class CnSExpandClusterNodeAction {
 					List<CyEdge> lce;
 					
 					for (CnSEdge ce : cl.getEdges())
-						if (expanded)
+						if (expanded) {
 							network.getNetwork().addEdge(ce.getCyEdge());
+						}
 						else {
 							clusterNode = null;
 							for (CnSNode n : cluster.getNodes())
@@ -158,8 +165,11 @@ public class CnSExpandClusterNodeAction {
 								}
 							if (!network.getNetwork().containsEdge(linkedCluster.getCyNode(), clusterNode) &&
 									!network.getNetwork().containsEdge(clusterNode, linkedCluster.getCyNode())) {
+								// adding node-cluster interaction link
 								edge = network.getNetwork().addEdge(linkedCluster.getCyNode(), clusterNode, false);
 								edgeWidth.putIfAbsent(edge, 1.0);
+								
+								
 							}
 							else {
 								lce = network.getNetwork().getConnectingEdgeList(linkedCluster.getCyNode(), clusterNode, CyEdge.Type.ANY);
@@ -176,15 +186,15 @@ public class CnSExpandClusterNodeAction {
 									edgeWidth.putIfAbsent(edge, view.getView().getEdgeView(edge).getVisualProperty(BasicVisualLexicon.EDGE_WIDTH) + 1.0);
 								}
 							}
-							//for (CyEdge e : edgeWidth.keySet()) {
-							//	network.getNetwork().getRow(e).set("CnS:size", (int)edgeWidth.get(e).doubleValue());
-							//}
 						}
 					for (CnSNode n : cl.getNodes()) {
 						if (!expanded) {
 							if (!network.getNetwork().containsEdge(linkedCluster.getCyNode(), n.getCyNode()) && 
 									!network.getNetwork().containsEdge(n.getCyNode(), linkedCluster.getCyNode())) {
+								// adding node-cluster multiclass link
 								CyEdge cyEdge = network.getNetwork().addEdge(linkedCluster.getCyNode(), n.getCyNode(), false);
+								
+								
 								eh.flushPayloadEvents();
 								network.getNetwork().getRow(cyEdge).set("CnS:isInteraction", false);
 								eh.flushPayloadEvents();
@@ -195,6 +205,9 @@ public class CnSExpandClusterNodeAction {
 			}
 			
 			eh.flushPayloadEvents();
+			
+			ev = new CnSEvent(CnSStyleManager.APPLY_CURRENT_STYLE, CnSEventManager.STYLE_MANAGER);
+			CnSEventManager.handleMessage(ev);
 			
 			ev = new CnSEvent(CnSViewManager.SET_EXPANDED, CnSEventManager.VIEW_MANAGER);
 			ev.addParameter(CnSViewManager.CLUSTER, cluster);

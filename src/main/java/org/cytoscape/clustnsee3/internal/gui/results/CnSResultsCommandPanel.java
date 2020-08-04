@@ -13,6 +13,7 @@
 
 package org.cytoscape.clustnsee3.internal.gui.results;
 
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedWriter;
@@ -26,7 +27,7 @@ import java.util.Vector;
 import javax.swing.BorderFactory;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
-import javax.swing.border.BevelBorder;
+import javax.swing.border.EtchedBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.cytoscape.application.CyApplicationManager;
@@ -87,9 +88,10 @@ public class CnSResultsCommandPanel extends CnSPanel {
 	}
 	
 	protected void initGraphics() {
-		setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
+		setBorder(BorderFactory.createEtchedBorder(EtchedBorder.RAISED));
+		
 		clusterPanel = new CnSPanel();
-		clusterPanel.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
+		clusterPanel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
 		newClusterViewButton = new CnSButton("New cluster view");
 		clusterPanel.addComponent(newClusterViewButton, 0, 0, 1, 1, 1.0, 1.0, EAST, NONE, 5, 5, 0, 0, 0, 0);
 		newClusterNetworkViewButton = new CnSButton("New network cluster view");
@@ -98,7 +100,7 @@ public class CnSResultsCommandPanel extends CnSPanel {
 		clusterPanel.addComponent(addClusterToViewButton, 0, 1, 1, 1, 1.0, 1.0, EAST, NONE, 5, 5, 5, 0, 0, 0);
 		addClusterNetworkToViewButton = new CnSButton("Add cluster network to view");
 		clusterPanel.addComponent(addClusterNetworkToViewButton, 1, 1, 1, 1, 1.0, 1.0, WEST, NONE, 5, 5, 5, 5, 0, 0);
-		addComponent(clusterPanel, 0, 0, 1, 1, 1.0, 1.0, NORTH, HORIZONTAL, 5, 5, 0, 5, 0, 0);
+		addComponent(clusterPanel, 0, 0, 1, 1, 0.0, 1.0, NORTH, NONE, 5, 5, 0, 5, 0, 0);
 
 		partitionPanel = new CnSPanel();
 		partitionViewButton = new CnSButton("Partition view");
@@ -372,6 +374,15 @@ public class CnSResultsCommandPanel extends CnSPanel {
 		        CnSCluster cluster = (CnSCluster)CnSEventManager.handleMessage(ev);
 				if (cluster != null) {
 					addClusterToView(cluster);
+					//ev = new CnSEvent(CnSViewManager.GET_SELECTED_VIEW, CnSEventManager.VIEW_MANAGER);
+					//CnSView sView = (CnSView)CnSEventManager.handleMessage(ev);
+					
+					/*for (CnSCluster cl : sView.getClusters()) {
+						double x = sView.getView().getNodeView(cl.getCyNode()).getVisualProperty(BasicVisualLexicon.NODE_X_LOCATION);
+						double y = sView.getView().getNodeView(cl.getCyNode()).getVisualProperty(BasicVisualLexicon.NODE_Y_LOCATION);
+						
+					}*/
+
 					
 					// Apply the CnS visual style to the view
 					ev = new CnSEvent(CnSStyleManager.APPLY_CURRENT_STYLE, CnSEventManager.STYLE_MANAGER);

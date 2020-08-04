@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <vizmap id="VizMap-2020_07_27-21_57" documentVersion="3.0">
-    <visualStyle name="CnS_default">
+    <visualStyle name="CnS_snapshot">
         <network>
             <visualProperty default="#FFFFFF" name="NETWORK_BACKGROUND_PAINT"/>
             <visualProperty default="1.0" name="NETWORK_SCALE_FACTOR"/>
@@ -21,61 +21,34 @@
             <dependency value="true" name="nodeCustomGraphicsSizeSync"/>
             <dependency value="false" name="nodeSizeLocked"/>
             <visualProperty default="0.0" name="NODE_CUSTOMGRAPHICS_SIZE_2"/>
-            <visualProperty default="10.0" name="NODE_WIDTH">
-                <continuousMapping attributeName="CnS:size" attributeType="integer">
-                    <continuousMappingPoint attrValue="1.0" equalValue="40.0" greaterValue="40.0" lesserValue="1.0"/>
-                    <continuousMappingPoint attrValue="50.000000790692866" equalValue="60.0" greaterValue="60.0" lesserValue="60.0"/>
-                    <continuousMappingPoint attrValue="99.99999542161822" equalValue="80.0" greaterValue="80.0" lesserValue="80.0"/>
-                    <continuousMappingPoint attrValue="5000.0" equalValue="50.0" greaterValue="1.0" lesserValue="50.0"/>
-                </continuousMapping>
+            <visualProperty default="20.0" name="NODE_WIDTH">
             </visualProperty>
             <visualProperty default="C,C,c,0.00,0.00" name="NODE_CUSTOMGRAPHICS_POSITION_6"/>
             <visualProperty default="C,C,c,0.00,0.00" name="NODE_LABEL_POSITION">
-                <discreteMapping attributeName="CnS:isCluster" attributeType="boolean">
-                    <discreteMappingEntry attributeValue="true" value="S,C,c,0.00,-10.00"/>
-                </discreteMapping>
             </visualProperty>
-            <visualProperty default="10.0" name="NODE_SIZE">
-                <discreteMapping attributeName="CnS:isCluster" attributeType="boolean">
-                    <discreteMappingEntry attributeValue="true" value="40.0"/>
-                </discreteMapping>
+            <visualProperty default="20.0" name="NODE_SIZE">
             </visualProperty>
             <visualProperty default="C,C,c,0.00,0.00" name="NODE_CUSTOMGRAPHICS_POSITION_3"/>
             <visualProperty default="6" name="NODE_LABEL_FONT_SIZE">
-                <discreteMapping attributeName="CnS:isCluster" attributeType="boolean">
-                    <discreteMappingEntry attributeValue="true" value="12"/>
-                </discreteMapping>
             </visualProperty>
             <visualProperty default="#FFFF00" name="NODE_SELECTED_PAINT"/>
             <visualProperty default="0.0" name="NODE_CUSTOMGRAPHICS_SIZE_5"/>
             <visualProperty default="org.cytoscape.ding.customgraphics.NullCustomGraphics,0,[ Remove Graphics ]," name="NODE_CUSTOMGRAPHICS_9"/>
-            <visualProperty default="ROUND_RECTANGLE" name="COMPOUND_NODE_SHAPE"/>
+            <visualProperty default="ELLIPSE" name="COMPOUND_NODE_SHAPE"/>
             <visualProperty default="255" name="NODE_TRANSPARENCY"/>
             <visualProperty default="org.cytoscape.ding.customgraphics.NullCustomGraphics,0,[ Remove Graphics ]," name="NODE_CUSTOMGRAPHICS_5"/>
             <visualProperty default="ELLIPSE" name="NODE_SHAPE">
-                <discreteMapping attributeName="CnS:isCluster" attributeType="boolean">
-                    <discreteMappingEntry attributeValue="true" value="ROUND_RECTANGLE"/>
-                </discreteMapping>
             </visualProperty>
             <visualProperty default="C,C,c,0.00,0.00" name="NODE_CUSTOMGRAPHICS_POSITION_5"/>
             <visualProperty default="50" name="NODE_LABEL_TRANSPARENCY">
-                <discreteMapping attributeName="CnS:isCluster" attributeType="boolean">
-                    <discreteMappingEntry attributeValue="true" value="255"/>
-                </discreteMapping>
             </visualProperty>
-            <visualProperty default="#99FF99" name="NODE_FILL_COLOR">
-                <discreteMapping attributeName="CnS:isCluster" attributeType="boolean">
-                    <discreteMappingEntry attributeValue="true" value="#FFCCCC"/>
-                </discreteMapping>
+            <visualProperty default="#FF0000" name="NODE_FILL_COLOR">
             </visualProperty>
             <visualProperty default="0.0" name="NODE_CUSTOMGRAPHICS_SIZE_1"/>
             <visualProperty default="C,C,c,0.00,0.00" name="NODE_CUSTOMGRAPHICS_POSITION_9"/>
             <visualProperty default="0.0" name="NODE_CUSTOMGRAPHICS_SIZE_4"/>
             <visualProperty default="org.cytoscape.ding.customgraphics.NullCustomGraphics,0,[ Remove Graphics ]," name="NODE_CUSTOMGRAPHICS_6"/>
             <visualProperty default="SansSerif.plain,plain,12" name="NODE_LABEL_FONT_FACE">
-                <discreteMapping attributeName="CnS:isCluster" attributeType="boolean">
-                    <discreteMappingEntry attributeValue="true" value="SansSerif.bold,plain,14"/>
-                </discreteMapping>
             </visualProperty>
             <visualProperty default="0.0" name="NODE_X_LOCATION"/>
             <visualProperty default="org.cytoscape.ding.customgraphics.NullCustomGraphics,0,[ Remove Graphics ]," name="NODE_CUSTOMGRAPHICS_2"/>
@@ -98,7 +71,6 @@
             <visualProperty default="0.0" name="NODE_CUSTOMGRAPHICS_SIZE_9"/>
             <visualProperty default="0.0" name="NODE_CUSTOMGRAPHICS_SIZE_8"/>
             <visualProperty default="" name="NODE_LABEL">
-                <passthroughMapping attributeName="name" attributeType="string"/>
             </visualProperty>
             <visualProperty default="C,C,c,0.00,0.00" name="NODE_CUSTOMGRAPHICS_POSITION_8"/>
             <visualProperty default="SOLID" name="NODE_BORDER_STROKE"/>
@@ -107,7 +79,7 @@
             <visualProperty default="255" name="NODE_BORDER_TRANSPARENCY"/>
             <visualProperty default="#000000" name="NODE_LABEL_COLOR"/>
             <visualProperty default="org.cytoscape.ding.customgraphics.NullCustomGraphics,0,[ Remove Graphics ]," name="NODE_CUSTOMGRAPHICS_4"/>
-            <visualProperty default="10.0" name="NODE_HEIGHT">
+            <visualProperty default="20.0" name="NODE_HEIGHT">
                 <continuousMapping attributeName="CnS:size" attributeType="integer">
                     <continuousMappingPoint attrValue="1.0" equalValue="30.0" greaterValue="30.0" lesserValue="1.0"/>
                     <continuousMappingPoint attrValue="50.000000790692866" equalValue="40.0" greaterValue="40.0" lesserValue="40.0"/>
@@ -134,27 +106,14 @@
             <visualProperty default="10" name="EDGE_LABEL_FONT_SIZE"/>
             <visualProperty default="true" name="EDGE_CURVED"/>
             <visualProperty default="#000000" name="EDGE_LABEL_COLOR">
-                <discreteMapping attributeName="CnS:isInteraction" attributeType="boolean">
-                    <discreteMappingEntry attributeValue="false" value="#66FF66"/>
-                    <discreteMappingEntry attributeValue="true" value="#00CCFF"/>
-                </discreteMapping>
             </visualProperty>
             <visualProperty default="" name="EDGE_LABEL"/>
             <visualProperty default="1.0" name="EDGE_WIDTH">
-                <continuousMapping attributeName="CnS:size" attributeType="integer">
-                    <continuousMappingPoint attrValue="1.0" equalValue="1.0" greaterValue="1.0" lesserValue="1.0"/>
-                    <continuousMappingPoint attrValue="10.000000217929482" equalValue="10.0" greaterValue="10.0" lesserValue="10.0"/>
-                    <continuousMappingPoint attrValue="1000.0" equalValue="10.0" greaterValue="5.0" lesserValue="10.0"/>
-                </continuousMapping>
             </visualProperty>
             <visualProperty default="SOLID" name="EDGE_LINE_TYPE"/>
             <visualProperty default="#000000" name="EDGE_SOURCE_ARROW_UNSELECTED_PAINT"/>
             <visualProperty default="255" name="EDGE_LABEL_TRANSPARENCY"/>
-            <visualProperty default="#404040" name="EDGE_STROKE_UNSELECTED_PAINT">
-                <discreteMapping attributeName="CnS:isInteraction" attributeType="boolean">
-                    <discreteMappingEntry attributeValue="false" value="#00FF00"/>
-                    <discreteMappingEntry attributeValue="true" value="#0000FF"/>
-                </discreteMapping>
+            <visualProperty default="#000000" name="EDGE_STROKE_UNSELECTED_PAINT">
             </visualProperty>
             <visualProperty default="#FF0000" name="EDGE_STROKE_SELECTED_PAINT"/>
             <visualProperty default="6.0" name="EDGE_TARGET_ARROW_SIZE"/>

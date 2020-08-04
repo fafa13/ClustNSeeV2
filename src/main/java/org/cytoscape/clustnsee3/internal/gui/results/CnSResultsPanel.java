@@ -14,10 +14,14 @@
 package org.cytoscape.clustnsee3.internal.gui.results;
 
 import java.awt.Component;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 
+import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.JTabbedPane;
+import javax.swing.border.EtchedBorder;
 
 import org.cytoscape.application.CyApplicationManager;
 import org.cytoscape.application.swing.CytoPanelComponent;
@@ -47,10 +51,12 @@ public class CnSResultsPanel extends CnSPanel implements CytoPanelComponent, CnS
 	public static final int GET_SELECTED_PARTITION = 3;
 	public static final int SELECT_CLUSTER = 4;
 	public static final int DISCARD_PARTITION = 5;
+	public static final int SORT_RESULTS = 6;
 	
 	private static CnSResultsPanel instance;
 	private CnSResultsCommandPanel commandPanel;
 	private JTabbedPane jtp;
+	private CnSResultsSortPanel sortPanel;
 	
 	public static final int PARTITION = 1001;
 	public static final int RESULT = 1003;
@@ -75,10 +81,18 @@ public class CnSResultsPanel extends CnSPanel implements CytoPanelComponent, CnS
 
 	protected void initGraphics() {
 		super.initGraphics();
+		sortPanel = new CnSResultsSortPanel();
+		addComponent(sortPanel, 0, 0, 1, 1, 1.0, 0.0, NORTH, HORIZONTAL, 10, 10, 0, 10, 0, 0);
+		
+		CnSPanel centerPanel = new CnSPanel();
+		centerPanel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.RAISED));
+		
 		jtp = new JTabbedPane();
-		addComponent(jtp, 0, 0, 1, 1, 1.0, 1.0, NORTH, BOTH, 0, 10, 10, 10, 0, 0);
+		centerPanel.addComponent(jtp, 0, 0, 1, 1, 1.0, 1.0, CENTER, BOTH, 5, 5, 5, 5, 0, 0);
+		
+		addComponent(centerPanel, 0, 1, 1, 1, 1.0, 1.0, CENTER, BOTH, 10, 10, 0, 10, 0, 0);
 		commandPanel = new CnSResultsCommandPanel();
-		addComponent(commandPanel, 0, 1, 1, 1, 1.0, 0.0, SOUTH, HORIZONTAL, 0, 10, 10, 10, 0, 0);
+		addComponent(commandPanel, 0, 2, 1, 1, 1.0, 0.0, SOUTH, HORIZONTAL, 10, 10, 10, 10, 0, 0);
 	}
 	
 	/* (non-Javadoc)
@@ -161,6 +175,11 @@ public class CnSResultsPanel extends CnSPanel implements CytoPanelComponent, CnS
 	    	        crn.removeSubNetwork(w.getNetwork());
 	    		}*/
 	    		break;
+	    		
+	    	case SORT_RESULTS :
+	    		((CnSClusterListPanel)jtp.getComponentAt(jtp.getModel().getSelectedIndex())).sort();
+	    		break;
+	    		
 	    }
 	    return ret;
 	}
