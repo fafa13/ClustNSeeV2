@@ -29,6 +29,7 @@ import org.cytoscape.clustnsee3.internal.analysis.CnSCluster;
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
 import org.cytoscape.clustnsee3.internal.gui.widget.CnSPanel;
+import org.cytoscape.clustnsee3.internal.partition.CnSPartition;
 
 /**
  * 
@@ -86,5 +87,19 @@ public class CnSResultsSortPanel extends CnSPanel {
 				}
 			}
 		});
+		clusterList.addItemListener(new ItemListener() {
+			@Override
+			public void itemStateChanged(ItemEvent event) {
+				if (event.getStateChange() == ItemEvent.SELECTED) {
+					CnSEvent ev = new CnSEvent(CnSResultsPanel.SELECT_CLUSTER, CnSEventManager.RESULTS_PANEL);
+					ev.addParameter(CnSResultsPanel.CLUSTER_NAME, clusterList.getSelectedItem());
+					CnSEventManager.handleMessage(ev);
+				}
+			}
+		});
+	}
+	public void init(CnSPartition partition) {
+		clusterList.removeAllItems();
+		for (int i = 1; i <= partition.getClusters().size(); i++) clusterList.addItem(i);
 	}
 }

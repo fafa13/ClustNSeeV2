@@ -102,6 +102,7 @@ public class CnSExpandClusterNodeAction {
 			for (CnSNode cnsnode : cluster.getNodes()) {
 				if (!view.getView().getModel().containsNode(cnsnode.getCyNode())) {
 					network.getNetwork().addNode(cnsnode.getCyNode());
+					network.getNetwork().getRow(cnsnode.getCyNode()).set("CnS:size", null);
 					view.getView().updateView();
 					View<CyNode> nodeView = view.getView().getNodeView(cnsnode.getCyNode());
 					x = (x0 - ratio * (x_max + x_min) / 2) + ratio * clusterView.getView().getNodeView(cnsnode.getCyNode()).getVisualProperty(BasicVisualLexicon.NODE_X_LOCATION);

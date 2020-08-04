@@ -22,6 +22,8 @@ import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.JTabbedPane;
 import javax.swing.border.EtchedBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import org.cytoscape.application.CyApplicationManager;
 import org.cytoscape.application.swing.CytoPanelComponent;
@@ -63,6 +65,7 @@ public class CnSResultsPanel extends CnSPanel implements CytoPanelComponent, CnS
 	public static final int NETWORK = 1004;
 	public static final int ALGO = 1005;
 	public static final int CLUSTER = 1006;
+	public static final int CLUSTER_NAME = 1007;
 	
 	public CnSResultsPanel(String title) {
 		super(title);
@@ -77,6 +80,18 @@ public class CnSResultsPanel extends CnSPanel implements CytoPanelComponent, CnS
 	public CnSResultsPanel() {
 		clusterListPanel = new HashMap<CnSPartition, CnSClusterListPanel>();
 		initGraphics();
+		initListeners();
+	}
+	
+	private void initListeners() {
+		jtp.addChangeListener(new ChangeListener() {
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				CnSEvent ev = new CnSEvent(CnSPartitionManager.GET_PARTITION, CnSEventManager.PARTITION_MANAGER);
+	    		ev.addParameter(CnSPartitionManager.INDEX, jtp.getSelectedIndex());
+	    		sortPanel.init((CnSPartition)CnSEventManager.handleMessage(ev));
+			}
+		});
 	}
 
 	protected void initGraphics() {
@@ -149,10 +164,17 @@ public class CnSResultsPanel extends CnSPanel implements CytoPanelComponent, CnS
 	    		
 	    	case SELECT_CLUSTER :
 	    		Long nodeId = (Long)event.getParameter(CLUSTER);
-	    		if (nodeId == null)
-	    			((CnSClusterListPanel)jtp.getComponentAt(jtp.getModel().getSelectedIndex())).selectCluster(-1);
-	    		else
+	    		if (nodeId != null)
 	    			((CnSClusterListPanel)jtp.getComponentAt(jtp.getModel().getSelectedIndex())).selectCluster(nodeId);
+	    		else {
+	    			Integer name = (Integer)event.getParameter(CLUSTER_NAME);
+	    			if (name != null) {
+	    				((CnSClusterListPanel)jtp.getComponentAt(jtp.getModel().getSelectedIndex())).selectCluster(name);
+	    			}
+	    			else
+	    				((CnSClusterListPanel)jtp.getComponentAt(jtp.getModel().getSelectedIndex())).selectCluster(-1);
+	    		}
+	    			
 	    		break;
 	    		
 	    	case DISCARD_PARTITION :
@@ -178,6 +200,7 @@ public class CnSResultsPanel extends CnSPanel implements CytoPanelComponent, CnS
 	    		
 	    	case SORT_RESULTS :
 	    		((CnSClusterListPanel)jtp.getComponentAt(jtp.getModel().getSelectedIndex())).sort();
+	    		jtp.repaint();
 	    		break;
 	    		
 	    }

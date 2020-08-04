@@ -80,12 +80,6 @@
             <visualProperty default="#000000" name="NODE_LABEL_COLOR"/>
             <visualProperty default="org.cytoscape.ding.customgraphics.NullCustomGraphics,0,[ Remove Graphics ]," name="NODE_CUSTOMGRAPHICS_4"/>
             <visualProperty default="20.0" name="NODE_HEIGHT">
-                <continuousMapping attributeName="CnS:size" attributeType="integer">
-                    <continuousMappingPoint attrValue="1.0" equalValue="30.0" greaterValue="30.0" lesserValue="1.0"/>
-                    <continuousMappingPoint attrValue="50.000000790692866" equalValue="40.0" greaterValue="40.0" lesserValue="40.0"/>
-                    <continuousMappingPoint attrValue="99.99999542161822" equalValue="50.0" greaterValue="50.0" lesserValue="50.0"/>
-                    <continuousMappingPoint attrValue="5000.0" equalValue="50.0" greaterValue="1.0" lesserValue="50.0"/>
-                </continuousMapping>
             </visualProperty>
             <visualProperty default="" name="NODE_TOOLTIP"/>
             <visualProperty default="false" name="NODE_SELECTED"/>

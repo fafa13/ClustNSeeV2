@@ -187,7 +187,8 @@ public class CnSCompressClusterNodeAction {
 								for (CnSNode cnsn : cl.getNodes())
 									if (!network.getNetwork().containsEdge(c.getCyNode(), cnsn.getCyNode()) && 
 											!network.getNetwork().containsEdge(cnsn.getCyNode(), c.getCyNode())) {
-										network.getNetwork().addEdge(c.getCyNode(), cnsn.getCyNode(), false);
+										CyEdge ce = network.getNetwork().addEdge(c.getCyNode(), cnsn.getCyNode(), false);
+										network.getNetwork().getRow(ce).set("CnS:isInteraction", false);
 										view.getView().updateView();
 									}
 								view.getView().updateView();
