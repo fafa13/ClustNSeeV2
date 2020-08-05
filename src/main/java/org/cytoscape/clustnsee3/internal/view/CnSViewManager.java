@@ -32,6 +32,7 @@ import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
 import org.cytoscape.clustnsee3.internal.gui.info.CnSInfoPanel;
 import org.cytoscape.clustnsee3.internal.gui.menu.action.CnSExpandClusterNodeAction;
 import org.cytoscape.clustnsee3.internal.gui.results.CnSResultsPanel;
+import org.cytoscape.clustnsee3.internal.gui.results.CnSResultsSortPanel;
 import org.cytoscape.clustnsee3.internal.network.CnSNetwork;
 import org.cytoscape.clustnsee3.internal.network.CnSNetworkManager;
 import org.cytoscape.clustnsee3.internal.partition.CnSPartition;
@@ -209,7 +210,12 @@ UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, SelectedNodesAndEd
 					
 			case SELECT_CLUSTER :
 				cluster = (CnSCluster)event.getParameter(CLUSTER);
-				if (cluster.getCyNode() != null)
+				if (cluster == null) {
+					Collection<CyRow> matchingRows = view2networkMap.get(selectedView).getNetwork().getTable(CyNode.class, CyNetwork.LOCAL_ATTRS).getMatchingRows("selected", true);
+					if (matchingRows.size() > 0)
+						for (CyRow row : matchingRows) row.set("selected", false);
+				}
+				else if (cluster.getCyNode() != null)
 					for (CnSView v : views)
 						if (v != null)
 							if (v.getView().getNodeView(cluster.getCyNode()) != null) {

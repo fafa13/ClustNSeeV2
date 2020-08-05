@@ -14,12 +14,12 @@
 package org.cytoscape.clustnsee3.internal.gui.results;
 
 import java.awt.Component;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
+import java.util.Vector;
 
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
+import javax.swing.JLabel;
 import javax.swing.JTabbedPane;
 import javax.swing.border.EtchedBorder;
 import javax.swing.event.ChangeEvent;
@@ -31,13 +31,18 @@ import org.cytoscape.application.swing.CytoPanelName;
 import org.cytoscape.clustnsee3.internal.CyActivator;
 import org.cytoscape.clustnsee3.internal.algorithm.CnSAlgorithm;
 import org.cytoscape.clustnsee3.internal.algorithm.CnSAlgorithmResult;
+import org.cytoscape.clustnsee3.internal.analysis.CnSCluster;
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventListener;
 import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
 import org.cytoscape.clustnsee3.internal.gui.widget.CnSPanel;
+import org.cytoscape.clustnsee3.internal.network.CnSNetwork;
+import org.cytoscape.clustnsee3.internal.network.CnSNetworkManager;
 import org.cytoscape.clustnsee3.internal.partition.CnSPartition;
 import org.cytoscape.clustnsee3.internal.partition.CnSPartitionManager;
 import org.cytoscape.model.CyNetwork;
+import org.cytoscape.model.subnetwork.CyRootNetwork;
+import org.cytoscape.model.subnetwork.CyRootNetworkManager;
 
 /**
  * 
@@ -54,11 +59,13 @@ public class CnSResultsPanel extends CnSPanel implements CytoPanelComponent, CnS
 	public static final int SELECT_CLUSTER = 4;
 	public static final int DISCARD_PARTITION = 5;
 	public static final int SORT_RESULTS = 6;
+	public static final int GET_CLUSTER_NAME = 7;
 	
 	private static CnSResultsPanel instance;
 	private CnSResultsCommandPanel commandPanel;
 	private JTabbedPane jtp;
 	private CnSResultsSortPanel sortPanel;
+	private JLabel nbClustersLabel;
 	
 	public static final int PARTITION = 1001;
 	public static final int RESULT = 1003;
@@ -87,9 +94,13 @@ public class CnSResultsPanel extends CnSPanel implements CytoPanelComponent, CnS
 		jtp.addChangeListener(new ChangeListener() {
 			@Override
 			public void stateChanged(ChangeEvent e) {
-				CnSEvent ev = new CnSEvent(CnSPartitionManager.GET_PARTITION, CnSEventManager.PARTITION_MANAGER);
-	    		ev.addParameter(CnSPartitionManager.INDEX, jtp.getSelectedIndex());
-	    		sortPanel.init((CnSPartition)CnSEventManager.handleMessage(ev));
+				if (jtp.getSelectedIndex() != -1) {
+					CnSEvent ev = new CnSEvent(CnSPartitionManager.GET_PARTITION, CnSEventManager.PARTITION_MANAGER);
+					ev.addParameter(CnSPartitionManager.INDEX, jtp.getSelectedIndex());
+					CnSPartition partition = (CnSPartition)CnSEventManager.handleMessage(ev);
+					sortPanel.init(partition);
+					nbClustersLabel.setText(String.valueOf(partition.getClusters().size()));
+				}
 			}
 		});
 	}
@@ -102,8 +113,11 @@ public class CnSResultsPanel extends CnSPanel implements CytoPanelComponent, CnS
 		CnSPanel centerPanel = new CnSPanel();
 		centerPanel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.RAISED));
 		
+		centerPanel.addComponent(new JLabel("Nb. of clusters :"), 0, 0, 1, 1, 0.0, 0.0, WEST, NONE, 5, 5, 0, 0, 0, 0);
+		nbClustersLabel = new JLabel();
+		centerPanel.addComponent(nbClustersLabel, 1, 0, 1, 1, 1.0, 0.0, WEST, NONE, 5, 5, 0, 5, 0, 0);
 		jtp = new JTabbedPane();
-		centerPanel.addComponent(jtp, 0, 0, 1, 1, 1.0, 1.0, CENTER, BOTH, 5, 5, 5, 5, 0, 0);
+		centerPanel.addComponent(jtp, 0, 1, 2, 1, 1.0, 1.0, CENTER, BOTH, 5, 5, 5, 5, 0, 0);
 		
 		addComponent(centerPanel, 0, 1, 1, 1, 1.0, 1.0, CENTER, BOTH, 10, 10, 0, 10, 0, 0);
 		commandPanel = new CnSResultsCommandPanel();
@@ -150,6 +164,7 @@ public class CnSResultsPanel extends CnSPanel implements CytoPanelComponent, CnS
 	    		CnSAlgorithm algo = (CnSAlgorithm)event.getParameter(ALGO);
 	    		initResultPanel(result, network, algo);
 	    		commandPanel.setEnabled(true);
+	    		sortPanel.setEnabled(true);
 	    		break;
 	    	    
 	    	case GET_SELECTED_CLUSTER:
@@ -164,15 +179,20 @@ public class CnSResultsPanel extends CnSPanel implements CytoPanelComponent, CnS
 	    		
 	    	case SELECT_CLUSTER :
 	    		Long nodeId = (Long)event.getParameter(CLUSTER);
-	    		if (nodeId != null)
+	    		if (nodeId != null) {
 	    			((CnSClusterListPanel)jtp.getComponentAt(jtp.getModel().getSelectedIndex())).selectCluster(nodeId);
+	    			sortPanel.setSelectedCluster(nodeId);
+	    		}
 	    		else {
 	    			Integer name = (Integer)event.getParameter(CLUSTER_NAME);
-	    			if (name != null) {
-	    				((CnSClusterListPanel)jtp.getComponentAt(jtp.getModel().getSelectedIndex())).selectCluster(name);
-	    			}
-	    			else
+	    			if (name == null || name == 0) {
 	    				((CnSClusterListPanel)jtp.getComponentAt(jtp.getModel().getSelectedIndex())).selectCluster(-1);
+	    				sortPanel.setSelectedCluster(0);
+	    			}
+	    			else {
+	    				((CnSClusterListPanel)jtp.getComponentAt(jtp.getModel().getSelectedIndex())).selectCluster(name);
+	    				sortPanel.setSelectedCluster(name);
+	    			}
 	    		}
 	    			
 	    		break;
@@ -181,8 +201,11 @@ public class CnSResultsPanel extends CnSPanel implements CytoPanelComponent, CnS
 	    		CnSPartition partition = (CnSPartition)event.getParameter(PARTITION);
 	    		jtp.remove(clusterListPanel.get(partition));
 	    		clusterListPanel.remove(partition);
-	    		if (clusterListPanel.size() == 0) commandPanel.setEnabled(false);
-	    		/*ev = new CnSEvent(CnSPartitionManager.GET_CLUSTERS, CnSEventManager.PARTITION_MANAGER);
+	    		if (clusterListPanel.size() == 0) {
+	    			commandPanel.setEnabled(false);
+	    			sortPanel.setEnabled(false);
+	    		}
+	    		ev = new CnSEvent(CnSPartitionManager.GET_CLUSTERS, CnSEventManager.PARTITION_MANAGER);
 	    		ev.addParameter(CnSPartitionManager.PARTITION, partition);
 	    		Vector<CnSCluster> clusters = (Vector<CnSCluster>)CnSEventManager.handleMessage(ev);
 	    		
@@ -195,7 +218,7 @@ public class CnSResultsPanel extends CnSPanel implements CytoPanelComponent, CnS
 	    			CnSNetwork w = (CnSNetwork)CnSEventManager.handleMessage(ev);
 	    			CyRootNetwork crn = crnm.getRootNetwork(w.getNetwork());
 	    	        crn.removeSubNetwork(w.getNetwork());
-	    		}*/
+	    		}
 	    		break;
 	    		
 	    	case SORT_RESULTS :
@@ -203,6 +226,10 @@ public class CnSResultsPanel extends CnSPanel implements CytoPanelComponent, CnS
 	    		jtp.repaint();
 	    		break;
 	    		
+	    	case GET_CLUSTER_NAME :
+	    		long cluster_suid = (Long)event.getParameter(CLUSTER);
+	    		ret = ((CnSClusterListPanel)jtp.getComponentAt(jtp.getModel().getSelectedIndex())).getClusterName(cluster_suid);
+	    		break;
 	    }
 	    return ret;
 	}
@@ -225,7 +252,8 @@ public class CnSResultsPanel extends CnSPanel implements CytoPanelComponent, CnS
 		clp.init(newPartition.getClusters());
         jtp.add(newPartition.getName() + ":" + newPartition.getAlgorithmName(), clp);
 		clusterListPanel.putIfAbsent(newPartition, clp);
-		
+		nbClustersLabel.setText(String.valueOf(newPartition.getClusters().size()));
 		applicationManager.setCurrentNetwork(inputNetwork);
+		jtp.setSelectedComponent(clp);
 	}
 }

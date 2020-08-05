@@ -116,7 +116,9 @@ public class CnSCluster implements Comparable<CnSCluster> {
 				else if (o.getExtEdges().size() > 0)
 					return 1000;
 				else return -1000;
-					
+				
+			case COMPARE_NO :
+				return Integer.parseInt(name) - Integer.parseInt(o.getName());
 		}
 		return 0;
 	}

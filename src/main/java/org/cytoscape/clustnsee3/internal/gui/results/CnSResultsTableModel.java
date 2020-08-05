@@ -118,15 +118,25 @@ public class CnSResultsTableModel extends AbstractTableModel {
 		return ret;
 	}
 	
-	public int getClusterIndex(Integer name) {
+	public int getClusterName(long nodeId) {
 		int ret = -1;
 		for (CnSCluster cl : cluster)
-			if (cl.getName() == name.toString()) {
+			if (cl.getCyNode() != null)
+				if (cl.getCyNode().getSUID() == nodeId) {
+					ret = Integer.parseInt(cl.getName());
+					break;
+				}
+		return ret;
+	}
+	
+	public int getClusterIndex(Integer name) {
+		int ret = -1;
+		for (CnSCluster cl : cluster) {
+			if (cl.getName().equals(name.toString())) {
 				ret = cluster.indexOf(cl);
 				break;
 			}
-		System.err.println("index of cluster " + name.toString() + " = " + ret);
-		
+		}
 		return ret;
 	}
 

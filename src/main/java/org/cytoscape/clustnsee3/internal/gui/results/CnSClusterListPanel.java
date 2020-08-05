@@ -76,6 +76,8 @@ public class CnSClusterListPanel extends CnSPanel {
 						CnSEvent ev = new CnSEvent(CnSInfoPanel.CLEAR, CnSEventManager.INFO_PANEL);
 						ev.addParameter(CnSInfoPanel.PANEL, CnSInfoPanel.CLUSTER_DETAILS);
 						CnSEventManager.handleMessage(ev);
+						ev = new CnSEvent(CnSViewManager.SELECT_CLUSTER, CnSEventManager.VIEW_MANAGER);
+						CnSEventManager.handleMessage(ev);
 					}
 			}
 		});
@@ -97,7 +99,8 @@ public class CnSClusterListPanel extends CnSPanel {
 	 * @param
 	 * @return
 	 */
-	public void selectCluster(long nodeId) {
+	public int selectCluster(long nodeId) {
+		int ret = -1;
 		if (nodeId == -1) {
 			table.clearSelection();
 		}
@@ -107,8 +110,13 @@ public class CnSClusterListPanel extends CnSPanel {
 				table.setRowSelectionInterval(clusterIndex, clusterIndex);
 				table.scrollRectToVisible(table.getCellRect(clusterIndex, 0, true));
 				table.repaint();
+				ret = clusterIndex;
 			}
 		}
+		return ret;
+	}
+	public int getClusterIndex(long suid) {
+		return model.getClusterIndex(suid);
 	}
 	
 	public void selectCluster(Integer name) {
@@ -116,6 +124,11 @@ public class CnSClusterListPanel extends CnSPanel {
 		if (clusterIndex != -1) {
 			table.setRowSelectionInterval(clusterIndex, clusterIndex);
 			table.scrollRectToVisible(table.getCellRect(clusterIndex, 0, true));
+			table.repaint();
+		}
+		else {
+			table.clearSelection();
+			table.scrollRectToVisible(table.getCellRect(0, 0, true));
 			table.repaint();
 		}
 	}
@@ -127,5 +140,14 @@ public class CnSClusterListPanel extends CnSPanel {
 	 */
 	public void sort() {
 		model.sortClusters();
+	}
+
+	/**
+	 * 
+	 * @param
+	 * @return
+	 */
+	public Object getClusterName(long cluster_suid) {
+		return model.getClusterName(cluster_suid);
 	}
 }

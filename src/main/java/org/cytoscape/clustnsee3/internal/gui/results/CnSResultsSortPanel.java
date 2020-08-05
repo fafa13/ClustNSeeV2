@@ -15,7 +15,6 @@ package org.cytoscape.clustnsee3.internal.gui.results;
 
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.util.Collections;
 
 import javax.swing.BorderFactory;
 import javax.swing.JCheckBox;
@@ -52,13 +51,15 @@ public class CnSResultsSortPanel extends CnSPanel {
 		
 		sortCheckBox = new JCheckBox();
 		sortCheckBox.setSelected(false);
+		sortCheckBox.setEnabled(false);
 		addComponent(sortCheckBox, 0, 0, 1, 1, 0.0, 1.0, WEST, NONE, 5, 5, 5, 0, 0, 0);
 		addComponent(new JLabel("Sort clusters by "), 1, 0, 1, 1, 0.0, 1.0, WEST, NONE, 5, 5, 5, 0, 0, 0);
 		sortList = new JComboBox<String>(CnSCluster.COMPARE_NAME);
 		sortList.setEnabled(false);
 		addComponent(sortList, 2, 0, 1, 1, 0.0, 1.0, WEST, HORIZONTAL, 5, 5, 5, 5, 0, 0);
 		clusterList = new JComboBox<Integer>();
-		addComponent(new JLabel("Go to cluster #"), 0, 1, 2, 1, 0.0, 1.0, WEST, NONE, 0, 5, 5, 0, 0, 0);
+		clusterList.setEnabled(false);
+		addComponent(new JLabel("Selected cluster"), 0, 1, 2, 1, 0.0, 1.0, WEST, NONE, 0, 5, 5, 0, 0, 0);
 		addComponent(clusterList, 2, 1, 1, 1, 0.0, 1.0, WEST, NONE, 0, 5, 5, 5, 0, 0);
 	}
 	
@@ -68,10 +69,12 @@ public class CnSResultsSortPanel extends CnSPanel {
 			public void stateChanged(ChangeEvent ev) {
 				if (sortCheckBox.isSelected()) {
 					sortList.setEnabled(true);
+					clusterList.setEnabled(true);
 				}
 				else {
 					sortList.setEnabled(false);
 					sortList.setSelectedIndex(0);
+					clusterList.setEnabled(false);
 				}
 			}
 			
@@ -100,6 +103,18 @@ public class CnSResultsSortPanel extends CnSPanel {
 	}
 	public void init(CnSPartition partition) {
 		clusterList.removeAllItems();
-		for (int i = 1; i <= partition.getClusters().size(); i++) clusterList.addItem(i);
+		for (int i = 0; i <= partition.getClusters().size(); i++) clusterList.addItem(i);
+	}
+	public void enable(boolean b) {
+		sortCheckBox.setEnabled(b);
+	}
+	public void setSelectedCluster(int i) {
+		clusterList.setSelectedItem(Integer.valueOf(i));
+	}
+	public void setSelectedCluster(long l) {
+		CnSEvent ev = new CnSEvent(CnSResultsPanel.GET_CLUSTER_NAME, CnSEventManager.RESULTS_PANEL);
+		ev.addParameter(CnSResultsPanel.CLUSTER, l);
+		int index = (Integer)CnSEventManager.handleMessage(ev);
+		if (index != clusterList.getSelectedIndex()) clusterList.setSelectedIndex(index);
 	}
 }
