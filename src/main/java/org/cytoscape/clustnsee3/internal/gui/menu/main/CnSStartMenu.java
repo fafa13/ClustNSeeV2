@@ -38,4 +38,7 @@ public class CnSStartMenu extends AbstractCyAction {
 		if (instance == null) instance = new CnSStartMenu(context, ca);
 		return instance;
 	}
+	public boolean insertSeparatorAfter() {
+		return false;
+	}
 }

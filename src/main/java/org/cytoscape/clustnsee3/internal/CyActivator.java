@@ -10,6 +10,7 @@ import org.cytoscape.clustnsee3.internal.event.CnSEventListener;
 import org.cytoscape.clustnsee3.internal.gui.menu.contextual.factory.CnSAnnotateClusterMenuFactory;
 import org.cytoscape.clustnsee3.internal.gui.menu.contextual.factory.CnSExpandCompressClusterNodeMenuFactory;
 import org.cytoscape.clustnsee3.internal.gui.menu.contextual.factory.CnSShowClusterlinksMenuFactory;
+import org.cytoscape.clustnsee3.internal.gui.menu.main.CnSImportPartitionMenu;
 import org.cytoscape.clustnsee3.internal.gui.menu.main.CnSStartMenu;
 import org.cytoscape.clustnsee3.internal.gui.menu.main.CnSStopMenu;
 import org.cytoscape.event.CyEventHelper;
@@ -63,6 +64,7 @@ public class CyActivator extends AbstractCyActivator implements CnSEventListener
 	private BundleContext bc = null;
 	private CnSStartMenu clustnseeStart;
 	private CnSStopMenu clustnseeStop;
+	private CnSImportPartitionMenu clustnseeImportPartition;
 	private ServiceRegistration clustnseeService;
 	
 	@Override
@@ -71,11 +73,17 @@ public class CyActivator extends AbstractCyActivator implements CnSEventListener
 		
 		// Definit le menu item
 		clustnseeStart = CnSStartMenu.getInstance(context, this);
+		clustnseeStart.setMenuGravity(0.0f);
 		registerAllServices(context, clustnseeStart, new Properties());
 		clustnseeService = CnSStartMenu.getInstance(context, this).getRef();
 		
-		clustnseeStop = CnSStopMenu.getInstance(context, this);
+		clustnseeStop = CnSStopMenu.getInstance();
+		clustnseeStop.setMenuGravity(1.0f);
 		registerAllServices(context, clustnseeStop, new Properties());
+		
+		clustnseeImportPartition = CnSImportPartitionMenu.getInstance();
+		clustnseeImportPartition.setMenuGravity(2.0f);
+		registerAllServices(context, clustnseeImportPartition, new Properties());
 		
 		CnSExpandCompressClusterNodeMenuFactory expandCompressClusterNodeMenuFactory  = new CnSExpandCompressClusterNodeMenuFactory();
 		Properties expandCompressClusterNodeMenuFactoryProps = new Properties();
@@ -171,7 +179,6 @@ public class CyActivator extends AbstractCyActivator implements CnSEventListener
 					clustnseeService.unregister();
 					clustnseeService = null;
 				}
-				//CnSStartMenu.getInstance(bc, this).stop();
 				break;
 			case GET_CYTO_PANEL :
 				CySwingApplication app = getService(bc,CySwingApplication.class);

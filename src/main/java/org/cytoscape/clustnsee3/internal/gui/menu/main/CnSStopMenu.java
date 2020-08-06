@@ -20,7 +20,6 @@ import org.cytoscape.clustnsee3.internal.CyActivator;
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
 import org.cytoscape.clustnsee3.internal.view.style.CnSStyleManager;
-import org.osgi.framework.BundleContext;
 
 /**
  * 
@@ -29,7 +28,7 @@ public class CnSStopMenu extends AbstractCyAction {
 	private static final long serialVersionUID = 7814074516214991713L;
 	private static CnSStopMenu instance;
 	
-	private CnSStopMenu(BundleContext context, CyActivator ca) {
+	private CnSStopMenu() {
 		super("Stop"); 						
 		setPreferredMenu("Apps.Clust&see");
 	}
@@ -44,8 +43,11 @@ public class CnSStopMenu extends AbstractCyAction {
 		ev = new CnSEvent(CyActivator.STOP, CnSEventManager.CY_ACTIVATOR);
 		CnSEventManager.handleMessage(ev);
 	}
-	public static CnSStopMenu getInstance(BundleContext context, CyActivator ca) {
-		if (instance == null) instance = new CnSStopMenu(context, ca);
+	public static CnSStopMenu getInstance() {
+		if (instance == null) instance = new CnSStopMenu();
 		return instance;
+	}
+	public boolean insertSeparatorAfter() {
+		return true;
 	}
 }
