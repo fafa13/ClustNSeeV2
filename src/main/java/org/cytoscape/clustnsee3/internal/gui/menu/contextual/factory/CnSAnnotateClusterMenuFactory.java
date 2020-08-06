@@ -11,7 +11,7 @@
 /* Philippe Gambette (LIGM, Marne-la-Vallée)
  */
 
-package org.cytoscape.clustnsee3.internal.gui.menu.factory;
+package org.cytoscape.clustnsee3.internal.gui.menu.contextual.factory;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -23,7 +23,7 @@ import org.cytoscape.application.swing.CyNodeViewContextMenuFactory;
 import org.cytoscape.clustnsee3.internal.analysis.CnSCluster;
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
-import org.cytoscape.clustnsee3.internal.gui.menu.action.CnSAnnotateClusterAction;
+import org.cytoscape.clustnsee3.internal.gui.menu.contextual.action.CnSAnnotateClusterAction;
 import org.cytoscape.clustnsee3.internal.view.CnSView;
 import org.cytoscape.clustnsee3.internal.view.CnSViewManager;
 import org.cytoscape.model.CyNode;

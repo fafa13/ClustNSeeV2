@@ -30,7 +30,7 @@ import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventListener;
 import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
 import org.cytoscape.clustnsee3.internal.gui.info.CnSInfoPanel;
-import org.cytoscape.clustnsee3.internal.gui.menu.action.CnSExpandClusterNodeAction;
+import org.cytoscape.clustnsee3.internal.gui.menu.contextual.action.CnSExpandClusterNodeAction;
 import org.cytoscape.clustnsee3.internal.gui.results.CnSResultsPanel;
 import org.cytoscape.clustnsee3.internal.network.CnSNetwork;
 import org.cytoscape.clustnsee3.internal.network.CnSNetworkManager;

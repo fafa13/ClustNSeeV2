@@ -19,16 +19,14 @@ import java.util.Properties;
 import java.util.Vector;
 
 import org.cytoscape.application.events.SetCurrentNetworkViewListener;
-import org.cytoscape.application.swing.CytoPanel;
 import org.cytoscape.application.swing.CytoPanelComponent;
-import org.cytoscape.application.swing.CytoPanelState;
 import org.cytoscape.clustnsee3.internal.algorithm.CnSAlgorithmEngine;
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventListener;
 import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
 import org.cytoscape.clustnsee3.internal.gui.control.CnSControlPanel;
 import org.cytoscape.clustnsee3.internal.gui.info.CnSInfoPanel;
-import org.cytoscape.clustnsee3.internal.gui.menu.action.CnSMenuManager;
+import org.cytoscape.clustnsee3.internal.gui.menu.contextual.action.CnSMenuManager;
 import org.cytoscape.clustnsee3.internal.gui.results.CnSResultsPanel;
 import org.cytoscape.clustnsee3.internal.network.CnSNetworkManager;
 import org.cytoscape.clustnsee3.internal.partition.CnSPartitionManager;
@@ -63,11 +61,9 @@ public class CnSClustnseePlugin implements CnSEventListener {
 	CnSControlPanel controlPanel;
 	private static CnSClustnseePlugin instance;
 	public static final int GET_PANEL = 1;
-	private BundleContext context;
 	
 	private CnSClustnseePlugin(BundleContext context, CyActivator ca) {
 		super();
-		this.context = context;
 		algorithmManager = CnSAlgorithmManager.getInstance();
 		analysisManager = CnSPartitionManager.getInstance();
 		menuManager = CnSMenuManager.getInstance();

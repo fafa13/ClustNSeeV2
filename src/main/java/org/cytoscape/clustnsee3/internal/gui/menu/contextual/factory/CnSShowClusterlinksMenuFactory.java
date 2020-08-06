@@ -11,7 +11,7 @@
 /* Philippe Gambette (LIGM, Marne-la-Vallée)
  */
 
-package org.cytoscape.clustnsee3.internal.gui.menu.factory;
+package org.cytoscape.clustnsee3.internal.gui.menu.contextual.factory;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
