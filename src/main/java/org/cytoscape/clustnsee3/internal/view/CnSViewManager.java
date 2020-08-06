@@ -32,7 +32,6 @@ import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
 import org.cytoscape.clustnsee3.internal.gui.info.CnSInfoPanel;
 import org.cytoscape.clustnsee3.internal.gui.menu.action.CnSExpandClusterNodeAction;
 import org.cytoscape.clustnsee3.internal.gui.results.CnSResultsPanel;
-import org.cytoscape.clustnsee3.internal.gui.results.CnSResultsSortPanel;
 import org.cytoscape.clustnsee3.internal.network.CnSNetwork;
 import org.cytoscape.clustnsee3.internal.network.CnSNetworkManager;
 import org.cytoscape.clustnsee3.internal.partition.CnSPartition;
@@ -86,6 +85,8 @@ UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, SelectedNodesAndEd
 	public static final int GET_VIEW_PARTITION = 15;
 	public static final int EXPAND_CLUSTER = 16;
 	public static final int GET_CLUSTER_FROM_CY_NODE = 17;
+	public static final int REMOVE_VIEW = 18;
+	public static final int REMOVE_VIEWS = 19;
 	
 	public static final int VIEW = 1000;
 	public static final int STATE = 1001;
@@ -307,6 +308,45 @@ UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, SelectedNodesAndEd
 						}
 					}
 				}
+				break;
+				
+			case REMOVE_VIEW :
+				view = (CnSView)event.getParameter(VIEW);
+				network = (CnSNetwork)event.getParameter(NETWORK);
+				cluster = (CnSCluster)event.getParameter(CLUSTER);
+				partition = (CnSPartition)event.getParameter(PARTITION);
+				if (views.contains(view)) {
+					views.removeElement(view);
+					network2viewMap.remove(network, view);
+					view2networkMap.remove(view, network);
+					
+					if (cluster != null) {
+						view2clusterMap.remove(view, cluster);
+						cluster2viewMap.remove(cluster, view);
+					}
+					else {
+						view2clusterMap.remove(cluster2viewMap.get(cluster));
+						cluster2viewMap.remove(cluster);
+					}
+					if (partition != null) {
+						partition2viewMap.remove(partition, view);
+						view2partitionMap.remove(view, partition);
+					}
+				}
+				break;
+				
+			case REMOVE_VIEWS :
+				partition = (CnSPartition)event.getParameter(PARTITION);
+				Vector<CnSView> deleted_views = new Vector<CnSView>();
+				for (CnSView v : views) {
+					if (v.getReference() == partition) {
+						deleted_views.addElement(v);
+						partition2viewMap.remove(partition, v);
+						view2partitionMap.remove(v, partition);
+					}
+				}
+				views.removeAll(deleted_views);
+				ret = deleted_views;
 				break;
 		}
 		return ret;

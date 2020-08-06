@@ -40,9 +40,10 @@ import org.cytoscape.clustnsee3.internal.network.CnSNetwork;
 import org.cytoscape.clustnsee3.internal.network.CnSNetworkManager;
 import org.cytoscape.clustnsee3.internal.partition.CnSPartition;
 import org.cytoscape.clustnsee3.internal.partition.CnSPartitionManager;
+import org.cytoscape.clustnsee3.internal.view.CnSView;
+import org.cytoscape.clustnsee3.internal.view.CnSViewManager;
 import org.cytoscape.model.CyNetwork;
-import org.cytoscape.model.subnetwork.CyRootNetwork;
-import org.cytoscape.model.subnetwork.CyRootNetworkManager;
+import org.cytoscape.model.CyNetworkManager;
 
 /**
  * 
@@ -179,19 +180,29 @@ public class CnSResultsPanel extends CnSPanel implements CytoPanelComponent, CnS
 	    		
 	    	case SELECT_CLUSTER :
 	    		Long nodeId = (Long)event.getParameter(CLUSTER);
+	    		int index;
 	    		if (nodeId != null) {
-	    			((CnSClusterListPanel)jtp.getComponentAt(jtp.getModel().getSelectedIndex())).selectCluster(nodeId);
-	    			sortPanel.setSelectedCluster(nodeId);
+	    			index = jtp.getModel().getSelectedIndex();
+	    			if (index != -1) {
+	    				((CnSClusterListPanel)jtp.getComponentAt(index)).selectCluster(nodeId);
+	    				sortPanel.setSelectedCluster(nodeId);
+	    			}
+	    			else
+	    				sortPanel.setSelectedCluster(0);
 	    		}
 	    		else {
 	    			Integer name = (Integer)event.getParameter(CLUSTER_NAME);
 	    			if (name == null || name == 0) {
-	    				((CnSClusterListPanel)jtp.getComponentAt(jtp.getModel().getSelectedIndex())).selectCluster(-1);
+	    				index = jtp.getModel().getSelectedIndex();
+	    				if (index != -1) ((CnSClusterListPanel)jtp.getComponentAt(index)).selectCluster(-1);
 	    				sortPanel.setSelectedCluster(0);
 	    			}
 	    			else {
-	    				((CnSClusterListPanel)jtp.getComponentAt(jtp.getModel().getSelectedIndex())).selectCluster(name);
-	    				sortPanel.setSelectedCluster(name);
+	    				index = jtp.getModel().getSelectedIndex();
+	    				if (index != -1) {
+	    					((CnSClusterListPanel)jtp.getComponentAt(index)).selectCluster(name);
+	    					sortPanel.setSelectedCluster(name);
+	    				}
 	    			}
 	    		}
 	    			
@@ -199,26 +210,46 @@ public class CnSResultsPanel extends CnSPanel implements CytoPanelComponent, CnS
 	    		
 	    	case DISCARD_PARTITION :
 	    		CnSPartition partition = (CnSPartition)event.getParameter(PARTITION);
-	    		jtp.remove(clusterListPanel.get(partition));
+	    		Vector<CnSCluster> clusters = partition.getClusters();
+	    		
+	    		ev = new CnSEvent(CyActivator.GET_NETWORK_MANAGER, CnSEventManager.CY_ACTIVATOR);
+	    	    CyNetworkManager crnm = (CyNetworkManager)CnSEventManager.handleMessage(ev);
+	    	    
+	    	    for (CnSCluster cl : clusters) {
+	    			ev =new CnSEvent(CnSNetworkManager.GET_NETWORK, CnSEventManager.NETWORK_MANAGER);
+	    	    	ev.addParameter(CnSNetworkManager.CLUSTER, cl);
+	    	    	CnSNetwork cnsNetwork = (CnSNetwork)CnSEventManager.handleMessage(ev);
+	    	    	
+	    	    	ev = new CnSEvent(CnSNetworkManager.GET_NETWORK, CnSEventManager.NETWORK_MANAGER);
+	    			ev.addParameter(CnSNetworkManager.CLUSTER, cl);
+	    			CnSNetwork w = (CnSNetwork)CnSEventManager.handleMessage(ev);
+	    			crnm.destroyNetwork(w.getNetwork());
+	    			
+	    			ev = new CnSEvent(CnSNetworkManager.REMOVE_NETWORK, CnSEventManager.NETWORK_MANAGER);
+	    	    	ev.addParameter(CnSNetworkManager.NETWORK, cnsNetwork);
+	    	    	CnSEventManager.handleMessage(ev);
+	    	    	
+	    			ev = new CnSEvent(CnSViewManager.REMOVE_VIEW, CnSEventManager.VIEW_MANAGER);
+	    			ev.addParameter(CnSViewManager.NETWORK, cnsNetwork);
+	    			ev.addParameter(CnSViewManager.CLUSTER, cl);
+	    			CnSEventManager.handleMessage(ev);
+	    	    }
+	    	    
+	    	    ev = new CnSEvent(CnSViewManager.REMOVE_VIEWS, CnSEventManager.VIEW_MANAGER);
+    			ev.addParameter(CnSViewManager.REFERENCE, partition);
+    			Vector<CnSView> deleted_views = (Vector<CnSView>)CnSEventManager.handleMessage(ev);
+				
+    			for (CnSView v : deleted_views) {
+    				crnm.destroyNetwork(v.getView().getModel());
+    			}
+    			
+	    	    jtp.remove(clusterListPanel.get(partition));
 	    		clusterListPanel.remove(partition);
 	    		if (clusterListPanel.size() == 0) {
 	    			commandPanel.setEnabled(false);
 	    			sortPanel.setEnabled(false);
 	    		}
-	    		ev = new CnSEvent(CnSPartitionManager.GET_CLUSTERS, CnSEventManager.PARTITION_MANAGER);
-	    		ev.addParameter(CnSPartitionManager.PARTITION, partition);
-	    		Vector<CnSCluster> clusters = (Vector<CnSCluster>)CnSEventManager.handleMessage(ev);
 	    		
-	    		ev = new CnSEvent(CyActivator.GET_ROOT_NETWORK_MANAGER, CnSEventManager.CY_ACTIVATOR);
-	    	    CyRootNetworkManager crnm = (CyRootNetworkManager)CnSEventManager.handleMessage(ev);
-	    	    
-	    	    for (CnSCluster cl : clusters) {
-	    			ev = new CnSEvent(CnSNetworkManager.GET_NETWORK, CnSEventManager.NETWORK_MANAGER);
-	    			ev.addParameter(CnSNetworkManager.CLUSTER, cl);
-	    			CnSNetwork w = (CnSNetwork)CnSEventManager.handleMessage(ev);
-	    			CyRootNetwork crn = crnm.getRootNetwork(w.getNetwork());
-	    	        crn.removeSubNetwork(w.getNetwork());
-	    		}
 	    		break;
 	    		
 	    	case SORT_RESULTS :
