@@ -238,13 +238,12 @@ public class CnSResultsPanel extends CnSPanel implements CytoPanelComponent, CnS
 	    	    ev = new CnSEvent(CnSViewManager.REMOVE_VIEWS, CnSEventManager.VIEW_MANAGER);
     			ev.addParameter(CnSViewManager.REFERENCE, partition);
     			Vector<CnSView> deleted_views = (Vector<CnSView>)CnSEventManager.handleMessage(ev);
-				
-    			for (CnSView v : deleted_views) {
-    				crnm.destroyNetwork(v.getView().getModel());
+				for (CnSView v : deleted_views) {
+    				if (crnm.networkExists(v.getView().getModel().getSUID())) 
+    					crnm.destroyNetwork(v.getView().getModel());
     			}
-    			
-	    	    jtp.remove(clusterListPanel.get(partition));
-	    		clusterListPanel.remove(partition);
+    			jtp.remove(clusterListPanel.get(partition));
+	    	    clusterListPanel.remove(partition);
 	    		if (clusterListPanel.size() == 0) {
 	    			commandPanel.setEnabled(false);
 	    			sortPanel.setEnabled(false);

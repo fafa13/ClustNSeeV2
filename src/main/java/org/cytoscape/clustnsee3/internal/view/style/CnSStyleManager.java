@@ -24,6 +24,7 @@ import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
 import org.cytoscape.clustnsee3.internal.view.CnSView;
 import org.cytoscape.clustnsee3.internal.view.CnSViewManager;
 import org.cytoscape.task.read.LoadVizmapFileTaskFactory;
+import org.cytoscape.view.vizmap.VisualMappingManager;
 import org.cytoscape.view.vizmap.VisualStyle;
 
 /**
@@ -32,6 +33,7 @@ import org.cytoscape.view.vizmap.VisualStyle;
 public class CnSStyleManager implements CnSEventListener {
 	public static final int SET_CURRENT_STYLE = 1;
 	public static final int APPLY_CURRENT_STYLE = 2;
+	public static final int REMOVE_CNS_STYLES = 3;
 	
 	public static final int STYLE = 1001;
 	public static final int VIEW = 1002;
@@ -64,11 +66,14 @@ public class CnSStyleManager implements CnSEventListener {
 		
 		CnSEvent ev = new CnSEvent(CyActivator.GET_LOAD_VIZMAP_FILE_TASK_FACTORY, CnSEventManager.CY_ACTIVATOR);
 		LoadVizmapFileTaskFactory lvtf = (LoadVizmapFileTaskFactory)CnSEventManager.handleMessage(ev);
+		ev = new CnSEvent(CyActivator.GET_VIZMAP_MANAGER, CnSEventManager.CY_ACTIVATOR);
+		VisualMappingManager vmm = (VisualMappingManager)CnSEventManager.handleMessage(ev);
 		
 		InputStream is = getClass().getResourceAsStream("/cns.xml");
 		if (is != null) {
 			vsSet = lvtf.loadStyles(is);
 			vs = vsSet.iterator().next();
+			vmm.addVisualStyle(vs);
 			style.put(CNS_STYLE, vs);
 			currentStyle = vs;
 		}
@@ -77,6 +82,7 @@ public class CnSStyleManager implements CnSEventListener {
 		if (is != null) {
 			vsSet = lvtf.loadStyles(is);
 			vs = vsSet.iterator().next();
+			vmm.addVisualStyle(vs);
 			style.put(SNAPSHOT_STYLE, vs);
 		}
 		
@@ -111,6 +117,12 @@ public class CnSStyleManager implements CnSEventListener {
 					view.getView().updateView();
 				}
 				break;
+				
+			case REMOVE_CNS_STYLES :
+				ev = new CnSEvent(CyActivator.GET_VIZMAP_MANAGER, CnSEventManager.CY_ACTIVATOR);
+				VisualMappingManager vmm = (VisualMappingManager)CnSEventManager.handleMessage(ev);
+				for (Integer vs : style.keySet()) vmm.removeVisualStyle(style.get(vs));
+				currentStyle = null;
 		}
 		return ret;
 	}

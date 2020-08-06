@@ -336,14 +336,18 @@ UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, SelectedNodesAndEd
 				break;
 				
 			case REMOVE_VIEWS :
-				partition = (CnSPartition)event.getParameter(PARTITION);
+				partition = (CnSPartition)event.getParameter(REFERENCE);
 				Vector<CnSView> deleted_views = new Vector<CnSView>();
 				for (CnSView v : views) {
+					//System.err.print("removing " + v + " ... ");
 					if (v.getReference() == partition) {
+						//System.err.println("yes");
 						deleted_views.addElement(v);
 						partition2viewMap.remove(partition, v);
 						view2partitionMap.remove(v, partition);
 					}
+					//else
+						//System.err.println("no");
 				}
 				views.removeAll(deleted_views);
 				ret = deleted_views;
@@ -365,7 +369,7 @@ UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, SelectedNodesAndEd
         	
         	if (!cnsv.isUserView() && !cnsv.getModifCluster()) {
         		Vector<CnSCluster> cls = cnsv.getState().getClusters();
-        		cnsv.setViewState(new CnSUserViewState());
+        		cnsv.setViewState(new CnSUserViewState(cnsv.getReference()));
         		cnsv.getState().getClusters().addAll(cls);
         		ev = new CnSEvent(CnSNetworkManager.RENAME_NETWORK, CnSEventManager.NETWORK_MANAGER);
         		ev.addParameter(CnSNetworkManager.NETWORK, view2networkMap.get(cnsv));
@@ -405,9 +409,11 @@ UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, SelectedNodesAndEd
 	 */
 	@Override
 	public void handleEvent(NetworkViewAboutToBeDestroyedEvent e) {
-		CnSEvent ev= new CnSEvent(CnSViewManager.DELETE_VIEW, CnSEventManager.VIEW_MANAGER);
-		ev.addParameter(VIEW, getView(e.getNetworkView()));
-		cnsEventOccured(ev);
+		if (getView(e.getNetworkView()) != null) {
+			CnSEvent ev= new CnSEvent(CnSViewManager.DELETE_VIEW, CnSEventManager.VIEW_MANAGER);
+			ev.addParameter(VIEW, getView(e.getNetworkView()));
+			cnsEventOccured(ev);
+		}
     }
 
 	/* (non-Javadoc)
@@ -420,7 +426,7 @@ UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, SelectedNodesAndEd
 			if (v.getView().getNodeView(e.getNode()) != null) {
 				if (!v.isUserView() && !v.getModifCluster()) {
 					Vector<CnSCluster> cls = v.getState().getClusters();
-	        		v.setViewState(new CnSUserViewState());
+	        		v.setViewState(new CnSUserViewState(v.getReference()));
 	        		v.getState().getClusters().addAll(cls);
 					ev.addParameter(CnSNetworkManager.NETWORK, view2networkMap.get(v));
 					ev.addParameter(CnSNetworkManager.NETWORK_NAME, "Copy of " + view2networkMap.get(v).getName());
@@ -499,7 +505,7 @@ UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, SelectedNodesAndEd
         	}
         	if (!cnsv.isUserView() && !cnsv.getModifCluster()) {
         		Vector<CnSCluster> cls = cnsv.getState().getClusters();
-        		cnsv.setViewState(new CnSUserViewState());
+        		cnsv.setViewState(new CnSUserViewState(cnsv.getReference()));
         		cnsv.getState().getClusters().addAll(cls);
         		ev = new CnSEvent(CnSNetworkManager.RENAME_NETWORK, CnSEventManager.NETWORK_MANAGER);
         		ev.addParameter(CnSNetworkManager.NETWORK, view2networkMap.get(cnsv));

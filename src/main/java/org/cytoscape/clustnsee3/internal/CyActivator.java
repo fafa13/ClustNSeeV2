@@ -3,6 +3,11 @@ package org.cytoscape.clustnsee3.internal;
 import java.util.Properties;
 
 import org.cytoscape.application.CyApplicationManager;
+import org.cytoscape.application.events.SetCurrentNetworkViewListener;
+import org.cytoscape.application.swing.CySwingApplication;
+import org.cytoscape.application.swing.CytoPanel;
+import org.cytoscape.application.swing.CytoPanelComponent;
+import org.cytoscape.application.swing.CytoPanelName;
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventListener;
 import org.cytoscape.clustnsee3.internal.gui.menu.factory.CnSAnnotateClusterMenuFactory;
@@ -11,6 +16,13 @@ import org.cytoscape.clustnsee3.internal.gui.menu.factory.CnSShowClusterlinksMen
 import org.cytoscape.event.CyEventHelper;
 import org.cytoscape.model.CyNetworkFactory;
 import org.cytoscape.model.CyNetworkManager;
+import org.cytoscape.model.events.AboutToRemoveNodesListener;
+import org.cytoscape.model.events.AddedEdgesListener;
+import org.cytoscape.model.events.AddedNodesListener;
+import org.cytoscape.model.events.NetworkAboutToBeDestroyedListener;
+import org.cytoscape.model.events.RemovedEdgesListener;
+import org.cytoscape.model.events.SelectedNodesAndEdgesListener;
+import org.cytoscape.model.events.UnsetNetworkPointerListener;
 import org.cytoscape.model.subnetwork.CyRootNetworkManager;
 import org.cytoscape.service.util.AbstractCyActivator;
 import org.cytoscape.task.read.LoadVizmapFileTaskFactory;
@@ -19,6 +31,7 @@ import org.cytoscape.task.write.ExportVizmapTaskFactory;
 import org.cytoscape.view.layout.CyLayoutAlgorithmManager;
 import org.cytoscape.view.model.CyNetworkViewFactory;
 import org.cytoscape.view.model.CyNetworkViewManager;
+import org.cytoscape.view.model.events.NetworkViewAboutToBeDestroyedListener;
 import org.cytoscape.view.presentation.RenderingEngineManager;
 import org.cytoscape.view.vizmap.VisualMappingFunctionFactory;
 import org.cytoscape.view.vizmap.VisualMappingManager;
@@ -49,16 +62,20 @@ public class CyActivator extends AbstractCyActivator implements CnSEventListener
 	public static final int GET_PASSTHROUGH_VISUAL_MAPPING_FUNCTION_FACTORY = 19;
 	public static final int GET_LOAD_VIZMAP_FILE_TASK_FACTORY = 20;
 	public static final int GET_VIZMAP_MANAGER = 21;
+	public static final int STOP = 22;
+	public static final int GET_CYTO_PANEL = 23;
+	
+	public static final int NAME = 1000;
 
 	private BundleContext bc = null;
-	
+	private MenuActionClustnsee clustnsee;
 	
 	@Override
 	public void start(BundleContext context) throws Exception {
 		bc = context;
 		
 		// Definit le menu item
-		MenuActionClustnsee clustnsee = new MenuActionClustnsee("Clustnsee", context, this);
+		clustnsee = MenuActionClustnsee.getInstance("Clustnsee", context, this);
 		registerAllServices(context, clustnsee, new Properties());
 		
 		CnSExpandCompressClusterNodeMenuFactory expandCompressClusterNodeMenuFactory  = new CnSExpandCompressClusterNodeMenuFactory();
@@ -75,15 +92,6 @@ public class CyActivator extends AbstractCyActivator implements CnSEventListener
 		Properties annotateClusterMenuFactoryProps = new Properties();
 		annotateClusterMenuFactoryProps.put("preferredMenu", "ClustnSee");
 		registerAllServices(context, annotateClusterMenuFactory, annotateClusterMenuFactoryProps);
-		
-		//context.ungetService(context.getServiceReference(myNodeViewContextMenuFactory.getClass().getName()));
-		/*CyApplicationManager cyApplicationManager = getService(context, CyApplicationManager.class);
-		
-		MenuAction action = new MenuAction(cyApplicationManager, "Hello World App");
-		
-		Properties properties = new Properties();
-		
-		registerAllServices(context, action, properties);*/
 	}
 
 	/* (non-Javadoc)
@@ -157,6 +165,14 @@ public class CyActivator extends AbstractCyActivator implements CnSEventListener
 				break;
 			case GET_VIZMAP_MANAGER :
 				ret = getService(bc, VisualMappingManager.class);
+				break;
+			case STOP:
+				CnSClustnseePlugin.getInstance(bc, this).stop();
+				MenuActionClustnsee.getInstance("Clustnsee", bc, this).stop();
+				break;
+			case GET_CYTO_PANEL :
+				CySwingApplication app = getService(bc,CySwingApplication.class);
+				ret = app.getCytoPanel((CytoPanelName)event.getParameter(NAME));
 				break;
 		}
 		return ret;

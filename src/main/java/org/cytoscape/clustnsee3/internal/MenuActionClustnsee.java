@@ -5,6 +5,8 @@ import java.util.Properties;
 
 import org.cytoscape.application.swing.AbstractCyAction;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
+import org.osgi.framework.ServiceRegistration;
 
 
 /**
@@ -15,8 +17,10 @@ public class MenuActionClustnsee extends AbstractCyAction {
 	private static final long serialVersionUID = 4674370847552144972L;
 	private BundleContext context;
 	private CyActivator cyActivator;
+	private ServiceRegistration ref;
+	private static MenuActionClustnsee instance;
 	
-	public MenuActionClustnsee(String name, BundleContext context, CyActivator ca) {
+	private MenuActionClustnsee(String name, BundleContext context, CyActivator ca) {
 		super(name); 				// name est le menu item
 		setPreferredMenu("Apps"); 	// definit le menu
 		
@@ -25,6 +29,17 @@ public class MenuActionClustnsee extends AbstractCyAction {
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		context.registerService(CnSClustnseePlugin.class.getName(), CnSClustnseePlugin.getInstance(context, cyActivator), new Properties());
+		ref = context.registerService(CnSClustnseePlugin.class.getName(), CnSClustnseePlugin.getInstance(context, cyActivator), new Properties());
     }
+	public void stop() {
+		instance = null;
+		if (ref != null) {
+			ref.unregister();
+			ref = null;
+		}
+	}
+	public static MenuActionClustnsee getInstance(String name, BundleContext context, CyActivator ca) {
+		if (instance == null) instance = new MenuActionClustnsee(name, context, ca);
+		return instance;
+	}
 }

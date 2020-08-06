@@ -374,15 +374,6 @@ public class CnSResultsCommandPanel extends CnSPanel {
 		        CnSCluster cluster = (CnSCluster)CnSEventManager.handleMessage(ev);
 				if (cluster != null) {
 					addClusterToView(cluster);
-					//ev = new CnSEvent(CnSViewManager.GET_SELECTED_VIEW, CnSEventManager.VIEW_MANAGER);
-					//CnSView sView = (CnSView)CnSEventManager.handleMessage(ev);
-					
-					/*for (CnSCluster cl : sView.getClusters()) {
-						double x = sView.getView().getNodeView(cl.getCyNode()).getVisualProperty(BasicVisualLexicon.NODE_X_LOCATION);
-						double y = sView.getView().getNodeView(cl.getCyNode()).getVisualProperty(BasicVisualLexicon.NODE_Y_LOCATION);
-						
-					}*/
-
 					
 					// Apply the CnS visual style to the view
 					ev = new CnSEvent(CnSStyleManager.APPLY_CURRENT_STYLE, CnSEventManager.STYLE_MANAGER);
@@ -612,7 +603,7 @@ public class CnSResultsCommandPanel extends CnSPanel {
 		CyNetworkViewFactory cnvf = (CyNetworkViewFactory)CnSEventManager.handleMessage(ev);
 		CyNetworkView cyView = cnvf.createNetworkView(clNet);
 		
-		CnSUserViewState viewState = new CnSUserViewState();
+		CnSUserViewState viewState = new CnSUserViewState(partition);
 		viewState.addCluster(cluster);
 		CnSView myView = new CnSView(cyView, viewState);
 		

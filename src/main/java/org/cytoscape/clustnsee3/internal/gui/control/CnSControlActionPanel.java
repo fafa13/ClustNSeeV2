@@ -10,9 +10,11 @@ import javax.swing.JOptionPane;
 import org.cytoscape.clustnsee3.internal.gui.widget.CnSPanel;
 import org.cytoscape.clustnsee3.internal.view.CnSView;
 import org.cytoscape.clustnsee3.internal.view.CnSViewManager;
+import org.cytoscape.clustnsee3.internal.view.style.CnSStyleManager;
 import org.cytoscape.model.CyNetwork;
 import org.cytoscape.task.read.LoadVizmapFileTaskFactory;
 import org.cytoscape.view.model.CyNetworkView;
+import org.cytoscape.view.vizmap.VisualMappingManager;
 import org.cytoscape.view.vizmap.VisualStyle;
 import org.cytoscape.application.CyApplicationManager;
 import org.cytoscape.clustnsee3.internal.CyActivator;
@@ -91,21 +93,11 @@ public class CnSControlActionPanel extends CnSPanel {
 		closeButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				CnSEvent ev = new CnSEvent(CyActivator.GET_LOAD_VIZMAP_FILE_TASK_FACTORY, CnSEventManager.CY_ACTIVATOR);
-				LoadVizmapFileTaskFactory lvtf = (LoadVizmapFileTaskFactory)CnSEventManager.handleMessage(ev);
-				InputStream is = getClass().getResourceAsStream("/cns.xml");
+				CnSEvent ev = new CnSEvent(CnSStyleManager.REMOVE_CNS_STYLES, CnSEventManager.STYLE_MANAGER);
+				CnSEventManager.handleMessage(ev);
+				ev = new CnSEvent(CyActivator.STOP, CnSEventManager.CY_ACTIVATOR);
+				CnSEventManager.handleMessage(ev);
 				
-				System.err.println("input stream = " + is);
-				
-				Set<VisualStyle> vsSet = lvtf.loadStyles(is);
-				
-				VisualStyle vs = vsSet.iterator().next();
-				
-				// Apply the visual style to a NetwokView
-				ev = new CnSEvent(CnSViewManager.GET_SELECTED_VIEW, CnSEventManager.VIEW_MANAGER);
-				CyNetworkView v = ((CnSView)CnSEventManager.handleMessage(ev)).getView();
-				vs.apply(v);
-				v.updateView();
 			}
 		});
 	}

@@ -17,8 +17,8 @@ package org.cytoscape.clustnsee3.internal.view.state;
  * 
  */
 public class CnSUserViewState extends CnSViewState {
-	public CnSUserViewState() {
-		super(null);
+	public CnSUserViewState(Object ref) {
+		super(ref);
 	}
 	public boolean isUserView() {
 		return true;

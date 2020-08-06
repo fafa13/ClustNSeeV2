@@ -16,9 +16,12 @@ package org.cytoscape.clustnsee3.internal;
 import org.cytoscape.clustnsee3.internal.algorithm.CnSAlgorithmManager;
 
 import java.util.Properties;
+import java.util.Vector;
 
 import org.cytoscape.application.events.SetCurrentNetworkViewListener;
+import org.cytoscape.application.swing.CytoPanel;
 import org.cytoscape.application.swing.CytoPanelComponent;
+import org.cytoscape.application.swing.CytoPanelState;
 import org.cytoscape.clustnsee3.internal.algorithm.CnSAlgorithmEngine;
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventListener;
@@ -40,6 +43,7 @@ import org.cytoscape.model.events.SelectedNodesAndEdgesListener;
 import org.cytoscape.model.events.UnsetNetworkPointerListener;
 import org.cytoscape.view.model.events.NetworkViewAboutToBeDestroyedListener;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceRegistration;
 
 /**
  * 
@@ -55,12 +59,15 @@ public class CnSClustnseePlugin implements CnSEventListener {
 	private CnSNetworkManager networkManager;
 	private CnSPartitionManager partitionManager;
 	private CnSStyleManager styleManager;
-	
+	private Vector<ServiceRegistration> ref;
+	CnSControlPanel controlPanel;
 	private static CnSClustnseePlugin instance;
 	public static final int GET_PANEL = 1;
+	private BundleContext context;
 	
 	private CnSClustnseePlugin(BundleContext context, CyActivator ca) {
 		super();
+		this.context = context;
 		algorithmManager = CnSAlgorithmManager.getInstance();
 		analysisManager = CnSPartitionManager.getInstance();
 		menuManager = CnSMenuManager.getInstance();
@@ -75,20 +82,21 @@ public class CnSClustnseePlugin implements CnSEventListener {
 		CnSEvent ev = new CnSEvent(CnSAlgorithmManager.INIT, CnSEventManager.ALGORITHM_MANAGER);
 		CnSEventManager.handleMessage(ev);
 		ev = new CnSEvent(CnSClustnseePlugin.GET_PANEL, CnSEventManager.CLUSTNSEE_PLUGIN);
-		CnSControlPanel controlPanel = (CnSControlPanel)CnSEventManager.handleMessage(ev);
+		controlPanel = (CnSControlPanel)CnSEventManager.handleMessage(ev);
 		styleManager.init();
-		context.registerService(CytoPanelComponent.class.getName(), controlPanel, new Properties());
-		context.registerService(CytoPanelComponent.class.getName(), resultsPanel, new Properties());
-		context.registerService(CytoPanelComponent.class.getName(), dataPanel, new Properties());
-		context.registerService(AboutToRemoveNodesListener.class.getName(), viewManager, new Properties());
-		context.registerService(AddedNodesListener.class.getName(), viewManager, new Properties());
-		context.registerService(RemovedEdgesListener.class.getName(), viewManager, new Properties());
-		context.registerService(AddedEdgesListener.class.getName(), viewManager, new Properties());
-		context.registerService(NetworkViewAboutToBeDestroyedListener.class.getName(), viewManager, new Properties());
-		context.registerService(NetworkAboutToBeDestroyedListener.class.getName(), networkManager, new Properties());
-		context.registerService(UnsetNetworkPointerListener.class.getName(), viewManager, new Properties());
-		context.registerService(SetCurrentNetworkViewListener.class.getName(), viewManager, new Properties());
-		context.registerService(SelectedNodesAndEdgesListener.class.getName(), viewManager, new Properties());
+		ref = new Vector<ServiceRegistration>();
+		ref.addElement(context.registerService(CytoPanelComponent.class.getName(), controlPanel, new Properties()));
+		ref.addElement(context.registerService(CytoPanelComponent.class.getName(), resultsPanel, new Properties()));
+		ref.addElement(context.registerService(CytoPanelComponent.class.getName(), dataPanel, new Properties()));
+		ref.addElement(context.registerService(AboutToRemoveNodesListener.class.getName(), viewManager, new Properties()));
+		ref.addElement(context.registerService(AddedNodesListener.class.getName(), viewManager, new Properties()));
+		ref.addElement(context.registerService(RemovedEdgesListener.class.getName(), viewManager, new Properties()));
+		ref.addElement(context.registerService(AddedEdgesListener.class.getName(), viewManager, new Properties()));
+		ref.addElement(context.registerService(NetworkViewAboutToBeDestroyedListener.class.getName(), viewManager, new Properties()));
+		ref.addElement(context.registerService(NetworkAboutToBeDestroyedListener.class.getName(), networkManager, new Properties()));
+		ref.addElement(context.registerService(UnsetNetworkPointerListener.class.getName(), viewManager, new Properties()));
+		ref.addElement(context.registerService(SetCurrentNetworkViewListener.class.getName(), viewManager, new Properties()));
+		ref.addElement(context.registerService(SelectedNodesAndEdgesListener.class.getName(), viewManager, new Properties()));
 	}
 	
 	public static CnSClustnseePlugin getInstance(BundleContext context, CyActivator ca) {
@@ -109,5 +117,10 @@ public class CnSClustnseePlugin implements CnSEventListener {
 				break;
 		}
 		return ret;
+	}
+	public void stop() {
+		for (ServiceRegistration sr : ref) sr.unregister();
+		ref.clear();
+		instance = null;
 	}
 }
