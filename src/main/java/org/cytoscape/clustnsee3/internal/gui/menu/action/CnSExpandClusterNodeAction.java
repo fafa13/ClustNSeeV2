@@ -121,9 +121,7 @@ public class CnSExpandClusterNodeAction {
 			
 			eh.flushPayloadEvents();
 			network.getNetwork().getRow(cluster.getCyNode()).set("selected", false);
-			for (CnSNode cnsnode : cluster.getNodes())
-				network.getNetwork().getRow(cnsnode.getCyNode()).set("selected", true);
-			eh.flushPayloadEvents();
+			
 			
 			ev = new CnSEvent(CnSViewManager.SET_CLUSTER_LOCATION, CnSEventManager.VIEW_MANAGER);
 			ev.addParameter(CnSViewManager.VIEW, view);
@@ -215,6 +213,11 @@ public class CnSExpandClusterNodeAction {
 			ev.addParameter(CnSViewManager.VIEW, view);
 			ev.addParameter(CnSViewManager.EXPANDED, true);
 			CnSEventManager.handleMessage(ev);
+			
+			eh.flushPayloadEvents();
+			for (CnSNode cnsnode : cluster.getNodes()) network.getNetwork().getRow(cnsnode.getCyNode()).set("selected", true);
+			eh.flushPayloadEvents();
+			
 			view.setModifCluster(false);
 		}
 	}

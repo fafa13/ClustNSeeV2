@@ -214,7 +214,8 @@ UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, SelectedNodesAndEd
 				if (cluster == null) {
 					Collection<CyRow> matchingRows = view2networkMap.get(selectedView).getNetwork().getTable(CyNode.class, CyNetwork.LOCAL_ATTRS).getMatchingRows("selected", true);
 					if (matchingRows.size() > 0)
-						for (CyRow row : matchingRows) row.set("selected", false);
+						for (CyRow row : matchingRows) 
+							if (row.get("CnS:isCluster",  Boolean.class) == true) row.set("selected", false);
 				}
 				else if (cluster.getCyNode() != null)
 					for (CnSView v : views)

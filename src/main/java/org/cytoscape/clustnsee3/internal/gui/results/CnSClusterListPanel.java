@@ -73,6 +73,7 @@ public class CnSClusterListPanel extends CnSPanel {
 						CnSEventManager.handleMessage(ev);
 					}
 					else {
+						System.err.println("clear selection");
 						CnSEvent ev = new CnSEvent(CnSInfoPanel.CLEAR, CnSEventManager.INFO_PANEL);
 						ev.addParameter(CnSInfoPanel.PANEL, CnSInfoPanel.CLUSTER_DETAILS);
 						CnSEventManager.handleMessage(ev);

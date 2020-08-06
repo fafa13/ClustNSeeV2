@@ -127,9 +127,12 @@ public class CnSNetworkManager implements CnSEventListener, NetworkAboutToBeDest
 	 */
 	@Override
 	public void handleEvent(NetworkAboutToBeDestroyedEvent e) {
-		CnSEvent ev= new CnSEvent(CnSNetworkManager.REMOVE_NETWORK, CnSEventManager.NETWORK_MANAGER);
-		ev.addParameter(NETWORK, getNetwork(e.getNetwork()));
-		cnsEventOccured(ev);
+		if (e.getNetwork() != null)
+			if (getNetwork(e.getNetwork()) != null) {
+				CnSEvent ev= new CnSEvent(CnSNetworkManager.REMOVE_NETWORK, CnSEventManager.NETWORK_MANAGER);
+				ev.addParameter(NETWORK, getNetwork(e.getNetwork()));
+				cnsEventOccured(ev);
+			}
 	}
 	
 	private CnSNetwork getNetwork(CyNetwork n) {
