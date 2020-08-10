@@ -13,6 +13,7 @@
 
 package org.cytoscape.clustnsee3.internal.analysis.node;
 
+import java.util.HashMap;
 import java.util.Vector;
 
 import org.cytoscape.clustnsee3.internal.analysis.CnSCluster;
@@ -24,9 +25,13 @@ import org.cytoscape.model.CyNode;
 public class CnSNode {
 	private CyNode cyNode;
 	private Vector<CnSCluster> clusters;
+	private HashMap<String, Object> attributes;
+	private HashMap<String, Class> attributeTypes;
 	
 	public CnSNode(CyNode cyNode, CnSCluster cluster) {
 		super();
+		attributes = new HashMap<String, Object>();
+		attributeTypes = new HashMap<String, Class>();
 		this.cyNode = cyNode;
 		clusters = new Vector<CnSCluster>();
 		if (cluster != null) clusters.addElement(cluster);
@@ -63,5 +68,15 @@ public class CnSNode {
 	}
 	public Vector<CnSCluster> getClusters() {
 		return clusters;
+	}
+	public void setAttribute(String name, Object value, Class type) {
+		attributes.put(name, value);
+		attributeTypes.put(name, type);
+		if (cyNode != null) {
+	
+		}
+	}
+	public HashMap<String, Object> getAttributes() {
+		return attributes;
 	}
 }

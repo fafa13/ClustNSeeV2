@@ -69,23 +69,39 @@ public class CnSStyleManager implements CnSEventListener {
 		ev = new CnSEvent(CyActivator.GET_VIZMAP_MANAGER, CnSEventManager.CY_ACTIVATOR);
 		VisualMappingManager vmm = (VisualMappingManager)CnSEventManager.handleMessage(ev);
 		
-		InputStream is = getClass().getResourceAsStream("/cns.xml");
-		if (is != null) {
-			vsSet = lvtf.loadStyles(is);
-			vs = vsSet.iterator().next();
-			vmm.addVisualStyle(vs);
-			style.put(CNS_STYLE, vs);
-			currentStyle = vs;
+		boolean dejala = false;
+		for (VisualStyle vss : vmm.getAllVisualStyles()) {
+			if (vss.getTitle().equals("CnS_default")) {
+				dejala = true;
+				break;
+			}
 		}
-		
-		is = getClass().getResourceAsStream("/snapshot.xml");
-		if (is != null) {
-			vsSet = lvtf.loadStyles(is);
-			vs = vsSet.iterator().next();
-			vmm.addVisualStyle(vs);
-			style.put(SNAPSHOT_STYLE, vs);
+		if (!dejala) {
+			InputStream is = getClass().getResourceAsStream("/cns.xml");
+			if (is != null) {
+				vsSet = lvtf.loadStyles(is);
+				vs = vsSet.iterator().next();
+				vmm.addVisualStyle(vs);
+				style.put(CNS_STYLE, vs);
+				currentStyle = vs;
+			}
 		}
-		
+		dejala = false;
+		for (VisualStyle vss : vmm.getAllVisualStyles()) {
+			if (vss.getTitle().equals("CnS_snapshot")) {
+				dejala = true;
+				break;
+			}
+		}
+		if (!dejala) {
+			InputStream is = getClass().getResourceAsStream("/snapshot.xml");
+			if (is != null) {
+				vsSet = lvtf.loadStyles(is);
+				vs = vsSet.iterator().next();
+				vmm.addVisualStyle(vs);
+				style.put(SNAPSHOT_STYLE, vs);
+			}
+		}
 		/*if (style.get(CNS_STYLE) != null) {
 			ev = new CnSEvent(CyActivator.GET_VIZMAP_MANAGER, CnSEventManager.CY_ACTIVATOR);
 			VisualMappingManager vmm = (VisualMappingManager)CnSEventManager.handleMessage(ev);

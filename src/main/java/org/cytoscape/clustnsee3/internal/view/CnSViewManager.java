@@ -87,6 +87,7 @@ UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, SelectedNodesAndEd
 	public static final int GET_CLUSTER_FROM_CY_NODE = 17;
 	public static final int REMOVE_VIEW = 18;
 	public static final int REMOVE_VIEWS = 19;
+	public static final int GET_PARTITION_VIEW = 20;
 	
 	public static final int VIEW = 1000;
 	public static final int STATE = 1001;
@@ -157,6 +158,7 @@ UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, SelectedNodesAndEd
 		CnSPartition partition;
 		View<CyNode> cnv;
 		CyNode cyNode;
+		Object reference;
 		
 		switch(event.getAction()) {
 			case ADD_VIEW :
@@ -353,6 +355,16 @@ UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, SelectedNodesAndEd
 				views.removeAll(deleted_views);
 				ret = deleted_views;
 				break;
+				
+			case GET_PARTITION_VIEW :
+				reference = event.getParameter(REFERENCE);
+				if (reference != null)
+					for (CnSView v : views)
+						if (v.getReference() != null)
+							if (v.getReference() == reference && v.isPartitionView()) {
+							ret = v;
+							break;
+						}
 		}
 		return ret;
 	}

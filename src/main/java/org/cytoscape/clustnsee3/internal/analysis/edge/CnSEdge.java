@@ -53,6 +53,9 @@ public class CnSEdge {
 	public void setAttribute(String name, Object value, Class type) {
 		attributes.put(name, value);
 		attributeTypes.put(name, type);
+		if (cyEdge != null) {
+	
+		}
 	}
 	public HashMap<String, Object> getAttributes() {
 		return attributes;

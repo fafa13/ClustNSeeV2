@@ -52,4 +52,15 @@ public class CnSAlgorithmParameters implements Iterable<Integer> {
 	public void setPanel(CnSPanel panel) {
 		algorithmPanel = panel;
 	}
+	
+	public Integer getParameterKey(String name) {
+		Integer ret = null;
+		for (Integer key : parameters.keySet()) {
+			if (parameters.get(key).getName().equals(name)) {
+				ret = key;
+				break;
+			}
+		}
+		return ret;
+	}
 }

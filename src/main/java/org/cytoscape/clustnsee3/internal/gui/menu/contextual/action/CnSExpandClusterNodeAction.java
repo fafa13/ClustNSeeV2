@@ -109,6 +109,7 @@ public class CnSExpandClusterNodeAction {
 					y = (y0 - ratio * (y_max + y_min) / 2) + ratio * clusterView.getView().getNodeView(cnsnode.getCyNode()).getVisualProperty(BasicVisualLexicon.NODE_Y_LOCATION);
 					nodeView.setVisualProperty(BasicVisualLexicon.NODE_X_LOCATION, x);
 					nodeView.setVisualProperty(BasicVisualLexicon.NODE_Y_LOCATION, y);
+					
 				}
 			}
 			eh.flushPayloadEvents();
@@ -116,12 +117,12 @@ public class CnSExpandClusterNodeAction {
 			// adding cluster internal edges
 			for (CnSEdge cnsedge : cluster.getEdges()) {
 				network.getNetwork().addEdge(cnsedge.getCyEdge());
-				
+				for (String key : network.getEdgeColumns().keySet())
+		        	network.getNetwork().getRow(cnsedge.getCyEdge()).set(key, cnsedge.getAttributes().get(key));
 			}
 			
 			eh.flushPayloadEvents();
 			network.getNetwork().getRow(cluster.getCyNode()).set("selected", false);
-			
 			
 			ev = new CnSEvent(CnSViewManager.SET_CLUSTER_LOCATION, CnSEventManager.VIEW_MANAGER);
 			ev.addParameter(CnSViewManager.VIEW, view);
@@ -147,32 +148,39 @@ public class CnSExpandClusterNodeAction {
 					expanded = (Boolean)CnSEventManager.handleMessage(ev);
 					node2edgeMap.clear();
 					HashMap<CyEdge, Double> edgeWidth = new HashMap<CyEdge, Double>();
-					CyNode clusterNode = null;
+					CnSNode clusterNode = null;
 					CyEdge edge = null;
 					List<CyEdge> lce;
 					
 					for (CnSEdge ce : cl.getEdges())
 						if (expanded) {
 							network.getNetwork().addEdge(ce.getCyEdge());
+							// fill CnS attributes
+					        for (String key : network.getEdgeColumns().keySet())
+					        	network.getNetwork().getRow(ce.getCyEdge()).set(key, ce.getAttributes().get(key));
 						}
 						else {
 							clusterNode = null;
 							for (CnSNode n : cluster.getNodes())
 								if ((n.getCyNode() == ce.getCyEdge().getSource()) || (n.getCyNode() == ce.getCyEdge().getTarget())) {
-									clusterNode = n.getCyNode();
+									clusterNode = n;
 									break;
 								}
-							if (!network.getNetwork().containsEdge(linkedCluster.getCyNode(), clusterNode) &&
-									!network.getNetwork().containsEdge(clusterNode, linkedCluster.getCyNode())) {
+							if (!network.getNetwork().containsEdge(linkedCluster.getCyNode(), clusterNode.getCyNode()) &&
+									!network.getNetwork().containsEdge(clusterNode.getCyNode(), linkedCluster.getCyNode())) {
 								// adding node-cluster interaction link
-								edge = network.getNetwork().addEdge(linkedCluster.getCyNode(), clusterNode, false);
+								edge = network.getNetwork().addEdge(linkedCluster.getCyNode(), clusterNode.getCyNode(), false);
 								edgeWidth.putIfAbsent(edge, 1.0);
 								
-								
+								network.getNetwork().getRow(edge).set("CnS:isInteraction", true);
+								network.getNetwork().getRow(edge).set("CnS:size", edgeWidth.get(edge).intValue());
+								network.getNetwork().getRow(edge).set("interaction", "pp");
+								network.getNetwork().getRow(edge).set("name", clusterNode.getAttributes().get("name") + " - " + linkedCluster.getName());
+								network.getNetwork().getRow(edge).set("canonicalName", clusterNode.getAttributes().get("name") + " - " + linkedCluster.getName());
 							}
 							else {
-								lce = network.getNetwork().getConnectingEdgeList(linkedCluster.getCyNode(), clusterNode, CyEdge.Type.ANY);
-								lce.addAll(network.getNetwork().getConnectingEdgeList(clusterNode, linkedCluster.getCyNode(), CyEdge.Type.ANY));
+								lce = network.getNetwork().getConnectingEdgeList(linkedCluster.getCyNode(), clusterNode.getCyNode(), CyEdge.Type.ANY);
+								lce.addAll(network.getNetwork().getConnectingEdgeList(clusterNode.getCyNode(), linkedCluster.getCyNode(), CyEdge.Type.ANY));
 								for (CyEdge e : lce)
 									if ((e.getSource() == linkedCluster.getCyNode() && e.getTarget() == clusterNode) ||
 											(e.getSource() == clusterNode && e.getTarget() == linkedCluster.getCyNode())) {
@@ -184,6 +192,7 @@ public class CnSExpandClusterNodeAction {
 								else {
 									edgeWidth.putIfAbsent(edge, view.getView().getEdgeView(edge).getVisualProperty(BasicVisualLexicon.EDGE_WIDTH) + 1.0);
 								}
+								network.getNetwork().getRow(edge).set("CnS:size", edgeWidth.get(edge).intValue());
 							}
 						}
 					for (CnSNode n : cl.getNodes()) {
@@ -191,22 +200,29 @@ public class CnSExpandClusterNodeAction {
 							if (!network.getNetwork().containsEdge(linkedCluster.getCyNode(), n.getCyNode()) && 
 									!network.getNetwork().containsEdge(n.getCyNode(), linkedCluster.getCyNode())) {
 								// adding node-cluster multiclass link
-								CyEdge cyEdge = network.getNetwork().addEdge(linkedCluster.getCyNode(), n.getCyNode(), false);
-								
-								
+								edge = network.getNetwork().addEdge(linkedCluster.getCyNode(), n.getCyNode(), false);
 								eh.flushPayloadEvents();
-								network.getNetwork().getRow(cyEdge).set("CnS:isInteraction", false);
+								network.getNetwork().getRow(edge).set("CnS:isInteraction", false);
+								network.getNetwork().getRow(edge).set("CnS:size", 1);
+								network.getNetwork().getRow(edge).set("interaction", "multiclass");
+								network.getNetwork().getRow(edge).set("name", n.getAttributes().get("name") + " ~ " + linkedCluster.getName());
+								network.getNetwork().getRow(edge).set("canonicalName", n.getAttributes().get("name") + " ~ " + linkedCluster.getName());
 								eh.flushPayloadEvents();
 							}
 						}
 					}
 				}
 			}
+			view.getView().updateView();
 			
 			eh.flushPayloadEvents();
 			
+			ev = new CnSEvent(CnSStyleManager.SET_CURRENT_STYLE, CnSEventManager.STYLE_MANAGER);
+	        ev.addParameter(CnSStyleManager.STYLE, CnSStyleManager.CNS_STYLE);
+	        CnSEventManager.handleMessage(ev);
 			ev = new CnSEvent(CnSStyleManager.APPLY_CURRENT_STYLE, CnSEventManager.STYLE_MANAGER);
 			CnSEventManager.handleMessage(ev);
+			view.getView().updateView();
 			
 			ev = new CnSEvent(CnSViewManager.SET_EXPANDED, CnSEventManager.VIEW_MANAGER);
 			ev.addParameter(CnSViewManager.CLUSTER, cluster);

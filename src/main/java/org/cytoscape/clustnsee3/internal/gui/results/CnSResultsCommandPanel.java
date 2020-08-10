@@ -162,7 +162,7 @@ public class CnSResultsCommandPanel extends CnSPanel {
 				CnSEvent ev = new CnSEvent(CnSResultsPanel.GET_SELECTED_PARTITION, CnSEventManager.RESULTS_PANEL);
 				CnSPartition partition = (CnSPartition)CnSEventManager.handleMessage(ev);
 		        
-				ev = new CnSEvent(CnSViewManager.GET_VIEW, CnSEventManager.VIEW_MANAGER);
+				ev = new CnSEvent(CnSViewManager.GET_PARTITION_VIEW, CnSEventManager.VIEW_MANAGER);
 				ev.addParameter(CnSViewManager.REFERENCE, partition);
 				CnSView partitionView = (CnSView)CnSEventManager.handleMessage(ev);
 				
@@ -242,6 +242,11 @@ public class CnSResultsCommandPanel extends CnSPanel {
 						for (String key : partNetwork.getNodeColumns().keySet())
 							partNet.getRow(clNode).set(key, cluster.getAttributes().get(key));
 						
+						// fill CnS attributes
+				        for (String key : partNetwork.getEdgeColumns().keySet())
+				        	for (CnSEdge edge : cluster.getEdges())
+				        		clNet.getRow(edge.getCyEdge()).set(key, edge.getAttributes().get(key));
+
 						// make the view up to date
 						partitionView.getView().updateView();
 						
@@ -507,7 +512,7 @@ public class CnSResultsCommandPanel extends CnSPanel {
 		// Fill sub-network with cluster nodes and relevant edges 
 		for (CnSNode node : cluster.getNodes()) clNet.addNode(node.getCyNode());
 		for (CnSEdge edge : cluster.getEdges()) clNet.addEdge(edge.getCyEdge());
-
+		
 		// create a new view for the sub-network
 		ev = new CnSEvent(CyActivator.GET_NETWORK_VIEW_FACTORY, CnSEventManager.CY_ACTIVATOR);
 		CyNetworkViewFactory cnvf = (CyNetworkViewFactory)CnSEventManager.handleMessage(ev);
@@ -524,7 +529,12 @@ public class CnSResultsCommandPanel extends CnSPanel {
         ev.addParameter(CnSNetworkManager.NETWORK, network);
         CnSEventManager.handleMessage(ev);
         
-        // associate the sub-network with the cluster
+        // fill CnS attributes
+        for (String key : network.getEdgeColumns().keySet())
+        	for (CnSEdge edge : cluster.getEdges())
+        		clNet.getRow(edge.getCyEdge()).set(key, edge.getAttributes().get(key));
+
+		// associate the sub-network with the cluster
         ev = new CnSEvent(CnSNetworkManager.SET_NETWORK_CLUSTER, CnSEventManager.NETWORK_MANAGER);
         ev.addParameter(CnSNetworkManager.NETWORK, network);
         ev.addParameter(CnSNetworkManager.CLUSTER, cluster);

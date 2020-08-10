@@ -73,6 +73,9 @@ public class CnSView {
 	public boolean isUserView() {
 		return state.isUserView();
 	}
+	public boolean isPartitionView() {
+		return state.isPartitionView();
+	}
 	protected void updateNodeContextMenu() {
 		state.updateNodeContextMenu();
 	}

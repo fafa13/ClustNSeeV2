@@ -27,4 +27,7 @@ public class CnSPartitionViewState extends CnSViewState {
 	public String getstate() {
 		return "partition";
 	}
+	public boolean isPartitionView() {
+		return true;
+	}
 }
