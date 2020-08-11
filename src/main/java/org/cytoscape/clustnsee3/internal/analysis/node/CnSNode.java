@@ -26,12 +26,12 @@ public class CnSNode {
 	private CyNode cyNode;
 	private Vector<CnSCluster> clusters;
 	private HashMap<String, Object> attributes;
-	private HashMap<String, Class> attributeTypes;
+	private HashMap<String, Class<?>> attributeTypes;
 	
 	public CnSNode(CyNode cyNode, CnSCluster cluster) {
 		super();
 		attributes = new HashMap<String, Object>();
-		attributeTypes = new HashMap<String, Class>();
+		attributeTypes = new HashMap<String, Class<?>>();
 		this.cyNode = cyNode;
 		clusters = new Vector<CnSCluster>();
 		if (cluster != null) clusters.addElement(cluster);
@@ -69,7 +69,7 @@ public class CnSNode {
 	public Vector<CnSCluster> getClusters() {
 		return clusters;
 	}
-	public void setAttribute(String name, Object value, Class type) {
+	public void setAttribute(String name, Object value, Class<?> type) {
 		attributes.put(name, value);
 		attributeTypes.put(name, type);
 		if (cyNode != null) {

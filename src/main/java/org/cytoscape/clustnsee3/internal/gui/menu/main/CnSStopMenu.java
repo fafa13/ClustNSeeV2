@@ -30,7 +30,7 @@ public class CnSStopMenu extends AbstractCyAction {
 	
 	private CnSStopMenu() {
 		super("Stop"); 						
-		setPreferredMenu("Apps.Clust&see");
+		setPreferredMenu("Apps.Clust&see");	
 	}
 
 	/* (non-Javadoc)
@@ -42,6 +42,7 @@ public class CnSStopMenu extends AbstractCyAction {
 		CnSEventManager.handleMessage(ev);
 		ev = new CnSEvent(CyActivator.STOP, CnSEventManager.CY_ACTIVATOR);
 		CnSEventManager.handleMessage(ev);
+		setEnabled(false);
 	}
 	public static CnSStopMenu getInstance() {
 		if (instance == null) instance = new CnSStopMenu();

@@ -2,6 +2,9 @@ package org.cytoscape.clustnsee3.internal;
 
 import java.util.Properties;
 
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+
 import org.cytoscape.application.CyApplicationManager;
 import org.cytoscape.application.swing.CySwingApplication;
 import org.cytoscape.application.swing.CytoPanelName;
@@ -11,6 +14,7 @@ import org.cytoscape.clustnsee3.internal.gui.menu.contextual.factory.CnSAnnotate
 import org.cytoscape.clustnsee3.internal.gui.menu.contextual.factory.CnSExpandCompressClusterNodeMenuFactory;
 import org.cytoscape.clustnsee3.internal.gui.menu.contextual.factory.CnSShowClusterlinksMenuFactory;
 import org.cytoscape.clustnsee3.internal.gui.menu.main.CnSImportPartitionMenu;
+import org.cytoscape.clustnsee3.internal.gui.menu.main.CnSSearchNodeClustersMenu;
 import org.cytoscape.clustnsee3.internal.gui.menu.main.CnSStartMenu;
 import org.cytoscape.clustnsee3.internal.gui.menu.main.CnSStopMenu;
 import org.cytoscape.event.CyEventHelper;
@@ -58,6 +62,7 @@ public class CyActivator extends AbstractCyActivator implements CnSEventListener
 	public static final int STOP = 22;
 	public static final int GET_CYTO_PANEL = 23;
 	public static final int REGISTER_CLUSTNSEE = 24;
+	public static final int GET_SWING_APPLICATION = 25;
 	
 	public static final int NAME = 1000;
 
@@ -65,11 +70,14 @@ public class CyActivator extends AbstractCyActivator implements CnSEventListener
 	private CnSStartMenu clustnseeStart;
 	private CnSStopMenu clustnseeStop;
 	private CnSImportPartitionMenu clustnseeImportPartition;
+	private CnSSearchNodeClustersMenu clustnseeSearchNodeClusters;
+	
 	private ServiceRegistration clustnseeService;
 	
 	@Override
 	public void start(BundleContext context) throws Exception {
 		bc = context;
+		CySwingApplication app = getService(bc, CySwingApplication.class);
 		
 		// Definit le menu item
 		clustnseeStart = CnSStartMenu.getInstance(context, this);
@@ -79,11 +87,18 @@ public class CyActivator extends AbstractCyActivator implements CnSEventListener
 		
 		clustnseeStop = CnSStopMenu.getInstance();
 		clustnseeStop.setMenuGravity(1.0f);
-		registerAllServices(context, clustnseeStop, new Properties());
+		clustnseeStop.setEnabled(false);
+		Properties pr = new Properties();
+		pr.put("enabled", false);
+		registerAllServices(context, clustnseeStop, pr);
 		
 		clustnseeImportPartition = CnSImportPartitionMenu.getInstance();
 		clustnseeImportPartition.setMenuGravity(2.0f);
 		registerAllServices(context, clustnseeImportPartition, new Properties());
+		
+		clustnseeSearchNodeClusters = CnSSearchNodeClustersMenu.getInstance(context, this);
+		clustnseeSearchNodeClusters.setMenuGravity(3.0f);
+		registerAllServices(context, clustnseeSearchNodeClusters, new Properties());
 		
 		CnSExpandCompressClusterNodeMenuFactory expandCompressClusterNodeMenuFactory  = new CnSExpandCompressClusterNodeMenuFactory();
 		Properties expandCompressClusterNodeMenuFactoryProps = new Properties();
@@ -99,6 +114,31 @@ public class CyActivator extends AbstractCyActivator implements CnSEventListener
 		Properties annotateClusterMenuFactoryProps = new Properties();
 		annotateClusterMenuFactoryProps.put("preferredMenu", "ClustnSee");
 		registerAllServices(context, annotateClusterMenuFactory, annotateClusterMenuFactoryProps);
+		
+		/*
+		JMenu menu = app.getJMenu("Apps.Clust&see");
+		System.err.println("menu = " + menu.getText());
+		System.err.println("item count = " + menu.getItemCount());
+		
+		for (int i = 0; i < menu.getItemCount(); i++) {
+			JMenuItem item = menu.getItem(i);
+			if (item.getText().equals("Stop")) {
+				item.setEnabled(false);
+				System.err.println("Stop = false");
+			}
+			else if (item.getText().equals("Start")) {
+				item.setEnabled(true);
+				System.err.println("Start = true");
+			}
+			else if (item.getText().equals("Import partition")) {
+				item.setEnabled(false);
+				System.err.println("Import partition = false");
+			}
+			else if (item.getText().equals("Search node clusters")) {
+				item.setEnabled(false);
+				System.err.println("Search node clusters = false");
+			}
+		}*/
 	}
 
 	/* (non-Javadoc)
@@ -153,22 +193,22 @@ public class CyActivator extends AbstractCyActivator implements CnSEventListener
 				break;
 			
 			case GET_VISUAL_MAPPING_MANAGER :
-				ret = getService(bc,VisualMappingManager.class);
+				ret = getService(bc, VisualMappingManager.class);
                 break;
 			case GET_VISUAL_STYLE_FACTORY :
-				ret = getService(bc,VisualStyleFactory.class);
+				ret = getService(bc, VisualStyleFactory.class);
 				break;
 			case GET_CONTINUOUS_VISUAL_MAPPING_FUNCTION_FACTORY :	
-				ret = getService(bc,VisualMappingFunctionFactory.class, "(mapping.type=continuous)");
+				ret = getService(bc, VisualMappingFunctionFactory.class, "(mapping.type=continuous)");
 				break;
 			case GET_DISCRETE_VISUAL_MAPPING_FUNCTION_FACTORY :
-				ret = getService(bc,VisualMappingFunctionFactory.class, "(mapping.type=discrete)");
+				ret = getService(bc, VisualMappingFunctionFactory.class, "(mapping.type=discrete)");
 				break;
 			case GET_PASSTHROUGH_VISUAL_MAPPING_FUNCTION_FACTORY :
-				ret = getService(bc,VisualMappingFunctionFactory.class, "(mapping.type=passthrough)");
+				ret = getService(bc, VisualMappingFunctionFactory.class, "(mapping.type=passthrough)");
 				break;
 			case GET_LOAD_VIZMAP_FILE_TASK_FACTORY :
-				ret = getService(bc,LoadVizmapFileTaskFactory.class);
+				ret = getService(bc, LoadVizmapFileTaskFactory.class);
 				break;
 			case GET_VIZMAP_MANAGER :
 				ret = getService(bc, VisualMappingManager.class);
@@ -178,13 +218,19 @@ public class CyActivator extends AbstractCyActivator implements CnSEventListener
 				if (clustnseeService != null) {
 					clustnseeService.unregister();
 					clustnseeService = null;
+					clustnseeImportPartition.setEnabled(false);
+					clustnseeStop.setEnabled(false);
+					clustnseeStart.setEnabled(true);
 				}
 				break;
 			case GET_CYTO_PANEL :
-				CySwingApplication app = getService(bc,CySwingApplication.class);
+				CySwingApplication app = getService(bc, CySwingApplication.class);
 				ret = app.getCytoPanel((CytoPanelName)event.getParameter(NAME));
 				break;
 			case REGISTER_CLUSTNSEE :
+				break;
+			case GET_SWING_APPLICATION :
+				ret = getService(bc, CySwingApplication.class);
 				break;
 		}
 		return ret;

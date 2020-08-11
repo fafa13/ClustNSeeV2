@@ -103,7 +103,9 @@ public class CnSResultsSortPanel extends CnSPanel {
 	}
 	public void init(CnSPartition partition) {
 		clusterList.removeAllItems();
-		for (int i = 0; i <= partition.getClusters().size(); i++) clusterList.addItem(i);
+		if (partition != null) {
+			for (int i = 0; i <= partition.getClusters().size(); i++) clusterList.addItem(i);
+		}
 	}
 	public void enable(boolean b) {
 		sortCheckBox.setEnabled(b);

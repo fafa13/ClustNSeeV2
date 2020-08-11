@@ -28,18 +28,15 @@ import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
 import org.cytoscape.clustnsee3.internal.network.CnSNetwork;
 import org.cytoscape.clustnsee3.internal.partition.CnSPartition;
 import org.cytoscape.clustnsee3.internal.partition.CnSPartitionManager;
+import org.cytoscape.clustnsee3.internal.utils.DelayedVizProp;
 import org.cytoscape.clustnsee3.internal.view.CnSView;
 import org.cytoscape.clustnsee3.internal.view.CnSViewManager;
 import org.cytoscape.clustnsee3.internal.view.style.CnSStyleManager;
 import org.cytoscape.event.CyEventHelper;
 import org.cytoscape.model.CyEdge;
 import org.cytoscape.model.CyNode;
-import org.cytoscape.view.model.View;
 import org.cytoscape.view.presentation.property.BasicVisualLexicon;
 
-/**
- * 
- */
 public class CnSExpandClusterNodeAction {
 	public static final String ACTION = "Expand cluster";
 	
@@ -99,20 +96,21 @@ public class CnSExpandClusterNodeAction {
 			
 			ev = new CnSEvent(CyActivator.GET_CY_EVENT_HELPER, CnSEventManager.CY_ACTIVATOR);
 			CyEventHelper eh = (CyEventHelper)CnSEventManager.handleMessage(ev);
+			eh.flushPayloadEvents();
+			
+			Vector<DelayedVizProp> dvp = new Vector<DelayedVizProp>();
 			for (CnSNode cnsnode : cluster.getNodes()) {
 				if (!view.getView().getModel().containsNode(cnsnode.getCyNode())) {
 					network.getNetwork().addNode(cnsnode.getCyNode());
 					network.getNetwork().getRow(cnsnode.getCyNode()).set("CnS:size", null);
-					view.getView().updateView();
-					View<CyNode> nodeView = view.getView().getNodeView(cnsnode.getCyNode());
 					x = (x0 - ratio * (x_max + x_min) / 2) + ratio * clusterView.getView().getNodeView(cnsnode.getCyNode()).getVisualProperty(BasicVisualLexicon.NODE_X_LOCATION);
 					y = (y0 - ratio * (y_max + y_min) / 2) + ratio * clusterView.getView().getNodeView(cnsnode.getCyNode()).getVisualProperty(BasicVisualLexicon.NODE_Y_LOCATION);
-					nodeView.setVisualProperty(BasicVisualLexicon.NODE_X_LOCATION, x);
-					nodeView.setVisualProperty(BasicVisualLexicon.NODE_Y_LOCATION, y);
-					
+					dvp.addElement(new DelayedVizProp(cnsnode.getCyNode(), BasicVisualLexicon.NODE_X_LOCATION, x, false));
+					dvp.addElement(new DelayedVizProp(cnsnode.getCyNode(), BasicVisualLexicon.NODE_Y_LOCATION, y, false));
 				}
 			}
 			eh.flushPayloadEvents();
+			DelayedVizProp.applyAll(view.getView(), dvp);
 			
 			// adding cluster internal edges
 			for (CnSEdge cnsedge : cluster.getEdges()) {
@@ -213,7 +211,7 @@ public class CnSExpandClusterNodeAction {
 					}
 				}
 			}
-			view.getView().updateView();
+			//view.getView().updateView();
 			
 			eh.flushPayloadEvents();
 			

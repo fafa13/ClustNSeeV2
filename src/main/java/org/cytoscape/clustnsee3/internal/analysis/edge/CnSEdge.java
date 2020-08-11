@@ -23,12 +23,12 @@ import org.cytoscape.model.CyEdge;
 public class CnSEdge {
 	private CyEdge cyEdge;
 	private HashMap<String, Object> attributes;
-	private HashMap<String, Class> attributeTypes;
+	private HashMap<String, Class<?>> attributeTypes;
 	
 	public CnSEdge() {
 		super();
 		attributes = new HashMap<String, Object>();
-		attributeTypes = new HashMap<String, Class>();
+		attributeTypes = new HashMap<String, Class<?>>();
 	}
 	
 	public void setCyEdge(CyEdge ce) {
@@ -50,7 +50,7 @@ public class CnSEdge {
 		ret = ret || (sourceSUID == cyEdge.getTarget().getSUID() && targetSUID == cyEdge.getSource().getSUID());
 		return ret;
 	}
-	public void setAttribute(String name, Object value, Class type) {
+	public void setAttribute(String name, Object value, Class<?> type) {
 		attributes.put(name, value);
 		attributeTypes.put(name, type);
 		if (cyEdge != null) {

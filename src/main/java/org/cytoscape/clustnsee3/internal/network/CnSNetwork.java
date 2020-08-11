@@ -24,11 +24,11 @@ import org.cytoscape.model.subnetwork.CySubNetwork;
  */
 public class CnSNetwork {
 	private CySubNetwork network;
-	private HashMap<String, Class> cnsNodeColumns, cnsEdgeColumns;
+	private HashMap<String, Class<?>> cnsNodeColumns, cnsEdgeColumns;
 	
 	public CnSNetwork(CySubNetwork network) {
 		this.network = network;
-		cnsNodeColumns = new HashMap<String, Class>();
+		cnsNodeColumns = new HashMap<String, Class<?>>();
 		cnsNodeColumns.put("CnS:isCluster", Boolean.class);
 		if (network.getDefaultNodeTable().getColumn("CnS:isCluster") == null)
 			network.getDefaultNodeTable().createColumn("CnS:isCluster", Boolean.class, true, false);
@@ -38,7 +38,7 @@ public class CnSNetwork {
 		cnsNodeColumns.put(CyNetwork.NAME, String.class);
 		cnsNodeColumns.put("canonicalName", String.class);
 		
-		cnsEdgeColumns = new HashMap<String, Class>();
+		cnsEdgeColumns = new HashMap<String, Class<?>>();
 		cnsEdgeColumns.put("CnS:isInteraction", Boolean.class);
 		if (network.getDefaultEdgeTable().getColumn("CnS:isInteraction") == null)
 			network.getDefaultEdgeTable().createColumn("CnS:isInteraction", Boolean.class, true, false);
@@ -56,10 +56,10 @@ public class CnSNetwork {
 	public String getName() {
 		return network.getRow(network).get(CySubNetwork.NAME, String.class);
 	}
-	public HashMap<String, Class> getNodeColumns() {
+	public HashMap<String, Class<?>> getNodeColumns() {
 		return cnsNodeColumns;
 	}
-	public HashMap<String, Class> getEdgeColumns() {
+	public HashMap<String, Class<?>> getEdgeColumns() {
 		return cnsEdgeColumns;
 	}
 }

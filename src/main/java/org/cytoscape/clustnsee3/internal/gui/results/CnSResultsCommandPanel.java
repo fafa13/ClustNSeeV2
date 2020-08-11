@@ -361,15 +361,16 @@ public class CnSResultsCommandPanel extends CnSPanel {
 				CnSEvent ev = new CnSEvent(CnSResultsPanel.GET_SELECTED_PARTITION, CnSEventManager.RESULTS_PANEL);
 				CnSPartition partition = (CnSPartition)CnSEventManager.handleMessage(ev);
 		        
-				// remove it from the partition controler
-				ev = new CnSEvent(CnSPartitionManager.REMOVE_PARTITION, CnSEventManager.PARTITION_MANAGER);
-				ev.addParameter(CnSPartitionManager.PARTITION, partition);
-				CnSEventManager.handleMessage(ev);
-				
 				// remove it from the results panel
 				ev = new CnSEvent(CnSResultsPanel.DISCARD_PARTITION, CnSEventManager.RESULTS_PANEL);
 				ev.addParameter(CnSResultsPanel.PARTITION, partition);
 				CnSEventManager.handleMessage(ev);
+				
+				// remove it from the partition controller
+				ev = new CnSEvent(CnSPartitionManager.REMOVE_PARTITION, CnSEventManager.PARTITION_MANAGER);
+				ev.addParameter(CnSPartitionManager.PARTITION, partition);
+				CnSEventManager.handleMessage(ev);
+				
 			}
 		});
 		addClusterToViewButton.addActionListener(new ActionListener() {
@@ -392,13 +393,16 @@ public class CnSResultsCommandPanel extends CnSPanel {
 				CnSEvent ev = new CnSEvent(CnSResultsPanel.GET_SELECTED_CLUSTER, CnSEventManager.RESULTS_PANEL);
 		        CnSCluster cluster = (CnSCluster)CnSEventManager.handleMessage(ev);
 		        if (cluster != null) {
-		        	ev = new CnSEvent(CnSViewManager.EXPAND_CLUSTER, CnSEventManager.VIEW_MANAGER);
-		        	ev.addParameter(CnSViewManager.SUID, addClusterToView(cluster));
-		        	CnSEventManager.handleMessage(ev);
+		        	Long suid = addClusterToView(cluster);
+		        	if (suid != null) {
+		        		ev = new CnSEvent(CnSViewManager.EXPAND_CLUSTER, CnSEventManager.VIEW_MANAGER);
+		        		ev.addParameter(CnSViewManager.SUID, suid);
+		        		CnSEventManager.handleMessage(ev);
 		        	
-		        	// Apply the CnS visual style to the view
-		        	ev = new CnSEvent(CnSStyleManager.APPLY_CURRENT_STYLE, CnSEventManager.STYLE_MANAGER);
-					CnSEventManager.handleMessage(ev);
+		        		// Apply the CnS visual style to the view
+		        		ev = new CnSEvent(CnSStyleManager.APPLY_CURRENT_STYLE, CnSEventManager.STYLE_MANAGER);
+		        		CnSEventManager.handleMessage(ev);
+		        	}
 		        }
 			}
 		});

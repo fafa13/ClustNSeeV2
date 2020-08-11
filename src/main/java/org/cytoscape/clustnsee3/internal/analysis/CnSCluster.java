@@ -24,6 +24,10 @@ import javax.swing.ImageIcon;
 import org.cytoscape.clustnsee3.internal.analysis.annotation.CnSClusterAnnotation;
 import org.cytoscape.clustnsee3.internal.analysis.edge.CnSEdge;
 import org.cytoscape.clustnsee3.internal.analysis.node.CnSNode;
+import org.cytoscape.clustnsee3.internal.event.CnSEvent;
+import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
+import org.cytoscape.clustnsee3.internal.partition.CnSPartition;
+import org.cytoscape.clustnsee3.internal.partition.CnSPartitionManager;
 import org.cytoscape.model.CyEdge;
 import org.cytoscape.model.CyNetwork;
 import org.cytoscape.model.CyNode;
@@ -58,7 +62,7 @@ public class CnSCluster implements Comparable<CnSCluster> {
 	private ArrayList<CnSClusterAnnotation> annotations;
 	
 	private HashMap<String, Object> attributes;
-	private HashMap<String, Class> attributeTypes;
+	private HashMap<String, Class<?>> attributeTypes;
 	
 	static {
 		COMPARE_NAME[COMPARE_NO] = "----------";
@@ -77,7 +81,7 @@ public class CnSCluster implements Comparable<CnSCluster> {
 		extEdges = null;
 		annotations = new ArrayList<CnSClusterAnnotation>();
 		attributes = new HashMap<String, Object>();
-		attributeTypes = new HashMap<String, Class>();
+		attributeTypes = new HashMap<String, Class<?>>();
 	}
 	
 	public static void setCompareType(String choice) {
@@ -158,6 +162,23 @@ public class CnSCluster implements Comparable<CnSCluster> {
 		}
 		return ret;
 	}
+	public boolean contains(String nodeName) {
+		boolean ret = false;
+		Iterator<CnSNode> it = alNodes.iterator();
+		CnSNode n;
+		String name;
+		
+		while (it.hasNext()) {
+			n = it.next();
+			name = network.getRow(n.getCyNode()).get("name", String.class);
+			if (name.equals(nodeName)) {
+				ret = true;
+				break;
+			}
+		}
+		return ret;
+	}
+	
 	public void setNetwork(CySubNetwork network) {
 		this.network = network;
 	}
@@ -271,11 +292,18 @@ public class CnSCluster implements Comparable<CnSCluster> {
 	public ArrayList<CnSClusterAnnotation> getAnnotations() {
 		return annotations;
 	}
-	public void setAttribute(String name, Object value, Class type) {
+	public void setAttribute(String name, Object value, Class<?> type) {
 		attributes.put(name, value);
 		attributeTypes.put(name, type);
 	}
 	public HashMap<String, Object> getAttributes() {
 		return attributes;
+	}
+	public String toString() {
+		CnSEvent ev = new CnSEvent(CnSPartitionManager.GET_PARTITION, CnSEventManager.PARTITION_MANAGER);
+		ev.addParameter(CnSPartitionManager.CLUSTER, this);
+		CnSPartition part = (CnSPartition)CnSEventManager.handleMessage(ev);
+		
+		return part.getName() + ":" + part.getAlgorithmName() + ":" + getName();
 	}
 }
