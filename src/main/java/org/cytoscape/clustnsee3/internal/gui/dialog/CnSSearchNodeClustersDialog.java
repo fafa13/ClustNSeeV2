@@ -88,8 +88,12 @@ public class CnSSearchNodeClustersDialog extends JDialog implements ActionListen
 					ev.addParameter(CnSPartitionManager.NODE_NAME, searchTextField.getText());
 					@SuppressWarnings("unchecked")
 					Vector<CnSCluster> v = (Vector<CnSCluster>)CnSEventManager.handleMessage(ev);
-					System.err.println("found " + v.size() + " clusters.");
-					data.addElement(v);
+					data.clear();
+					for (int i = 0; i < v.size(); i++) {
+						Vector<CnSCluster> r = new Vector<CnSCluster>();
+						r.addElement(v.elementAt(i));
+						data.addElement(r);
+					}
 					clustersTable.updateUI();
 					clustersTable.repaint();
 				}
@@ -105,8 +109,12 @@ public class CnSSearchNodeClustersDialog extends JDialog implements ActionListen
 					ev.addParameter(CnSPartitionManager.NODE_NAME, searchTextField.getText());
 					@SuppressWarnings("unchecked")
 					Vector<CnSCluster> v = (Vector<CnSCluster>)CnSEventManager.handleMessage(ev);
-					System.err.println("found " + v.size() + " clusters.");
-					data.addElement(v);
+					data.clear();
+					for (int i = 0; i < v.size(); i++) {
+						Vector<CnSCluster> r = new Vector<CnSCluster>();
+						r.addElement(v.elementAt(i));
+						data.addElement(r);
+					}
 					clustersTable.updateUI();
 					clustersTable.repaint();
 				}

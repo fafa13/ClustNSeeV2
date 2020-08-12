@@ -212,4 +212,8 @@ public class CnSPartition {
 			}
 		return ret;
 	}
+	
+	public String toString() {
+		return getName() + ":" + algorithmName;
+	}
 }

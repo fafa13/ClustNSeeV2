@@ -70,6 +70,7 @@ public class CnSPartitionManager implements CnSEventListener {
 	public static final int GET_CLUSTER = 14;
 	public static final int IMPORT_PARTITION = 15;
 	public static final int GET_NODE_CLUSTERS = 16;
+	public static final int GET_PARTITIONS = 17;
 	
 	public static final int PARTITION = 1000;
 	public static final int INDEX = 1001;
@@ -301,15 +302,17 @@ public class CnSPartitionManager implements CnSEventListener {
 				nodeName = (String)event.getParameter(NODE_NAME);
 				Vector<CnSCluster> clusters = new Vector<CnSCluster>();
 				for (CnSPartition part : partitions) {
-					System.err.println("searching partition " + part.getName());
 					for (CnSCluster cluster : part.getClusters()) {
 						if (cluster.contains(nodeName)) {
 							clusters.addElement(cluster);
-							System.err.println("  found cluster " + cluster.getName());
 						}
 					}
 				}
 				ret = clusters;
+				break;
+				
+			case GET_PARTITIONS :
+				ret = partitions;
 				break;
 		}
 		return ret;

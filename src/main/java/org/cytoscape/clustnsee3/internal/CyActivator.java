@@ -2,9 +2,6 @@ package org.cytoscape.clustnsee3.internal;
 
 import java.util.Properties;
 
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-
 import org.cytoscape.application.CyApplicationManager;
 import org.cytoscape.application.swing.CySwingApplication;
 import org.cytoscape.application.swing.CytoPanelName;
@@ -13,6 +10,7 @@ import org.cytoscape.clustnsee3.internal.event.CnSEventListener;
 import org.cytoscape.clustnsee3.internal.gui.menu.contextual.factory.CnSAnnotateClusterMenuFactory;
 import org.cytoscape.clustnsee3.internal.gui.menu.contextual.factory.CnSExpandCompressClusterNodeMenuFactory;
 import org.cytoscape.clustnsee3.internal.gui.menu.contextual.factory.CnSShowClusterlinksMenuFactory;
+import org.cytoscape.clustnsee3.internal.gui.menu.main.CnSComparePartitionsMenu;
 import org.cytoscape.clustnsee3.internal.gui.menu.main.CnSImportPartitionMenu;
 import org.cytoscape.clustnsee3.internal.gui.menu.main.CnSSearchNodeClustersMenu;
 import org.cytoscape.clustnsee3.internal.gui.menu.main.CnSStartMenu;
@@ -71,13 +69,13 @@ public class CyActivator extends AbstractCyActivator implements CnSEventListener
 	private CnSStopMenu clustnseeStop;
 	private CnSImportPartitionMenu clustnseeImportPartition;
 	private CnSSearchNodeClustersMenu clustnseeSearchNodeClusters;
+	private CnSComparePartitionsMenu clustnseeComparePartitions;
 	
 	private ServiceRegistration clustnseeService;
 	
 	@Override
 	public void start(BundleContext context) throws Exception {
 		bc = context;
-		CySwingApplication app = getService(bc, CySwingApplication.class);
 		
 		// Definit le menu item
 		clustnseeStart = CnSStartMenu.getInstance(context, this);
@@ -87,18 +85,19 @@ public class CyActivator extends AbstractCyActivator implements CnSEventListener
 		
 		clustnseeStop = CnSStopMenu.getInstance();
 		clustnseeStop.setMenuGravity(1.0f);
-		clustnseeStop.setEnabled(false);
-		Properties pr = new Properties();
-		pr.put("enabled", false);
-		registerAllServices(context, clustnseeStop, pr);
+		registerAllServices(context, clustnseeStop, new Properties());
 		
 		clustnseeImportPartition = CnSImportPartitionMenu.getInstance();
 		clustnseeImportPartition.setMenuGravity(2.0f);
 		registerAllServices(context, clustnseeImportPartition, new Properties());
 		
-		clustnseeSearchNodeClusters = CnSSearchNodeClustersMenu.getInstance(context, this);
+		clustnseeSearchNodeClusters = CnSSearchNodeClustersMenu.getInstance();
 		clustnseeSearchNodeClusters.setMenuGravity(3.0f);
 		registerAllServices(context, clustnseeSearchNodeClusters, new Properties());
+		
+		clustnseeComparePartitions = CnSComparePartitionsMenu.getInstance();
+		clustnseeComparePartitions.setMenuGravity(4.0f);
+		registerAllServices(context, clustnseeComparePartitions, new Properties());
 		
 		CnSExpandCompressClusterNodeMenuFactory expandCompressClusterNodeMenuFactory  = new CnSExpandCompressClusterNodeMenuFactory();
 		Properties expandCompressClusterNodeMenuFactoryProps = new Properties();

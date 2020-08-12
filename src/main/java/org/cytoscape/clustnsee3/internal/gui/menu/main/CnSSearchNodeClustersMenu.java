@@ -17,25 +17,18 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 
 import org.cytoscape.application.swing.AbstractCyAction;
-import org.cytoscape.clustnsee3.internal.CyActivator;
 import org.cytoscape.clustnsee3.internal.gui.dialog.CnSSearchNodeClustersDialog;
-import org.osgi.framework.BundleContext;
 
 /**
  * 
  */
 public class CnSSearchNodeClustersMenu extends AbstractCyAction {
 	private static final long serialVersionUID = 5680982903583583075L;
-	private BundleContext context;
-	private CyActivator cyActivator;
 	private static CnSSearchNodeClustersMenu instance;
 	
-	private CnSSearchNodeClustersMenu(BundleContext context, CyActivator ca) {
+	private CnSSearchNodeClustersMenu() {
 		super("Search node clusters"); 
 		setPreferredMenu("Apps.Clust&see");
-		
-		this.context = context;
-		cyActivator = ca;
 	}
 
 	/* (non-Javadoc)
@@ -50,8 +43,8 @@ public class CnSSearchNodeClustersMenu extends AbstractCyAction {
 		dialog.setVisible(true);
 	}
 	
-	public static CnSSearchNodeClustersMenu getInstance(BundleContext context, CyActivator ca) {
-		if (instance == null) instance = new CnSSearchNodeClustersMenu(context, ca);
+	public static CnSSearchNodeClustersMenu getInstance() {
+		if (instance == null) instance = new CnSSearchNodeClustersMenu();
 		return instance;
 	}
 }
