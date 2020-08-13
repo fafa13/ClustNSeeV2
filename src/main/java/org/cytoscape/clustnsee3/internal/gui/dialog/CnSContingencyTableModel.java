@@ -17,21 +17,27 @@ import java.util.Vector;
 
 import javax.swing.table.AbstractTableModel;
 
+import org.cytoscape.clustnsee3.internal.partition.CnSPartition;
+
 /**
  * 
  */
 public class CnSContingencyTableModel extends AbstractTableModel {
 	private static final long serialVersionUID = -5638398154610258836L;
-	private Vector<String> colName;
+	private Vector<String> colName, rowName;
 	private Vector<Vector<Integer>> data;
 	
 	/**
 	 * @param
 	 * @return
 	 */
-	public CnSContingencyTableModel(Vector<Vector<Integer>> data) {
+	public CnSContingencyTableModel(Vector<Vector<Integer>> data, CnSPartition p1, CnSPartition p2) {
 		super();
 		colName = new Vector<String>();
+		colName.addElement("");
+		rowName = new Vector<String>();
+		for (int i = 0; i < p1.getClusters().size(); i++) colName.addElement("C" + (i + 1));
+		for (int i = 0; i < p2.getClusters().size(); i++) rowName.addElement("C" + (i + 1));
 		this.data = data;
 	}
 	
@@ -48,15 +54,17 @@ public class CnSContingencyTableModel extends AbstractTableModel {
 	 */
 	@Override
 	public int getRowCount() {
-		return data.size();
+		return rowName.size();
 	}
 
 	/* (non-Javadoc)
 	 * @see javax.swing.table.TableModel#getValueAt(int, int)
 	 */
 	@Override
-	public Object getValueAt(int x, int y) {
-		return data.elementAt(x).elementAt(y);
+	public Object getValueAt(int row, int column) {
+		if (column == 0)
+			return rowName.get(row);
+		return data.elementAt(row).elementAt(column - 1);
 	}
 	
 	/* (non-Javadoc)

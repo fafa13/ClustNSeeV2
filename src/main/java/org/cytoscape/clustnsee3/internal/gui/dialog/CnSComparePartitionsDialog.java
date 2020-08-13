@@ -26,6 +26,8 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.border.BevelBorder;
 
+import org.cytoscape.clustnsee3.internal.analysis.CnSCluster;
+import org.cytoscape.clustnsee3.internal.analysis.node.CnSNode;
 import org.cytoscape.clustnsee3.internal.gui.widget.CnSButton;
 import org.cytoscape.clustnsee3.internal.gui.widget.CnSPanel;
 import org.cytoscape.clustnsee3.internal.partition.CnSPartition;
@@ -36,7 +38,7 @@ import org.cytoscape.clustnsee3.internal.partition.CnSPartition;
 public class CnSComparePartitionsDialog extends JDialog implements ActionListener, ItemListener {
 	private static final long serialVersionUID = -6497149083805785043L;
 	private JComboBox<CnSPartition> firstPartitionComboBox, secondPartitionComboBox;
-	private CnSButton okButton, cancelButton;
+	private CnSButton okButton, closeButton;
 	private Vector<CnSPartition> allData = null, firstComboBoxData = null, secondComboBoxData = null;
 	private boolean firstComboBoxListen, secondComboBoxListen;
 	
@@ -73,20 +75,34 @@ public class CnSComparePartitionsDialog extends JDialog implements ActionListene
 		secondPartitionPanel.addComponent(secondPartitionComboBox, 0, 0, 1, 1, 1.0, 1.0, CnSPanel.CENTER, CnSPanel.HORIZONTAL, 5, 5, 5, 5, 0, 0);
 		
 		okButton = new CnSButton("OK");
-		cancelButton = new CnSButton("Cancel");
+		closeButton = new CnSButton("Close");
 		buttonsPanel.add(okButton);
-		buttonsPanel.add(cancelButton);
+		buttonsPanel.add(closeButton);
 		getContentPane().add(mainPanel);
 	}
 	
 	public void initListeners() {
 		firstPartitionComboBox.addItemListener(this);
 		secondPartitionComboBox.addItemListener(this);
-		cancelButton.addActionListener(this);
+		closeButton.addActionListener(this);
 		okButton.addActionListener(new ActionListener() {
+			@SuppressWarnings("unchecked")
 			@Override
 			public void actionPerformed(ActionEvent ae) {
-				CnSComparePartitionsResultDialog dialog = new CnSComparePartitionsResultDialog(firstPartitionComboBox.getItemAt(firstPartitionComboBox.getSelectedIndex()), secondPartitionComboBox.getItemAt(secondPartitionComboBox.getSelectedIndex()));
+				CnSPartition p1 = firstPartitionComboBox.getItemAt(firstPartitionComboBox.getSelectedIndex());
+				CnSPartition p2 = secondPartitionComboBox.getItemAt(secondPartitionComboBox.getSelectedIndex());
+				Vector<CnSNode> v;
+				Vector<Vector<Integer>> data = new Vector<Vector<Integer>>();
+				for (CnSCluster c1 : p2.getClusters()) {
+					data.addElement(new Vector<Integer>());
+					for (CnSCluster c2 : p1.getClusters()) {
+						v = (Vector<CnSNode>)c1.getNodes().clone();
+						v.retainAll(c2.getNodes());
+						data.get(data.size() - 1).addElement(v.size());
+					}
+				}
+				dispose();
+				CnSComparePartitionsResultDialog dialog = new CnSComparePartitionsResultDialog(p1, p2, data);
 				dialog.pack();
 				dialog.setLocation((Toolkit.getDefaultToolkit().getScreenSize().width) / 2 - dialog.getWidth() / 2, 
 						(Toolkit.getDefaultToolkit().getScreenSize().height) / 2 - dialog.getHeight() / 2);
