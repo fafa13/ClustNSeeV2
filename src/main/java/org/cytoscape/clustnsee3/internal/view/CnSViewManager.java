@@ -22,6 +22,7 @@ import org.cytoscape.application.events.SetCurrentNetworkViewEvent;
 import org.cytoscape.application.events.SetCurrentNetworkViewListener;
 import org.cytoscape.application.events.SetSelectedNetworkViewsEvent;
 import org.cytoscape.application.events.SetSelectedNetworkViewsListener;
+import org.cytoscape.clustnsee3.internal.CnSClustnseePlugin;
 import org.cytoscape.clustnsee3.internal.CyActivator;
 import org.cytoscape.clustnsee3.internal.analysis.CnSCluster;
 import org.cytoscape.clustnsee3.internal.analysis.CnSClusterLink;
@@ -463,12 +464,26 @@ UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, SelectedNodesAndEd
 	 */
 	@Override
 	public void handleEvent(SetCurrentNetworkViewEvent e) {
+		CnSEvent ev;
+		//System.err.println("coucou");
 		if (e.getNetworkView() != null) {
+			ev = new CnSEvent(CnSClustnseePlugin.ENABLE_ANALYZIS, CnSEventManager.CLUSTNSEE_PLUGIN);
+			ev.addParameter(CnSClustnseePlugin.ENABLE, true);
 			selectedView = getView(e.getNetworkView());
-			if (selectedView != null) selectedView.updateNodeContextMenu();
+			if (selectedView != null) {
+				selectedView.updateNodeContextMenu();
+				if (selectedView.getClusters().size() > 0)
+					ev.addParameter(CnSClustnseePlugin.ENABLE, false);
+			}
+			CnSEventManager.handleMessage(ev);
 		}
-		else
+		else {
 			selectedView = null;
+			ev = new CnSEvent(CnSClustnseePlugin.ENABLE_ANALYZIS, CnSEventManager.CLUSTNSEE_PLUGIN);
+			ev.addParameter(CnSClustnseePlugin.ENABLE, false);
+			CnSEventManager.handleMessage(ev);
+		}
+		
 	}
 	
 	private CnSView getView(Object reference, CnSNetwork network, CnSCluster cluster) {
@@ -542,29 +557,31 @@ UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, SelectedNodesAndEd
 					CnSPartition p = view2partitionMap.get(selectedView);
 					if (p == null) p = (CnSPartition)CnSEventManager.handleMessage(ev);
 					
-					ev = new CnSEvent(CnSPartitionManager.GET_CLUSTER_NODE, CnSEventManager.PARTITION_MANAGER);
-					ev.addParameter(CnSPartitionManager.PARTITION, p);
-					ev.addParameter(CnSPartitionManager.CY_NODE, node);
-					CnSNode cnsn = (CnSNode)CnSEventManager.handleMessage(ev);
-					
-					if (cnsn != null) {
-						ev = new CnSEvent(CnSResultsPanel.SELECT_CLUSTER, CnSEventManager.RESULTS_PANEL);
-						ev.addParameter(CnSResultsPanel.CLUSTER, node.getSUID());
-						CnSEventManager.handleMessage(ev);
-					}
-					else {
-						ev = new CnSEvent(CnSPartitionManager.GET_NODE, CnSEventManager.PARTITION_MANAGER);
+					if (p != null) {
+						ev = new CnSEvent(CnSPartitionManager.GET_CLUSTER_NODE, CnSEventManager.PARTITION_MANAGER);
+						ev.addParameter(CnSPartitionManager.PARTITION, p);
 						ev.addParameter(CnSPartitionManager.CY_NODE, node);
-						cnsn = (CnSNode)CnSEventManager.handleMessage(ev);
+						CnSNode cnsn = (CnSNode)CnSEventManager.handleMessage(ev);
+					
 						if (cnsn != null) {
-							ev = new CnSEvent(CnSInfoPanel.INIT, CnSEventManager.INFO_PANEL);
-							ev.addParameter(CnSInfoPanel.NODE, cnsn);
-							ev.addParameter(CnSInfoPanel.PANEL, CnSInfoPanel.NODE_DETAILS);
+							ev = new CnSEvent(CnSResultsPanel.SELECT_CLUSTER, CnSEventManager.RESULTS_PANEL);
+							ev.addParameter(CnSResultsPanel.CLUSTER, node.getSUID());
 							CnSEventManager.handleMessage(ev);
+						}
+						else {
+							ev = new CnSEvent(CnSPartitionManager.GET_NODE, CnSEventManager.PARTITION_MANAGER);
+							ev.addParameter(CnSPartitionManager.CY_NODE, node);
+							cnsn = (CnSNode)CnSEventManager.handleMessage(ev);
+							if (cnsn != null) {
+								ev = new CnSEvent(CnSInfoPanel.INIT, CnSEventManager.INFO_PANEL);
+								ev.addParameter(CnSInfoPanel.NODE, cnsn);
+								ev.addParameter(CnSInfoPanel.PANEL, CnSInfoPanel.NODE_DETAILS);
+								CnSEventManager.handleMessage(ev);
 							
-							ev = new CnSEvent(CnSInfoPanel.SELECT_PANEL, CnSEventManager.INFO_PANEL);
-							ev.addParameter(CnSInfoPanel.PANEL, CnSInfoPanel.NODE_DETAILS);
-							CnSEventManager.handleMessage(ev);
+								ev = new CnSEvent(CnSInfoPanel.SELECT_PANEL, CnSEventManager.INFO_PANEL);
+								ev.addParameter(CnSInfoPanel.PANEL, CnSInfoPanel.NODE_DETAILS);
+								CnSEventManager.handleMessage(ev);
+							}
 						}
 					}
 				}

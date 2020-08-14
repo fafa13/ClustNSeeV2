@@ -44,6 +44,7 @@ import org.cytoscape.clustnsee3.internal.network.CnSNetwork;
 import org.cytoscape.clustnsee3.internal.network.CnSNetworkManager;
 import org.cytoscape.clustnsee3.internal.partition.CnSPartition;
 import org.cytoscape.clustnsee3.internal.partition.CnSPartitionManager;
+import org.cytoscape.clustnsee3.internal.task.CnSDiscardPartitionTask;
 import org.cytoscape.clustnsee3.internal.view.CnSView;
 import org.cytoscape.clustnsee3.internal.view.CnSViewManager;
 import org.cytoscape.clustnsee3.internal.view.state.CnSClusterViewState;
@@ -68,6 +69,7 @@ import org.cytoscape.view.model.View;
 import org.cytoscape.view.presentation.property.BasicVisualLexicon;
 import org.cytoscape.work.TaskIterator;
 import org.cytoscape.work.TaskManager;
+import org.cytoscape.work.swing.DialogTaskManager;
 
 /**
  * 
@@ -345,8 +347,10 @@ public class CnSResultsCommandPanel extends CnSPanel {
 				ev = new CnSEvent(CnSViewManager.GET_NETWORK, CnSEventManager.VIEW_MANAGER);
 				ev.addParameter(CnSViewManager.VIEW, partitionView);
 				CnSNetwork network = (CnSNetwork)CnSEventManager.handleMessage(ev);
+				
 				ev = new CnSEvent(CyActivator.GET_APPLICATION_MANAGER, CnSEventManager.CY_ACTIVATOR);
 				CyApplicationManager applicationManager = (CyApplicationManager)CnSEventManager.handleMessage(ev);
+				applicationManager.setCurrentNetworkView(partitionView.getView());
 				applicationManager.setCurrentNetwork(network.getNetwork());
 				
 				// Apply the CnS visual style to the view
@@ -356,21 +360,13 @@ public class CnSResultsCommandPanel extends CnSPanel {
 		});
 		discardPartitionButton.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				// get the selected partition
-				CnSEvent ev = new CnSEvent(CnSResultsPanel.GET_SELECTED_PARTITION, CnSEventManager.RESULTS_PANEL);
-				CnSPartition partition = (CnSPartition)CnSEventManager.handleMessage(ev);
-		        
-				// remove it from the results panel
-				ev = new CnSEvent(CnSResultsPanel.DISCARD_PARTITION, CnSEventManager.RESULTS_PANEL);
-				ev.addParameter(CnSResultsPanel.PARTITION, partition);
-				CnSEventManager.handleMessage(ev);
-				
-				// remove it from the partition controller
-				ev = new CnSEvent(CnSPartitionManager.REMOVE_PARTITION, CnSEventManager.PARTITION_MANAGER);
-				ev.addParameter(CnSPartitionManager.PARTITION, partition);
-				CnSEventManager.handleMessage(ev);
-				
+			public void actionPerformed(ActionEvent event) {
+				CnSEvent ev = new CnSEvent(CyActivator.GET_TASK_MANAGER, CnSEventManager.CY_ACTIVATOR);
+				DialogTaskManager dialogTaskManager = (DialogTaskManager)CnSEventManager.handleMessage(ev);
+				TaskIterator ti = new TaskIterator();
+				CnSDiscardPartitionTask task = new CnSDiscardPartitionTask();
+				ti.append(task);
+				dialogTaskManager.execute(ti);
 			}
 		});
 		addClusterToViewButton.addActionListener(new ActionListener() {

@@ -44,6 +44,7 @@ import org.cytoscape.clustnsee3.internal.view.CnSView;
 import org.cytoscape.clustnsee3.internal.view.CnSViewManager;
 import org.cytoscape.model.CyNetwork;
 import org.cytoscape.model.CyNetworkManager;
+import org.cytoscape.work.TaskMonitor;
 
 /**
  * 
@@ -77,6 +78,7 @@ public class CnSResultsPanel extends CnSPanel implements CytoPanelComponent, CnS
 	public static final int CLUSTER_NAME = 1007;
 	public static final int SCOPE = 1008;
 	public static final int ANNOTATION = 1009;
+	public static final int TASK_MONITOR = 1010;
 	
 	public CnSResultsPanel(String title) {
 		super(title);
@@ -171,13 +173,15 @@ public class CnSResultsPanel extends CnSPanel implements CytoPanelComponent, CnS
 	    CyNetwork network;
 	    CnSAlgorithm algo;
 	    String scope;
+	    TaskMonitor taskMonitor;
 	    
 	    switch (action) {
 	    	case ADD_PARTITION:
 	    		result = (CnSAlgorithmResult)event.getParameter(RESULT);
 	    		network = (CyNetwork)event.getParameter(NETWORK);
 	    		algo = (CnSAlgorithm)event.getParameter(ALGO);
-	    		initResultPanel(result, network, algo);
+	    		taskMonitor = (TaskMonitor)event.getParameter(TASK_MONITOR);
+	    		initResultPanel(result, network, algo, taskMonitor);
 	    		commandPanel.setEnabled(true);
 	    		sortPanel.setEnabled(true);
 	    		break;
@@ -235,12 +239,19 @@ public class CnSResultsPanel extends CnSPanel implements CytoPanelComponent, CnS
 	    		
 	    	case DISCARD_PARTITION :
 	    		CnSPartition partition = (CnSPartition)event.getParameter(PARTITION);
+	    		taskMonitor = (TaskMonitor)event.getParameter(TASK_MONITOR);
 	    		Vector<CnSCluster> clusters = partition.getClusters();
 	    		
 	    		ev = new CnSEvent(CyActivator.GET_NETWORK_MANAGER, CnSEventManager.CY_ACTIVATOR);
 	    	    CyNetworkManager crnm = (CyNetworkManager)CnSEventManager.handleMessage(ev);
 	    	    
-	    	    for (CnSCluster cl : clusters) {
+	    	    ev = new CnSEvent(CnSViewManager.REMOVE_VIEWS, CnSEventManager.VIEW_MANAGER);
+    			ev.addParameter(CnSViewManager.REFERENCE, partition);
+    			Vector<CnSView> deleted_views = (Vector<CnSView>)CnSEventManager.handleMessage(ev);
+    			int N = clusters.size() + deleted_views.size();
+    			int n = 0;
+				for (CnSCluster cl : clusters) {
+					taskMonitor.setProgress((double)n / (double)N);
 	    			ev = new CnSEvent(CnSNetworkManager.GET_NETWORK, CnSEventManager.NETWORK_MANAGER);
 	    	    	ev.addParameter(CnSNetworkManager.CLUSTER, cl);
 	    	    	CnSNetwork cnsNetwork = (CnSNetwork)CnSEventManager.handleMessage(ev);
@@ -257,14 +268,14 @@ public class CnSResultsPanel extends CnSPanel implements CytoPanelComponent, CnS
 	    	    		ev.addParameter(CnSViewManager.CLUSTER, cl);
 	    	    		CnSEventManager.handleMessage(ev);
 	    	    	}
+	    	    	n++;
 	    	    }
 	    	    
-	    	    ev = new CnSEvent(CnSViewManager.REMOVE_VIEWS, CnSEventManager.VIEW_MANAGER);
-    			ev.addParameter(CnSViewManager.REFERENCE, partition);
-    			Vector<CnSView> deleted_views = (Vector<CnSView>)CnSEventManager.handleMessage(ev);
-				for (CnSView v : deleted_views) {
+	    	    for (CnSView v : deleted_views) {
+	    	    	taskMonitor.setProgress((double)n / (double)N);
     				if (crnm.networkExists(v.getView().getModel().getSUID())) 
     					crnm.destroyNetwork(v.getView().getModel());
+    				n++;
     			}
     			jtp.remove(clusterListPanel.get(partition));
 	    	    clusterListPanel.remove(partition);
@@ -315,7 +326,7 @@ public class CnSResultsPanel extends CnSPanel implements CytoPanelComponent, CnS
 		jtp.setSelectedComponent(clp);
 	}
 	
-	private void initResultPanel(CnSAlgorithmResult result, CyNetwork inputNetwork, CnSAlgorithm algo) {
+	private void initResultPanel(CnSAlgorithmResult result, CyNetwork inputNetwork, CnSAlgorithm algo, TaskMonitor taskMonitor) {
 		CnSEvent ev = new CnSEvent(CyActivator.GET_APPLICATION_MANAGER, CnSEventManager.CY_ACTIVATOR);
         CyApplicationManager applicationManager = (CyApplicationManager)CnSEventManager.handleMessage(ev);
         
@@ -323,6 +334,7 @@ public class CnSResultsPanel extends CnSPanel implements CytoPanelComponent, CnS
         ev.addParameter(CnSPartitionManager.ALGORITHM, algo);
         ev.addParameter(CnSPartitionManager.ALGORITHM_RESULTS, result);
         ev.addParameter(CnSPartitionManager.NETWORK, inputNetwork);
+        ev.addParameter(CnSPartitionManager.TASK_MONITOR, taskMonitor);
         CnSPartition newPartition = (CnSPartition)CnSEventManager.handleMessage(ev);
         
         CnSClusterListPanel clp = new CnSClusterListPanel();

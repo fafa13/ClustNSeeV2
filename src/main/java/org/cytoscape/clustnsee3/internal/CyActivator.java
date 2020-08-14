@@ -32,6 +32,7 @@ import org.cytoscape.view.vizmap.VisualMappingManager;
 import org.cytoscape.view.vizmap.VisualStyleFactory;
 import org.cytoscape.work.SynchronousTaskManager;
 import org.cytoscape.work.TaskObserver;
+import org.cytoscape.work.swing.DialogTaskManager;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 
@@ -61,6 +62,7 @@ public class CyActivator extends AbstractCyActivator implements CnSEventListener
 	public static final int GET_CYTO_PANEL = 23;
 	public static final int REGISTER_CLUSTNSEE = 24;
 	public static final int GET_SWING_APPLICATION = 25;
+	public static final int GET_TASK_MANAGER = 26;
 	
 	public static final int NAME = 1000;
 
@@ -230,6 +232,9 @@ public class CyActivator extends AbstractCyActivator implements CnSEventListener
 				break;
 			case GET_SWING_APPLICATION :
 				ret = getService(bc, CySwingApplication.class);
+				break;
+			case GET_TASK_MANAGER :
+				ret = getService(bc, DialogTaskManager.class);
 				break;
 		}
 		return ret;

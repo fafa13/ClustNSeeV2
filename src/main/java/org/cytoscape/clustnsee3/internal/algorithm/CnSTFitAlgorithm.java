@@ -26,8 +26,6 @@ import org.cytoscape.model.CyEdge;
 import org.cytoscape.model.CyNetwork;
 import org.cytoscape.model.CyNode;
 import org.cytoscape.model.CyTableUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * 
@@ -212,19 +210,7 @@ public class CnSTFitAlgorithm extends CnSAlgorithm {
         	if (partition[i] != 0)
         		classes[partition[i] - 1][card[partition[i] - 1]++] = i;
         }
-        String l = "";
-        Logger LOGGER = LoggerFactory.getLogger(this.getClass());
-        LOGGER.info("*** Nb class : " + clusterNumber);
-        for (int i = 0; i < N; i++) if (card[i] > 0) l += i + " ";
-        LOGGER.info("*** " + l);
-        for (int i = 0; i < clusterNumber; i++) {
-        	LOGGER.info("*** Cluster #" + i + " : " + card[i] + " nodes");
-        	l = "*** ";
-        	for (int j = 0; j < card[i]; j++) l += modClust_to_cyto.get(classes[i][j]) + " ";
-        	LOGGER.info(l);
-        	LOGGER.info("***");
-        	LOGGER.info("***");
-        }
+        
         return new CnSAlgorithmResult(classes, card, clusterNumber, modClust_to_cyto, inputNetwork, scope);
     }
 

@@ -47,6 +47,11 @@ import org.osgi.framework.ServiceRegistration;
  * 
  */
 public class CnSClustnseePlugin implements CnSEventListener {
+	public static final int GET_PANEL = 1;
+	public static final int ENABLE_ANALYZIS = 2;
+	
+	public static final int ENABLE = 1000;
+			
 	private CnSAlgorithmManager algorithmManager;
 	private CnSPartitionManager analysisManager;
 	private CnSMenuManager menuManager;
@@ -60,7 +65,6 @@ public class CnSClustnseePlugin implements CnSEventListener {
 	private Vector<ServiceRegistration> ref;
 	CnSControlPanel controlPanel;
 	private static CnSClustnseePlugin instance;
-	public static final int GET_PANEL = 1;
 	
 	private CnSClustnseePlugin(BundleContext context, CyActivator ca) {
 		super();
@@ -110,6 +114,9 @@ public class CnSClustnseePlugin implements CnSEventListener {
 		switch (event.getAction()) {
 			case (GET_PANEL) :
 				ret = new CnSControlPanel("Clust&see");
+				break;
+			case ENABLE_ANALYZIS :
+				controlPanel.setAnalysisEnabled((Boolean)event.getParameter(ENABLE));
 				break;
 		}
 		return ret;

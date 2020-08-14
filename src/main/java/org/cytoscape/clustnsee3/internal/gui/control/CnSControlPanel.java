@@ -45,4 +45,13 @@ public class CnSControlPanel extends CnSPanel implements CytoPanelComponent {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	/**
+	 * 
+	 * @param
+	 * @return
+	 */
+	public void setAnalysisEnabled(Boolean enable) {
+		actionPanel.setAnalysisEnabled(enable);
+	}
 }

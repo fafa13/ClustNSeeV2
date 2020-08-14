@@ -13,11 +13,8 @@
 
 package org.cytoscape.clustnsee3.internal.algorithm;
 
-import org.cytoscape.application.CyApplicationManager;
-import org.cytoscape.clustnsee3.internal.CyActivator;
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventListener;
-import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
 import org.cytoscape.model.CyNetwork;
 
 /**
@@ -34,6 +31,7 @@ public class CnSAlgorithmEngine implements CnSEventListener {
 	public static final int PARAMETERS = 1001;
 	public static final int SCOPE = 1002;
 	public static final int CANCELLED = 1003;
+	public static final int NETWORK = 1004;
 	
 	private static CnSAlgorithmEngine instance;
 	private String scope;
@@ -51,10 +49,7 @@ public class CnSAlgorithmEngine implements CnSEventListener {
 		return instance;
 	}
 	
-	public CnSAlgorithmResult start(CnSAlgorithm algo) {
-		CnSEvent ev = new CnSEvent(CyActivator.GET_APPLICATION_MANAGER, CnSEventManager.CY_ACTIVATOR);
-		CyApplicationManager cam = (CyApplicationManager)CnSEventManager.handleMessage(ev);
-		CyNetwork network = cam.getCurrentNetwork();
+	public CnSAlgorithmResult start(CnSAlgorithm algo, CyNetwork network) {
 		if (network != null) return algo.execute(network);
 		return null;
 	}
@@ -67,7 +62,7 @@ public class CnSAlgorithmEngine implements CnSEventListener {
 		Object ret = null;
 		switch(event.getAction()) {
 			case START :
-				ret = start((CnSAlgorithm)event.getParameter(ALGORITHM));
+				ret = start((CnSAlgorithm)event.getParameter(ALGORITHM), (CyNetwork)event.getParameter(NETWORK));
 				break;
 			case SET_SCOPE :
 				scope = (String)event.getParameter(SCOPE);

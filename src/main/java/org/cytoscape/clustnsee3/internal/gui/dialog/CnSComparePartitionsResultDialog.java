@@ -25,11 +25,12 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.border.BevelBorder;
 import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableCellRenderer;
+import javax.swing.table.JTableHeader;
 
 import org.cytoscape.clustnsee3.internal.gui.widget.CnSButton;
 import org.cytoscape.clustnsee3.internal.gui.widget.CnSPanel;
@@ -72,10 +73,10 @@ public class CnSComparePartitionsResultDialog extends JDialog {
 		contingencyTable.setDefaultRenderer(Integer.class, new DataCellRenderer());
 		contingencyTable.getColumnModel().getColumn(0).setCellRenderer(new RowHeaderCellRenderer());
 		contingencyTable.setCellSelectionEnabled(true);
-		contingencyTable.setRowSelectionAllowed(false);
-		contingencyTable.setColumnSelectionAllowed(false);
+		contingencyTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		contingencyTable.setShowGrid(true);
 		contingencyPanel.addComponent(new JScrollPane(contingencyTable), 0, 0, 1, 1, 1.0, 1.0, CnSPanel.CENTER, CnSPanel.BOTH, 20, 10, 10, 10, 0, 0);
-		
+
 		getContentPane().add(mainPanel);
 	}
 	
@@ -83,6 +84,8 @@ public class CnSComparePartitionsResultDialog extends JDialog {
 		closeButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				//for (Object o : UIManager.getDefaults().keySet()) System.err.println(o);
+			    
 				dispose();
 			}
 		});
@@ -90,42 +93,71 @@ public class CnSComparePartitionsResultDialog extends JDialog {
 	
 	private class RowHeaderCellRenderer extends DefaultTableCellRenderer {
 		private static final long serialVersionUID = -8690657045355086626L;
-
+		
+		/**
+		 * @param
+		 * @return
+		 */
+		public RowHeaderCellRenderer() {
+			super();
+			setHorizontalAlignment(JLabel.CENTER);
+		}
+		
 		/* (non-Javadoc)
 		 * @see javax.swing.table.TableCellRenderer#getTableCellRendererComponent(javax.swing.JTable, java.lang.Object, boolean, boolean, int, int)
 		 */
 		@Override
 		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-			JLabel component = (JLabel)table.getTableHeader().getDefaultRenderer().getTableCellRendererComponent(table, value, isSelected, hasFocus, 0, 0);
-		    component.setHorizontalAlignment(SwingConstants.CENTER);
-		    if (isSelected) {
-		        component.setFont(component.getFont().deriveFont(Font.BOLD));
-		        component.setForeground(Color.red);
-		    } 
-		    else
-		        component.setFont(component.getFont().deriveFont(Font.PLAIN));
-		    component.setBorder(UIManager.getBorder("TableHeader.cellBorder"));
-		    return component;
+			if (table != null) {
+				JTableHeader header = table.getTableHeader();
+				if (header != null) {
+					setForeground(header.getForeground());
+					setBackground(header.getBackground());
+					setFont(header.getFont());
+				}
+			}
+
+			if (isSelected) {
+				setFont(getFont().deriveFont(Font.BOLD));
+				setForeground(Color.red);
+			}
+			
+			setText((value == null) ? "" : value.toString());
+			setBorder(UIManager.getBorder("TableHeader.cellBorder"));
+			setOpaque(true);
+			return this;
 		}	
 	}
 	
 	private class DataCellRenderer extends DefaultTableCellRenderer {
 		private static final long serialVersionUID = -2476241713017411985L;
 
+		/**
+		 * @param
+		 * @return
+		 */
+		public DataCellRenderer() {
+			super();
+			setHorizontalAlignment(SwingConstants.CENTER);
+		    setBackground(Color.white);
+		}
+		
 		/* (non-Javadoc)
 		 * @see javax.swing.table.TableCellRenderer#getTableCellRendererComponent(javax.swing.JTable, java.lang.Object, boolean, boolean, int, int)
 		 */
 		@Override
 		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-			JLabel component = (JLabel)table.getDefaultRenderer(String.class).getTableCellRendererComponent(table, value, isSelected, hasFocus, 0, 0);
-		    component.setHorizontalAlignment(SwingConstants.CENTER);
-		    if (((Integer)value).intValue() > 0)
-		        component.setFont(component.getFont().deriveFont(Font.BOLD));
+			if (((Integer)value).intValue() > 0)
+		        setFont(getFont().deriveFont(Font.BOLD));
 		    else
-		        component.setFont(component.getFont().deriveFont(Font.PLAIN));
+		        setFont(getFont().deriveFont(Font.PLAIN));
 		    if (isSelected)
-		    	component.setForeground(Color.blue);
-		    return component;
+		    	setForeground(Color.blue);
+		    else
+		    	setForeground(Color.black);
+		    setText((value == null) ? "" : value.toString());
+			
+		    return this;
 		}	
 	}
 }

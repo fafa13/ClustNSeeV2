@@ -49,6 +49,7 @@ import org.cytoscape.view.model.CyNetworkViewFactory;
 import org.cytoscape.view.model.CyNetworkViewManager;
 import org.cytoscape.work.TaskIterator;
 import org.cytoscape.work.TaskManager;
+import org.cytoscape.work.TaskMonitor;
 
 /**
  * 
@@ -86,6 +87,7 @@ public class CnSPartitionManager implements CnSEventListener {
 	public static final int PARTITION_IMPORT = 1011;
 	public static final int ANNOTATION_IMPORT = 1012;
 	public static final int NODE_NAME = 1013;
+	public static final int TASK_MONITOR = 1014;
 	
 	private static CnSPartitionManager instance;
 	private Vector<CnSPartition> partitions;
@@ -129,6 +131,7 @@ public class CnSPartitionManager implements CnSEventListener {
 		String scope, nodeName;
 		Vector<Vector<Long>> partition_import;
 		Vector<Vector<String>> annotation_import;
+		TaskMonitor taskMonitor;
 		
 		switch (event.getAction()) {
 			case ADD_PARTITON :
@@ -140,7 +143,8 @@ public class CnSPartitionManager implements CnSEventListener {
 				inputNetwork = (CyNetwork)event.getParameter(NETWORK);
 				algoResults = (CnSAlgorithmResult)event.getParameter(ALGORITHM_RESULTS);
 				algorithm = (CnSAlgorithm)event.getParameter(ALGORITHM);
-				p = createPartition(inputNetwork, algoResults, algorithm);
+				taskMonitor = (TaskMonitor)event.getParameter(TASK_MONITOR);
+				p = createPartition(inputNetwork, algoResults, algorithm, taskMonitor);
 				if (!partitions.contains(p)) partitions.addElement(p);
 				ret = p;
 				break;
@@ -507,7 +511,7 @@ public class CnSPartitionManager implements CnSEventListener {
 	 * @param
 	 * @return
 	 */
-	private CnSPartition createPartition(CyNetwork inputNetwork, CnSAlgorithmResult algoResults, CnSAlgorithm algorithm) {
+	private CnSPartition createPartition(CyNetwork inputNetwork, CnSAlgorithmResult algoResults, CnSAlgorithm algorithm, TaskMonitor taskMonitor) {
 		
 		// get services needed for network and view creation in cytoscape
 		CnSEvent ev = new CnSEvent(CyActivator.GET_ROOT_NETWORK_MANAGER, CnSEventManager.CY_ACTIVATOR);
@@ -551,6 +555,7 @@ public class CnSPartitionManager implements CnSEventListener {
         
         // the main loop on clusters
         for( int k = 0; k < NbClas; k++) {
+        	taskMonitor.setProgress((double)k / (double)NbClas);
         	// crerate a new cluster
             CnSCluster cluster = new CnSCluster();
             
@@ -600,7 +605,7 @@ public class CnSPartitionManager implements CnSEventListener {
             cluster.setNetwork(clusterNet);
             
             // Add the network to Cytoscape
-            networkManager.addNetwork(clusterNet);
+            networkManager.addNetwork(clusterNet, false);
             
             // Set name for network
             clusterNet.getRow(clusterNet).set(CyNetwork.NAME, String.valueOf(k + 1));
@@ -634,18 +639,11 @@ public class CnSPartitionManager implements CnSEventListener {
 				node.setAttribute("CnS:size", 1, Integer.class);
 			}
 			
-			System.err.println("Cluster #" + cluster.getName());
-			System.err.println("  CnS:isCluster : " + cluster.getAttributes().get("CnS:isCluster"));
-			System.err.println("  CnS:size : " + cluster.getAttributes().get("CnS:size"));
-			System.err.println("  CyNetwork.NAME : " + cluster.getAttributes().get(CyNetwork.NAME));
-			System.err.println("  canonicalName : " + cluster.getAttributes().get("canonicalName"));
-			System.err.println();
-			
-            // create a new view for my network
+			// create a new view for my network
             CyNetworkView myView = cnvf.createNetworkView(clusterNet);
             
             // myView.updateView();
-            networkViewManager.addNetworkView(myView);
+            networkViewManager.addNetworkView(myView, false);
             
             cluster.calModularity(clusterNet);
             

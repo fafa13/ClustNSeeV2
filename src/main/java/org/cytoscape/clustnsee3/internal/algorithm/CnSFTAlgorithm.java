@@ -37,8 +37,6 @@ import org.cytoscape.model.CyIdentifiable;
 import org.cytoscape.model.CyNetwork;
 import org.cytoscape.model.CyNode;
 import org.cytoscape.model.CyTableUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class CnSFTAlgorithm extends CnSAlgorithm {
 
@@ -169,7 +167,6 @@ public class CnSFTAlgorithm extends CnSAlgorithm {
             }
         }
         
-        Logger LOGGER = LoggerFactory.getLogger(this.getClass());
         NbClas = Newman( 1);
         ClasOut();
         int[][] classes = new int[N][N];
@@ -182,18 +179,7 @@ public class CnSFTAlgorithm extends CnSAlgorithm {
         for (int i = 0; i < N; i++) {
         	classes[Part[i] - 1][card[Part[i] - 1]++] = i;
         }
-        String l = "";
-        LOGGER.info("*** Nb class : " + NbClas);
-        for (int i = 0; i < N; i++) if (card[i] > 0) l += i + " ";
-        LOGGER.info("*** " + l);
-        for (int i = 0; i < NbClas; i++) {
-        	LOGGER.info("*** Cluster #" + i + " : " + card[i] + " nodes");
-        	l = "*** ";
-        	for (int j = 0; j < card[i]; j++) l += algo_to_cyto.get(classes[i][j]) + " ";
-        	LOGGER.info(l);
-        	LOGGER.info("***");
-        	LOGGER.info("***");
-        }
+        
         return new CnSAlgorithmResult(classes, card, NbClas, algo_to_cyto, inputNetwork, scope);
     }
     

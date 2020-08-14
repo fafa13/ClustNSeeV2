@@ -6,17 +6,15 @@ import java.awt.event.ActionListener;
 import javax.swing.JOptionPane;
 
 import org.cytoscape.clustnsee3.internal.gui.widget.CnSPanel;
+import org.cytoscape.clustnsee3.internal.task.CnSAnalyzeTask;
 import org.cytoscape.clustnsee3.internal.view.style.CnSStyleManager;
 import org.cytoscape.model.CyNetwork;
+import org.cytoscape.work.TaskIterator;
+import org.cytoscape.work.swing.DialogTaskManager;
 import org.cytoscape.application.CyApplicationManager;
 import org.cytoscape.clustnsee3.internal.CyActivator;
-import org.cytoscape.clustnsee3.internal.algorithm.CnSAlgorithm;
-import org.cytoscape.clustnsee3.internal.algorithm.CnSAlgorithmEngine;
-import org.cytoscape.clustnsee3.internal.algorithm.CnSAlgorithmManager;
-import org.cytoscape.clustnsee3.internal.algorithm.CnSAlgorithmResult;
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
-import org.cytoscape.clustnsee3.internal.gui.results.CnSResultsPanel;
 import org.cytoscape.clustnsee3.internal.gui.widget.CnSButton;
 
 public class CnSControlActionPanel extends CnSPanel {
@@ -42,44 +40,19 @@ public class CnSControlActionPanel extends CnSPanel {
 		analyzeButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				CnSEvent ev;
-				
-				/**
-				 * Get the name of the selected algorithm
-				 */
-				ev = new CnSEvent(CnSAlgorithmManager.GET_SELECTED_ALGORITHM, CnSEventManager.ALGORITHM_MANAGER);
-				String algoName = (String)CnSEventManager.handleMessage(ev);
-				
-				/**
-				 * Get the selected algorithm
-				 */
-				ev = new CnSEvent(CnSAlgorithmManager.GET_ALGORITHM, CnSEventManager.ALGORITHM_MANAGER);
-				ev.addParameter(CnSAlgorithmManager.ALGO_NAME, algoName);
-				CnSAlgorithm algo = (CnSAlgorithm)CnSEventManager.handleMessage(ev);
-				
-				/**
-				 * Run the algorithm
-				 */
-				ev = new CnSEvent(CnSAlgorithmEngine.START, CnSEventManager.ALGORITHM_ENGINE);
-				ev.addParameter(CnSAlgorithmEngine.ALGORITHM, algo);
-	    		CnSAlgorithmResult result = (CnSAlgorithmResult)CnSEventManager.handleMessage(ev);
-	    		
-	    		/**
-	    		 * initialize result panel
-	    		 */
-	    		if (result != null) {
-	    			ev = new CnSEvent(CyActivator.GET_APPLICATION_MANAGER, CnSEventManager.CY_ACTIVATOR);
-	    			CyApplicationManager cam = (CyApplicationManager)CnSEventManager.handleMessage(ev);
-	    			CyNetwork network = cam.getCurrentNetwork();
-	    		
-	    			ev = new CnSEvent(CnSResultsPanel.ADD_PARTITION, CnSEventManager.RESULTS_PANEL);
-	    			ev.addParameter(CnSResultsPanel.RESULT, result);
-	    			ev.addParameter(CnSResultsPanel.ALGO, algo);
-	    			ev.addParameter(CnSResultsPanel.NETWORK, network);
-	    			CnSEventManager.handleMessage(ev);
-	    		}
-	    		else
-	    			JOptionPane.showMessageDialog(null, "You must select a network !");
+				CnSEvent ev = new CnSEvent(CyActivator.GET_APPLICATION_MANAGER, CnSEventManager.CY_ACTIVATOR);
+				CyApplicationManager cam = (CyApplicationManager)CnSEventManager.handleMessage(ev);
+				CyNetwork network = cam.getCurrentNetwork();
+				if (network == null)
+					JOptionPane.showMessageDialog(null, "You must select a network first !");
+				else {
+					ev = new CnSEvent(CyActivator.GET_TASK_MANAGER, CnSEventManager.CY_ACTIVATOR);
+					DialogTaskManager dialogTaskManager = (DialogTaskManager)CnSEventManager.handleMessage(ev);
+					TaskIterator ti = new TaskIterator();
+					CnSAnalyzeTask task = new CnSAnalyzeTask(network);
+					ti.append(task);
+					dialogTaskManager.execute(ti);
+				}
 			}
 		});
 		closeButton.addActionListener(new ActionListener() {
@@ -92,5 +65,14 @@ public class CnSControlActionPanel extends CnSPanel {
 				
 			}
 		});
+	}
+
+	/**
+	 * 
+	 * @param
+	 * @return
+	 */
+	public void setAnalysisEnabled(Boolean enable) {
+		analyzeButton.setEnabled(enable);
 	}
 }

@@ -476,45 +476,7 @@ public class CnSOCGAlgorithm extends CnSAlgorithm {
 
         ClasOut( NbClas, Mod);
         HashMap<Integer, Long> modClust_to_cyto = reverseMap( cyto2ModClust);
-        /*Logger LOGGER = LoggerFactory.getLogger(this.getClass());
-        for( int k = 0; k < NbClas; k++) {
-            CnSCluster newCluster = new CnSCluster();
-            ArrayList<Integer> alNodes = new ArrayList<Integer>();
-            int degree = 0;
-            for( int index_in_class = 0; index_in_class < Kard[ k]; index_in_class++) {
-                int mod_clust_index = Cl[ k][ index_in_class];
-                Long cyto_index = modClust_to_cyto.get(mod_clust_index);
-                if( cyto_index != null){
-                	alNodes.add( cyto_index.intValue());
-                }
-                else{
-                	LOGGER.error("Index not found in Cytoscape network :" + mod_clust_index);
-                }
-                //degree += inputNetwork.getDegree( cyto_index);
-            }
-            if( alNodes.size() > 0) {
-                newCluster.setNodeIndexList( alNodes);
-                newCluster.setTotalDegree( degree);
-                alOriginalClusters.add( newCluster);
-            }
-            else{
-            	LOGGER.error("The class " + k + " is void");
-            }
-        }*/
-        Logger LOGGER = LoggerFactory.getLogger(this.getClass());
         
-        String l = "";
-        LOGGER.info("*** Nb class : " + NbClas);
-        for (int i = 0; i < N; i++) if (Kard[i] > 0) l += i + " ";
-        LOGGER.info("*** " + l);
-        for (int i = 0; i < NbClas; i++) {
-        		LOGGER.info("*** Cluster #" + i + " : " + Kard[i] + " nodes");
-        		l = "*** ";
-        		for (int j = 0; j < Kard[i]; j++) l += modClust_to_cyto.get(Cl[i][j]) + " ";
-        		LOGGER.info(l);
-        		LOGGER.info("***");
-        		LOGGER.info("***");
-        }
         CnSEvent ev = new CnSEvent(CnSAlgorithmEngine.GET_SCOPE, CnSEventManager.ALGORITHM_ENGINE);
         String scope = (String)CnSEventManager.handleMessage(ev);
 
