@@ -174,7 +174,7 @@ public class CnSExpandClusterNodeAction {
 								network.getNetwork().getRow(edge).set("CnS:size", edgeWidth.get(edge).intValue());
 								network.getNetwork().getRow(edge).set("interaction", "pp");
 								network.getNetwork().getRow(edge).set("name", clusterNode.getAttributes().get("name") + " - " + linkedCluster.getName());
-								network.getNetwork().getRow(edge).set("canonicalName", clusterNode.getAttributes().get("name") + " - " + linkedCluster.getName());
+								//network.getNetwork().getRow(edge).set("canonicalName", clusterNode.getAttributes().get("name") + " - " + linkedCluster.getName());
 							}
 							else {
 								lce = network.getNetwork().getConnectingEdgeList(linkedCluster.getCyNode(), clusterNode.getCyNode(), CyEdge.Type.ANY);
@@ -204,7 +204,7 @@ public class CnSExpandClusterNodeAction {
 								network.getNetwork().getRow(edge).set("CnS:size", 1);
 								network.getNetwork().getRow(edge).set("interaction", "multiclass");
 								network.getNetwork().getRow(edge).set("name", n.getAttributes().get("name") + " ~ " + linkedCluster.getName());
-								network.getNetwork().getRow(edge).set("canonicalName", n.getAttributes().get("name") + " ~ " + linkedCluster.getName());
+								//network.getNetwork().getRow(edge).set("canonicalName", n.getAttributes().get("name") + " ~ " + linkedCluster.getName());
 								eh.flushPayloadEvents();
 							}
 						}
