@@ -82,6 +82,7 @@ public class CnSStyleManager implements CnSEventListener {
 				vsSet = lvtf.loadStyles(is);
 				vs = vsSet.iterator().next();
 				vmm.addVisualStyle(vs);
+				//vmm.setCurrentVisualStyle(vs);
 				style.put(CNS_STYLE, vs);
 				currentStyle = vs;
 			}
@@ -123,20 +124,24 @@ public class CnSStyleManager implements CnSEventListener {
 				break;
 				
 			case APPLY_CURRENT_STYLE :
+				ev = new CnSEvent(CyActivator.GET_VIZMAP_MANAGER, CnSEventManager.CY_ACTIVATOR);
+				VisualMappingManager vmm = (VisualMappingManager)CnSEventManager.handleMessage(ev);
+				
 				CnSView view = (CnSView)event.getParameter(VIEW);
 				if (view == null) {
 					ev = new CnSEvent(CnSViewManager.GET_SELECTED_VIEW, CnSEventManager.VIEW_MANAGER);
 					view = (CnSView)CnSEventManager.handleMessage(ev);
 				}
 				if (view != null) {
-					currentStyle.apply(view.getView());
+					vmm.setVisualStyle(currentStyle, view.getView());
+					//currentStyle.apply(view.getView());
 					view.getView().updateView();
 				}
 				break;
 				
 			case REMOVE_CNS_STYLES :
 				ev = new CnSEvent(CyActivator.GET_VIZMAP_MANAGER, CnSEventManager.CY_ACTIVATOR);
-				VisualMappingManager vmm = (VisualMappingManager)CnSEventManager.handleMessage(ev);
+				vmm = (VisualMappingManager)CnSEventManager.handleMessage(ev);
 				for (Integer vs : style.keySet()) vmm.removeVisualStyle(style.get(vs));
 				currentStyle = null;
 		}
