@@ -13,10 +13,14 @@
 
 package org.cytoscape.clustnsee3.internal.gui.info;
 
+import java.util.Map;
+
 import javax.swing.table.AbstractTableModel;
 
 import org.cytoscape.clustnsee3.internal.analysis.CnSCluster;
 import org.cytoscape.model.CyNetwork;
+import org.cytoscape.model.CyNode;
+import org.cytoscape.model.CyRow;
 
 /**
  * 
@@ -58,8 +62,17 @@ public class CnSNodeListTableModel extends AbstractTableModel {
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		if (cluster != null)
-			if (columnIndex == 0)
-				return cluster.getNetwork().getRootNetwork().getRow(cluster.getNodes().get(rowIndex).getCyNode()).get(CyNetwork.NAME, String.class);
+			if (columnIndex == 0) {
+				CyNode cn = cluster.getNodes().get(rowIndex).getCyNode();
+				CyRow cr = cluster.getNetwork().getRootNetwork().getRow(cn);
+				String name = cr.get("shared name", String.class);
+				//Map<String, Object> map = cr.getAllValues();
+				//System.out.println("CyNode = " + cn + " ; CyRow = " + cr + " ; name = " + name);
+				//for (String key : map.keySet()) {
+				//	System.out.println("  " + key + " -> " + map.get(key));
+				//}
+				return name;
+			}
 			else if (columnIndex == 1)
 				return cluster.getNodes().get(rowIndex).getNbClusters();
 			else if (columnIndex == 2)
