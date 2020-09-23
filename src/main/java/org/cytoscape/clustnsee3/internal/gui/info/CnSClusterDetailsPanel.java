@@ -119,7 +119,6 @@ public class CnSClusterDetailsPanel extends CnSPanel {
 			data.addElement(v);
 		}
 		
-		annotationTable.updateUI();
 		annotationTable.repaint();
 	}
 

@@ -556,7 +556,7 @@ public class CnSPartitionManager implements CnSEventListener {
         // the main loop on clusters
         for( int k = 0; k < NbClas; k++) {
         	taskMonitor.setProgress((double)k / (double)NbClas);
-        	// crerate a new cluster
+        	// create a new cluster
             CnSCluster cluster = new CnSCluster();
             
             // the cluster nodes and edges 

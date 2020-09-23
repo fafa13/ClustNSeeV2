@@ -107,10 +107,15 @@ public class CnSEdgeDetailsPanel extends CnSPanel {
 			linkNameLabel.setText("Cluster #" + clusterLink.getSource().getName() + " -- Cluster #" + clusterLink.getTarget().getName());
 			leftClusterPanel.init(clusterLink.getSource());
 			rightClusterPanel.init(clusterLink.getTarget());
-			if (clusterLink.getInteractionEdge().getCyEdge() == edge) {
-				middleLayout.show(middlePanel, CLUSTER_INTERACTION);
-				interactionsPanel.init(clusterLink);
-			}
+			if (clusterLink.getInteractionEdge() != null)
+				if (clusterLink.getInteractionEdge().getCyEdge() == edge) {
+					middleLayout.show(middlePanel, CLUSTER_INTERACTION);
+					interactionsPanel.init(clusterLink);
+				}
+				else {
+					middleLayout.show(middlePanel, CLUSTER_MULTICLASS);
+					multiclassPanel.init(clusterLink);
+				}
 			else {
 				middleLayout.show(middlePanel, CLUSTER_MULTICLASS);
 				multiclassPanel.init(clusterLink);

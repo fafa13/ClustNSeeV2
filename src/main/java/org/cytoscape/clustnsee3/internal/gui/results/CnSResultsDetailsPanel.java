@@ -14,6 +14,7 @@
 package org.cytoscape.clustnsee3.internal.gui.results;
 
 import java.awt.Color;
+import java.text.NumberFormat;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -61,8 +62,11 @@ public class CnSResultsDetailsPanel extends CnSPanel {
 		l = new JLabel("Intra/extra edges ratio :");
 		l.setForeground(Color.blue);
 		addComponent(l, 0, 4, 1, 1, 1.0, 1.0, CnSPanel.EAST, CnSPanel.NONE, 5, 5, 5, 0, 0, 0);
+		NumberFormat nf = NumberFormat.getInstance();
+		nf.setMaximumFractionDigits(3);
+		nf.setMinimumFractionDigits(3);
 		if (data.getExtEdges().size() > 0)
-			l = new JLabel(String.valueOf(Integer.valueOf(data.getInDegree()).doubleValue() / Integer.valueOf(data.getExtEdges().size()).doubleValue()));
+			l = new JLabel(String.valueOf(nf.format(Integer.valueOf(data.getInDegree()).doubleValue() / Integer.valueOf(data.getExtEdges().size()).doubleValue())));
 		else
 			l = new JLabel("-");
 		addComponent(l, 1, 4, 1, 1, 1.0, 1.0, CnSPanel.WEST, CnSPanel.NONE, 5, 5, 5, 5, 0, 0);

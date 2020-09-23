@@ -67,14 +67,7 @@ public class FTTaskObserver implements TaskObserver {
 	 */
 	@Override
 	public void allFinished(FinishStatus arg0) {
-		//view.fitContent();
-		//view.updateView();
-		///re.createImage(200,  100);
-		//BufferedImage image = new BufferedImage( 200, 100, BufferedImage.TYPE_INT_RGB);
-        //final Graphics2D g = (Graphics2D) image.getGraphics();
-		//if (re != null) re.printCanvas(g);
-		BufferedImage i = (BufferedImage)re.createImage(200, 112);
-		//JOptionPane.showConfirmDialog(null, i.getClass());
+		BufferedImage i = (BufferedImage)re.createImage(200, 100);
 		ImageFilter filter = new RGBImageFilter() {
 	         int transparentColor = Color.white.getRGB() | 0xFF000000;
 
