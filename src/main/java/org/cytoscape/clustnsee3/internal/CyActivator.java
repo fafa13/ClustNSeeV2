@@ -10,6 +10,7 @@ import org.cytoscape.clustnsee3.internal.event.CnSEventListener;
 import org.cytoscape.clustnsee3.internal.gui.menu.contextual.factory.CnSAnnotateClusterMenuFactory;
 import org.cytoscape.clustnsee3.internal.gui.menu.contextual.factory.CnSExpandCompressClusterNodeMenuFactory;
 import org.cytoscape.clustnsee3.internal.gui.menu.contextual.factory.CnSShowClusterlinksMenuFactory;
+import org.cytoscape.clustnsee3.internal.gui.menu.main.CnSBuildNeighborhoodNetworkMenu;
 import org.cytoscape.clustnsee3.internal.gui.menu.main.CnSComparePartitionsMenu;
 import org.cytoscape.clustnsee3.internal.gui.menu.main.CnSImportPartitionMenu;
 import org.cytoscape.clustnsee3.internal.gui.menu.main.CnSSearchNodeClustersMenu;
@@ -72,6 +73,7 @@ public class CyActivator extends AbstractCyActivator implements CnSEventListener
 	private CnSImportPartitionMenu clustnseeImportPartition;
 	private CnSSearchNodeClustersMenu clustnseeSearchNodeClusters;
 	private CnSComparePartitionsMenu clustnseeComparePartitions;
+	private CnSBuildNeighborhoodNetworkMenu clustnseeBuildNeighborhoodNetwork;
 	
 	private ServiceRegistration clustnseeService;
 	
@@ -100,6 +102,10 @@ public class CyActivator extends AbstractCyActivator implements CnSEventListener
 		clustnseeComparePartitions = CnSComparePartitionsMenu.getInstance();
 		clustnseeComparePartitions.setMenuGravity(4.0f);
 		registerAllServices(context, clustnseeComparePartitions, new Properties());
+		
+		clustnseeBuildNeighborhoodNetwork = CnSBuildNeighborhoodNetworkMenu.getInstance();
+		clustnseeBuildNeighborhoodNetwork.setMenuGravity(5.0f);
+		registerAllServices(context, clustnseeBuildNeighborhoodNetwork, new Properties());
 		
 		CnSExpandCompressClusterNodeMenuFactory expandCompressClusterNodeMenuFactory  = new CnSExpandCompressClusterNodeMenuFactory();
 		Properties expandCompressClusterNodeMenuFactoryProps = new Properties();
