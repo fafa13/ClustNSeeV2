@@ -170,7 +170,7 @@ public class CnSCluster implements Comparable<CnSCluster> {
 		
 		while (it.hasNext()) {
 			n = it.next();
-			name = network.getRow(n.getCyNode()).get("name", String.class);
+			name = network.getRow(n.getCyNode()).get("shared name", String.class);
 			if (name.equals(nodeName)) {
 				ret = true;
 				break;

@@ -36,6 +36,7 @@ import org.cytoscape.clustnsee3.internal.algorithm.CnSAlgorithmManager;
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
 import org.cytoscape.clustnsee3.internal.gui.results.CnSResultsPanel;
+import org.cytoscape.clustnsee3.internal.network.CnSNetworkManager;
 import org.cytoscape.model.CyNetwork;
 import org.cytoscape.model.CyNode;
 import org.cytoscape.model.CyRow;
@@ -56,6 +57,7 @@ public class CnSImportPartitionMenu extends AbstractCyAction {
 	/* (non-Javadoc)
 	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		JFileChooser jfc = new JFileChooser();
@@ -157,7 +159,13 @@ public class CnSImportPartitionMenu extends AbstractCyAction {
     							System.err.println("  " + s);
     						}
     						else if (!s.equals("")) {
-    							n = getNodesWithValue(network, network.getDefaultNodeTable(), "name", s);
+    							ev = new CnSEvent(CnSNetworkManager.GET_NODES_WITH_VALUE, CnSEventManager.NETWORK_MANAGER);
+    							ev.addParameter(CnSNetworkManager.NETWORK, network);
+    							ev.addParameter(CnSNetworkManager.COLNAME, "name");
+    							ev.addParameter(CnSNetworkManager.VALUE, s);
+    							n = (Set<CyNode>)CnSEventManager.handleMessage(ev);
+    							
+    							//n = getNodesWithValue(network, network.getDefaultNodeTable(), "name", s);
     							if (n.size() == 1) {
     								System.err.println("  " + n.iterator().next().getSUID() + " => " + s);
     								imported_partition.lastElement().addElement(n.iterator().next().getSUID());
@@ -228,7 +236,7 @@ public class CnSImportPartitionMenu extends AbstractCyAction {
      * @param value The attribute value
      * @return A set of {@code CyNode}s with a matching value, or an empty set if no nodes match.
      */
-    private static Set<CyNode> getNodesWithValue(final CyNetwork net, final CyTable table, final String colname, final Object value) {
+    /*private static Set<CyNode> getNodesWithValue(final CyNetwork net, final CyTable table, final String colname, final Object value) {
         final Collection<CyRow> matchingRows = table.getMatchingRows(colname, value);
         final Set<CyNode> nodes = new HashSet<CyNode>();
         final String primaryKeyColname = table.getPrimaryKey().getName();
@@ -240,5 +248,5 @@ public class CnSImportPartitionMenu extends AbstractCyAction {
             nodes.add(node);
         }
         return nodes;
-    }
+    }*/
 }
