@@ -351,9 +351,14 @@ public class CnSPartitionManager implements CnSEventListener {
         for( int k = 0; k < imported_partition.size(); k++)
         	for (int index_in_class = 0; index_in_class < imported_partition.get(k).size(); index_in_class++)
             	cynodes_to_keep.addElement(inputNetwork.getNode(imported_partition.get(k).get(index_in_class)));
-            
+        
+        //System.err.println("----------------------------");
+        //for (CyNode nn : cynodes_to_keep) System.err.println(nn.getSUID());
+        //System.err.println("----------------------------");
+        
         // the main loop on clusters
         for( int k = 0; k < imported_partition.size(); k++) {
+        	
         	// create a new cluster
             CnSCluster cluster = new CnSCluster();
             
@@ -402,7 +407,7 @@ public class CnSPartitionManager implements CnSEventListener {
             cluster.setNetwork(clusterNet);
             
             // Add the network to Cytoscape
-            networkManager.addNetwork(clusterNet);
+            networkManager.addNetwork(clusterNet, false);
             
             // Set name for network
             clusterNet.getRow(clusterNet).set(CyNetwork.NAME, String.valueOf(k + 1));
@@ -436,31 +441,40 @@ public class CnSPartitionManager implements CnSEventListener {
 				node.setAttribute("CnS:size", 1, Integer.class);
 			}
 			
-			System.err.println("Cluster #" + cluster.getName());
-			System.err.println("  CnS:isCluster : " + cluster.getAttributes().get("CnS:isCluster"));
-			System.err.println("  CnS:size : " + cluster.getAttributes().get("CnS:size"));
-			System.err.println("  CyNetwork.NAME : " + cluster.getAttributes().get(CyNetwork.NAME));
-			System.err.println("  canonicalName : " + cluster.getAttributes().get("canonicalName"));
-			System.err.println();
+			cluster.print();
 			
-            // create a new view for my network
+			//System.err.println("Cluster #" + cluster.getName());
+			//System.err.println("  CnS:isCluster : " + cluster.getAttributes().get("CnS:isCluster"));
+			//System.err.println("  CnS:size : " + cluster.getAttributes().get("CnS:size"));
+			//System.err.println("  CyNetwork.NAME : " + cluster.getAttributes().get(CyNetwork.NAME));
+			//System.err.println("  canonicalName : " + cluster.getAttributes().get("canonicalName"));
+			
+            //System.err.print("  calculating modularity ... ");
+			cluster.calModularity(clusterNet);
+            //System.err.println("done.");
+            
+            //System.err.print("  making view ... ");
+			// create a new view for my network
             CyNetworkView myView = cnvf.createNetworkView(clusterNet);
             
             // myView.updateView();
-            networkViewManager.addNetworkView(myView);
+            networkViewManager.addNetworkView(myView, false);
+            //System.err.println("done.");
             
-            cluster.calModularity(clusterNet);
-            
+            //System.err.print("  making snapshot ... ");
+			
             // create the CnSView and apply the snapshot style
             CnSView view = new CnSView(myView, new CnSClusterViewState(cluster));
             ev = new CnSEvent(CnSStyleManager.APPLY_CURRENT_STYLE, CnSEventManager.STYLE_MANAGER);
             ev.addParameter(CnSStyleManager.VIEW, view);
             CnSEventManager.handleMessage(ev);
-            
+            //System.err.print("--- ");
+             
             // make the snapshot
         	TaskIterator tit = apltf.createTaskIterator(networkViewManager.getNetworkViews(clusterNet));
             FTTaskObserver to = new FTTaskObserver(myView, cluster);
             tm.execute(tit, to);
+            //System.err.println("done.");
             
             // create the network and register it
             CnSNetwork network = new CnSNetwork(clusterNet);
@@ -482,7 +496,7 @@ public class CnSPartitionManager implements CnSEventListener {
             CnSEventManager.handleMessage(ev);
             
             // fill CnS attributes
-			for (String key : network.getNodeColumns().keySet())
+            for (String key : network.getNodeColumns().keySet())
 				for (CnSNode node : cluster.getNodes())
 					network.getNetwork().getRow(node.getCyNode()).set(key, node.getAttributes().get(key));
 			
@@ -491,7 +505,8 @@ public class CnSPartitionManager implements CnSEventListener {
 	        	for (CnSEdge edge : cluster.getEdges())
 	        		network.getNetwork().getRow(edge.getCyEdge()).set(key, edge.getAttributes().get(key));
 	        }
-            // make the links between the new cluster and the existing ones
+	        
+	        // make the links between the new cluster and the existing ones
             makeClusterLinks(cluster, partition);
             
             // add the new cluster in the partition
@@ -512,7 +527,25 @@ public class CnSPartitionManager implements CnSEventListener {
 	 * @return
 	 */
 	private CnSPartition createPartition(CyNetwork inputNetwork, CnSAlgorithmResult algoResults, CnSAlgorithm algorithm, TaskMonitor taskMonitor) {
-		
+		/*Vector<Vector<Long>> imported_partition = new Vector<Vector<Long>>();
+		int NbClas = algoResults.getNbClass();
+		int[] Kard = algoResults.getCard();
+        HashMap<Integer, Long> algo_to_cyto = algoResults.getAlgoToCyto();
+        int[][] Cl = algoResults.getClasses();
+        Vector<Vector<String>> ann = new Vector<Vector<String>>();
+        for( int k = 0; k < NbClas; k++) {
+			Vector<Long> vl = new Vector<Long>();
+			ann.addElement(new Vector<String>());
+			imported_partition.addElement(vl);
+			for (int index_in_class = 0; index_in_class < Kard[k]; index_in_class++) {
+				int mod_clust_index = Cl[k][ index_in_class];
+            	Long cyto_index = algo_to_cyto.get(mod_clust_index);
+            	vl.addElement(cyto_index);
+			}
+		}
+        
+        return importPartition(inputNetwork, imported_partition, ann, algorithm, algoResults.getScope());*/
+        
 		// get services needed for network and view creation in cytoscape
 		CnSEvent ev = new CnSEvent(CyActivator.GET_ROOT_NETWORK_MANAGER, CnSEventManager.CY_ACTIVATOR);
         CyRootNetworkManager crnm = (CyRootNetworkManager)CnSEventManager.handleMessage(ev);
@@ -538,8 +571,8 @@ public class CnSPartitionManager implements CnSEventListener {
         int NbClas = algoResults.getNbClass();
         int[] Kard = algoResults.getCard();
         int[][] Cl = algoResults.getClasses();
-        HashMap<Integer, Long> algo_to_cyto = algoResults.getAlgoToCyto();
         Vector<CyNode> cynodes_to_keep = new Vector<CyNode>();
+        HashMap<Integer, Long> algo_to_cyto = algoResults.getAlgoToCyto();
         for( int k = 0; k < NbClas; k++) {
         	for (int index_in_class = 0; index_in_class < Kard[k]; index_in_class++) {
             	int mod_clust_index = Cl[k][ index_in_class];
@@ -547,6 +580,10 @@ public class CnSPartitionManager implements CnSEventListener {
             	if( cyto_index != null) cynodes_to_keep.addElement(inputNetwork.getNode(cyto_index));
             }
         }
+        
+        //System.err.println("----------------------------");
+        //for (CyNode nn : cynodes_to_keep) System.err.println(nn.getSUID());
+        //System.err.println("----------------------------");
         
         // use the snapshot style
         ev = new CnSEvent(CnSStyleManager.SET_CURRENT_STYLE, CnSEventManager.STYLE_MANAGER);
@@ -638,6 +675,14 @@ public class CnSPartitionManager implements CnSEventListener {
 				node.setAttribute("CnS:isCluster", false, Boolean.class);
 				node.setAttribute("CnS:size", 1, Integer.class);
 			}
+			
+			cluster.print();
+			
+			//System.err.println("Cluster #" + cluster.getName());
+			//System.err.println("  CnS:isCluster : " + cluster.getAttributes().get("CnS:isCluster"));
+			//System.err.println("  CnS:size : " + cluster.getAttributes().get("CnS:size"));
+			//System.err.println("  CyNetwork.NAME : " + cluster.getAttributes().get(CyNetwork.NAME));
+			//System.err.println("  canonicalName : " + cluster.getAttributes().get("canonicalName"));
 			
 			// create a new view for my network
             CyNetworkView myView = cnvf.createNetworkView(clusterNet);

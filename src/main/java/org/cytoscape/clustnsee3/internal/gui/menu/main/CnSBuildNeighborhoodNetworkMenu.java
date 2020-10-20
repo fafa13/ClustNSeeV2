@@ -25,10 +25,12 @@ import org.cytoscape.clustnsee3.internal.gui.dialog.CnSBuildNeighborhoodNetworkD
 public class CnSBuildNeighborhoodNetworkMenu extends AbstractCyAction {
 	private static final long serialVersionUID = 2693746646708499693L;
 	private static CnSBuildNeighborhoodNetworkMenu instance;
+	private boolean en;
 	
 	private CnSBuildNeighborhoodNetworkMenu() {
 		super("Build neighborhood network"); 
 		setPreferredMenu("Apps.Clust&see");
+		en = true;
 	}
 
 	/* (non-Javadoc)
@@ -46,5 +48,13 @@ public class CnSBuildNeighborhoodNetworkMenu extends AbstractCyAction {
 	public static CnSBuildNeighborhoodNetworkMenu getInstance() {
 		if (instance == null) instance = new CnSBuildNeighborhoodNetworkMenu();
 		return instance;
+	}
+	
+	public void setEnabled_(boolean b) {
+		super.setEnabled(b);
+		en = b;
+	}
+	public boolean isEnabled() {
+		return en;
 	}
 }

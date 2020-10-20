@@ -73,7 +73,23 @@ public class CnSCluster implements Comparable<CnSCluster> {
 		
 		compare_type = COMPARE_NB_NODES_DEC;
 	}
-	
+	public void print() {
+		System.out.println("---------------------------------------------");
+		System.out.println("Cluster name : " + name);
+		System.out.println("Total degree : " + totalDegree);
+		System.out.println("In degree : " + inDegree);
+		System.out.println("Out degree : " + outDegree);
+		System.out.println("Modularity : " + modularity);
+		System.out.println("Snapshot : " + snapshot);
+		System.out.println("Nodes : " + alNodes.size());
+		System.out.println("Edges : " + alEdges.size());
+		System.out.println("Ext edges : " + extEdges.size());
+		System.out.println("CyNode : " + cyNode);
+		System.out.println("Annotations : " + annotations);
+		System.out.println("Attributes : " + attributes);
+		System.out.println("Attribute types : " + attributeTypes);
+		System.out.println("---------------------------------------------");
+	}
 	public CnSCluster() {
 		super();
 		alNodes = null;

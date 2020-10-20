@@ -63,11 +63,13 @@ public class CnSClustnseePlugin implements CnSEventListener {
 	private CnSPartitionManager partitionManager;
 	private CnSStyleManager styleManager;
 	private Vector<ServiceRegistration> ref;
-	CnSControlPanel controlPanel;
+	private CnSControlPanel controlPanel;
 	private static CnSClustnseePlugin instance;
+	private BundleContext bc;
 	
 	private CnSClustnseePlugin(BundleContext context, CyActivator ca) {
 		super();
+		bc = context;
 		algorithmManager = CnSAlgorithmManager.getInstance();
 		analysisManager = CnSPartitionManager.getInstance();
 		menuManager = CnSMenuManager.getInstance();
@@ -81,10 +83,10 @@ public class CnSClustnseePlugin implements CnSEventListener {
 		CnSEventManager.getCnsEventManager(this, analysisManager, menuManager, dataPanel, resultsPanel, algorithmManager, algorithmEngine, viewManager, networkManager, partitionManager, styleManager, ca);
 		CnSEvent ev = new CnSEvent(CnSAlgorithmManager.INIT, CnSEventManager.ALGORITHM_MANAGER);
 		CnSEventManager.handleMessage(ev);
-		ev = new CnSEvent(CnSClustnseePlugin.GET_PANEL, CnSEventManager.CLUSTNSEE_PLUGIN);
-		controlPanel = (CnSControlPanel)CnSEventManager.handleMessage(ev);
+		//ev = new CnSEvent(CnSClustnseePlugin.GET_PANEL, CnSEventManager.CLUSTNSEE_PLUGIN);
+		//controlPanel = (CnSControlPanel)CnSEventManager.handleMessage(ev);
 		styleManager.init();
-		ref = new Vector<ServiceRegistration>();
+		/*ref = new Vector<ServiceRegistration>();
 		ref.addElement(context.registerService(CytoPanelComponent.class.getName(), controlPanel, new Properties()));
 		ref.addElement(context.registerService(CytoPanelComponent.class.getName(), resultsPanel, new Properties()));
 		ref.addElement(context.registerService(CytoPanelComponent.class.getName(), dataPanel, new Properties()));
@@ -96,7 +98,26 @@ public class CnSClustnseePlugin implements CnSEventListener {
 		ref.addElement(context.registerService(NetworkAboutToBeDestroyedListener.class.getName(), networkManager, new Properties()));
 		ref.addElement(context.registerService(UnsetNetworkPointerListener.class.getName(), viewManager, new Properties()));
 		ref.addElement(context.registerService(SetCurrentNetworkViewListener.class.getName(), viewManager, new Properties()));
-		ref.addElement(context.registerService(SelectedNodesAndEdgesListener.class.getName(), viewManager, new Properties()));
+		ref.addElement(context.registerService(SelectedNodesAndEdgesListener.class.getName(), viewManager, new Properties()));*/
+	}
+	
+	public void registerServices() {
+		CnSEvent ev = new CnSEvent(CnSClustnseePlugin.GET_PANEL, CnSEventManager.CLUSTNSEE_PLUGIN);
+		controlPanel = (CnSControlPanel)CnSEventManager.handleMessage(ev);
+		//styleManager.init();
+		ref = new Vector<ServiceRegistration>();
+		ref.addElement(bc.registerService(CytoPanelComponent.class.getName(), controlPanel, new Properties()));
+		ref.addElement(bc.registerService(CytoPanelComponent.class.getName(), resultsPanel, new Properties()));
+		ref.addElement(bc.registerService(CytoPanelComponent.class.getName(), dataPanel, new Properties()));
+		ref.addElement(bc.registerService(AboutToRemoveNodesListener.class.getName(), viewManager, new Properties()));
+		ref.addElement(bc.registerService(AddedNodesListener.class.getName(), viewManager, new Properties()));
+		ref.addElement(bc.registerService(RemovedEdgesListener.class.getName(), viewManager, new Properties()));
+		ref.addElement(bc.registerService(AddedEdgesListener.class.getName(), viewManager, new Properties()));
+		ref.addElement(bc.registerService(NetworkViewAboutToBeDestroyedListener.class.getName(), viewManager, new Properties()));
+		ref.addElement(bc.registerService(NetworkAboutToBeDestroyedListener.class.getName(), networkManager, new Properties()));
+		ref.addElement(bc.registerService(UnsetNetworkPointerListener.class.getName(), viewManager, new Properties()));
+		ref.addElement(bc.registerService(SetCurrentNetworkViewListener.class.getName(), viewManager, new Properties()));
+		ref.addElement(bc.registerService(SelectedNodesAndEdgesListener.class.getName(), viewManager, new Properties()));
 	}
 	
 	public static CnSClustnseePlugin getInstance(BundleContext context, CyActivator ca) {

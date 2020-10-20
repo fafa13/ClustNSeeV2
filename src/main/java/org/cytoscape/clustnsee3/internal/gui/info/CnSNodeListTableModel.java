@@ -13,12 +13,9 @@
 
 package org.cytoscape.clustnsee3.internal.gui.info;
 
-import java.util.Map;
-
 import javax.swing.table.AbstractTableModel;
 
 import org.cytoscape.clustnsee3.internal.analysis.CnSCluster;
-import org.cytoscape.model.CyNetwork;
 import org.cytoscape.model.CyNode;
 import org.cytoscape.model.CyRow;
 

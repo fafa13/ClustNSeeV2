@@ -315,6 +315,7 @@ public class CnSResultsPanel extends CnSPanel implements CytoPanelComponent, CnS
         ev.addParameter(CnSPartitionManager.PARTITION_IMPORT, imported_partition);
         ev.addParameter(CnSPartitionManager.ANNOTATION_IMPORT, imported_annotation);
         ev.addParameter(CnSPartitionManager.NETWORK, inputNetwork);
+        //ev.addParameter(CnSPartitionManager.TASK_MONITOR, taskMonitor);
         CnSPartition newPartition = (CnSPartition)CnSEventManager.handleMessage(ev);
         
         CnSClusterListPanel clp = new CnSClusterListPanel();

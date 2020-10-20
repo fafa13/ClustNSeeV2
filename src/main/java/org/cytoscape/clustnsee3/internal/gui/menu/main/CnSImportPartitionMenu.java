@@ -19,8 +19,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.Vector;
 
@@ -39,8 +37,6 @@ import org.cytoscape.clustnsee3.internal.gui.results.CnSResultsPanel;
 import org.cytoscape.clustnsee3.internal.network.CnSNetworkManager;
 import org.cytoscape.model.CyNetwork;
 import org.cytoscape.model.CyNode;
-import org.cytoscape.model.CyRow;
-import org.cytoscape.model.CyTable;
 
 /**
  * 
@@ -48,10 +44,12 @@ import org.cytoscape.model.CyTable;
 public class CnSImportPartitionMenu extends AbstractCyAction {
 	private static final long serialVersionUID = -5381959952948728885L;
 	private static CnSImportPartitionMenu instance;
+	private boolean en;
 	
 	private CnSImportPartitionMenu() {
 		super("Import partition"); 						
 		setPreferredMenu("Apps.Clust&see");
+		en = true;
 	}
 
 	/* (non-Javadoc)
@@ -132,7 +130,7 @@ public class CnSImportPartitionMenu extends AbstractCyAction {
     							}
     							else if (s.startsWith("#Cluster Name")) {
     								if ((s = br.readLine()) != null)
-    									System.err.println(s.split(", ").length + "clusters");
+    									System.err.println(s.split(", ").length + " clusters");
     							}
     							else if (s.startsWith("#Parameter:")) {
     								String[] item = s.substring(11).split("=");
@@ -161,7 +159,7 @@ public class CnSImportPartitionMenu extends AbstractCyAction {
     						else if (!s.equals("")) {
     							ev = new CnSEvent(CnSNetworkManager.GET_NODES_WITH_VALUE, CnSEventManager.NETWORK_MANAGER);
     							ev.addParameter(CnSNetworkManager.NETWORK, network);
-    							ev.addParameter(CnSNetworkManager.COLNAME, "name");
+    							ev.addParameter(CnSNetworkManager.COLNAME, "shared name");
     							ev.addParameter(CnSNetworkManager.VALUE, s);
     							n = (Set<CyNode>)CnSEventManager.handleMessage(ev);
     							
@@ -194,6 +192,7 @@ public class CnSImportPartitionMenu extends AbstractCyAction {
     			ev.addParameter(CnSResultsPanel.ALGO, algo);
     			ev.addParameter(CnSResultsPanel.NETWORK, network);
     			ev.addParameter(CnSResultsPanel.SCOPE, scope);
+    			
     			CnSEventManager.handleMessage(ev);
 			}
 			catch (FileNotFoundException ex) {
@@ -203,6 +202,15 @@ public class CnSImportPartitionMenu extends AbstractCyAction {
 				e1.printStackTrace();
 			}
 		}
+	}
+	
+	public void setEnabled_(boolean b) {
+		super.setEnabled(b);
+		en = b;
+	}
+	
+	public boolean isEnabled() {
+		return en;
 	}
 	
 	public boolean insertSeparatorAfter() {

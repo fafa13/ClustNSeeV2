@@ -27,10 +27,12 @@ import org.cytoscape.clustnsee3.internal.view.style.CnSStyleManager;
 public class CnSStopMenu extends AbstractCyAction {
 	private static final long serialVersionUID = 7814074516214991713L;
 	private static CnSStopMenu instance;
+	private boolean en;
 	
 	private CnSStopMenu() {
 		super("Stop"); 						
 		setPreferredMenu("Apps.Clust&see");	
+		en = true;
 	}
 
 	/* (non-Javadoc)
@@ -42,7 +44,6 @@ public class CnSStopMenu extends AbstractCyAction {
 		CnSEventManager.handleMessage(ev);
 		ev = new CnSEvent(CyActivator.STOP, CnSEventManager.CY_ACTIVATOR);
 		CnSEventManager.handleMessage(ev);
-		setEnabled(false);
 	}
 	public static CnSStopMenu getInstance() {
 		if (instance == null) instance = new CnSStopMenu();
@@ -50,5 +51,12 @@ public class CnSStopMenu extends AbstractCyAction {
 	}
 	public boolean insertSeparatorAfter() {
 		return true;
+	}
+	public void setEnabled_(boolean b) {
+		super.setEnabled(b);
+		en = b;
+	}
+	public boolean isEnabled() {
+		return en;
 	}
 }

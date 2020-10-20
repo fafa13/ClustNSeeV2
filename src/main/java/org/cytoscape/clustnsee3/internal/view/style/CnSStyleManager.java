@@ -71,7 +71,7 @@ public class CnSStyleManager implements CnSEventListener {
 		
 		boolean dejala = false;
 		for (VisualStyle vss : vmm.getAllVisualStyles()) {
-			if (vss.getTitle().equals("CnS_default")) {
+			if (vss.getTitle().startsWith("CnS_default")) {
 				dejala = true;
 				break;
 			}
@@ -89,7 +89,7 @@ public class CnSStyleManager implements CnSEventListener {
 		}
 		dejala = false;
 		for (VisualStyle vss : vmm.getAllVisualStyles()) {
-			if (vss.getTitle().equals("CnS_snapshot")) {
+			if (vss.getTitle().startsWith("CnS_snapshot")) {
 				dejala = true;
 				break;
 			}
@@ -134,7 +134,7 @@ public class CnSStyleManager implements CnSEventListener {
 				}
 				if (view != null) {
 					vmm.setVisualStyle(currentStyle, view.getView());
-					//currentStyle.apply(view.getView());
+					currentStyle.apply(view.getView());
 					view.getView().updateView();
 				}
 				break;

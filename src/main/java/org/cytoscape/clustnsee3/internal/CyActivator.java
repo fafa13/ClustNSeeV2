@@ -9,7 +9,7 @@ import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventListener;
 import org.cytoscape.clustnsee3.internal.gui.menu.contextual.factory.CnSAnnotateClusterMenuFactory;
 import org.cytoscape.clustnsee3.internal.gui.menu.contextual.factory.CnSExpandCompressClusterNodeMenuFactory;
-import org.cytoscape.clustnsee3.internal.gui.menu.contextual.factory.CnSShowClusterlinksMenuFactory;
+//import org.cytoscape.clustnsee3.internal.gui.menu.contextual.factory.CnSShowClusterlinksMenuFactory;
 import org.cytoscape.clustnsee3.internal.gui.menu.main.CnSBuildNeighborhoodNetworkMenu;
 import org.cytoscape.clustnsee3.internal.gui.menu.main.CnSComparePartitionsMenu;
 import org.cytoscape.clustnsee3.internal.gui.menu.main.CnSImportPartitionMenu;
@@ -64,6 +64,7 @@ public class CyActivator extends AbstractCyActivator implements CnSEventListener
 	public static final int REGISTER_CLUSTNSEE = 24;
 	public static final int GET_SWING_APPLICATION = 25;
 	public static final int GET_TASK_MANAGER = 26;
+	public static final int START = 27;
 	
 	public static final int NAME = 1000;
 
@@ -74,37 +75,42 @@ public class CyActivator extends AbstractCyActivator implements CnSEventListener
 	private CnSSearchNodeClustersMenu clustnseeSearchNodeClusters;
 	private CnSComparePartitionsMenu clustnseeComparePartitions;
 	private CnSBuildNeighborhoodNetworkMenu clustnseeBuildNeighborhoodNetwork;
-	
-	private ServiceRegistration clustnseeService;
+	private ServiceRegistration plugin;
 	
 	@Override
 	public void start(BundleContext context) throws Exception {
 		bc = context;
+		CnSClustnseePlugin.getInstance(bc, this);
 		
 		// Definit le menu item
 		clustnseeStart = CnSStartMenu.getInstance(context, this);
 		clustnseeStart.setMenuGravity(0.0f);
 		registerAllServices(context, clustnseeStart, new Properties());
-		clustnseeService = CnSStartMenu.getInstance(context, this).getRef();
+		//clustnseeService = CnSStartMenu.getInstance(context, this).getRef();
 		
 		clustnseeStop = CnSStopMenu.getInstance();
+		clustnseeStop.setEnabled_(false);
 		clustnseeStop.setMenuGravity(1.0f);
 		registerAllServices(context, clustnseeStop, new Properties());
 		
 		clustnseeImportPartition = CnSImportPartitionMenu.getInstance();
 		clustnseeImportPartition.setMenuGravity(2.0f);
+		clustnseeImportPartition.setEnabled_(false);
 		registerAllServices(context, clustnseeImportPartition, new Properties());
 		
 		clustnseeSearchNodeClusters = CnSSearchNodeClustersMenu.getInstance();
 		clustnseeSearchNodeClusters.setMenuGravity(3.0f);
+		clustnseeSearchNodeClusters.setEnabled_(false);
 		registerAllServices(context, clustnseeSearchNodeClusters, new Properties());
 		
 		clustnseeComparePartitions = CnSComparePartitionsMenu.getInstance();
 		clustnseeComparePartitions.setMenuGravity(4.0f);
+		clustnseeComparePartitions.setEnabled_(false);
 		registerAllServices(context, clustnseeComparePartitions, new Properties());
 		
 		clustnseeBuildNeighborhoodNetwork = CnSBuildNeighborhoodNetworkMenu.getInstance();
 		clustnseeBuildNeighborhoodNetwork.setMenuGravity(5.0f);
+		clustnseeBuildNeighborhoodNetwork.setEnabled_(false);
 		registerAllServices(context, clustnseeBuildNeighborhoodNetwork, new Properties());
 		
 		CnSExpandCompressClusterNodeMenuFactory expandCompressClusterNodeMenuFactory  = new CnSExpandCompressClusterNodeMenuFactory();
@@ -112,40 +118,15 @@ public class CyActivator extends AbstractCyActivator implements CnSEventListener
 		expandCompressClusterNodeMenuFactoryProps.put("preferredMenu", "ClustnSee");
 		registerAllServices(context, expandCompressClusterNodeMenuFactory, expandCompressClusterNodeMenuFactoryProps);
 		
-		CnSShowClusterlinksMenuFactory showClusterlinksMenuFactory = new CnSShowClusterlinksMenuFactory();
-		Properties showClusterlinksMenuFactoryProps = new Properties();
-		showClusterlinksMenuFactoryProps.put("preferredMenu", "ClustnSee");
-		registerAllServices(context, showClusterlinksMenuFactory, showClusterlinksMenuFactoryProps);
+		//CnSShowClusterlinksMenuFactory showClusterlinksMenuFactory = new CnSShowClusterlinksMenuFactory();
+		//Properties showClusterlinksMenuFactoryProps = new Properties();
+		//showClusterlinksMenuFactoryProps.put("preferredMenu", "ClustnSee");
+		//registerAllServices(context, showClusterlinksMenuFactory, showClusterlinksMenuFactoryProps);
 		
 		CnSAnnotateClusterMenuFactory annotateClusterMenuFactory = new CnSAnnotateClusterMenuFactory();
 		Properties annotateClusterMenuFactoryProps = new Properties();
 		annotateClusterMenuFactoryProps.put("preferredMenu", "ClustnSee");
 		registerAllServices(context, annotateClusterMenuFactory, annotateClusterMenuFactoryProps);
-		
-		/*
-		JMenu menu = app.getJMenu("Apps.Clust&see");
-		System.err.println("menu = " + menu.getText());
-		System.err.println("item count = " + menu.getItemCount());
-		
-		for (int i = 0; i < menu.getItemCount(); i++) {
-			JMenuItem item = menu.getItem(i);
-			if (item.getText().equals("Stop")) {
-				item.setEnabled(false);
-				System.err.println("Stop = false");
-			}
-			else if (item.getText().equals("Start")) {
-				item.setEnabled(true);
-				System.err.println("Start = true");
-			}
-			else if (item.getText().equals("Import partition")) {
-				item.setEnabled(false);
-				System.err.println("Import partition = false");
-			}
-			else if (item.getText().equals("Search node clusters")) {
-				item.setEnabled(false);
-				System.err.println("Search node clusters = false");
-			}
-		}*/
 	}
 
 	/* (non-Javadoc)
@@ -220,15 +201,27 @@ public class CyActivator extends AbstractCyActivator implements CnSEventListener
 			case GET_VIZMAP_MANAGER :
 				ret = getService(bc, VisualMappingManager.class);
 				break;
+			case START :
+				CnSClustnseePlugin.getInstance(bc, this).registerServices();
+				plugin = bc.registerService(CnSClustnseePlugin.class.getName(), CnSClustnseePlugin.getInstance(bc, this), new Properties());
+				clustnseeStop.setEnabled_(true);
+				clustnseeStart.setEnabled_(false);
+				clustnseeImportPartition.setEnabled_(true);
+				clustnseeSearchNodeClusters.setEnabled_(true);
+				clustnseeComparePartitions.setEnabled_(true);
+				clustnseeBuildNeighborhoodNetwork.setEnabled_(true);
+				break;
 			case STOP:
-				CnSClustnseePlugin.getInstance(bc, this).stop();
-				if (clustnseeService != null) {
-					clustnseeService.unregister();
-					clustnseeService = null;
-					clustnseeImportPartition.setEnabled(false);
-					clustnseeStop.setEnabled(false);
-					clustnseeStart.setEnabled(true);
+				if (plugin != null) {
+					plugin.unregister();
+					clustnseeStop.setEnabled_(false);
+					clustnseeStart.setEnabled_(true);
+					clustnseeImportPartition.setEnabled_(false);
+					clustnseeSearchNodeClusters.setEnabled_(false);
+					clustnseeComparePartitions.setEnabled_(false);
+					clustnseeBuildNeighborhoodNetwork.setEnabled_(false);
 				}
+				CnSClustnseePlugin.getInstance(bc, this).stop();
 				break;
 			case GET_CYTO_PANEL :
 				CySwingApplication app = getService(bc, CySwingApplication.class);

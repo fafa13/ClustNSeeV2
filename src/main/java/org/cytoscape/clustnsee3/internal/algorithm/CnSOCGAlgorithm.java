@@ -502,12 +502,13 @@ public class CnSOCGAlgorithm extends CnSAlgorithm {
         else if (initialClusters.getValue().toString().equals("Centered cliques"))
         	typ = 3;
 
-        CardMax = ((Integer)clusterMaxCardinal.getValue()).intValue();
+        System.err.println("*********** " + clusterMaxCardinal.getValue() + " ******************************");
+        CardMax = Integer.parseInt(clusterMaxCardinal.getValue().toString());
         if (classSystem.getValue().toString().equals("Maximize modularity"))
         	FCS = 1;
         else if (classSystem.getValue().toString().equals("Final class"))
         	FCS = 0;
-        ClCh = ((Integer)clusterMinNumber.getValue()).intValue();
+        ClCh = Integer.parseInt(clusterMinNumber.getValue().toString());
 
         verbose = 1;
         logfile = 1;

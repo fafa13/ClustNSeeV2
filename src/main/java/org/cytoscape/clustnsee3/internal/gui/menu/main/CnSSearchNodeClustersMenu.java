@@ -25,10 +25,12 @@ import org.cytoscape.clustnsee3.internal.gui.dialog.CnSSearchNodeClustersDialog;
 public class CnSSearchNodeClustersMenu extends AbstractCyAction {
 	private static final long serialVersionUID = 5680982903583583075L;
 	private static CnSSearchNodeClustersMenu instance;
+	private boolean en;
 	
 	private CnSSearchNodeClustersMenu() {
 		super("Search node clusters"); 
 		setPreferredMenu("Apps.Clust&see");
+		en = true;
 	}
 
 	/* (non-Javadoc)
@@ -46,5 +48,13 @@ public class CnSSearchNodeClustersMenu extends AbstractCyAction {
 	public static CnSSearchNodeClustersMenu getInstance() {
 		if (instance == null) instance = new CnSSearchNodeClustersMenu();
 		return instance;
+	}
+	
+	public void setEnabled_(boolean b) {
+		super.setEnabled(b);
+		en = b;
+	}
+	public boolean isEnabled() {
+		return en;
 	}
 }

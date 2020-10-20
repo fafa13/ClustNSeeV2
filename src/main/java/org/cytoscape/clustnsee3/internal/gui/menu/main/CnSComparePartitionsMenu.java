@@ -30,10 +30,12 @@ import org.cytoscape.clustnsee3.internal.partition.CnSPartitionManager;
 public class CnSComparePartitionsMenu extends AbstractCyAction {
 	private static final long serialVersionUID = 600642538506055931L;
 	private static CnSComparePartitionsMenu instance;
+	private boolean en;
 	
 	private CnSComparePartitionsMenu() {
 		super("Compare partitions"); 
 		setPreferredMenu("Apps.Clust&see");
+		en = true;
 	}
 
 	/* (non-Javadoc)
@@ -57,5 +59,13 @@ public class CnSComparePartitionsMenu extends AbstractCyAction {
 	public static CnSComparePartitionsMenu getInstance() {
 		if (instance == null) instance = new CnSComparePartitionsMenu();
 		return instance;
+	}
+	
+	public void setEnabled_(boolean b) {
+		super.setEnabled(b);
+		en = b;
+	}
+	public boolean isEnabled() {
+		return en;
 	}
 }
