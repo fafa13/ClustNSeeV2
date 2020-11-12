@@ -16,6 +16,7 @@ package org.cytoscape.clustnsee3.internal.gui.dialog;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
@@ -49,7 +50,7 @@ public class CnSBuildNeighborhoodNetworkDialog extends JDialog implements Action
 	private CnSButton addNodeButton, removeNodeButton, buildNetworkButton, closeButton;
 	private JTable nodesTable;
 	private Vector<Vector<CnSNodeToName>> data;
-	private CyNetwork network = null;
+	private CyNetwork network = null, neighborhooddNetwork = null;
 	private int maxDistance = 3, maxNodeNumber = 5000;
 	
 	public CnSBuildNeighborhoodNetworkDialog() {
@@ -181,13 +182,38 @@ public class CnSBuildNeighborhoodNetworkDialog extends JDialog implements Action
 					CnSNodeToName ntn = v.firstElement();
 					targetNodes.addElement(ntn.getNode());
 				}
-				for (CyNode sourceNode : network.getNodeList()) {
-					for (CyNode targetNode : targetNodes) {
-						if (network.getConnectingEdgeList(sourceNode, targetNode, CyEdge.Type.ANY).size() <= maxDistance) {
-							
+				
+				maxDistance = Integer.parseInt(maxDistanceTextField.getText());
+				maxNodeNumber = Integer.parseInt(maxNodeNumberTextField.getText());
+				int dist = 0, nb_nodes = 0;
+				Vector<CyEdge> edges_to_keep = new Vector<CyEdge>();
+				Vector<CyNode> nodes_to_add = new Vector<CyNode>();
+				List<CyEdge> edges;
+				
+				CyNode currentNode;
+				while (nb_nodes <= maxNodeNumber && dist < maxDistance) {
+					nodes_to_add.clear();
+					for (CyNode node : targetNodes) {
+						edges = network.getAdjacentEdgeList(node, CyEdge.Type.ANY);
+						for (CyEdge edge : edges) {
+							if (edge.getSource() != node)
+								currentNode = edge.getSource();
+							else
+								currentNode = edge.getTarget();
+							if (!nodes_to_add.contains(currentNode) && !targetNodes.contains(currentNode)) {
+								nodes_to_add.addElement(currentNode);
+								edges_to_keep.addElement(edge);
+							}
 						}
 					}
+					nb_nodes = targetNodes.size() + nodes_to_add.size();
+					dist++;
+					System.err.println("Adding " + nodes_to_add.size() + " nodes at dist " + dist + ".");
+					for (CyNode node : nodes_to_add) System.err.println("  " + node.getSUID());
+					if (nb_nodes <= maxNodeNumber)
+						targetNodes.addAll(nodes_to_add);
 				}
+				System.err.println("Neighborhood network contains " + targetNodes.size() + " nodes and " + edges_to_keep.size() + " edges.");
 			}
 		}
 	}

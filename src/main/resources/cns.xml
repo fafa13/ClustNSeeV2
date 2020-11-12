@@ -58,7 +58,7 @@
                 </discreteMapping>
             </visualProperty>
             <visualProperty default="C,C,c,0.00,0.00" name="NODE_CUSTOMGRAPHICS_POSITION_5"/>
-            <visualProperty default="50" name="NODE_LABEL_TRANSPARENCY">
+            <visualProperty default="255" name="NODE_LABEL_TRANSPARENCY">
                 <discreteMapping attributeName="CnS:isCluster" attributeType="boolean">
                     <discreteMappingEntry attributeValue="true" value="255"/>
                 </discreteMapping>
