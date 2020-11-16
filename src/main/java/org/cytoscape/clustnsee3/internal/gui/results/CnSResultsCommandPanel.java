@@ -665,7 +665,8 @@ public class CnSResultsCommandPanel extends CnSPanel {
 		CnSEvent ev = new CnSEvent(CnSViewManager.GET_SELECTED_VIEW, CnSEventManager.VIEW_MANAGER);
 		CnSView currentView = (CnSView)CnSEventManager.handleMessage(ev);
 		
-		if (currentView != null)
+		if (currentView != null && currentView.getStateValue() != "cluster" && currentView.getStateValue() != "partition") {
+			System.err.println("current view state = " + currentView.getStateValue());
 			if (!currentView.getClusters().contains(cluster)) {
 				// get the selected partition
 				ev = new CnSEvent(CnSResultsPanel.GET_SELECTED_PARTITION, CnSEventManager.RESULTS_PANEL);
@@ -809,8 +810,9 @@ public class CnSResultsCommandPanel extends CnSPanel {
 			
 				ret = clNode.getSUID();
 			}
-		else
-			ret = cluster.getCyNode().getSUID();
+			else
+				ret = cluster.getCyNode().getSUID();
+		}
 		return ret;
 	}
 }

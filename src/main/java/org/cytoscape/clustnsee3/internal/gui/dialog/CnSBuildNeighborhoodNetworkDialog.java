@@ -16,6 +16,7 @@ package org.cytoscape.clustnsee3.internal.gui.dialog;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
@@ -37,9 +38,22 @@ import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
 import org.cytoscape.clustnsee3.internal.gui.widget.CnSButton;
 import org.cytoscape.clustnsee3.internal.gui.widget.CnSPanel;
 import org.cytoscape.clustnsee3.internal.network.CnSNetworkManager;
+import org.cytoscape.event.CyEventHelper;
 import org.cytoscape.model.CyEdge;
 import org.cytoscape.model.CyNetwork;
+import org.cytoscape.model.CyNetworkManager;
 import org.cytoscape.model.CyNode;
+import org.cytoscape.model.subnetwork.CyRootNetwork;
+import org.cytoscape.model.subnetwork.CyRootNetworkManager;
+import org.cytoscape.model.subnetwork.CySubNetwork;
+import org.cytoscape.view.layout.CyLayoutAlgorithm;
+import org.cytoscape.view.layout.CyLayoutAlgorithmManager;
+import org.cytoscape.view.model.CyNetworkView;
+import org.cytoscape.view.model.CyNetworkViewFactory;
+import org.cytoscape.view.model.CyNetworkViewManager;
+import org.cytoscape.view.model.View;
+import org.cytoscape.work.TaskIterator;
+import org.cytoscape.work.TaskManager;
 
 /**
  * 
@@ -50,7 +64,8 @@ public class CnSBuildNeighborhoodNetworkDialog extends JDialog implements Action
 	private CnSButton addNodeButton, removeNodeButton, buildNetworkButton, closeButton;
 	private JTable nodesTable;
 	private Vector<Vector<CnSNodeToName>> data;
-	private CyNetwork network = null, neighborhooddNetwork = null;
+	private CyNetwork network = null;
+	private CySubNetwork neighborhoodNetwork = null;
 	private int maxDistance = 3, maxNodeNumber = 5000;
 	
 	public CnSBuildNeighborhoodNetworkDialog() {
@@ -182,38 +197,91 @@ public class CnSBuildNeighborhoodNetworkDialog extends JDialog implements Action
 					CnSNodeToName ntn = v.firstElement();
 					targetNodes.addElement(ntn.getNode());
 				}
-				
-				maxDistance = Integer.parseInt(maxDistanceTextField.getText());
-				maxNodeNumber = Integer.parseInt(maxNodeNumberTextField.getText());
-				int dist = 0, nb_nodes = 0;
-				Vector<CyEdge> edges_to_keep = new Vector<CyEdge>();
-				Vector<CyNode> nodes_to_add = new Vector<CyNode>();
-				List<CyEdge> edges;
-				
-				CyNode currentNode;
-				while (nb_nodes <= maxNodeNumber && dist < maxDistance) {
-					nodes_to_add.clear();
-					for (CyNode node : targetNodes) {
-						edges = network.getAdjacentEdgeList(node, CyEdge.Type.ANY);
-						for (CyEdge edge : edges) {
-							if (edge.getSource() != node)
-								currentNode = edge.getSource();
-							else
-								currentNode = edge.getTarget();
-							if (!nodes_to_add.contains(currentNode) && !targetNodes.contains(currentNode)) {
-								nodes_to_add.addElement(currentNode);
-								edges_to_keep.addElement(edge);
-							}
-						}
-					}
-					nb_nodes = targetNodes.size() + nodes_to_add.size();
-					dist++;
-					System.err.println("Adding " + nodes_to_add.size() + " nodes at dist " + dist + ".");
-					for (CyNode node : nodes_to_add) System.err.println("  " + node.getSUID());
-					if (nb_nodes <= maxNodeNumber)
-						targetNodes.addAll(nodes_to_add);
+				try {
+					maxDistance = -1;
+					maxDistance = Integer.parseInt(maxDistanceTextField.getText());
 				}
-				System.err.println("Neighborhood network contains " + targetNodes.size() + " nodes and " + edges_to_keep.size() + " edges.");
+				catch (NumberFormatException ex) {
+					JOptionPane.showMessageDialog(null, "You must provide a valid maximal distance.");
+				}
+				try {
+					maxNodeNumber = -1;
+					maxNodeNumber = Integer.parseInt(maxNodeNumberTextField.getText());
+				}
+				catch (NumberFormatException ex) {
+					JOptionPane.showMessageDialog(null, "You must provide a valid maximal node number.");
+				}
+				
+				if (maxDistance >= 0 && maxNodeNumber >= 0) {
+					int dist = 0, nb_nodes = 0;
+					Vector<CyEdge> edges_to_keep = new Vector<CyEdge>();
+					Vector<CyNode> nodes_to_add = new Vector<CyNode>();
+					List<CyNode> nodes;
+				
+					while (nb_nodes <= maxNodeNumber && dist < maxDistance) {
+						nodes_to_add.clear();
+						for (CyNode node : targetNodes) {
+							nodes = network.getNeighborList(node, CyEdge.Type.ANY);
+							for (CyNode currentNode : nodes)
+								if (!nodes_to_add.contains(currentNode) && !targetNodes.contains(currentNode))
+									nodes_to_add.addElement(currentNode);
+						}
+						nb_nodes = targetNodes.size() + nodes_to_add.size();
+						dist++;
+						if (nb_nodes <= maxNodeNumber) targetNodes.addAll(nodes_to_add);
+					}
+					
+					for (CyEdge edge : network.getEdgeList())
+						if (targetNodes.contains(edge.getSource()) && targetNodes.contains(edge.getTarget()))
+							edges_to_keep.addElement(edge);
+					
+					// get useful cytoscape managers
+					CnSEvent ev = new CnSEvent(CyActivator.GET_ROOT_NETWORK_MANAGER, CnSEventManager.CY_ACTIVATOR);
+					CyRootNetworkManager crnm = (CyRootNetworkManager)CnSEventManager.handleMessage(ev);
+					CyRootNetwork crn = crnm.getRootNetwork(network);
+					ev = new CnSEvent(CyActivator.GET_NETWORK_MANAGER, CnSEventManager.CY_ACTIVATOR);
+					CyNetworkManager networkManager = (CyNetworkManager)CnSEventManager.handleMessage(ev);
+					ev = new CnSEvent(CyActivator.GET_NETWORK_VIEW_FACTORY, CnSEventManager.CY_ACTIVATOR);
+					CyNetworkViewFactory cnvf = (CyNetworkViewFactory)CnSEventManager.handleMessage(ev);
+					ev = new CnSEvent(CyActivator.GET_NETWORK_VIEW_MANAGER, CnSEventManager.CY_ACTIVATOR);
+					CyNetworkViewManager networkViewManager = (CyNetworkViewManager)CnSEventManager.handleMessage(ev);
+					ev = new CnSEvent(CyActivator.GET_LAYOUT_ALGORITHM_MANAGER, CnSEventManager.CY_ACTIVATOR);
+					CyLayoutAlgorithmManager clam = (CyLayoutAlgorithmManager)CnSEventManager.handleMessage(ev);
+					ev = new CnSEvent(CyActivator.GET_SYNCHRONOUS_TASK_MANAGER, CnSEventManager.CY_ACTIVATOR);
+					TaskManager<?, ?> tm = (TaskManager<?, ?>)CnSEventManager.handleMessage(ev);
+					ev = new CnSEvent(CyActivator.GET_CY_EVENT_HELPER, CnSEventManager.CY_ACTIVATOR);
+					CyEventHelper eh = (CyEventHelper)CnSEventManager.handleMessage(ev);
+				
+					// Create a new network
+					neighborhoodNetwork = crn.addSubNetwork();
+        	
+					// Set the network name
+					neighborhoodNetwork.getRow(neighborhoodNetwork).set(CyNetwork.NAME, networkNameTextField.getText());
+        	
+					// Add the network to Cytoscape
+					networkManager.addNetwork(neighborhoodNetwork);
+				
+					// create a new view for my network
+					CyNetworkView partCyView = cnvf.createNetworkView(neighborhoodNetwork);
+					networkViewManager.addNetworkView(partCyView);
+				
+					for (CyNode node : targetNodes) neighborhoodNetwork.addNode(node);
+					for (CyEdge edge : edges_to_keep) neighborhoodNetwork.addEdge(edge);
+					partCyView.updateView();
+				
+					// apply circular layout
+					CyLayoutAlgorithm cla = clam.getDefaultLayout();
+					TaskIterator tit = cla.createTaskIterator(partCyView, cla.getDefaultLayoutContext(), new HashSet<View<CyNode>>(partCyView.getNodeViews()), "");
+					tm.execute(tit);
+				
+					// select initial nodes
+					for (Vector<CnSNodeToName> v : data) {
+						CyNode node = v.firstElement().getNode();
+						neighborhoodNetwork.getRow(node).set("selected", true);
+					}
+					eh.flushPayloadEvents();
+					dispose();
+				}
 			}
 		}
 	}
