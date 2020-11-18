@@ -35,6 +35,7 @@ import org.cytoscape.clustnsee3.internal.analysis.CnSCluster;
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventListener;
 import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
+import org.cytoscape.clustnsee3.internal.gui.info.partition.CnSPartitionTablePanel;
 import org.cytoscape.clustnsee3.internal.gui.widget.CnSPanel;
 import org.cytoscape.clustnsee3.internal.network.CnSNetwork;
 import org.cytoscape.clustnsee3.internal.network.CnSNetworkManager;
@@ -106,6 +107,9 @@ public class CnSResultsPanel extends CnSPanel implements CytoPanelComponent, CnS
 					CnSPartition partition = (CnSPartition)CnSEventManager.handleMessage(ev);
 					sortPanel.init(partition);
 					nbClustersLabel.setText(String.valueOf(partition.getClusters().size()));
+					ev = new CnSEvent(CnSPartitionTablePanel.INIT, CnSEventManager.PARTITION_TABLE_PANEL);
+					ev.addParameter(CnSPartitionTablePanel.PARTITION, partition);
+					CnSEventManager.handleMessage(ev);
 				}
 				else {
 					sortPanel.init(null);

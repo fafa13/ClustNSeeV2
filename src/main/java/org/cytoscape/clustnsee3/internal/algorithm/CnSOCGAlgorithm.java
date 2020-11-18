@@ -20,7 +20,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.cytoscape.clustnsee3.internal.algorithm.CnSAlgorithm;
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
 import org.cytoscape.model.CyEdge;

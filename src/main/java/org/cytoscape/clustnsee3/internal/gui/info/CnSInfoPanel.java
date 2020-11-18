@@ -56,7 +56,7 @@ public class CnSInfoPanel extends CnSPanel implements CytoPanelComponent, CnSEve
 	private CnSEdgeDetailsPanel edgeDetailsPanel;
 	private CnSNodeDetailsPanel nodeDetailsPanel;
 	
-	public CnSInfoPanel(String title) {
+	private CnSInfoPanel(String title) {
 		super(title);
 		cardLayout = new CardLayout();
 		setLayout(cardLayout);
@@ -66,9 +66,6 @@ public class CnSInfoPanel extends CnSPanel implements CytoPanelComponent, CnSEve
 		add(edgeDetailsPanel, EDGE_DETAILS);
 		nodeDetailsPanel = new CnSNodeDetailsPanel();
 		add(nodeDetailsPanel, NODE_DETAILS);
-	}
-	public CnSInfoPanel() {
-		initGraphics();
 	}
 	public static CnSInfoPanel getInstance() {
 		if (instance == null)

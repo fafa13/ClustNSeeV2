@@ -18,7 +18,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import org.cytoscape.clustnsee3.internal.algorithm.CnSAlgorithm;
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
 import org.cytoscape.clustnsee3.internal.gui.widget.CnSPanel;
@@ -177,6 +176,7 @@ public class CnSTFitAlgorithm extends CnSAlgorithm {
         }
 
         Iterator<CyEdge> edges;
+
         if (scope.equals("Selection")) {
             edges = selectedEdges.iterator();
         }
