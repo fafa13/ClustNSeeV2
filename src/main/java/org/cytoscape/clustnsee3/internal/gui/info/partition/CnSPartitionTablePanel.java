@@ -14,21 +14,34 @@
 package org.cytoscape.clustnsee3.internal.gui.info.partition;
 
 import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Set;
 
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
-import javax.swing.JScrollPane;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableColumnModel;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
 
 import org.cytoscape.application.swing.CytoPanelComponent;
 import org.cytoscape.application.swing.CytoPanelName;
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventListener;
+import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
 import org.cytoscape.clustnsee3.internal.gui.info.partition.annotation.CnSPartitionProperty;
+import org.cytoscape.clustnsee3.internal.gui.results.CnSResultsPanel;
 import org.cytoscape.clustnsee3.internal.gui.widget.CnSButton;
 import org.cytoscape.clustnsee3.internal.gui.widget.CnSPanel;
 import org.cytoscape.clustnsee3.internal.partition.CnSPartition;
+import org.cytoscape.model.CyNode;
 
 /**
  * 
@@ -72,7 +85,70 @@ public class CnSPartitionTablePanel extends CnSPanel implements CytoPanelCompone
 	}
 	
 	private void initListeners() {
+		importAnnotationButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				CnSEvent ev = new CnSEvent(CnSResultsPanel.GET_SELECTED_PARTITION, CnSEventManager.RESULTS_PANEL);
+				CnSPartition partition = (CnSPartition)CnSEventManager.handleMessage(ev);
+				if (partition != null) {
+					JFileChooser jfc = new JFileChooser();
+					jfc.addChoosableFileFilter(new FileNameExtensionFilter("Annotation file", "annot"));
+					int ret = jfc.showOpenDialog(null);
+					boolean toload = false;
+					String s;
+					File file = null;
+					
+					if (ret == JFileChooser.APPROVE_OPTION) {
+						toload = true;
+						file = jfc.getSelectedFile();
+						if (!file.exists()) {
+							JOptionPane.showMessageDialog(null, "The file you have selected doest not exist !", "Unknown file", JOptionPane.ERROR_MESSAGE, null);
+							toload = false;
+						}	
+					}
+					if (toload) {
+						try {
+							System.err.println("Importing annotations from " + file.getName());
+							
+							BufferedReader br= new BufferedReader(new FileReader(file));
+							Set<CyNode> n;
+						
+							while ((s = br.readLine()) != null) {
+								if (s.startsWith(">")) {
+									String[] words = s.split("\t");
+									table.getModel().addAnnotation(new CnSPartitionProperty<Integer>(partition, words[0].substring(1)));
+									
+								}
+								else if (!s.equals("")) {
+									
+								}
+							}
+							br.close();
+							table.fireTableDataChanged();
+						}
+						catch (FileNotFoundException ex) {
+							ex.printStackTrace();
+						} 
+						catch (IOException e1) {
+							e1.printStackTrace();
+						}
+					}
+				}
+			}
+		});
 		
+		addAnnotationColumnButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				
+				FisherExact fe = new FisherExact(1000);
+				double p = fe.getCumlativeP(88, 2, 904, 6);
+				System.err.println("Fisher = " + p);
+			}
+			
+		});
 	}
 	
 	/* (non-Javadoc)
@@ -92,21 +168,24 @@ public class CnSPartitionTablePanel extends CnSPanel implements CytoPanelCompone
 				model.addAnnotation(new CnSPartitionProperty<Double>(partition, "Intra/extra edges ratio"));
 				model.addAnnotation(new CnSPartitionProperty<Integer>(partition, "Mono-clustered nodes"));
 				model.addAnnotation(new CnSPartitionProperty<Integer>(partition, "Multi-clustered nodes"));
-				
-				TableColumnModel columnModel = table.getTable().getColumnModel();
-			    TableColumn column = columnModel.getColumn(0);
-		    	columnModel.removeColumn( column );
-		    	table.getFixedTable().getColumnModel().addColumn( column );
 		    	
-		    	table.getFixedTable().setPreferredScrollableViewportSize(table.getFixedTable().getPreferredSize());
-				table.getScrollPane().setRowHeaderView(table.getFixedTable());
-				table.getScrollPane().setCorner(JScrollPane.UPPER_LEFT_CORNER, table.getFixedTable().getTableHeader());
-				table.getScrollPane().getRowHeader().addChangeListener(table);
-
+		    	int preferredWidth = 0;
+		    	TableCellRenderer r0 = table.getFixedTable().getColumnModel().getColumn(0).getCellRenderer();
+				for (int row = 0; row < table.getFixedTable().getRowCount(); row++) {
+					Component c = r0.getTableCellRendererComponent(table.getFixedTable(), model.getValueAt(row, 0), true, false, row, 0);
+				    int width = c.getPreferredSize().width + table.getFixedTable().getIntercellSpacing().width + 5;
+				    preferredWidth = Math.max(preferredWidth, width);
+				}
+				table.getFixedTable().getColumnModel().getColumn(0).setPreferredWidth(preferredWidth);
+				table.getFixedTable().setPreferredScrollableViewportSize(table.getFixedTable().getPreferredSize());
 				break;
 			
 			case CLEAR :
 				table.getModel().clear();
+				table.getTable().setModel(new DefaultTableModel());;
+				table.clear();
+				table.getTable().doLayout();
+				table.getTable().repaint();
 				break;
 		}
 		return ret;

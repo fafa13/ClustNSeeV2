@@ -36,5 +36,5 @@ public abstract class CnSPartitionAnnotation<AnnotationType> {
 		return network;
 	}
 	
-	public abstract Object getValueAt(int index);
+	public abstract <AnnotationType> AnnotationType getValueAt(int index);
 }

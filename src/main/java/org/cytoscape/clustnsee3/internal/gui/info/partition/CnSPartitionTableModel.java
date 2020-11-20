@@ -37,6 +37,7 @@ public class CnSPartitionTableModel extends AbstractTableModel {
 	
 	public void clear() {
 		partition = null;
+		annotations = new Vector<CnSPartitionAnnotation<?>>();
 	}
 	
 	public void addAnnotation(CnSPartitionAnnotation<?> annotation) {
@@ -124,5 +125,7 @@ public class CnSPartitionTableModel extends AbstractTableModel {
 		// TODO Auto-generated method stub
 		
 	}
-
+	public void fireTableDataChanged() {
+		super.fireTableDataChanged();
+	}
 }

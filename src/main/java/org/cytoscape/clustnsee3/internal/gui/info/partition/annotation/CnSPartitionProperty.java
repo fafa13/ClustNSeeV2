@@ -13,6 +13,9 @@
 
 package org.cytoscape.clustnsee3.internal.gui.info.partition.annotation;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+
 import org.cytoscape.clustnsee3.internal.analysis.CnSCluster;
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
@@ -34,12 +37,19 @@ public class CnSPartitionProperty<AnnotationType> extends CnSPartitionAnnotation
 		this.partition = partition;
 	}
 	
-	public Object getValueAt(int index) {
+	public static <AnnotationType> AnnotationType createInstance(Class<AnnotationType> metadata) throws NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		Constructor<AnnotationType> constructor = metadata.getDeclaredConstructor(metadata);
+		constructor.setAccessible( true );
+        return constructor.newInstance(metadata);
+	}
+	
+	public <AnnotationType> AnnotationType getValueAt(int index) {
 		CnSCluster cluster = partition.getClusters().elementAt(index - 1);
+		
 		if (name.equals("Nb. nodes") )
-			return new Integer(cluster.getNbNodes());
+			return (AnnotationType) this.createInstance(Integer.class); //new Integer(cluster.getNbNodes());
 		else if (name.equals("Intra cluster edges"))
-			return new Integer(cluster.getEdges().size());
+			return (AnnotationType) this.createInstance(Integer.class); //new Integer(cluster.getEdges().size());
 		else if (name.equals("Extra cluster edges"))
 			return new Integer(cluster.getExtEdges().size());
 		else if (name.equals("Intra/extra edges ratio"))

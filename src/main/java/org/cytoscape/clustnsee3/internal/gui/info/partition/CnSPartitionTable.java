@@ -13,14 +13,18 @@
 
 package org.cytoscape.clustnsee3.internal.gui.info.partition;
 
+import java.awt.Color;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
+import javax.swing.BorderFactory;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JViewport;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 
 /**
  * 
@@ -34,14 +38,22 @@ public class CnSPartitionTable implements ChangeListener, PropertyChangeListener
 		super();
 		table = new JTable();
 		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-		table.setRowHeight(20);
+		table.setRowHeight(26);
 		scrollPane = new JScrollPane(table);
 		table.addPropertyChangeListener(this);
 		fixed = new JTable();
 		fixed.setAutoCreateColumnsFromModel(false);
 		fixed.setSelectionModel(table.getSelectionModel());
 		fixed.setFocusable(false);
-		fixed.setRowHeight(20);
+		fixed.setRowHeight(26);
+		fixed.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+		fixed.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+		fixed.getTableHeader().setResizingAllowed(false);
+    	table.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+    	scrollPane.setRowHeaderView(fixed);
+    	scrollPane.setCorner(JScrollPane.UPPER_LEFT_CORNER, fixed.getTableHeader());
+    	scrollPane.getRowHeader().addChangeListener(this);
+    	table.setDefaultRenderer(Object.class, new CnSPartitionTableCellRenderer());
 	}
 	
 	public JTable getTable() {
@@ -55,9 +67,20 @@ public class CnSPartitionTable implements ChangeListener, PropertyChangeListener
 		return scrollPane;
 	}
 	
+	public void clear() {
+		if (fixed.getColumnModel().getColumnCount() > 0) fixed.getColumnModel().removeColumn(fixed.getColumnModel().getColumn(0));
+	}
+	
 	public void setModel(CnSPartitionTableModel model) {
 		table.setModel(model); 
 		fixed.setModel(model);
+		
+		TableColumnModel columnModel = table.getColumnModel();
+	    TableColumn column = columnModel.getColumn(0);
+    	columnModel.removeColumn(column);
+    	if (fixed.getColumnModel().getColumnCount() > 0) fixed.getColumnModel().removeColumn(fixed.getColumnModel().getColumn(0));
+    	fixed.getColumnModel().addColumn(column);
+    	fixed.getColumnModel().getColumn(0).setCellRenderer(new CnSPartitionTableRowHeaderRenderer());
 	}
 	
 	public CnSPartitionTableModel getModel() {
@@ -82,5 +105,9 @@ public class CnSPartitionTable implements ChangeListener, PropertyChangeListener
 	public void stateChanged(ChangeEvent e) {
 		JViewport viewport = (JViewport)e.getSource();
 		scrollPane.getVerticalScrollBar().setValue(viewport.getViewPosition().y);
+	}
+	
+	public void fireTableDataChanged() {
+		getModel().fireTableDataChanged();
 	}
 }

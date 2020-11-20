@@ -2,7 +2,7 @@
 /* Copyright (C) 2018 TAGC, Luminy, Marseille
 /*
 /* @author Fabrice Lopez (TAGC/BCF, Luminy, Marseille)
-/* @date 17 nov. 2020
+/* @date 19 nov. 2020
 /*
 /* with contributions from:
 /* Lionel Spinelli (CIML/TAGC, Luminy, Marseille)
@@ -13,31 +13,35 @@
 
 package org.cytoscape.clustnsee3.internal.gui.info.partition;
 
+import java.awt.Color;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.Font;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JTable;
+import javax.swing.border.Border;
 import javax.swing.table.DefaultTableCellRenderer;
 
 /**
  * 
  */
-public class CnSPartitionTableHeaderRenderer extends DefaultTableCellRenderer {
-	private static final long serialVersionUID = -7084782142485553305L;
-	
-	private Font font = new Font("serif", Font.BOLD, 12);
-	
+public class CnSPartitionTableCellRenderer extends DefaultTableCellRenderer {
+	private static final long serialVersionUID = 9173113458642486427L;
+	private Font font = new Font("serif", Font.PLAIN, 12);
+	private Border paddingBorder = BorderFactory.createEmptyBorder(0, 10, 0, 10);
+
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-		JLabel lab = new JLabel((String)value);
-	    lab.setBorder(BorderFactory.createRaisedBevelBorder());
-	    lab.setHorizontalAlignment(CENTER);
-	    lab.setHorizontalTextPosition(JLabel.LEFT);
-	    lab.setFont(font);
-	    lab.setOpaque(true);
-	    lab.setPreferredSize(new Dimension(table.getColumnModel().getColumn(column).getPreferredWidth(), 24));
-	    return lab;
+		JLabel label = new JLabel(value.toString());
+	    label.setFont(font);
+	    label.setOpaque(true);
+	    label.setBorder(paddingBorder);
+	    if (isSelected) {
+	    	label.setFont(label.getFont().deriveFont(Font.BOLD));
+			label.setBackground(Color.yellow.darker());
+		}
+		else
+			label.setBackground(Color.white);
+	    return label;
 	}
 }

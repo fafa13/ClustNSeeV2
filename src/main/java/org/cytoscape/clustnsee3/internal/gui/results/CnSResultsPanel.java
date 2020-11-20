@@ -207,7 +207,7 @@ public class CnSResultsPanel extends CnSPanel implements CytoPanelComponent, CnS
 	    		
 	    	case GET_SELECTED_PARTITION:
 	    		ev = new CnSEvent(CnSPartitionManager.GET_PARTITION, CnSEventManager.PARTITION_MANAGER);
-	    		ev.addParameter(CnSPartitionManager.INDEX, jtp.getSelectedIndex());
+	    		if (jtp.getSelectedIndex() >= 0) ev.addParameter(CnSPartitionManager.INDEX, jtp.getSelectedIndex());
 	    		ret = CnSEventManager.handleMessage(ev);
 	    		break;
 	    		
@@ -286,6 +286,8 @@ public class CnSResultsPanel extends CnSPanel implements CytoPanelComponent, CnS
 	    		if (clusterListPanel.size() == 0) {
 	    			commandPanel.setEnabled(false);
 	    			sortPanel.setEnabled(false);
+	    			ev = new CnSEvent(CnSPartitionTablePanel.CLEAR, CnSEventManager.PARTITION_TABLE_PANEL);
+	    			CnSEventManager.handleMessage(ev);
 	    		}
 	    		
 	    		break;

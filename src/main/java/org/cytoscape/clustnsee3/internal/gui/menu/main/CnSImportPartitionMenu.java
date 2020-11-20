@@ -61,7 +61,7 @@ public class CnSImportPartitionMenu extends AbstractCyAction {
 		JFileChooser jfc = new JFileChooser();
 		jfc.addChoosableFileFilter(new FileNameExtensionFilter("Clust&See file", "cns"));
 		int ret = jfc.showOpenDialog(null);
-		boolean toload =false;
+		boolean toload = false;
 		String s;
 		File file = null;
 		CnSAlgorithm algo = null;
