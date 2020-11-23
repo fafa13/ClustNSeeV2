@@ -27,20 +27,20 @@ import org.cytoscape.clustnsee3.internal.partition.CnSPartition;
 public class CnSPartitionTableModel extends AbstractTableModel {
 	private static final long serialVersionUID = 3984889084020756303L;
 	private CnSPartition partition;
-	private Vector<CnSPartitionAnnotation<?>> annotations;
+	private Vector<CnSPartitionAnnotation> annotations;
 	
 	public CnSPartitionTableModel(CnSPartition partition) {
 		super();
 		this.partition = partition;
-		annotations = new Vector<CnSPartitionAnnotation<?>>();
+		annotations = new Vector<CnSPartitionAnnotation>();
 	}
 	
 	public void clear() {
 		partition = null;
-		annotations = new Vector<CnSPartitionAnnotation<?>>();
+		annotations = new Vector<CnSPartitionAnnotation>();
 	}
 	
-	public void addAnnotation(CnSPartitionAnnotation<?> annotation) {
+	public void addAnnotation(CnSPartitionAnnotation annotation) {
 		annotations.addElement(annotation);
 	}
 	

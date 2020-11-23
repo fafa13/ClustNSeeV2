@@ -13,19 +13,20 @@
 
 package org.cytoscape.clustnsee3.internal.gui.info.partition.annotation;
 
+import org.cytoscape.clustnsee3.internal.partition.CnSPartition;
 import org.cytoscape.model.CyNetwork;
 
 /**
  * 
  */
-public abstract class CnSPartitionAnnotation<AnnotationType> {
+public abstract class CnSPartitionAnnotation {
 	protected String name;
-	protected CyNetwork network;
+	protected CnSPartition partition;
 	
-	public CnSPartitionAnnotation(CyNetwork network, String name) {
+	public CnSPartitionAnnotation(CnSPartition partition, String name) {
 		super();
 		this.name = name;
-		this.network = network;
+		this.partition = partition;
 	}
 	
 	public String getName() {
@@ -33,8 +34,9 @@ public abstract class CnSPartitionAnnotation<AnnotationType> {
 	}
 	
 	public CyNetwork getNetwork() {
-		return network;
+		return partition.getInputNetwork();
 	}
 	
-	public abstract <AnnotationType> AnnotationType getValueAt(int index);
+	public abstract Object getValueAt(int index);
 }
+

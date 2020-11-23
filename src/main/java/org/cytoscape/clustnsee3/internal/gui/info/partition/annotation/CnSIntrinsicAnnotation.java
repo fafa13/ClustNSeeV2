@@ -2,7 +2,7 @@
 /* Copyright (C) 2018 TAGC, Luminy, Marseille
 /*
 /* @author Fabrice Lopez (TAGC/BCF, Luminy, Marseille)
-/* @date 18 nov. 2020
+/* @date 23 nov. 2020
 /*
 /* with contributions from:
 /* Lionel Spinelli (CIML/TAGC, Luminy, Marseille)
@@ -13,9 +13,6 @@
 
 package org.cytoscape.clustnsee3.internal.gui.info.partition.annotation;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-
 import org.cytoscape.clustnsee3.internal.analysis.CnSCluster;
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
@@ -25,31 +22,27 @@ import org.cytoscape.clustnsee3.internal.partition.CnSPartitionManager;
 /**
  * 
  */
-public class CnSPartitionProperty<AnnotationType> extends CnSPartitionAnnotation {
-	private CnSPartition partition;
-	
+public class CnSIntrinsicAnnotation extends CnSPartitionAnnotation {
+
 	/**
 	 * @param
 	 * @return
 	 */
-	public CnSPartitionProperty(CnSPartition partition, String name) {
-		super(partition.getInputNetwork(), name);
-		this.partition = partition;
+	public CnSIntrinsicAnnotation(CnSPartition partition, String name) {
+		super(partition, name);
 	}
-	
-	public static <AnnotationType> AnnotationType createInstance(Class<AnnotationType> metadata) throws NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-		Constructor<AnnotationType> constructor = metadata.getDeclaredConstructor(metadata);
-		constructor.setAccessible( true );
-        return constructor.newInstance(metadata);
-	}
-	
+
+	/* (non-Javadoc)
+	 * @see org.cytoscape.clustnsee3.internal.gui.info.partition.annotation.CnSPartitionAnnotation#getValueAt(int)
+	 */
+	@Override
 	public Object getValueAt(int index) {
 		CnSCluster cluster = partition.getClusters().elementAt(index - 1);
 		
-		/*if (name.equals("Nb. nodes") )
-			return (AnnotationType) this.createInstance(Integer.class); //new Integer(cluster.getNbNodes());
+		if (name.equals("Nb. nodes") )
+			return new Integer(cluster.getNbNodes());
 		else if (name.equals("Intra cluster edges"))
-			return (AnnotationType) this.createInstance(Integer.class); //new Integer(cluster.getEdges().size());
+			return new Integer(cluster.getEdges().size());
 		else if (name.equals("Extra cluster edges"))
 			return new Integer(cluster.getExtEdges().size());
 		else if (name.equals("Intra/extra edges ratio"))
@@ -63,7 +56,8 @@ public class CnSPartitionProperty<AnnotationType> extends CnSPartitionAnnotation
 				return nb;
 			else if (name.equals("Mono-clustered nodes"))
 				return cluster.getNbNodes() - nb.intValue();
-			else */return "NA";
-		//}
+			else return "NA";
+		}
 	}
+
 }

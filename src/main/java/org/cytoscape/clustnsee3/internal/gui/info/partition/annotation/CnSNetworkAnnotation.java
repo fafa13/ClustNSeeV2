@@ -13,33 +13,59 @@
 
 package org.cytoscape.clustnsee3.internal.gui.info.partition.annotation;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
+import java.util.Vector;
 
 import org.cytoscape.model.CyNetwork;
+import org.cytoscape.model.CyNode;
 
 /**
  * 
  */
-public class CnSNetworkAnnotation<AnnotationType> extends CnSPartitionAnnotation<AnnotationType> {
-	private HashMap<String, AnnotationType> data; 
+public class CnSNetworkAnnotation<T> {
+	private HashMap<CyNode, T> data;
+	private CyNetwork network;
+	private String name;
+	private Vector<String> list;
+	private Class<T> type;
 	
-	public CnSNetworkAnnotation(CyNetwork network, String name) {
-		super(network, name);
+	public CnSNetworkAnnotation(CyNetwork network, String name, Class<T> cl) {
+		super();
+		this.network = network;
+		this.name = name;
+		type = cl;
+	}
+	public CnSNetworkAnnotation(CyNetwork network, String name, String list, Class<T> cl) {
+		this(network, name, cl);
+		this.list = new Vector<String>();
+		for (String s : list.split(",")) this.list.addElement(s);
 	}
 	
-	public void setData(HashMap<String, AnnotationType> data) {
+	public void addData(CyNode node, String data) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+		Constructor<T> constructor = type.getDeclaredConstructor(type);
+		constructor.setAccessible(true);
+		constructor.newInstance(type);
+	}
+	
+	public void setData(HashMap<CyNode, T> data) {
 		this.data = data;
 	}
 	
-	public HashMap<String, AnnotationType> getData() {
+	public HashMap<CyNode, T> getData() {
 		return data;
 	}
+	
+	public String getName() {
+		return name;
+	}
 
-	/* (non-Javadoc)
-	 * @see org.cytoscape.clustnsee3.internal.gui.info.partition.annotation.CnSPartitionAnnotation#getValueAt(int)
-	 */
-	@Override
-	public Object getValueAt(int index) {
-		return "NA";
+	public T getValue(String key) {
+		return data.get(key);
+	}
+	
+	public CyNetwork getNetwork() {
+		return network;
 	}
 }
