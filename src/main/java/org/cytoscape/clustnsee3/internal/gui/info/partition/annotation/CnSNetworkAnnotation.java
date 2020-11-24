@@ -18,6 +18,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Vector;
 
+import org.cytoscape.clustnsee3.internal.gui.info.partition.annotation.decorator.CnSNetworkAnnotationDecorator;
 import org.cytoscape.model.CyNetwork;
 import org.cytoscape.model.CyNode;
 
@@ -30,13 +31,20 @@ public class CnSNetworkAnnotation<T> {
 	private String name;
 	private Vector<String> list;
 	private Class<T> type;
+	private CnSNetworkAnnotationDecorator deco;
 	
 	public CnSNetworkAnnotation(CyNetwork network, String name, Class<T> cl) {
 		super();
 		this.network = network;
 		this.name = name;
 		type = cl;
+		data = new HashMap<CyNode, T>();
 	}
+	
+	public void setDecorator(CnSNetworkAnnotationDecorator deco) {
+		this.deco = deco;
+	}
+	
 	public CnSNetworkAnnotation(CyNetwork network, String name, String list, Class<T> cl) {
 		this(network, name, cl);
 		this.list = new Vector<String>();
@@ -44,9 +52,15 @@ public class CnSNetworkAnnotation<T> {
 	}
 	
 	public void addData(CyNode node, String data) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
-		Constructor<T> constructor = type.getDeclaredConstructor(type);
+		Class<?> types[] = {String.class};
+		Constructor<T> constructor = type.getDeclaredConstructor(types);
 		constructor.setAccessible(true);
-		constructor.newInstance(type);
+		T newInstance = constructor.newInstance(data);
+		this.data.put(node, newInstance);
+	}
+	
+	public Object getMeanValue(Vector<CyNode> nodes) {
+		return deco.getMeanValue(data, nodes);
 	}
 	
 	public void setData(HashMap<CyNode, T> data) {
@@ -61,8 +75,12 @@ public class CnSNetworkAnnotation<T> {
 		return name;
 	}
 
-	public T getValue(String key) {
+	public T getValue(CyNode key) {
 		return data.get(key);
+	}
+	
+	public Class<?> getType() {
+		return type;
 	}
 	
 	public CyNetwork getNetwork() {

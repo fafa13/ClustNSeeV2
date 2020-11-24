@@ -70,7 +70,7 @@ public class CnSPartitionTableModel extends AbstractTableModel {
 		if (column == 0)
 			return annotations.get(row).getName();
 		else 
-			return annotations.get(row).getValueAt(column);
+			return annotations.get(row).getValueAt(column - 1);
 	}
 
 	/* (non-Javadoc)

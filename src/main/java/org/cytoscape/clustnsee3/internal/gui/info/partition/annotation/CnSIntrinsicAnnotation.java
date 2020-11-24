@@ -37,7 +37,7 @@ public class CnSIntrinsicAnnotation extends CnSPartitionAnnotation {
 	 */
 	@Override
 	public Object getValueAt(int index) {
-		CnSCluster cluster = partition.getClusters().elementAt(index - 1);
+		CnSCluster cluster = partition.getClusters().elementAt(index);
 		
 		if (name.equals("Nb. nodes") )
 			return new Integer(cluster.getNbNodes());

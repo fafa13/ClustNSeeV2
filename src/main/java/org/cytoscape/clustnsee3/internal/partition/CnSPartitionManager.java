@@ -72,6 +72,7 @@ public class CnSPartitionManager implements CnSEventListener {
 	public static final int IMPORT_PARTITION = 15;
 	public static final int GET_NODE_CLUSTERS = 16;
 	public static final int GET_PARTITIONS = 17;
+	public static final int GET_CLUSTER_NODES = 18;
 	
 	public static final int PARTITION = 1000;
 	public static final int INDEX = 1001;
@@ -132,6 +133,7 @@ public class CnSPartitionManager implements CnSEventListener {
 		Vector<Vector<Long>> partition_import;
 		Vector<Vector<String>> annotation_import;
 		TaskMonitor taskMonitor;
+		Vector<CyNode> nodes;
 		
 		switch (event.getAction()) {
 			case ADD_PARTITON :
@@ -317,6 +319,13 @@ public class CnSPartitionManager implements CnSEventListener {
 				
 			case GET_PARTITIONS :
 				ret = partitions;
+				break;
+				
+			case GET_CLUSTER_NODES :
+				nodes = new Vector<CyNode>();
+				c = (CnSCluster)event.getParameter(CLUSTER);
+				for (CnSNode node : c.getNodes()) nodes.addElement(node.getCyNode());
+				ret = nodes;
 				break;
 		}
 		return ret;

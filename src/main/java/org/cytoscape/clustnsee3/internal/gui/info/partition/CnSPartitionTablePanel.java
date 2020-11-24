@@ -21,8 +21,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Hashtable;
-import java.util.Set;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
@@ -41,6 +40,11 @@ import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
 import org.cytoscape.clustnsee3.internal.gui.info.partition.annotation.CnSIntrinsicAnnotation;
 import org.cytoscape.clustnsee3.internal.gui.info.partition.annotation.CnSNetworkAnnotation;
 import org.cytoscape.clustnsee3.internal.gui.info.partition.annotation.CnSNetworkBasedAnnotation;
+import org.cytoscape.clustnsee3.internal.gui.info.partition.annotation.decorator.CnSNetworkAnnotationDecoratorBoolean;
+import org.cytoscape.clustnsee3.internal.gui.info.partition.annotation.decorator.CnSNetworkAnnotationDecoratorDouble;
+import org.cytoscape.clustnsee3.internal.gui.info.partition.annotation.decorator.CnSNetworkAnnotationDecoratorInteger;
+import org.cytoscape.clustnsee3.internal.gui.info.partition.annotation.decorator.CnSNetworkAnnotationDecoratorString;
+import org.cytoscape.clustnsee3.internal.gui.info.partition.annotation.decorator.CnSNetworkAnnotationDecoratorTextList;
 import org.cytoscape.clustnsee3.internal.gui.results.CnSResultsPanel;
 import org.cytoscape.clustnsee3.internal.gui.widget.CnSButton;
 import org.cytoscape.clustnsee3.internal.gui.widget.CnSPanel;
@@ -116,26 +120,43 @@ public class CnSPartitionTablePanel extends CnSPanel implements CytoPanelCompone
 							System.err.println("Importing annotations from " + file.getName());
 							
 							BufferedReader br= new BufferedReader(new FileReader(file));
-							Set<CyNode> n;
 							CnSNetworkAnnotation<?> annotation;
 							Vector<CnSNetworkAnnotation<?>> ht = new Vector<CnSNetworkAnnotation<?>>();
 							while ((s = br.readLine()) != null) {
 								if (s.startsWith(">")) {
 									String[] words = s.split("\t");
 									annotation = null;
-									if (words[1].equalsIgnoreCase("int"))
+									if (words[1].equalsIgnoreCase("int")) {
 										annotation = new CnSNetworkAnnotation<Integer>(partition.getInputNetwork(), words[0].substring(1), Integer.class);
-									else if (words[1].equalsIgnoreCase("float"))
-										annotation = new CnSNetworkAnnotation<Double>(partition.getInputNetwork(), words[0].substring(1));
-									else if (words[1].equalsIgnoreCase("bool"))
-										annotation = new CnSNetworkAnnotation<Boolean>(partition.getInputNetwork(), words[0].substring(1));
-									else if (words[1].equalsIgnoreCase("text"))
-										annotation = new CnSNetworkAnnotation<String>(partition.getInputNetwork(), words[0].substring(1));
-									else if (words[1].equalsIgnoreCase("text_list"))
-										annotation = new CnSNetworkAnnotation<Vector<String>>(partition.getInputNetwork(), words[0].substring(1));
+										annotation.setDecorator(new CnSNetworkAnnotationDecoratorInteger());
+										table.getModel().addAnnotation(new CnSNetworkBasedAnnotation<Integer>(partition, annotation));
+									}
+									else if (words[1].equalsIgnoreCase("float")) {
+										annotation = new CnSNetworkAnnotation<Double>(partition.getInputNetwork(), words[0].substring(1), Double.class);
+										annotation.setDecorator(new CnSNetworkAnnotationDecoratorDouble());
+										table.getModel().addAnnotation(new CnSNetworkBasedAnnotation<Double>(partition, annotation));
+									}
+									else if (words[1].equalsIgnoreCase("bool")) {
+										annotation = new CnSNetworkAnnotation<Boolean>(partition.getInputNetwork(), words[0].substring(1), Boolean.class);
+										annotation.setDecorator(new CnSNetworkAnnotationDecoratorBoolean());
+										table.getModel().addAnnotation(new CnSNetworkBasedAnnotation<Boolean>(partition, annotation));
+									}
+									else if (words[1].equalsIgnoreCase("text")) {
+										annotation = new CnSNetworkAnnotation<String>(partition.getInputNetwork(), words[0].substring(1), String.class);
+										annotation.setDecorator(new CnSNetworkAnnotationDecoratorString());
+										table.getModel().addAnnotation(new CnSNetworkBasedAnnotation<String>(partition, annotation));
+									}
+									else if (words[1].equalsIgnoreCase("text_list")) {
+										annotation = new CnSNetworkAnnotation<String>(partition.getInputNetwork(), words[0].substring(1), words[2], String.class);
+										annotation.setDecorator(new CnSNetworkAnnotationDecoratorTextList());
+										table.getModel().addAnnotation(new CnSNetworkBasedAnnotation<String>(partition, annotation));
+									}
 									if (annotation != null) {
 										ht.addElement(annotation);
-										table.getModel().addAnnotation(new CnSNetworkBasedAnnotation(partition, annotation));
+										System.err.println("Annotation " + words[0] + " has been added.");
+									}
+									else {
+										System.err.println("Annotation " + words[0] + " is unknown.");
 									}
 								}
 								else if (!s.equals("")) {
@@ -147,6 +168,7 @@ public class CnSPartitionTablePanel extends CnSPanel implements CytoPanelCompone
 								}
 							}
 							br.close();
+							
 							table.fireTableDataChanged();
 						}
 						catch (FileNotFoundException ex) {
@@ -154,6 +176,24 @@ public class CnSPartitionTablePanel extends CnSPanel implements CytoPanelCompone
 						} 
 						catch (IOException e1) {
 							e1.printStackTrace();
+						} catch (InstantiationException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (IllegalAccessException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (IllegalArgumentException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (InvocationTargetException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (NoSuchMethodException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (SecurityException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
 						}
 					}
 				}
