@@ -34,6 +34,7 @@ public class CnSStyleManager implements CnSEventListener {
 	public static final int SET_CURRENT_STYLE = 1;
 	public static final int APPLY_CURRENT_STYLE = 2;
 	public static final int REMOVE_CNS_STYLES = 3;
+	public static final int INIT = 4;
 	
 	public static final int STYLE = 1001;
 	public static final int VIEW = 1002;
@@ -144,6 +145,10 @@ public class CnSStyleManager implements CnSEventListener {
 				vmm = (VisualMappingManager)CnSEventManager.handleMessage(ev);
 				for (Integer vs : style.keySet()) vmm.removeVisualStyle(style.get(vs));
 				currentStyle = null;
+				
+			case INIT :
+				init();
+				break;
 		}
 		return ret;
 	}

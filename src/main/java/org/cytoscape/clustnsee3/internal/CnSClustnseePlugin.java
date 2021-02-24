@@ -24,12 +24,13 @@ import org.cytoscape.clustnsee3.internal.algorithm.CnSAlgorithmEngine;
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventListener;
 import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
-import org.cytoscape.clustnsee3.internal.gui.control.CnSControlPanel;
-import org.cytoscape.clustnsee3.internal.gui.info.CnSInfoPanel;
-import org.cytoscape.clustnsee3.internal.gui.info.partition.CnSPartitionTablePanel;
+import org.cytoscape.clustnsee3.internal.gui.controlpanel.CnSControlPanel;
+import org.cytoscape.clustnsee3.internal.gui.infopanel.CnSInfoPanel;
 import org.cytoscape.clustnsee3.internal.gui.menu.contextual.action.CnSMenuManager;
-import org.cytoscape.clustnsee3.internal.gui.results.CnSResultsPanel;
+import org.cytoscape.clustnsee3.internal.gui.partitionpanel.CnSPartitionPanel;
+import org.cytoscape.clustnsee3.internal.gui.resultspanel.CnSResultsPanel;
 import org.cytoscape.clustnsee3.internal.network.CnSNetworkManager;
+import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeAnnotationManager;
 import org.cytoscape.clustnsee3.internal.partition.CnSPartitionManager;
 import org.cytoscape.clustnsee3.internal.view.CnSViewManager;
 import org.cytoscape.clustnsee3.internal.view.style.CnSStyleManager;
@@ -57,7 +58,7 @@ public class CnSClustnseePlugin implements CnSEventListener {
 	private CnSPartitionManager analysisManager;
 	private CnSMenuManager menuManager;
 	private CnSInfoPanel dataPanel;
-	private CnSPartitionTablePanel partitionTablePanel;
+	private CnSPartitionPanel partitionTablePanel;
 	private CnSResultsPanel resultsPanel;
 	private CnSAlgorithmEngine algorithmEngine;
 	private CnSViewManager viewManager;
@@ -66,6 +67,7 @@ public class CnSClustnseePlugin implements CnSEventListener {
 	private CnSStyleManager styleManager;
 	private Vector<ServiceRegistration> ref;
 	private CnSControlPanel controlPanel;
+	private CnSNodeAnnotationManager nodeAnnotationManager;
 	private static CnSClustnseePlugin instance;
 	private BundleContext bc;
 	
@@ -76,25 +78,27 @@ public class CnSClustnseePlugin implements CnSEventListener {
 		analysisManager = CnSPartitionManager.getInstance();
 		menuManager = CnSMenuManager.getInstance();
 		dataPanel = CnSInfoPanel.getInstance();
-		partitionTablePanel = CnSPartitionTablePanel.getInstance();
+		partitionTablePanel = CnSPartitionPanel.getInstance();
 		resultsPanel = CnSResultsPanel.getInstance();
 		algorithmEngine = CnSAlgorithmEngine.getInstance();
 		viewManager = CnSViewManager.getInstance();
 		networkManager = CnSNetworkManager.getInstance();
 		partitionManager = CnSPartitionManager.getInstance();
 		styleManager = CnSStyleManager.getInstance();
+		nodeAnnotationManager = CnSNodeAnnotationManager.getInstance();
 		
 		CnSEventManager.getCnsEventManager(this, analysisManager, menuManager, dataPanel, resultsPanel, algorithmManager, 
-				algorithmEngine, viewManager, networkManager, partitionManager, styleManager, partitionTablePanel, ca);
+				algorithmEngine, viewManager, networkManager, partitionManager, styleManager, partitionTablePanel, nodeAnnotationManager, ca);
 		CnSEvent ev = new CnSEvent(CnSAlgorithmManager.INIT, CnSEventManager.ALGORITHM_MANAGER);
 		CnSEventManager.handleMessage(ev);
-		styleManager.init();
+		ev = new CnSEvent(CnSStyleManager.INIT, CnSEventManager.STYLE_MANAGER);
+		CnSEventManager.handleMessage(ev);
 	}
 	
 	public void registerServices() {
 		CnSEvent ev = new CnSEvent(CnSClustnseePlugin.GET_PANEL, CnSEventManager.CLUSTNSEE_PLUGIN);
 		controlPanel = (CnSControlPanel)CnSEventManager.handleMessage(ev);
-		//styleManager.init();
+
 		ref = new Vector<ServiceRegistration>();
 		ref.addElement(bc.registerService(CytoPanelComponent.class.getName(), controlPanel, new Properties()));
 		ref.addElement(bc.registerService(CytoPanelComponent.class.getName(), resultsPanel, new Properties()));

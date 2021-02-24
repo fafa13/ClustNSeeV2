@@ -184,11 +184,26 @@ public class CnSCompressClusterNodeAction {
 											edgeWidth.putIfAbsent(edge, view.getView().getEdgeView(edge).getVisualProperty(BasicVisualLexicon.EDGE_WIDTH) + 1.0);
 									}
 								}
+								for (CyEdge ce : edgeWidth.keySet()) {
+									network.getNetwork().getRow(ce).set("CnS:isInteraction", true);
+									network.getNetwork().getRow(ce).set("CnS:size", edgeWidth.get(ce).intValue());
+									network.getNetwork().getRow(ce).set("interaction", "pp");
+									if (ce.getSource() == c.getCyNode()) {
+										network.getNetwork().getRow(ce).set("name", c.getAttributes().get("name") + " - " + view.getView().getNodeView(ce.getTarget()).getVisualProperty(BasicVisualLexicon.NODE_LABEL));
+										network.getNetwork().getRow(ce).set("shared name", c.getAttributes().get("name") + " - " + view.getView().getNodeView(ce.getTarget()).getVisualProperty(BasicVisualLexicon.NODE_LABEL));
+									}
+									else {
+										network.getNetwork().getRow(ce).set("name", c.getAttributes().get("name") + " - " + view.getView().getNodeView(ce.getSource()).getVisualProperty(BasicVisualLexicon.NODE_LABEL));
+										network.getNetwork().getRow(ce).set("shared name", c.getAttributes().get("name") + " - " + view.getView().getNodeView(ce.getSource()).getVisualProperty(BasicVisualLexicon.NODE_LABEL));
+									}
+								view.getView().updateView();
+								}
 								for (CnSNode cnsn : cl.getNodes())
 									if (!network.getNetwork().containsEdge(c.getCyNode(), cnsn.getCyNode()) && 
 											!network.getNetwork().containsEdge(cnsn.getCyNode(), c.getCyNode())) {
 										CyEdge ce = network.getNetwork().addEdge(c.getCyNode(), cnsn.getCyNode(), false);
 										network.getNetwork().getRow(ce).set("CnS:isInteraction", false);
+										network.getNetwork().getRow(ce).set("CnS:size", 1);
 										view.getView().updateView();
 									}
 								view.getView().updateView();

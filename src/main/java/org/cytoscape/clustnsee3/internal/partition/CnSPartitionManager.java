@@ -73,6 +73,7 @@ public class CnSPartitionManager implements CnSEventListener {
 	public static final int GET_NODE_CLUSTERS = 16;
 	public static final int GET_PARTITIONS = 17;
 	public static final int GET_CLUSTER_NODES = 18;
+	public static final int GET_ALL_CLUSTERS = 19;
 	
 	public static final int PARTITION = 1000;
 	public static final int INDEX = 1001;
@@ -134,6 +135,7 @@ public class CnSPartitionManager implements CnSEventListener {
 		Vector<Vector<String>> annotation_import;
 		TaskMonitor taskMonitor;
 		Vector<CyNode> nodes;
+		Vector<CnSCluster> clusters;
 		
 		switch (event.getAction()) {
 			case ADD_PARTITON :
@@ -279,7 +281,7 @@ public class CnSPartitionManager implements CnSEventListener {
 						for (CnSNode node : cl.getNodes())
 							if (!multiclassNodes.contains(node))
 								multiclassNodes.addElement(node);
-				ret = new Integer(multiclassNodes.size());
+				ret = Integer.valueOf(multiclassNodes.size());
 				break;
 				
 			case GET_CLUSTER :
@@ -306,7 +308,7 @@ public class CnSPartitionManager implements CnSEventListener {
 				
 			case GET_NODE_CLUSTERS :
 				nodeName = (String)event.getParameter(NODE_NAME);
-				Vector<CnSCluster> clusters = new Vector<CnSCluster>();
+				clusters = new Vector<CnSCluster>();
 				for (CnSPartition part : partitions) {
 					for (CnSCluster cluster : part.getClusters()) {
 						if (cluster.contains(nodeName)) {
@@ -326,6 +328,12 @@ public class CnSPartitionManager implements CnSEventListener {
 				c = (CnSCluster)event.getParameter(CLUSTER);
 				for (CnSNode node : c.getNodes()) nodes.addElement(node.getCyNode());
 				ret = nodes;
+				break;
+				
+			case GET_ALL_CLUSTERS :
+				clusters = new Vector<CnSCluster>();
+				for (CnSPartition part : partitions) clusters.addAll(part.getClusters());
+				ret = clusters;
 				break;
 		}
 		return ret;
@@ -421,6 +429,7 @@ public class CnSPartitionManager implements CnSEventListener {
             // Set name for network
             clusterNet.getRow(clusterNet).set(CyNetwork.NAME, String.valueOf(k + 1));
             cluster.setName(String.valueOf(k + 1));
+            cluster.setID(k + 1);
             
             // Fill network with cluster nodes and edges 
             for (CnSNode node : cluster.getNodes()) clusterNet.addNode(node.getCyNode());
@@ -656,6 +665,7 @@ public class CnSPartitionManager implements CnSEventListener {
             // Set name for network
             clusterNet.getRow(clusterNet).set(CyNetwork.NAME, String.valueOf(k + 1));
             cluster.setName(String.valueOf(k + 1));
+            cluster.setID(k + 1);
             
             // Fill network with cluster nodes and edges 
             for (CnSNode node : cluster.getNodes()) clusterNet.addNode(node.getCyNode());

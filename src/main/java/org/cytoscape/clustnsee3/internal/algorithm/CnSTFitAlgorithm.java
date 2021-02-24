@@ -167,14 +167,24 @@ public class CnSTFitAlgorithm extends CnSAlgorithm {
         List<String> node_names = Arrays.asList( nodeName);
         Collections.sort( node_names);
         HashMap<Integer, Long> modClust_to_cyto = new HashMap<Integer, Long>();
-		for( int i_node_name = 0; i_node_name < node_names.size(); i_node_name++) {
+		/*for( int i_node_name = 0; i_node_name < node_names.size(); i_node_name++) {
             String node_name = node_names.get( i_node_name);
-            nodeName[ i_node_name] = node_name;
             long cyto_index = name_to_node.get( node_name).getSUID();
             cyto2ModClust.put( cyto_index, i_node_name);
             modClust_to_cyto.put(i_node_name, cyto_index);
+        }*/
+        if (scope.equals("Selection")) {
+            ni = selectedNodes.iterator();
         }
-
+        else {
+            ni = inputNetwork.getNodeList().iterator();
+        }
+		for (int i = 0; ni.hasNext(); i++) {
+        	CyNode n = (CyNode)ni.next();
+            long cyto_index = n.getSUID();
+            cyto2ModClust.put(cyto_index, i);
+            modClust_to_cyto.put(i, cyto_index);
+        }
         Iterator<CyEdge> edges;
 
         if (scope.equals("Selection")) {

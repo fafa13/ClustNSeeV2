@@ -6,6 +6,7 @@ import org.cytoscape.application.swing.AbstractCyAction;
 import org.cytoscape.clustnsee3.internal.CyActivator;
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
+import org.cytoscape.clustnsee3.internal.view.style.CnSStyleManager;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -26,6 +27,9 @@ public class CnSStartMenu extends AbstractCyAction {
 	public void actionPerformed(ActionEvent e) {
 		CnSEvent ev = new CnSEvent(CyActivator.START, CnSEventManager.CY_ACTIVATOR);
 		CnSEventManager.handleMessage(ev);
+		ev = new CnSEvent(CnSStyleManager.INIT, CnSEventManager.STYLE_MANAGER);
+		CnSEventManager.handleMessage(ev);
+		
 	}
 	
 	public static CnSStartMenu getInstance(BundleContext context, CyActivator ca) {

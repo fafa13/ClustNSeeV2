@@ -47,7 +47,7 @@ public class CnSCluster implements Comparable<CnSCluster> {
 		
 	private static int compare_type;
 	
-	private int totalDegree, inDegree, outDegree;
+	private int ID, totalDegree, inDegree, outDegree;
 	private double modularity;
 	private ImageIcon snapshot = null;
 	private String name;
@@ -98,6 +98,8 @@ public class CnSCluster implements Comparable<CnSCluster> {
 		annotations = new ArrayList<CnSClusterAnnotation>();
 		attributes = new HashMap<String, Object>();
 		attributeTypes = new HashMap<String, Class<?>>();
+		name = null;
+		ID = -1;
 	}
 	
 	public static void setCompareType(String choice) {
@@ -219,6 +221,13 @@ public class CnSCluster implements Comparable<CnSCluster> {
 	public String getName() {
 		return name;
 	}
+	public void setID(int id) {
+		ID = id;
+	}
+	public int getID() {
+		return ID;
+	}
+	
 	/**
      * Compute the modularity, InDegree and OutDegree of the cluster
      * 
@@ -321,5 +330,9 @@ public class CnSCluster implements Comparable<CnSCluster> {
 		CnSPartition part = (CnSPartition)CnSEventManager.handleMessage(ev);
 		
 		return part.getName() + ":" + part.getAlgorithmName() + ":" + getName();
+	}
+	
+	public double getDensity() {
+		return 2.0 * getEdges().size() / (getNbNodes() * (getNbNodes() - 1));
 	}
 }

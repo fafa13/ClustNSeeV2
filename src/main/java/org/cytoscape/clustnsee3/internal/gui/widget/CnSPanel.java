@@ -9,6 +9,7 @@ import java.awt.Insets;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
+import javax.swing.border.TitledBorder;
 
 public class CnSPanel extends JPanel {
 	private static final long serialVersionUID = -5064107269789069026L;
@@ -29,24 +30,32 @@ public class CnSPanel extends JPanel {
 
 	private String title;
 	private int top, bottom, left, right;
+	private int justification, position;
 
-	public CnSPanel() {
-		this("", 0, 0, 0, 0);
-	}
-	public CnSPanel(String tit) {
-		this(tit, 20, 5, 5, 5);
-	}
-	public CnSPanel(int t, int l, int b, int r) {
-		this("", t, l, b, r);
-	}
 	public CnSPanel(String tit, int t, int l, int b, int r) {
 		super();
+		justification = TitledBorder.LEFT;
+		position = TitledBorder.ABOVE_TOP;
 		setLayout(new GridBagLayout());
 		title = tit;
 		top = t;
 		left = l;
 		bottom = b;
 		right = r;
+	}
+	
+	public CnSPanel() {
+		this("", 0, 0, 0, 0);
+	}
+	public CnSPanel(String tit, int justification, int position) {
+		this(tit, 20, 5, 5, 5);
+		setTitleLocation(justification, position);
+	}
+	public CnSPanel(String tit) {
+		this(tit, 20, 5, 5, 5);
+	}
+	public CnSPanel(int t, int l, int b, int r) {
+		this("", t, l, b, r);
 	}
 	public Insets getInsets() {
 		return new Insets(top, left, bottom, right);
@@ -57,16 +66,20 @@ public class CnSPanel extends JPanel {
 		bottom = b;
 		right = r;  	
 	}
+	public void setTitleLocation(int justification, int position) {
+		this.justification = justification;
+		this.position = position;
+	}
 	public void addComponent(Component comp, int gridx, int gridy, int gridwidth, int gridheight,
                            double weightx, double weighty, int anchor, int fill, int insetstop, int insetsleft,
                            int insetsbottom, int insetsright, int ipadx, int ipady) {
 		add(comp, new GridBagConstraints(gridx, gridy, gridwidth, gridheight, weightx, weighty, anchor, fill,
 				new Insets(insetstop, insetsleft, insetsbottom, insetsright), ipadx, ipady));
 	}
-	protected void initGraphics() {
+	public void initGraphics() {
 		if (getTitle() != null)
 			if (!getTitle().equals("") && !getTitle().equals("Clust&see")) 
-				setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), " " + getTitle() + " "));
+				setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), " " + getTitle() + " ", justification, position));
 			else
 				setBorder(BorderFactory.createEtchedBorder());
 	}

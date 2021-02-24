@@ -21,7 +21,7 @@ import javax.swing.JOptionPane;
 
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventListener;
-import org.cytoscape.clustnsee3.internal.gui.control.CnSControlAlgorithmPanel;
+import org.cytoscape.clustnsee3.internal.gui.controlpanel.CnSControlAlgorithmPanel;
 import org.cytoscape.clustnsee3.internal.gui.widget.CnSPanel;
 
 /**
@@ -94,8 +94,8 @@ public class CnSAlgorithmManager implements CnSEventListener  {
 	    	case INIT:
 	    		try {
 	    			register("org.cytoscape.clustnsee3.internal.algorithm.CnSFTAlgorithm", null);
-	    			register("org.cytoscape.clustnsee3.internal.algorithm.CnSTFitAlgorithm", "org.cytoscape.clustnsee3.internal.gui.control.CnSControlAlgorithmTfitOptionsPanel");
-	    			register("org.cytoscape.clustnsee3.internal.algorithm.CnSOCGAlgorithm", "org.cytoscape.clustnsee3.internal.gui.control.CnSControlAlgorithmOCGPanel");
+	    			register("org.cytoscape.clustnsee3.internal.algorithm.CnSTFitAlgorithm", "org.cytoscape.clustnsee3.internal.gui.controlpanel.CnSControlAlgorithmTfitOptionsPanel");
+	    			register("org.cytoscape.clustnsee3.internal.algorithm.CnSOCGAlgorithm", "org.cytoscape.clustnsee3.internal.gui.controlpanel.CnSControlAlgorithmOCGPanel");
 	    		} 
 	    		catch (Exception e) {
 	    			String s = "";

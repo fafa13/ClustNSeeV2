@@ -30,9 +30,10 @@ import org.cytoscape.clustnsee3.internal.analysis.node.CnSNode;
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventListener;
 import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
-import org.cytoscape.clustnsee3.internal.gui.info.CnSInfoPanel;
+import org.cytoscape.clustnsee3.internal.gui.infopanel.CnSInfoPanel;
 import org.cytoscape.clustnsee3.internal.gui.menu.contextual.action.CnSExpandClusterNodeAction;
-import org.cytoscape.clustnsee3.internal.gui.results.CnSResultsPanel;
+import org.cytoscape.clustnsee3.internal.gui.partitionpanel.CnSPartitionPanel;
+import org.cytoscape.clustnsee3.internal.gui.resultspanel.CnSResultsPanel;
 import org.cytoscape.clustnsee3.internal.network.CnSNetwork;
 import org.cytoscape.clustnsee3.internal.network.CnSNetworkManager;
 import org.cytoscape.clustnsee3.internal.partition.CnSPartition;
@@ -89,6 +90,7 @@ UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, SelectedNodesAndEd
 	public static final int REMOVE_VIEW = 18;
 	public static final int REMOVE_VIEWS = 19;
 	public static final int GET_PARTITION_VIEW = 20;
+	public static final int SET_USER_ENABLED = 21;
 	
 	public static final int VIEW = 1000;
 	public static final int STATE = 1001;
@@ -100,6 +102,7 @@ UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, SelectedNodesAndEd
 	public static final int PARTITION = 1007;
 	public static final int SUID = 1008;
 	public static final int CY_NODE = 1009;
+	public static final int ENABLED = 1010;
 	
 	private Vector<CnSView> views;
 	private CnSView selectedView;
@@ -111,6 +114,8 @@ UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, SelectedNodesAndEd
 	private HashMap<CnSPartition, CnSView> partition2viewMap;
 	
 	private static CnSViewManager instance = null;
+	
+	private boolean USER_ENABLED = true;
 	
 	private CnSViewManager() {
 		super();
@@ -366,6 +371,11 @@ UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, SelectedNodesAndEd
 							ret = v;
 							break;
 						}
+				
+			case SET_USER_ENABLED :
+				Boolean enabled = (Boolean)event.getParameter(ENABLED);
+				if (enabled != null) USER_ENABLED = enabled;
+				break;
 		}
 		return ret;
 	}
@@ -548,47 +558,67 @@ UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, SelectedNodesAndEd
 	 */
 	@Override
 	public void handleEvent(SelectedNodesAndEdgesEvent e) {
-		if (selectedView != null) {
+		CnSEvent ev;
+		if (selectedView != null && USER_ENABLED) {
 			Collection<CyNode> cn = e.getSelectedNodes();
 			if (cn.size() == 1) {
-				for (CyNode node : cn) {
-					CnSEvent ev = new CnSEvent(CnSPartitionManager.GET_PARTITION, CnSEventManager.PARTITION_MANAGER);
+				CnSPartition p = view2partitionMap.get(selectedView);
+				if (p == null) {
+					ev = new CnSEvent(CnSPartitionManager.GET_PARTITION, CnSEventManager.PARTITION_MANAGER);
 					ev.addParameter(CnSPartitionManager.VIEW, selectedView);
-					CnSPartition p = view2partitionMap.get(selectedView);
-					if (p == null) p = (CnSPartition)CnSEventManager.handleMessage(ev);
+					p = (CnSPartition)CnSEventManager.handleMessage(ev);
+				}
 					
-					if (p != null) {
-						ev = new CnSEvent(CnSPartitionManager.GET_CLUSTER_NODE, CnSEventManager.PARTITION_MANAGER);
-						ev.addParameter(CnSPartitionManager.PARTITION, p);
-						ev.addParameter(CnSPartitionManager.CY_NODE, node);
-						CnSNode cnsn = (CnSNode)CnSEventManager.handleMessage(ev);
-					
-						if (cnsn != null) {
-							ev = new CnSEvent(CnSResultsPanel.SELECT_CLUSTER, CnSEventManager.RESULTS_PANEL);
-							ev.addParameter(CnSResultsPanel.CLUSTER, node.getSUID());
+				if (p != null) {
+					CyNode node = cn.iterator().next();
+					ev = new CnSEvent(CnSPartitionManager.GET_CLUSTER_NODE, CnSEventManager.PARTITION_MANAGER);
+					ev.addParameter(CnSPartitionManager.PARTITION, p);
+					ev.addParameter(CnSPartitionManager.CY_NODE, node);
+					CnSNode cnsn = (CnSNode)CnSEventManager.handleMessage(ev);
+				
+					if (cnsn != null) {
+						ev = new CnSEvent(CnSResultsPanel.SELECT_CLUSTER, CnSEventManager.RESULTS_PANEL);
+						ev.addParameter(CnSResultsPanel.CLUSTER, node.getSUID());
+						CnSEventManager.handleMessage(ev);
+							
+						CnSNode cnsnode = p.getClusterNode(node.getSUID());
+						CnSCluster cluster = null;
+						for (CnSCluster c : p.getClusters()) {
+							if (c.getCyNode() == cnsnode.getCyNode()) {
+								cluster = c;
+								break;
+							}
+						}
+						if (cluster != null) {
+							ev = new CnSEvent(CnSPartitionPanel.SELECT_CLUSTER, CnSEventManager.ANNOTATION_PANEL);
+							ev.addParameter(CnSPartitionPanel.CLUSTER, cluster);
 							CnSEventManager.handleMessage(ev);
 						}
-						else {
-							ev = new CnSEvent(CnSPartitionManager.GET_NODE, CnSEventManager.PARTITION_MANAGER);
-							ev.addParameter(CnSPartitionManager.CY_NODE, node);
-							cnsn = (CnSNode)CnSEventManager.handleMessage(ev);
-							if (cnsn != null) {
-								ev = new CnSEvent(CnSInfoPanel.INIT, CnSEventManager.INFO_PANEL);
-								ev.addParameter(CnSInfoPanel.NODE, cnsn);
-								ev.addParameter(CnSInfoPanel.PANEL, CnSInfoPanel.NODE_DETAILS);
-								CnSEventManager.handleMessage(ev);
-							
-								ev = new CnSEvent(CnSInfoPanel.SELECT_PANEL, CnSEventManager.INFO_PANEL);
-								ev.addParameter(CnSInfoPanel.PANEL, CnSInfoPanel.NODE_DETAILS);
-								CnSEventManager.handleMessage(ev);
-							}
+					}
+					else {
+						ev = new CnSEvent(CnSPartitionManager.GET_NODE, CnSEventManager.PARTITION_MANAGER);
+						ev.addParameter(CnSPartitionManager.CY_NODE, node);
+						cnsn = (CnSNode)CnSEventManager.handleMessage(ev);
+						if (cnsn != null) {
+							ev = new CnSEvent(CnSInfoPanel.INIT, CnSEventManager.INFO_PANEL);
+							ev.addParameter(CnSInfoPanel.NODE, cnsn);
+							ev.addParameter(CnSInfoPanel.PANEL, CnSInfoPanel.NODE_DETAILS);
+							CnSEventManager.handleMessage(ev);
+						
+							ev = new CnSEvent(CnSInfoPanel.SELECT_PANEL, CnSEventManager.INFO_PANEL);
+							ev.addParameter(CnSInfoPanel.PANEL, CnSInfoPanel.NODE_DETAILS);
+							CnSEventManager.handleMessage(ev);
 						}
 					}
 				}
 			}
 			else if (cn.size() >= 2 || cn.size() == 0) {
-				CnSEvent ev = new CnSEvent(CnSResultsPanel.SELECT_CLUSTER, CnSEventManager.RESULTS_PANEL);
+				ev = new CnSEvent(CnSResultsPanel.SELECT_CLUSTER, CnSEventManager.RESULTS_PANEL);
 				CnSEventManager.handleMessage(ev);
+				
+				ev = new CnSEvent(CnSPartitionPanel.SELECT_CLUSTER, CnSEventManager.ANNOTATION_PANEL);
+				CnSEventManager.handleMessage(ev);
+				
 				ev = new CnSEvent(CnSInfoPanel.CLEAR, CnSEventManager.INFO_PANEL);
 				ev.addParameter(CnSInfoPanel.PANEL, CnSInfoPanel.NODE_DETAILS);
 				CnSEventManager.handleMessage(ev);
@@ -596,26 +626,25 @@ UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, SelectedNodesAndEd
 			
 			Collection<CyEdge> ce = e.getSelectedEdges();
 			if (ce.size() == 1) {
-				for (CyEdge edge : ce) {
-					CnSEvent ev = new CnSEvent(CnSPartitionManager.GET_CLUSTER_LINK, CnSEventManager.PARTITION_MANAGER);
-					ev.addParameter(CnSPartitionManager.CY_EDGE, edge);
-					CnSClusterLink clusterLink = (CnSClusterLink)CnSEventManager.handleMessage(ev);
+				CyEdge edge = ce.iterator().next();
+				ev = new CnSEvent(CnSPartitionManager.GET_CLUSTER_LINK, CnSEventManager.PARTITION_MANAGER);
+				ev.addParameter(CnSPartitionManager.CY_EDGE, edge);
+				CnSClusterLink clusterLink = (CnSClusterLink)CnSEventManager.handleMessage(ev);
 					
-					ev = new CnSEvent(CnSInfoPanel.INIT, CnSEventManager.INFO_PANEL);
-					ev.addParameter(CnSInfoPanel.EDGE, edge);
-					if (clusterLink != null) ev.addParameter(CnSInfoPanel.CLUSTER_LINK, clusterLink);
-					ev.addParameter(CnSInfoPanel.PANEL, CnSInfoPanel.EDGE_DETAILS);
-					ev.addParameter(CnSInfoPanel.VIEW, selectedView);
-					ev.addParameter(CnSInfoPanel.NETWORK, view2networkMap.get(selectedView));
-					CnSEventManager.handleMessage(ev);
+				ev = new CnSEvent(CnSInfoPanel.INIT, CnSEventManager.INFO_PANEL);
+				ev.addParameter(CnSInfoPanel.EDGE, edge);
+				if (clusterLink != null) ev.addParameter(CnSInfoPanel.CLUSTER_LINK, clusterLink);
+				ev.addParameter(CnSInfoPanel.PANEL, CnSInfoPanel.EDGE_DETAILS);
+				ev.addParameter(CnSInfoPanel.VIEW, selectedView);
+				ev.addParameter(CnSInfoPanel.NETWORK, view2networkMap.get(selectedView));
+				CnSEventManager.handleMessage(ev);
 								
-					ev = new CnSEvent(CnSInfoPanel.SELECT_PANEL, CnSEventManager.INFO_PANEL);
-					ev.addParameter(CnSInfoPanel.PANEL, CnSInfoPanel.EDGE_DETAILS);
-					CnSEventManager.handleMessage(ev);
-				}
+				ev = new CnSEvent(CnSInfoPanel.SELECT_PANEL, CnSEventManager.INFO_PANEL);
+				ev.addParameter(CnSInfoPanel.PANEL, CnSInfoPanel.EDGE_DETAILS);
+				CnSEventManager.handleMessage(ev);
 			}
 			else if (ce.size() >= 2 || ce.size() == 0) {
-				CnSEvent ev = new CnSEvent(CnSInfoPanel.CLEAR, CnSEventManager.INFO_PANEL);
+				ev = new CnSEvent(CnSInfoPanel.CLEAR, CnSEventManager.INFO_PANEL);
 				ev.addParameter(CnSInfoPanel.PANEL, CnSInfoPanel.EDGE_DETAILS);
 				CnSEventManager.handleMessage(ev);
 			}

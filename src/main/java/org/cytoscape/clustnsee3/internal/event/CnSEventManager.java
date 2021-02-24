@@ -14,7 +14,7 @@
 package org.cytoscape.clustnsee3.internal.event;
 
 import org.cytoscape.clustnsee3.internal.CyActivator;
-import org.cytoscape.clustnsee3.internal.gui.info.partition.CnSPartitionTablePanel;
+import org.cytoscape.clustnsee3.internal.gui.partitionpanel.CnSPartitionPanel;
 import org.cytoscape.clustnsee3.internal.network.CnSNetworkManager;
 import org.cytoscape.clustnsee3.internal.partition.CnSPartitionManager;
 import org.cytoscape.clustnsee3.internal.view.style.CnSStyleManager;
@@ -36,7 +36,8 @@ public class CnSEventManager {
 	public static final int NETWORK_MANAGER = 10;
 	public static final int PARTITION_MANAGER = 11;
 	public static final int STYLE_MANAGER = 12;
-	public static final int PARTITION_TABLE_PANEL = 13;
+	public static final int ANNOTATION_PANEL = 13;
+	public static final int ANNOTATION_MANAGER = 14;
 	
 	private static CnSEventListener plugin;
 	private static CnSEventListener analysisManager;
@@ -51,6 +52,7 @@ public class CnSEventManager {
 	private static CnSEventListener partitionManager;
 	private static CnSEventListener styleManager;
 	private static CnSEventListener partitionTablePanel;
+	private static CnSEventListener nodeAnnotationManager;
 	
 	private static CnSEventManager instance;
 
@@ -62,8 +64,8 @@ public class CnSEventManager {
 			CnSEventListener _analysisManager, CnSEventListener _clustnseeMenuManager,
 			CnSEventListener _dataPanel, CnSEventListener _resultsPanel, CnSEventListener _algorithmManager, 
 			CnSEventListener _algorithmEngine, CnSEventListener _viewManager, CnSNetworkManager _networkManager, 
-			CnSPartitionManager _partitionManager, CnSStyleManager _styleManager, CnSPartitionTablePanel _partitionTablePanel, 
-			CyActivator ca) {
+			CnSPartitionManager _partitionManager, CnSStyleManager _styleManager, CnSPartitionPanel _annotationPanel, 
+			CnSEventListener _nodeAnnotationManager, CyActivator ca) {
 		if (instance == null) {
 			instance = new CnSEventManager();
 			plugin = _plugin;
@@ -77,7 +79,8 @@ public class CnSEventManager {
 			networkManager = _networkManager;
 			partitionManager = _partitionManager;
 			styleManager = _styleManager;
-			partitionTablePanel = _partitionTablePanel;
+			partitionTablePanel = _annotationPanel;
+			nodeAnnotationManager = _nodeAnnotationManager;
 			cyActivator = ca;
 		}
 		return instance;
@@ -131,8 +134,12 @@ public class CnSEventManager {
 	      		if (styleManager != null) ret = styleManager.cnsEventOccured(event);
 	      		break;
 	      		
-	      	case PARTITION_TABLE_PANEL :
+	      	case ANNOTATION_PANEL :
 	      		if (partitionTablePanel != null) ret = partitionTablePanel.cnsEventOccured(event);
+	      		break;
+	      		
+	      	case ANNOTATION_MANAGER :
+	      		if (nodeAnnotationManager != null) ret = nodeAnnotationManager.cnsEventOccured(event);
 	      		break;
 	      		
 	      	case CY_ACTIVATOR:
