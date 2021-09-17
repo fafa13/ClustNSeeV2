@@ -97,7 +97,7 @@ public class CnSImportPartitionMenu extends AbstractCyAction {
     			imported_annotation = new Vector<Vector<String>>();
     			
     			if (s != null) {
-    				if (s.equals("#ClustnSee analysis export")) {
+    				if (s.equals("#ClustnSee analysis export") || s.equals("#ModClust analysis export")) {
     					while ((s = br.readLine()) != null) {
     						if (s.startsWith("#")) {
     							if (s.startsWith("#Algorithm:")) {

@@ -52,7 +52,6 @@ public class CnSNodeDetailsPanel extends CnSPanel {
 		columnNamesPropertiesTable.addElement("Value");
 		dataPropertiesTable = new Vector<Vector<String>>();
 		propertiesTable = new JTable(dataPropertiesTable, columnNamesPropertiesTable);
-		
 		initGraphics();
 	}
 	

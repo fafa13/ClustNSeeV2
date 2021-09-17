@@ -14,6 +14,7 @@
 package org.cytoscape.clustnsee3.internal.nodeannotation;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -101,7 +102,7 @@ public class CnSNodeAnnotationManager implements CnSEventListener {
 		CnSNodeAnnotation annotation;
 		Vector<CyNode> nodes;
 		CyNode node;
-		CnSNodeAnnotationFile inputFile;
+		File inputFile;
 		int fromLine;
 		BufferedReader br;
 		String[] word, anno;
@@ -115,12 +116,12 @@ public class CnSNodeAnnotationManager implements CnSEventListener {
 		
 		switch (event.getAction()) {
 			case PARSE_ANNOTATIONS :
-				inputFile = (CnSNodeAnnotationFile)event.getParameter(FILE);
+				inputFile = (File)event.getParameter(FILE);
 				fromLine = (Integer)event.getParameter(FROM_LINE);
 				network = (CyNetwork)event.getParameter(NETWORK);
 				annots = new Vector<String>();
 				try {
-					br = new BufferedReader(new FileReader(inputFile.getFile()));
+					br = new BufferedReader(new FileReader(inputFile));
 					for (int i = 1; i < fromLine; i++) br.readLine();
 					found_nodes = mapped_annotations = 0;
 					nodes_in_file = new HashSet<String>();
@@ -151,6 +152,7 @@ public class CnSNodeAnnotationManager implements CnSEventListener {
 					results[1] = annotations_in_file.size();
 					results[2] = found_nodes;
 					results[3] = mapped_annotations;
+					
 					ret = results;
 					System.err.println("Total nodes in file : " + nodes_in_file.size());
 					System.err.println("Total annotations in file : " + annotations_in_file.size());
@@ -167,19 +169,21 @@ public class CnSNodeAnnotationManager implements CnSEventListener {
 				break;
 			
 			case LOAD_ANNOTATIONS :
-				inputFile = (CnSNodeAnnotationFile)event.getParameter(FILE);
+				inputFile = (File)event.getParameter(FILE);
+				CnSNodeAnnotationFile aif = new CnSNodeAnnotationFile(inputFile);
+				
 				fromLine = (Integer)event.getParameter(FROM_LINE);
 				try {
-					fileNames.addElement(inputFile.getFile().getCanonicalPath());
+					fileNames.addElement(aif.getFile().getCanonicalPath());
 				}
 				catch (IOException e1) {
 					e1.printStackTrace();
 				}
-				System.err.println("Importing annotations from " + inputFile.getFile().getName());
+				System.err.println("Importing annotations from " + aif.getFile().getName());
 				network = (CyNetwork)event.getParameter(NETWORK);
 				
 				try {
-					br = new BufferedReader(new FileReader(inputFile.getFile()));
+					br = new BufferedReader(new FileReader(aif.getFile()));
 					for (int i = 1; i < fromLine; i++) br.readLine();
 					while ((s = br.readLine()) != null) {
 						word = s.split("\t");
@@ -190,17 +194,18 @@ public class CnSNodeAnnotationManager implements CnSEventListener {
 							for (String q : anno)
 								if (! q.equals("")) {
 									CnSTrieNode w = annotationTrie.addWord(q);
-									CnSNodeAnnotation annot = addAnnotation(w, node, inputFile);
+									CnSNodeAnnotation annot = addAnnotation(w, node, aif);
 									if (annot != null)
 										w.setAnnotation(annot);
 									else
-										w.getAnnotation().addAnnotationfile(inputFile);
+										w.getAnnotation().addAnnotationfile(aif);
 								}
 						}
 					}
 					br.close();
 					makeCyNodesHashMap();
 					makeClustersHashMap();
+					ret = aif;
 				} 
 				catch (FileNotFoundException e) {
 					e.printStackTrace();
@@ -213,9 +218,9 @@ public class CnSNodeAnnotationManager implements CnSEventListener {
 			case ADD_ANNOTATION :
 				value = (String)event.getParameter(VALUE);
 				node = (CyNode)event.getParameter(NODE);
-				inputFile = (CnSNodeAnnotationFile)event.getParameter(FILE);
+				inputFile = (File)event.getParameter(FILE);
 				CnSTrieNode w = annotationTrie.addWord(value);
-				addAnnotation(w, node, inputFile);
+				//addAnnotation(w, node, inputFile);
 				break;
 				
 			case REMOVE_ANNOTATION :
@@ -303,9 +308,9 @@ public class CnSNodeAnnotationManager implements CnSEventListener {
 				break;
 				
 			case UNLOAD_ANNOTATIONS :
-				inputFile = (CnSNodeAnnotationFile)event.getParameter(FILE);
+				inputFile = (File)event.getParameter(FILE);
 				if (inputFile != null) {
-					annotationTrie.removeAnnotations(inputFile);
+					//annotationTrie.removeAnnotations(inputFile);
 					makeCyNodesHashMap();
 					makeClustersHashMap();
 				}

@@ -2,7 +2,7 @@
 /* Copyright (C) 2018 TAGC, Luminy, Marseille
 /*
 /* @author Fabrice Lopez (TAGC/BCF, Luminy, Marseille)
-/* @date 17 févr. 2021
+/* @date 19 nov. 2020
 /*
 /* with contributions from:
 /* Lionel Spinelli (CIML/TAGC, Luminy, Marseille)
@@ -11,12 +11,11 @@
 /* Philippe Gambette (LIGM, Marne-la-Vallée)
  */
 
-package org.cytoscape.clustnsee3.internal.gui.controlpanel.annotationfiletable;
+package org.cytoscape.clustnsee3.internal.gui.annotationpanel.partitiontable;
 
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
-import java.io.File;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -27,31 +26,19 @@ import javax.swing.table.DefaultTableCellRenderer;
 /**
  * 
  */
-public class CnSAnnotationFileTableCellRenderer extends DefaultTableCellRenderer {
-	private static final long serialVersionUID = 1974159369704905347L;
-	
-	private Font font = new Font("serif", Font.PLAIN, 11);
+public class CnSPartitionTableCellRenderer extends DefaultTableCellRenderer {
+	private static final long serialVersionUID = 9173113458642486427L;
+	private Font font = new Font("serif", Font.PLAIN, 12);
 	private Border paddingBorder = BorderFactory.createEmptyBorder(0, 10, 0, 10);
 
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-		JLabel label;
-		int begin;
-		
-		if (value != null) {
-			begin = value.toString().lastIndexOf(File.separatorChar);
-			label = new JLabel(value.toString().substring(begin + 1));
-		}
-		else {
-			begin = -1;
-			label = new JLabel("NA");
-		}
+		JLabel label = new JLabel(value.toString());
 	    label.setFont(font);
 	    label.setOpaque(true);
 	    label.setBorder(paddingBorder);
-	    if (begin != -1) label.setToolTipText(value.toString().substring(0, begin));
 	    if (isSelected) {
 	    	label.setFont(label.getFont().deriveFont(Font.BOLD));
-			label.setBackground(Color.lightGray);
+			label.setBackground(Color.yellow.darker());
 		}
 		else
 			label.setBackground(Color.white);

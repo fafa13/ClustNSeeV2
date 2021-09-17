@@ -106,9 +106,13 @@ public class CnSOCGAlgorithm extends CnSAlgorithm {
 		parameters = new CnSAlgorithmParameters();
 		parameters.addParameter("Options", OPTIONS, "Default options");
 		parameters.addParameter("Initial clusters", INITIAL_CLUSTERS, "Centered cliques");
+		parameters.addParameter("Initial_classes", INITIAL_CLUSTERS, "centered cliques");
 		parameters.addParameter("Class system", CLASS_SYSTEM, "Maximize modularity");
+		parameters.addParameter("Class_System", CLASS_SYSTEM, "maximizing_modularity");
 		parameters.addParameter("Cluster max. cardinal", CLUSTER_MAX_CARDINAL, 0);
+		parameters.addParameter("Maximum_Cardinality", CLUSTER_MAX_CARDINAL, 0);
 		parameters.addParameter("Cluster min. number", CLUSTER_MIN_NUMBER, 2);
+		parameters.addParameter("Minimum_Cardinality", CLUSTER_MIN_NUMBER, 2);
 	}
 
 	public static CnSAlgorithm getInstance() {

@@ -40,6 +40,7 @@ public class CnSNetworkManager implements CnSEventListener, NetworkAboutToBeDest
 	public static final int GET_NETWORK = 4;
 	public static final int SET_NETWORK_CLUSTER = 5;
 	public static final int GET_NODES_WITH_VALUE = 6;
+	public static final int SELECT_CLUSTER = 7;
 			
 	public static final int NETWORK = 1000;
 	public static final int NETWORK_NAME = 1001;
@@ -133,6 +134,12 @@ public class CnSNetworkManager implements CnSEventListener, NetworkAboutToBeDest
 				colName = (String)event.getParameter(COLNAME);
 				value = event.getParameter(VALUE);
 				ret = getNodesWithValue(cyNetwork, cyNetwork.getDefaultNodeTable(), colName, value);
+				break;
+				
+			case SELECT_CLUSTER :
+				network = (CnSNetwork)event.getParameter(NETWORK);
+				cluster = (CnSCluster)event.getParameter(CLUSTER);
+				
 				break;
 		}
 		return ret;

@@ -3,9 +3,11 @@ package org.cytoscape.clustnsee3.internal.gui.controlpanel;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Hashtable;
 
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
@@ -23,6 +25,8 @@ import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
 import org.cytoscape.clustnsee3.internal.gui.controlpanel.annotationfiletable.CnSAnnotationFileTableCellRenderer;
 import org.cytoscape.clustnsee3.internal.gui.controlpanel.annotationfiletable.CnSAnnotationFileTableModel;
+import org.cytoscape.clustnsee3.internal.gui.controlpanel.annotationfiletree.nodes.root.CnSAFTreeRootNode;
+import org.cytoscape.clustnsee3.internal.gui.controlpanel.annotationfiletree.CnSAFTreeModel;
 import org.cytoscape.clustnsee3.internal.gui.dialog.CnSAnnotationFileStatsDialog;
 import org.cytoscape.clustnsee3.internal.gui.dialog.CnSLoadAnnotationFileDialog;
 import org.cytoscape.clustnsee3.internal.gui.partitionpanel.CnSPartitionPanel;
@@ -30,6 +34,9 @@ import org.cytoscape.clustnsee3.internal.gui.resultspanel.CnSResultsPanel;
 import org.cytoscape.clustnsee3.internal.gui.widget.CnSButton;
 import org.cytoscape.clustnsee3.internal.gui.widget.CnSPanel;
 import org.cytoscape.clustnsee3.internal.gui.widget.CnSTableHeaderRenderer;
+import org.cytoscape.clustnsee3.internal.gui.widget.paneltree.CnSPanelTree;
+import org.cytoscape.clustnsee3.internal.gui.widget.paneltree.CnSPanelTreeCellEditor;
+import org.cytoscape.clustnsee3.internal.gui.widget.paneltree.CnSPanelTreeCellRenderer;
 import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeAnnotationFile;
 import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeAnnotationManager;
 import org.cytoscape.clustnsee3.internal.partition.CnSPartition;
@@ -47,10 +54,17 @@ public class CnSControlPanel extends CnSPanel implements CytoPanelComponent {
 	private CnSPanel analyzePanel;
 	private CnSButton analyzeButton;
 	private CnSPanel importAnnotationPanel;
+	
+	private CnSPanel treeImportAnnotationPanel;
+	private CnSAFTreeModel treeModel;
+	
 	private JTable annotationTable;
 	private CnSButton addAnnotationButton, removeAnnotationButton;
 	private CnSPanel mainPanel;
 	private CnSAnnotationFileTableModel annotationFileTableModel;
+	
+	private CnSPanelTree tree;
+	private CnSAFTreeRootNode rootNode;
 	
 	public CnSControlPanel(String title) {
 		super(title);
@@ -88,14 +102,31 @@ public class CnSControlPanel extends CnSPanel implements CytoPanelComponent {
 		importAnnotationPanel.addComponent(addAnnotationButton, 0, 1, 1, 1, 1.0, 0.0, NORTH, NONE, 0, 0, 0, 0, 0, 0);
 		removeAnnotationButton = new CnSButton("Remove");
 		importAnnotationPanel.addComponent(removeAnnotationButton, 1, 1, 1, 1, 1.0, 0.0, NORTH, NONE, 0, 0, 0, 0, 0, 0);
+		
 		importAnnotationPanel.initGraphics();
 		mainPanel.addComponent(importAnnotationPanel, 0, 1, 1, 1, 1.0, 1.0, NORTH, HORIZONTAL, 10, 0, 0, 0, 0, 0);
 		
+		treeImportAnnotationPanel = new CnSPanel("XXX", TitledBorder.CENTER, TitledBorder.ABOVE_TOP);
+		Hashtable<Integer, Object> v= new Hashtable<Integer, Object>();
+		v.put(CnSAFTreeRootNode.TITLE, "Imported annotation files");
+		rootNode = new CnSAFTreeRootNode(v);
+		rootNode.getPanel().deriveFont(Font.PLAIN, 14);
+		rootNode.getPanel().initGraphics();
+		treeModel = new CnSAFTreeModel(rootNode);
+		tree = new CnSPanelTree(treeModel);
+		
+		tree.setShowsRootHandles(true);
+		tree.setCellRenderer(new CnSPanelTreeCellRenderer());
+		tree.setCellEditor(new CnSPanelTreeCellEditor());
+		
+		JScrollPane jsp2 = new JScrollPane(tree);
+		jsp2.getViewport().setPreferredSize(new Dimension(0, 10*26));
+		treeImportAnnotationPanel.addComponent(jsp2, 0, 0, 1, 1, 1.0, 1.0, NORTH, BOTH, 0, 0, 0, 0, 0, 0);
+		treeImportAnnotationPanel.initGraphics();
+		mainPanel.addComponent(treeImportAnnotationPanel, 0, 2, 1, 1, 1.0, 1.0, NORTH, HORIZONTAL, 10, 0, 0, 0, 0, 0);
+		
 		addComponent(mainPanel, 0, 0, 1, 1, 1.0, 1.0, NORTH, BOTH, 0, 0, 0, 0, 0, 0);
 		
-		//actionPanel = new CnSControlActionPanel("");
-		//actionPanel.initGraphics();
-		//addComponent(actionPanel, 0, 2, 1, 1, 1.0, 1.0, SOUTH, HORIZONTAL, 0, 0, 5, 0, 0, 0);
 		super.initGraphics();
 	}
 	
@@ -139,7 +170,7 @@ public class CnSControlPanel extends CnSPanel implements CytoPanelComponent {
 				if (dialog.getExitOption() == CnSLoadAnnotationFileDialog.OK_OPTION) {
 					if (! annotationFileTableModel.contains(dialog.getSelectedFile())) {
 						ev = new CnSEvent(CnSNodeAnnotationManager.PARSE_ANNOTATIONS, CnSEventManager.ANNOTATION_MANAGER);
-						ev.addParameter(CnSNodeAnnotationManager.FILE, new CnSNodeAnnotationFile(dialog.getSelectedFile()));
+						ev.addParameter(CnSNodeAnnotationManager.FILE, dialog.getSelectedFile());
 						ev.addParameter(CnSNodeAnnotationManager.FROM_LINE, dialog.getFromLine());
 						ev.addParameter(CnSNodeAnnotationManager.NETWORK, network);
 						int[] results = (int[])CnSEventManager.handleMessage(ev);
@@ -148,19 +179,21 @@ public class CnSControlPanel extends CnSPanel implements CytoPanelComponent {
 						statsDialog.setLocation((screenSize.width - statsDialog.getWidth()) / 2, (screenSize.height - statsDialog.getHeight()) / 2);
 						statsDialog.setVisible(true);
 						if (statsDialog.getExitOption() == CnSAnnotationFileStatsDialog.OK_OPTION) {
-							CnSNodeAnnotationFile annotationFile = new CnSNodeAnnotationFile(dialog.getSelectedFile());
 							ev = new CnSEvent(CnSNodeAnnotationManager.LOAD_ANNOTATIONS, CnSEventManager.ANNOTATION_MANAGER);
-							ev.addParameter(CnSNodeAnnotationManager.FILE, annotationFile);
+							ev.addParameter(CnSNodeAnnotationManager.FILE, dialog.getSelectedFile());
 							ev.addParameter(CnSNodeAnnotationManager.FROM_LINE, dialog.getFromLine());
 							ev.addParameter(CnSNodeAnnotationManager.NETWORK, network);
-							CnSEventManager.handleMessage(ev);
+							CnSNodeAnnotationFile annotationFile = (CnSNodeAnnotationFile)CnSEventManager.handleMessage(ev);
 						
 							ev = new CnSEvent(CnSPartitionPanel.INIT_ANNOTATION_PANEL, CnSEventManager.ANNOTATION_PANEL);
 							if (partition != null) ev.addParameter(CnSPartitionPanel.PARTITION, partition);
 							CnSEventManager.handleMessage(ev);
-							annotationFileTableModel.addItem(annotationFile, results[1], results[3]);
+							annotationFileTableModel.addItem(annotationFile, results, network);
 							annotationFileTableModel.fireTableDataChanged();
 							annotationTable.repaint();
+							
+							treeModel.addAnnotationFile(rootNode, annotationFile, results[1], results[0]);
+							treeModel.mapAnnotation(network);
 						}
 					}
 					else {
@@ -197,7 +230,6 @@ public class CnSControlPanel extends CnSPanel implements CytoPanelComponent {
 
 	@Override
 	public Icon getIcon() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

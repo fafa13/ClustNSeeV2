@@ -14,16 +14,19 @@
 package org.cytoscape.clustnsee3.internal.nodeannotation;
 
 import java.io.File;
+import java.util.Vector;
 
 /**
  * 
  */
 public class CnSNodeAnnotationFile {
 	private File file;
+	private Vector<CnSNodeAnnotation> annotations;
 	
 	public CnSNodeAnnotationFile(File file) {
 		super();
 		this.file = file;
+		annotations = new Vector<CnSNodeAnnotation>();
 	}
 	
 	public File getFile() { 
@@ -31,5 +34,8 @@ public class CnSNodeAnnotationFile {
 	}
 	public String toString() {
 		return file.getAbsolutePath();
+	}
+	public void addAnnotation(CnSNodeAnnotation annotation) {
+		if (!annotations.contains(annotation)) annotations.addElement(annotation);
 	}
 }

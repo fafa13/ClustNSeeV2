@@ -19,6 +19,7 @@ import java.util.Vector;
 import javax.swing.table.AbstractTableModel;
 
 import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeAnnotationFile;
+import org.cytoscape.model.CyNetwork;
 
 /**
  * 
@@ -26,8 +27,9 @@ import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeAnnotationFile;
 public class CnSAnnotationFileTableModel extends AbstractTableModel {
 	private static final long serialVersionUID = 431987641574491635L;
 	private Vector<Vector<?>> data;
-	private static final String[] columnNames = {"File", "Total", "Mapped"}; 
-	private static final Class<?>[] columnClasses = {CnSNodeAnnotationFile.class, Integer.class, Integer.class};
+	private static final String[] columnNames = {"File", "Annotations", "Nodes", "Mapped annot.", "Found nodes", "Network"}; 
+	
+	private static final Class<?>[] columnClasses = {CnSNodeAnnotationFile.class, Integer.class, Integer.class, Integer.class, Integer.class, CyNetwork.class};
 
 	/**
 	 * @param
@@ -75,14 +77,18 @@ public class CnSAnnotationFileTableModel extends AbstractTableModel {
 	 */
 	@Override
 	public Object getValueAt(int row, int col) {
-		if (data.size() > row) return data.elementAt(row).elementAt(col);
+		if (data.size() > row) 
+			return data.elementAt(row).elementAt(col);
 		return null;
 	}
-	public void addItem(CnSNodeAnnotationFile file, int nb_annotations, int mapped_annotations) {
+	public void addItem(CnSNodeAnnotationFile file, int[] stats, CyNetwork network) {
 		Vector<Object> v = new Vector<Object>();
 		v.addElement(file);
-		v.addElement(nb_annotations);
-		v.addElement(mapped_annotations);
+		v.addElement(stats[1]);
+		v.addElement(stats[0]);
+		v.addElement(stats[3]);
+		v.addElement(stats[2]);
+		v.addElement(network);
 		data.addElement(v);
 	}
 	
