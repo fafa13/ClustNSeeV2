@@ -13,6 +13,7 @@
 
 package org.cytoscape.clustnsee3.internal.gui.controlpanel.networkfiletree.nodes.root;
 
+import java.awt.event.ActionEvent;
 import java.util.Hashtable;
 
 import org.cytoscape.clustnsee3.internal.gui.widget.paneltree.CnSPanelTreeNode;
@@ -26,5 +27,14 @@ public class CnSAFTreeNetworksRootNode extends CnSPanelTreeNode {
 	public CnSAFTreeNetworksRootNode(Hashtable<Integer, Object> v) {
 		super();
 		panel = new CnSAFTreeNetworksRootNodePanel(v.get(TITLE).toString());
+	}
+
+	/* (non-Javadoc)
+	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+	 */
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 }

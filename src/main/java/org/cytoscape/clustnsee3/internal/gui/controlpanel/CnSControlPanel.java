@@ -23,6 +23,7 @@ import org.cytoscape.application.swing.CytoPanelName;
 import org.cytoscape.clustnsee3.internal.CyActivator;
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
+import org.cytoscape.clustnsee3.internal.gui.annotationpanel.CnSAnnotationPanel;
 import org.cytoscape.clustnsee3.internal.gui.controlpanel.annotationfiletable.CnSAnnotationFileTableCellRenderer;
 import org.cytoscape.clustnsee3.internal.gui.controlpanel.annotationfiletable.CnSAnnotationFileTableModel;
 import org.cytoscape.clustnsee3.internal.gui.controlpanel.annotationfiletree.nodes.root.CnSAFTreeRootNode;
@@ -185,8 +186,8 @@ public class CnSControlPanel extends CnSPanel implements CytoPanelComponent {
 							ev.addParameter(CnSNodeAnnotationManager.NETWORK, network);
 							CnSNodeAnnotationFile annotationFile = (CnSNodeAnnotationFile)CnSEventManager.handleMessage(ev);
 						
-							ev = new CnSEvent(CnSPartitionPanel.INIT_ANNOTATION_PANEL, CnSEventManager.ANNOTATION_PANEL);
-							if (partition != null) ev.addParameter(CnSPartitionPanel.PARTITION, partition);
+							ev = new CnSEvent(CnSAnnotationPanel.INIT_ANNOTATION_PANEL, CnSEventManager.ANNOTATION_PANEL);
+							if (partition != null) ev.addParameter(CnSAnnotationPanel.PARTITION, partition);
 							CnSEventManager.handleMessage(ev);
 							annotationFileTableModel.addItem(annotationFile, results, network);
 							annotationFileTableModel.fireTableDataChanged();

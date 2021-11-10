@@ -26,6 +26,7 @@ import javax.swing.event.ListSelectionListener;
 import org.cytoscape.clustnsee3.internal.analysis.CnSCluster;
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
+import org.cytoscape.clustnsee3.internal.gui.annotationpanel.CnSAnnotationPanel;
 import org.cytoscape.clustnsee3.internal.gui.infopanel.CnSInfoPanel;
 import org.cytoscape.clustnsee3.internal.gui.partitionpanel.CnSPartitionPanel;
 import org.cytoscape.clustnsee3.internal.gui.widget.CnSPanel;
@@ -81,14 +82,14 @@ public class CnSClusterListPanel extends CnSPanel {
 						CnSEventManager.handleMessage(ev);
 						
 						ev = new CnSEvent(CnSPartitionPanel.SELECT_CLUSTER, CnSEventManager.ANNOTATION_PANEL);
-						ev.addParameter(CnSPartitionPanel.CLUSTER, cluster);
+						ev.addParameter(CnSAnnotationPanel.CLUSTER, cluster);
 						CnSEventManager.handleMessage(ev);
 						
-						ev = new CnSEvent(CnSPartitionManager.GET_PARTITION, CnSEventManager.NETWORK_MANAGER);
-						ev.addParameter(CnSNetworkManager.CLUSTER, cluster);
+						ev = new CnSEvent(CnSPartitionManager.GET_PARTITION, CnSEventManager.PARTITION_MANAGER);
+						ev.addParameter(CnSPartitionManager.CLUSTER, cluster);
 						CnSPartition p = (CnSPartition)CnSEventManager.handleMessage(ev);
 						
-						ev = new CnSEvent(CnSPartitionManager.GET_PARTITION_NETWORK, CnSEventManager.NETWORK_MANAGER);
+						ev = new CnSEvent(CnSPartitionManager.GET_PARTITION_NETWORK, CnSEventManager.PARTITION_MANAGER);
 						ev.addParameter(CnSPartitionManager.PARTITION, p);
 						CnSNetwork nw = (CnSNetwork)CnSEventManager.handleMessage(ev);
 						

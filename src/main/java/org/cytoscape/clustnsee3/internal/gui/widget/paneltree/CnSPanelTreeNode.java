@@ -26,7 +26,7 @@ import org.cytoscape.clustnsee3.internal.gui.widget.CnSButton;
 /**
  * 
  */
-public abstract class CnSPanelTreeNode implements MutableTreeNode {
+public abstract class CnSPanelTreeNode implements MutableTreeNode, ActionListener {
 	private Hashtable<Integer, Object> data;
 	protected Vector<CnSPanelTreeNode> children;
 	protected CnSPanelTreeNode parent;

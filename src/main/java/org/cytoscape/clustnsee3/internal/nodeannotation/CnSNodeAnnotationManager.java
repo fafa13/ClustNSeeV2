@@ -194,7 +194,7 @@ public class CnSNodeAnnotationManager implements CnSEventListener {
 							for (String q : anno)
 								if (! q.equals("")) {
 									CnSTrieNode w = annotationTrie.addWord(q);
-									CnSNodeAnnotation annot = addAnnotation(w, node, aif);
+									CnSNodeAnnotation annot = /*addNudeAnnotation(w, aif); */ addAnnotation(w, node, aif);
 									if (annot != null)
 										w.setAnnotation(annot);
 									else
@@ -316,6 +316,11 @@ public class CnSNodeAnnotationManager implements CnSEventListener {
 				}
 		}
 		return ret;
+	}
+	
+	private CnSNodeAnnotation addNudeAnnotation(CnSTrieNode value, CnSNodeAnnotationFile file) {
+		CnSNodeAnnotation annotation = new CnSNodeAnnotation(value, file);
+		return annotation;
 	}
 	
 	private CnSNodeAnnotation addAnnotation(CnSTrieNode value, CyNode node, CnSNodeAnnotationFile file) {

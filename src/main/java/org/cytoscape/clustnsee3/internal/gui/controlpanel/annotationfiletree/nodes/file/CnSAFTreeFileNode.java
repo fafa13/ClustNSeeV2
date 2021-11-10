@@ -13,7 +13,7 @@
 
 package org.cytoscape.clustnsee3.internal.gui.controlpanel.annotationfiletree.nodes.file;
 
-import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 import java.util.Hashtable;
 
 import org.cytoscape.clustnsee3.internal.gui.widget.CnSButton;
@@ -32,12 +32,25 @@ public class CnSAFTreeFileNode extends CnSPanelTreeNode {
 	public CnSAFTreeFileNode(CnSPanelTreeNode parent, Hashtable<Integer, Object> v) {
 		super(parent, v);
 		panel = new CnSAFTreeFileNodePanel((CnSNodeAnnotationFile)v.get(ANNOTATION_FILE));
+		panel.initGraphics();
+		((CnSAFTreeFileNodePanel)panel).getDeleteButton().addActionListener(this);
+		((CnSAFTreeFileNodePanel)panel).getAnnotateButton().addActionListener(this);
 	}
-	public CnSButton getButton() {
-		return ((CnSAFTreeFileNodePanel)panel).getButton();
-	}
-	public void addActionListener(ActionListener actionListener) {
-		CnSButton button = ((CnSAFTreeFileNodePanel)panel).getButton();
-		if (button.getActionListeners().length == 0) button.addActionListener(actionListener);
+	
+	/* (non-Javadoc)
+	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+	 */
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		String val;
+		if (e.getSource() instanceof CnSButton)
+			if (((CnSButton)e.getSource()).getActionCommand().equals("delete")) {
+				val = getData(CnSAFTreeFileNode.ANNOTATION_FILE).toString();
+				System.out.println("Pressed: delete " + val);
+			}
+			else if (((CnSButton)e.getSource()).getActionCommand().equals("annotate")) {
+				val = getData(CnSAFTreeFileNode.ANNOTATION_FILE).toString();
+				System.out.println("Pressed: annotate " + val);
+			}
 	}
 }

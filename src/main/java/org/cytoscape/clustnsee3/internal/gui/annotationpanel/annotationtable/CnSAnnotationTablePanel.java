@@ -86,6 +86,7 @@ public class CnSAnnotationTablePanel extends CnSPanel {
 	public void init(CnSPartition partition) {
 		CnSEvent ev = new CnSEvent(CnSNodeAnnotationManager.GET_ANNOTATIONS, CnSEventManager.ANNOTATION_MANAGER);
 		Vector<CnSNodeAnnotation> annotations = (Vector<CnSNodeAnnotation>)CnSEventManager.handleMessage(ev);
+		System.err.println("nb annot : " + annotations.size());
 		CnSAnnotationTableModel model = new CnSAnnotationTableModel(annotations, partition);
 		annotationTable.setModel(model);
 		
