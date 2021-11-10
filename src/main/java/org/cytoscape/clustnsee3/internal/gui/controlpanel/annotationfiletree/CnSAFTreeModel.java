@@ -65,11 +65,12 @@ public class CnSAFTreeModel extends CnSPanelTreeModel {
 		}
 	}
 	
-	private boolean contains(File f) {
+	public boolean contains(File f) {
 		Enumeration<CnSPanelTreeNode> nodes = rootNode.children();
 		while (nodes.hasMoreElements()) {
 			CnSPanelTreeNode node = nodes.nextElement();
-			if (node.getData(CnSAFTreeFileNode.ANNOTATION_FILE) == f) return true;
+			CnSNodeAnnotationFile af = (CnSNodeAnnotationFile)node.getData(CnSAFTreeFileNode.ANNOTATION_FILE);
+			if (af.getFile() == f) return true;
 		}
 		return false;
 	}

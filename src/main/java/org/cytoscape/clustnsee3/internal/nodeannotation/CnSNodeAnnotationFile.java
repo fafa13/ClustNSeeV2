@@ -32,6 +32,9 @@ public class CnSNodeAnnotationFile {
 	public File getFile() { 
 		return file;
 	}
+	public Vector<CnSNodeAnnotation> getAnnotations() {
+		return annotations;
+	}
 	public String toString() {
 		return file.getAbsolutePath();
 	}
