@@ -71,7 +71,7 @@ public class CnSAFTreeFileNode extends CnSPanelTreeNode {
 					ev = new CnSEvent(CnSPartitionManager.GET_PARTITION, CnSEventManager.PARTITION_MANAGER);
 					ev.addParameter(CnSPartitionManager.NETWORK, cn);
 					CnSPartition p = (CnSPartition)CnSEventManager.handleMessage(ev);
-					network = p.getInputNetwork();
+					//network = p.getInputNetwork();
 				}
 				ev = new CnSEvent(CnSNodeAnnotationManager.ANNOTATE_NETWORK, CnSEventManager.ANNOTATION_MANAGER);
 				ev.addParameter(CnSNodeAnnotationManager.ANNOTATION_FILE, getData(ANNOTATION_FILE));

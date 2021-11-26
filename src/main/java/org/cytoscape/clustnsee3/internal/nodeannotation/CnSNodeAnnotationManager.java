@@ -19,6 +19,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Comparator;
+//import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -70,21 +71,25 @@ public class CnSNodeAnnotationManager implements CnSEventListener {
 	public static final int CLUSTER = 1008;
 	public static final int ANNOTATION_FILE = 1009;
 	
-	private HashMap<CnSNodeAnnotation, Vector<CyNode>> annotations;
+	//private HashMap<CnSNodeAnnotation, Vector<CyNode>> annotations;
 	private HashMap<CnSNodeAnnotation, Vector<CnSCluster>> annotation2cluster;
 	private HashMap<CyNode, Vector<CnSNodeAnnotation>> cyNodes;
 	private HashMap<CnSCluster, Vector<CnSNodeAnnotation>> clusters;
 	private Vector<String> fileNames;
 	private CnSAnnotationTrie annotationTrie;
 	
+	private HashMap<String, CnSNodeAnnotation> rawAnnotations;
+	
 	private CnSNodeAnnotationManager() {
 		super();
-		annotations = new HashMap<CnSNodeAnnotation, Vector<CyNode>>();
+		//annotations = new HashMap<CnSNodeAnnotation, Vector<CyNode>>();
 		cyNodes = new HashMap<CyNode, Vector<CnSNodeAnnotation>>();
 		clusters = new HashMap<CnSCluster, Vector<CnSNodeAnnotation>>();
 		annotation2cluster = new HashMap<CnSNodeAnnotation, Vector<CnSCluster>>();
 		fileNames = new Vector<String>();
 		annotationTrie = new CnSAnnotationTrie();
+		
+		rawAnnotations = new HashMap<String, CnSNodeAnnotation>();
 	}
 	
 	public static CnSNodeAnnotationManager getInstance() {
@@ -102,8 +107,8 @@ public class CnSNodeAnnotationManager implements CnSEventListener {
 		Object ret = null;
 		String value, s;
 		CnSNodeAnnotation annotation;
-		Vector<CyNode> nodes;
-		CyNode node;
+		//Vector<CyNode> nodes;
+		//CyNode node;
 		File inputFile;
 		int fromLine;
 		BufferedReader br;
@@ -139,7 +144,7 @@ public class CnSNodeAnnotationManager implements CnSEventListener {
 						it = network.getDefaultNodeTable().getMatchingRows("shared name", word[0]).iterator();
 						if (it.hasNext()) {
 							found_nodes++;
-							node = network.getNode(it.next().get(network.getDefaultNodeTable().getPrimaryKey().getName(), Long.class));
+							//node = network.getNode(it.next().get(network.getDefaultNodeTable().getPrimaryKey().getName(), Long.class));
 							for (String q : anno)
 								if (! q.equals("")) 
 									if (!annots.contains(q)) {
@@ -183,7 +188,7 @@ public class CnSNodeAnnotationManager implements CnSEventListener {
 					e1.printStackTrace();
 				}
 				System.err.println("Importing annotations from " + aif.getFile().getName());
-				network = (CyNetwork)event.getParameter(NETWORK);
+				//network = (CyNetwork)event.getParameter(NETWORK);
 				
 				try {
 					br = new BufferedReader(new FileReader(aif.getFile()));
@@ -191,19 +196,19 @@ public class CnSNodeAnnotationManager implements CnSEventListener {
 					while ((s = br.readLine()) != null) {
 						word = s.split("\t");
 						anno = word[1].split(";");
-						it = network.getDefaultNodeTable().getMatchingRows("shared name", word[0]).iterator();
-						if (it.hasNext()) {
-							node = network.getNode(it.next().get(network.getDefaultNodeTable().getPrimaryKey().getName(), Long.class));
+						//it = network.getDefaultNodeTable().getMatchingRows("shared name", word[0]).iterator();
+						//if (it.hasNext()) {
+							//node = network.getNode(it.next().get(network.getDefaultNodeTable().getPrimaryKey().getName(), Long.class));
 							for (String q : anno)
 								if (! q.equals("")) {
 									CnSTrieNode w = annotationTrie.addWord(q);
-									addNudeAnnotation(w, aif); // addAnnotation(w, node, aif);
+									aif.addAnnotation(addNudeAnnotation(w, aif, word[0])); // addAnnotation(w, node, aif);
 								}
-						}
+						//}
 					}
 					br.close();
-					//makeCyNodesHashMap();
-					//makeClustersHashMap();
+					makeCyNodesHashMap();
+					makeClustersHashMap();
 					ret = aif;
 				} 
 				catch (FileNotFoundException e) {
@@ -216,7 +221,7 @@ public class CnSNodeAnnotationManager implements CnSEventListener {
 			
 			case ADD_ANNOTATION :
 				value = (String)event.getParameter(VALUE);
-				node = (CyNode)event.getParameter(NODE);
+				//node = (CyNode)event.getParameter(NODE);
 				inputFile = (File)event.getParameter(FILE);
 				CnSTrieNode w = annotationTrie.addWord(value);
 				//addAnnotation(w, node, inputFile);
@@ -224,25 +229,25 @@ public class CnSNodeAnnotationManager implements CnSEventListener {
 				
 			case REMOVE_ANNOTATION :
 				annotation = (CnSNodeAnnotation)event.getParameter(ANNOTATION);
-				annotations.remove(annotation);
+				//annotations.remove(annotation);
 				break;
 				
 			case REMOVE_NODE_ANNOTATION :
-				node = (CyNode)event.getParameter(NODE);
+				//node = (CyNode)event.getParameter(NODE);
 				value = (String)event.getParameter(VALUE);
 				w = annotationTrie.get(value);
 				annotation = new CnSNodeAnnotation(w, null);
-				nodes = annotations.get(annotation);
-				if (nodes != null) nodes.removeElement(node);
+				//nodes = annotations.get(annotation);
+				//if (nodes != null) nodes.removeElement(node);
 				break;
 				
 			case GET_NODES :
 				annotation = (CnSNodeAnnotation)event.getParameter(ANNOTATION);
-				ret = annotations.get(annotation);
+				//ret = annotations.get(annotation);
 				break;
 				
 			case GET_ANNOTATIONS :
-				Vector<CnSNodeAnnotation> v = new Vector<CnSNodeAnnotation>(annotations.keySet());
+				Vector<CnSNodeAnnotation> v = new Vector<CnSNodeAnnotation>(rawAnnotations.values());
 				v.sort(new Comparator<CnSNodeAnnotation>() {
 					@Override
 					public int compare(CnSNodeAnnotation a1, CnSNodeAnnotation a2) {
@@ -253,7 +258,7 @@ public class CnSNodeAnnotationManager implements CnSEventListener {
 				break;
 				
 			case PRINT_ANNOTATIONS :
-				printAnnotations();
+				//printAnnotations();
 				break;
 				
 			case LOOK_FOR_ANNOTATIONS :
@@ -317,11 +322,27 @@ public class CnSNodeAnnotationManager implements CnSEventListener {
 			case ANNOTATE_NETWORK :
 				af = (CnSNodeAnnotationFile)event.getParameter(ANNOTATION_FILE);
 				network = (CyNetwork)event.getParameter(NETWORK);
-				for (CyNode cn : network.getNodeList()) {
-					System.err.println(network.getRow(cn).get("shared name", String.class).toString());
-				}
+				/*for (CyNode cn : network.getNodeList()) {
+					Vector<CnSNodeAnnotation> anns = cyNodes.get(cn);
+					if (anns != null) {
+						System.err.println(network.getRow(cn).get("shared name", String.class).toString());
+						for (CnSNodeAnnotation toto : anns)
+							System.err.println("  " + toto.getValue());
+					}
+				}*/
 				for (CnSNodeAnnotation na : af.getAnnotations()) {
-					
+					//Vector<CyNode> vcn = annotations.get(na);
+					for (CyNode cn : network.getNodeList()) {
+						String nodeName = network.getRow(cn).get("shared name", String.class).toString();
+						if (nodeName.equals(na.getValue())) {
+							na.addTargetNode(cn);
+							//vcn.addElement(cn);
+						}
+						else {
+							//System.err.println(nodeName + " != " + na.getValue());
+						}
+					}
+					System.err.println(na.getValue() + " -> " + na.getTargetNodes().size());
 				}
 				//nodes = annotations.get(annotation);
 				//if (! nodes.contains(node)) nodes.addElement(node);
@@ -334,13 +355,17 @@ public class CnSNodeAnnotationManager implements CnSEventListener {
 		return ret;
 	}
 	
-	private CnSNodeAnnotation addNudeAnnotation(CnSTrieNode value, CnSNodeAnnotationFile file) {
-		CnSNodeAnnotation annotation = new CnSNodeAnnotation(value, file);
-		Vector<CyNode> nodes = annotations.get(annotation);
+	private CnSNodeAnnotation addNudeAnnotation(CnSTrieNode value, CnSNodeAnnotationFile file, String nodeName) {
+		CnSNodeAnnotation annotation = rawAnnotations.get(nodeName);
+		if (annotation == null) {
+			annotation = new CnSNodeAnnotation(value, file);
+			rawAnnotations.put(nodeName, annotation);
+		}
+		/*Vector<CyNode> nodes = annotations.get(annotation);
 		if (nodes == null) {
 			nodes = new Vector<CyNode>();
 			annotations.put(annotation, nodes);
-		}
+		}*/
 		value.setAnnotation(annotation);
 		return annotation;
 	}
@@ -361,7 +386,7 @@ public class CnSNodeAnnotationManager implements CnSEventListener {
 				w.getAnnotation().addAnnotationfile(aif);
 	}*/
 	
-	private CnSNodeAnnotation addAnnotation(CnSTrieNode value, CyNode node, CnSNodeAnnotationFile file) {
+/*	private CnSNodeAnnotation addAnnotation(CnSTrieNode value, CyNode node, CnSNodeAnnotationFile file) {
 		CnSNodeAnnotation annotation = new CnSNodeAnnotation(value, file);
 		Vector<CyNode> nodes = annotations.get(annotation);
 		if (nodes == null) {
@@ -373,12 +398,12 @@ public class CnSNodeAnnotationManager implements CnSEventListener {
 			nodes.addElement(node);
 		value.setAnnotation(annotation);
 		return annotation;
-	}
+	}*/
 	
 	private void makeCyNodesHashMap() {
 		cyNodes.clear();
-		for (CnSNodeAnnotation annotation : annotations.keySet()) {
-			Vector<CyNode> nodes = annotations.get(annotation);
+		for (CnSNodeAnnotation annotation : rawAnnotations.values()) {
+			Vector<CyNode> nodes = annotation.getTargetNodes();
 			for (CyNode node : nodes) {
 				Vector<CnSNodeAnnotation> a = cyNodes.get(node);
 				if (a == null) {
@@ -417,12 +442,12 @@ public class CnSNodeAnnotationManager implements CnSEventListener {
 				clusters.put(cl, annot);
 			}
 	}
-	public void printAnnotations() {
+/*	public void printAnnotations() {
 		for (CnSNodeAnnotation key : annotations.keySet()) {
 			System.out.println(key.getValue());
 			for (CyNode value : annotations.get(key)) {
 				System.out.println("  " + value.getSUID());
 			}
 		}
-	}
+	}*/
 }

@@ -16,6 +16,7 @@ package org.cytoscape.clustnsee3.internal.nodeannotation;
 import java.util.Vector;
 
 import org.cytoscape.clustnsee3.internal.nodeannotation.trie.CnSTrieNode;
+import org.cytoscape.model.CyNode;
 
 /**
  * 
@@ -23,18 +24,24 @@ import org.cytoscape.clustnsee3.internal.nodeannotation.trie.CnSTrieNode;
 public class CnSNodeAnnotation {
 	private Vector<CnSNodeAnnotationFile> annotationFiles;
 	private CnSTrieNode trieNode;
+	private Vector<CyNode> targetNodes;
 	
 	public CnSNodeAnnotation(CnSTrieNode trieNode, CnSNodeAnnotationFile file) {
 		super();
 		this.trieNode = trieNode;
 		annotationFiles = new Vector<CnSNodeAnnotationFile>();
 		annotationFiles.addElement(file);
+		targetNodes = new Vector<CyNode>();
 	}
-	
+	public void addTargetNode(CyNode node) {
+		targetNodes.addElement(node);
+	}
 	public String getValue() {
 		return trieNode.getWord();
 	}
-	
+	public Vector<CyNode> getTargetNodes() {
+		return targetNodes;
+	}
 	public boolean equals(Object toCompare) {
 		String value = getValue();
 		String toCompareValue = ((CnSNodeAnnotation)toCompare).getValue();
