@@ -58,7 +58,7 @@ public class CnSClustnseePlugin implements CnSEventListener {
 	private CnSPartitionManager analysisManager;
 	private CnSMenuManager menuManager;
 	private CnSInfoPanel dataPanel;
-	private CnSPartitionPanel partitionTablePanel;
+	private CnSPartitionPanel partitionPanel;
 	private CnSResultsPanel resultsPanel;
 	private CnSAlgorithmEngine algorithmEngine;
 	private CnSViewManager viewManager;
@@ -78,7 +78,7 @@ public class CnSClustnseePlugin implements CnSEventListener {
 		analysisManager = CnSPartitionManager.getInstance();
 		menuManager = CnSMenuManager.getInstance();
 		dataPanel = CnSInfoPanel.getInstance();
-		partitionTablePanel = CnSPartitionPanel.getInstance();
+		partitionPanel = CnSPartitionPanel.getInstance();
 		resultsPanel = CnSResultsPanel.getInstance();
 		algorithmEngine = CnSAlgorithmEngine.getInstance();
 		viewManager = CnSViewManager.getInstance();
@@ -88,7 +88,7 @@ public class CnSClustnseePlugin implements CnSEventListener {
 		nodeAnnotationManager = CnSNodeAnnotationManager.getInstance();
 		
 		CnSEventManager.getCnsEventManager(this, analysisManager, menuManager, dataPanel, resultsPanel, algorithmManager, 
-				algorithmEngine, viewManager, networkManager, partitionManager, styleManager, partitionTablePanel, nodeAnnotationManager, ca);
+				algorithmEngine, viewManager, networkManager, partitionManager, styleManager, partitionPanel, nodeAnnotationManager, ca);
 		CnSEvent ev = new CnSEvent(CnSAlgorithmManager.INIT, CnSEventManager.ALGORITHM_MANAGER);
 		CnSEventManager.handleMessage(ev);
 		ev = new CnSEvent(CnSStyleManager.INIT, CnSEventManager.STYLE_MANAGER);
@@ -103,7 +103,7 @@ public class CnSClustnseePlugin implements CnSEventListener {
 		ref.addElement(bc.registerService(CytoPanelComponent.class.getName(), controlPanel, new Properties()));
 		ref.addElement(bc.registerService(CytoPanelComponent.class.getName(), resultsPanel, new Properties()));
 		ref.addElement(bc.registerService(CytoPanelComponent.class.getName(), dataPanel, new Properties()));
-		ref.addElement(bc.registerService(CytoPanelComponent.class.getName(), partitionTablePanel, new Properties()));
+		ref.addElement(bc.registerService(CytoPanelComponent.class.getName(), partitionPanel, new Properties()));
 		ref.addElement(bc.registerService(AboutToRemoveNodesListener.class.getName(), viewManager, new Properties()));
 		ref.addElement(bc.registerService(AddedNodesListener.class.getName(), viewManager, new Properties()));
 		ref.addElement(bc.registerService(RemovedEdgesListener.class.getName(), viewManager, new Properties()));

@@ -80,8 +80,8 @@ public class CnSAnnotationTableModel extends AbstractTableModel {
 	 */
 	@Override
 	public int getRowCount() {
-		CnSEvent ev = new CnSEvent(CnSNodeAnnotationManager.GET_ANNOTATIONS, CnSEventManager.ANNOTATION_MANAGER);
-		Vector<?> annotations = (Vector<?>)CnSEventManager.handleMessage(ev);
+		//CnSEvent ev = new CnSEvent(CnSNodeAnnotationManager.GET_ANNOTATIONS, CnSEventManager.ANNOTATION_MANAGER);
+		//Vector<?> annotations = (Vector<?>)CnSEventManager.handleMessage(ev);
 		return annotations.size();
 	}
 	
@@ -104,22 +104,47 @@ public class CnSAnnotationTableModel extends AbstractTableModel {
 		int annotated_node_count;
 		int annotated_cluster_count = 0;
 		Vector<?> v;
+		Object o;
 		switch(column) {
 			case 0 : return annotations.elementAt(row).getValue();
 			case 1 : ev = new CnSEvent(CnSNodeAnnotationManager.GET_NODES, CnSEventManager.ANNOTATION_MANAGER);
 					 ev.addParameter(CnSNodeAnnotationManager.ANNOTATION, annotations.elementAt(row));
-					 return ((Vector<?>)CnSEventManager.handleMessage(ev)).size();
+					 o = CnSEventManager.handleMessage(ev);
+					 if (o != null) {
+						 v = (Vector<?>)o;
+						 return v.size();
+					 }
+					 else
+						 return 0;
 			case 2 : node_count = partition.getInputNetwork().getNodeCount();
 			 		 ev = new CnSEvent(CnSNodeAnnotationManager.GET_NODES, CnSEventManager.ANNOTATION_MANAGER);
 					 ev.addParameter(CnSNodeAnnotationManager.ANNOTATION, annotations.elementAt(row));
-					 annotation_count = ((Vector<?>)CnSEventManager.handleMessage(ev)).size();
+					 o = CnSEventManager.handleMessage(ev);
+					 if (o != null) {
+						 v = (Vector<?>)o;
+						 annotation_count = v.size();
+					 }
+					 else
+						 annotation_count = 0;
 					 return (int)(annotation_count * 1000D / node_count) / 1000D;
 			case 3 : ev = new CnSEvent(CnSNodeAnnotationManager.GET_NODES, CnSEventManager.ANNOTATION_MANAGER);
 	 		 		 ev.addParameter(CnSNodeAnnotationManager.ANNOTATION, annotations.elementAt(row));
-	 		 		 annotation_count = ((Vector<?>)CnSEventManager.handleMessage(ev)).size();
+	 		 		 o = CnSEventManager.handleMessage(ev);
+					 if (o != null) {
+						 v = (Vector<?>)o;
+						 annotation_count = v.size();
+					 }
+					 else
+						 annotation_count = 0;
 	 		 		 ev = new CnSEvent(CnSNodeAnnotationManager.GET_ANNOTATED_NODES, CnSEventManager.ANNOTATION_MANAGER);
-	 		 		 annotated_node_count = ((Vector<?>)CnSEventManager.handleMessage(ev)).size();
-	 		 		 return (int)(annotation_count * 1000D / annotated_node_count) / 1000D;
+	 		 		 o = CnSEventManager.handleMessage(ev);
+	 		 		 if (o != null) {
+	 		 			 v = (Vector<?>)o;
+	 		 			 annotated_node_count = v.size();
+	 		 			 return (int)(annotation_count * 1000D / annotated_node_count) / 1000D;
+	 		 		 }
+	 		 		 else
+	 		 			 return 0;
 			case 4 : ev = new CnSEvent(CnSNodeAnnotationManager.GET_ANNOTATED_CLUSTERS, CnSEventManager.ANNOTATION_MANAGER);
 					 ev.addParameter(CnSNodeAnnotationManager.ANNOTATION, annotations.elementAt(row));
 					 v = (Vector<?>)(CnSEventManager.handleMessage(ev));

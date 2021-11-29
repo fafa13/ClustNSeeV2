@@ -163,7 +163,7 @@ public class CnSSearchAnnotationComponent implements KeyListener, ActionListener
 		if (word != null) {
 			textField.setText(popupWindow.getSelectedAnnotation().getValue());
 			popupWindow.setVisible(false);
-			ev = new CnSEvent(CnSPartitionPanel.SEARCH, CnSEventManager.ANNOTATION_PANEL);
+			ev = new CnSEvent(CnSPartitionPanel.SEARCH, CnSEventManager.PARTITION_PANEL);
 			ev.addParameter(CnSPartitionPanel.ANNOTATION, popupWindow.getSelectedAnnotation());
 			CnSEventManager.handleMessage(ev);
 			textField.setBackground(Color.GREEN);
@@ -179,7 +179,7 @@ public class CnSSearchAnnotationComponent implements KeyListener, ActionListener
 				textField.setBackground(Color.RED);
 			else
 				textField.setBackground(Color.WHITE);
-			ev = new CnSEvent(CnSPartitionPanel.SEARCH, CnSEventManager.ANNOTATION_PANEL);
+			ev = new CnSEvent(CnSPartitionPanel.SEARCH, CnSEventManager.PARTITION_PANEL);
 			if (ann != null) ev.addParameter(CnSPartitionPanel.ANNOTATION, ann);
 			CnSEventManager.handleMessage(ev);
 		}
@@ -204,7 +204,7 @@ public class CnSSearchAnnotationComponent implements KeyListener, ActionListener
 					textField.setBackground(Color.RED);
 				else
 					textField.setBackground(Color.WHITE);
-				ev = new CnSEvent(CnSPartitionPanel.SEARCH, CnSEventManager.ANNOTATION_PANEL);
+				ev = new CnSEvent(CnSPartitionPanel.SEARCH, CnSEventManager.PARTITION_PANEL);
 				if (ann != null) ev.addParameter(CnSPartitionPanel.ANNOTATION, ann);
 				CnSEventManager.handleMessage(ev);
 			}

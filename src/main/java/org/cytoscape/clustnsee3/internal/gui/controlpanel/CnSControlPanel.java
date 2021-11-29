@@ -20,7 +20,6 @@ import org.cytoscape.application.swing.CytoPanelName;
 import org.cytoscape.clustnsee3.internal.CyActivator;
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
-import org.cytoscape.clustnsee3.internal.gui.annotationpanel.CnSAnnotationPanel;
 import org.cytoscape.clustnsee3.internal.gui.controlpanel.annotationfiletree.nodes.root.CnSAFTreeRootNode;
 import org.cytoscape.clustnsee3.internal.gui.controlpanel.annotationfiletree.CnSAFTreeModel;
 import org.cytoscape.clustnsee3.internal.gui.dialog.CnSAnnotationFileStatsDialog;
@@ -165,8 +164,8 @@ public class CnSControlPanel extends CnSPanel implements CytoPanelComponent {
 							ev.addParameter(CnSNodeAnnotationManager.NETWORK, network);
 							CnSNodeAnnotationFile annotationFile = (CnSNodeAnnotationFile)CnSEventManager.handleMessage(ev);
 						
-							ev = new CnSEvent(CnSAnnotationPanel.INIT_ANNOTATION_PANEL, CnSEventManager.ANNOTATION_PANEL);
-							if (partition != null) ev.addParameter(CnSAnnotationPanel.PARTITION, partition);
+							ev = new CnSEvent(CnSPartitionPanel.INIT_ANNOTATION_PANEL, CnSEventManager.PARTITION_PANEL);
+							if (partition != null) ev.addParameter(CnSPartitionPanel.PARTITION, partition);
 							CnSEventManager.handleMessage(ev);
 							
 							treeModel.addAnnotationFile(rootNode, annotationFile, results[1], results[0]);
@@ -186,7 +185,7 @@ public class CnSControlPanel extends CnSPanel implements CytoPanelComponent {
 				CnSEvent ev = new CnSEvent(CnSNodeAnnotationManager.UNLOAD_ANNOTATIONS, CnSEventManager.ANNOTATION_MANAGER);
 				//ev.addParameter(CnSNodeAnnotationManager.FILE, annotationFile);
 				CnSEventManager.handleMessage(ev);
-				ev = new CnSEvent(CnSPartitionPanel.INIT_ANNOTATION_PANEL, CnSEventManager.ANNOTATION_PANEL);
+				ev = new CnSEvent(CnSPartitionPanel.INIT_ANNOTATION_PANEL, CnSEventManager.PARTITION_PANEL);
 				CnSEventManager.handleMessage(ev);
 				//annotationFileTableModel.removeItem(annotationFile);
 				//annotationFileTableModel.fireTableDataChanged();

@@ -31,8 +31,8 @@ import javax.swing.table.TableRowSorter;
 import org.cytoscape.clustnsee3.internal.analysis.CnSCluster;
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
-import org.cytoscape.clustnsee3.internal.gui.annotationpanel.CnSAnnotationPanel;
 import org.cytoscape.clustnsee3.internal.gui.annotationpanel.partitiontable.search.CnSSearchAnnotationComponent;
+import org.cytoscape.clustnsee3.internal.gui.partitionpanel.CnSPartitionPanel;
 import org.cytoscape.clustnsee3.internal.gui.resultspanel.CnSResultsPanel;
 import org.cytoscape.clustnsee3.internal.gui.widget.CnSButton;
 import org.cytoscape.clustnsee3.internal.gui.widget.CnSPanel;
@@ -103,8 +103,8 @@ public class CnSPartitionTablePanel extends CnSPanel {
 		    	if (cluster != null) ev.addParameter(CnSResultsPanel.CLUSTER_NAME, Integer.parseInt(cluster.getName()));
 		    	CnSEventManager.handleMessage(ev);
 		    	if (cluster != null) {
-		    		ev = new CnSEvent(CnSAnnotationPanel.INIT_ANNOTATION_PANEL, CnSEventManager.ANNOTATION_PANEL);
-		    		ev.addParameter(CnSAnnotationPanel.CLUSTER, cluster);
+		    		ev = new CnSEvent(CnSPartitionPanel.INIT_ANNOTATION_PANEL, CnSEventManager.PARTITION_PANEL);
+		    		ev.addParameter(CnSPartitionPanel.CLUSTER, cluster);
 		    		CnSEventManager.handleMessage(ev);
 		    	}
 		    }

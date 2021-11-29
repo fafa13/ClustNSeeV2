@@ -103,7 +103,7 @@ public class CnSPartitionTablePanel extends CnSPanel {
 		    	if (cluster != null) ev.addParameter(CnSResultsPanel.CLUSTER_NAME, Integer.parseInt(cluster.getName()));
 		    	CnSEventManager.handleMessage(ev);
 		    	if (cluster != null) {
-		    		ev = new CnSEvent(CnSPartitionPanel.INIT_ANNOTATION_PANEL, CnSEventManager.ANNOTATION_PANEL);
+		    		ev = new CnSEvent(CnSPartitionPanel.INIT_ANNOTATION_PANEL, CnSEventManager.PARTITION_PANEL);
 		    		ev.addParameter(CnSPartitionPanel.CLUSTER, cluster);
 		    		CnSEventManager.handleMessage(ev);
 		    	}

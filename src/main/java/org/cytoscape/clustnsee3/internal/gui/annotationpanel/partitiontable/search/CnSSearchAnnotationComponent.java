@@ -30,7 +30,7 @@ import javax.swing.event.DocumentListener;
 
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
-import org.cytoscape.clustnsee3.internal.gui.annotationpanel.CnSAnnotationPanel;
+import org.cytoscape.clustnsee3.internal.gui.partitionpanel.CnSPartitionPanel;
 import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeAnnotation;
 import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeAnnotationManager;
 
@@ -163,8 +163,8 @@ public class CnSSearchAnnotationComponent implements KeyListener, ActionListener
 		if (word != null) {
 			textField.setText(popupWindow.getSelectedAnnotation().getValue());
 			popupWindow.setVisible(false);
-			ev = new CnSEvent(CnSAnnotationPanel.SEARCH, CnSEventManager.ANNOTATION_PANEL);
-			ev.addParameter(CnSAnnotationPanel.ANNOTATION, popupWindow.getSelectedAnnotation());
+			ev = new CnSEvent(CnSPartitionPanel.SEARCH, CnSEventManager.PARTITION_PANEL);
+			ev.addParameter(CnSPartitionPanel.ANNOTATION, popupWindow.getSelectedAnnotation());
 			CnSEventManager.handleMessage(ev);
 			textField.setBackground(Color.GREEN);
 		}
@@ -179,8 +179,8 @@ public class CnSSearchAnnotationComponent implements KeyListener, ActionListener
 				textField.setBackground(Color.RED);
 			else
 				textField.setBackground(Color.WHITE);
-			ev = new CnSEvent(CnSAnnotationPanel.SEARCH, CnSEventManager.ANNOTATION_PANEL);
-			if (ann != null) ev.addParameter(CnSAnnotationPanel.ANNOTATION, ann);
+			ev = new CnSEvent(CnSPartitionPanel.SEARCH, CnSEventManager.PARTITION_PANEL);
+			if (ann != null) ev.addParameter(CnSPartitionPanel.ANNOTATION, ann);
 			CnSEventManager.handleMessage(ev);
 		}
 	}
@@ -204,8 +204,8 @@ public class CnSSearchAnnotationComponent implements KeyListener, ActionListener
 					textField.setBackground(Color.RED);
 				else
 					textField.setBackground(Color.WHITE);
-				ev = new CnSEvent(CnSAnnotationPanel.SEARCH, CnSEventManager.ANNOTATION_PANEL);
-				if (ann != null) ev.addParameter(CnSAnnotationPanel.ANNOTATION, ann);
+				ev = new CnSEvent(CnSPartitionPanel.SEARCH, CnSEventManager.PARTITION_PANEL);
+				if (ann != null) ev.addParameter(CnSPartitionPanel.ANNOTATION, ann);
 				CnSEventManager.handleMessage(ev);
 			}
 		}

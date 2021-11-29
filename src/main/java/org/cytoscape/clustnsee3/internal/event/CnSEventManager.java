@@ -36,8 +36,8 @@ public class CnSEventManager {
 	public static final int NETWORK_MANAGER = 10;
 	public static final int PARTITION_MANAGER = 11;
 	public static final int STYLE_MANAGER = 12;
-	public static final int ANNOTATION_PANEL = 13;
-	public static final int ANNOTATION_MANAGER = 14;
+	public static final int PARTITION_PANEL = 13;
+	public static final int ANNOTATION_MANAGER = 15;
 	
 	private static CnSEventListener plugin;
 	private static CnSEventListener analysisManager;
@@ -51,7 +51,7 @@ public class CnSEventManager {
 	private static CnSEventListener networkManager;
 	private static CnSEventListener partitionManager;
 	private static CnSEventListener styleManager;
-	private static CnSEventListener partitionTablePanel;
+	private static CnSEventListener partitionPanel;
 	private static CnSEventListener nodeAnnotationManager;
 	
 	private static CnSEventManager instance;
@@ -64,7 +64,7 @@ public class CnSEventManager {
 			CnSEventListener _analysisManager, CnSEventListener _clustnseeMenuManager,
 			CnSEventListener _dataPanel, CnSEventListener _resultsPanel, CnSEventListener _algorithmManager, 
 			CnSEventListener _algorithmEngine, CnSEventListener _viewManager, CnSNetworkManager _networkManager, 
-			CnSPartitionManager _partitionManager, CnSStyleManager _styleManager, CnSPartitionPanel _annotationPanel, 
+			CnSPartitionManager _partitionManager, CnSStyleManager _styleManager, CnSPartitionPanel _partitionPanel, 
 			CnSEventListener _nodeAnnotationManager, CyActivator ca) {
 		if (instance == null) {
 			instance = new CnSEventManager();
@@ -79,7 +79,7 @@ public class CnSEventManager {
 			networkManager = _networkManager;
 			partitionManager = _partitionManager;
 			styleManager = _styleManager;
-			partitionTablePanel = _annotationPanel;
+			partitionPanel = _partitionPanel;
 			nodeAnnotationManager = _nodeAnnotationManager;
 			cyActivator = ca;
 		}
@@ -134,8 +134,8 @@ public class CnSEventManager {
 	      		if (styleManager != null) ret = styleManager.cnsEventOccured(event);
 	      		break;
 	      		
-	      	case ANNOTATION_PANEL :
-	      		if (partitionTablePanel != null) ret = partitionTablePanel.cnsEventOccured(event);
+	      	case PARTITION_PANEL :
+	      		if (partitionPanel != null) ret = partitionPanel.cnsEventOccured(event);
 	      		break;
 	      		
 	      	case ANNOTATION_MANAGER :

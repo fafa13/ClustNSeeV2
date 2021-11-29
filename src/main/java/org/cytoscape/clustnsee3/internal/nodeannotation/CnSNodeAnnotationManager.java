@@ -71,7 +71,7 @@ public class CnSNodeAnnotationManager implements CnSEventListener {
 	public static final int CLUSTER = 1008;
 	public static final int ANNOTATION_FILE = 1009;
 	
-	//private HashMap<CnSNodeAnnotation, Vector<CyNode>> annotations;
+	private HashMap<CnSNodeAnnotation, Vector<CyNode>> annotations;
 	private HashMap<CnSNodeAnnotation, Vector<CnSCluster>> annotation2cluster;
 	private HashMap<CyNode, Vector<CnSNodeAnnotation>> cyNodes;
 	private HashMap<CnSCluster, Vector<CnSNodeAnnotation>> clusters;
@@ -82,7 +82,7 @@ public class CnSNodeAnnotationManager implements CnSEventListener {
 	
 	private CnSNodeAnnotationManager() {
 		super();
-		//annotations = new HashMap<CnSNodeAnnotation, Vector<CyNode>>();
+		annotations = new HashMap<CnSNodeAnnotation, Vector<CyNode>>();
 		cyNodes = new HashMap<CyNode, Vector<CnSNodeAnnotation>>();
 		clusters = new HashMap<CnSCluster, Vector<CnSNodeAnnotation>>();
 		annotation2cluster = new HashMap<CnSNodeAnnotation, Vector<CnSCluster>>();
@@ -243,7 +243,7 @@ public class CnSNodeAnnotationManager implements CnSEventListener {
 				
 			case GET_NODES :
 				annotation = (CnSNodeAnnotation)event.getParameter(ANNOTATION);
-				//ret = annotations.get(annotation);
+				ret = annotations.get(annotation);
 				break;
 				
 			case GET_ANNOTATIONS :

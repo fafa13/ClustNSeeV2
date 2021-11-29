@@ -88,7 +88,7 @@ public class CnSAnnotationTablePanel extends CnSPanel {
 		Vector<CnSNodeAnnotation> annotations = (Vector<CnSNodeAnnotation>)CnSEventManager.handleMessage(ev);
 		CnSAnnotationTableModel model = new CnSAnnotationTableModel(annotations, partition);
 		annotationTable.setModel(model);
-		
+		System.err.println("nb annotations = " + annotations.size());
 		RowFilter<CnSAnnotationTableModel,Integer> annotationFilter = new RowFilter<CnSAnnotationTableModel,Integer>() {
 			@Override
 			public boolean include(Entry<? extends CnSAnnotationTableModel, ? extends Integer> entry) {

@@ -107,6 +107,7 @@ public class CnSPartitionPanel extends CnSPanel implements CytoPanelComponent, C
 				break;
 				
 			case INIT_ANNOTATION_PANEL :
+				System.err.println("COUCOU");
 				cluster = (CnSCluster)event.getParameter(CLUSTER);
 				partition = (CnSPartition)event.getParameter(PARTITION);
 				if (cluster != null)

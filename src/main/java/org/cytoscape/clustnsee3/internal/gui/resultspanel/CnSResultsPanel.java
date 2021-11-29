@@ -107,7 +107,7 @@ public class CnSResultsPanel extends CnSPanel implements CytoPanelComponent, CnS
 					CnSPartition partition = (CnSPartition)CnSEventManager.handleMessage(ev);
 					sortPanel.init(partition);
 					nbClustersLabel.setText(String.valueOf(partition.getClusters().size()));
-					ev = new CnSEvent(CnSPartitionPanel.INIT, CnSEventManager.ANNOTATION_PANEL);
+					ev = new CnSEvent(CnSPartitionPanel.INIT, CnSEventManager.PARTITION_PANEL);
 					ev.addParameter(CnSPartitionPanel.PARTITION, partition);
 					CnSEventManager.handleMessage(ev);
 				}
@@ -287,7 +287,7 @@ public class CnSResultsPanel extends CnSPanel implements CytoPanelComponent, CnS
 	    		if (clusterListPanel.size() == 0) {
 	    			commandPanel.setEnabled(false);
 	    			sortPanel.setEnabled(false);
-	    			ev = new CnSEvent(CnSPartitionPanel.CLEAR, CnSEventManager.ANNOTATION_PANEL);
+	    			ev = new CnSEvent(CnSPartitionPanel.CLEAR, CnSEventManager.PARTITION_PANEL);
 	    			CnSEventManager.handleMessage(ev);
 	    		}
 	    		

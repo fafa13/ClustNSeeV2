@@ -590,7 +590,7 @@ UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, SelectedNodesAndEd
 							}
 						}
 						if (cluster != null) {
-							ev = new CnSEvent(CnSPartitionPanel.SELECT_CLUSTER, CnSEventManager.ANNOTATION_PANEL);
+							ev = new CnSEvent(CnSPartitionPanel.SELECT_CLUSTER, CnSEventManager.PARTITION_PANEL);
 							ev.addParameter(CnSPartitionPanel.CLUSTER, cluster);
 							CnSEventManager.handleMessage(ev);
 						}
@@ -616,7 +616,7 @@ UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, SelectedNodesAndEd
 				ev = new CnSEvent(CnSResultsPanel.SELECT_CLUSTER, CnSEventManager.RESULTS_PANEL);
 				CnSEventManager.handleMessage(ev);
 				
-				ev = new CnSEvent(CnSPartitionPanel.SELECT_CLUSTER, CnSEventManager.ANNOTATION_PANEL);
+				ev = new CnSEvent(CnSPartitionPanel.SELECT_CLUSTER, CnSEventManager.PARTITION_PANEL);
 				CnSEventManager.handleMessage(ev);
 				
 				ev = new CnSEvent(CnSInfoPanel.CLEAR, CnSEventManager.INFO_PANEL);
