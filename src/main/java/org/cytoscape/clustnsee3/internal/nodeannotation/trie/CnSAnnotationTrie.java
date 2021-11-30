@@ -16,7 +16,7 @@ package org.cytoscape.clustnsee3.internal.nodeannotation.trie;
 import java.util.Vector;
 
 import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeAnnotation;
-import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeAnnotationFile;
+//import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeAnnotationFile;
 
 /**
  * 
@@ -104,7 +104,7 @@ public class CnSAnnotationTrie {
 		}
 		return n;
 	}
-	public void removeAnnotations(CnSNodeAnnotationFile annotationFile) {
+/*	public void removeAnnotations(CnSNodeAnnotationFile annotationFile) {
 		removeAllAnnotations(annotationFile, root);
 	}
 	
@@ -132,5 +132,5 @@ public class CnSAnnotationTrie {
 			}
 		}
 		return b;
-	}
+	}*/
 }

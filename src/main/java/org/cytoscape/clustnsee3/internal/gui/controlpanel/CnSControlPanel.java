@@ -164,12 +164,11 @@ public class CnSControlPanel extends CnSPanel implements CytoPanelComponent {
 							ev.addParameter(CnSNodeAnnotationManager.NETWORK, network);
 							CnSNodeAnnotationFile annotationFile = (CnSNodeAnnotationFile)CnSEventManager.handleMessage(ev);
 						
-							ev = new CnSEvent(CnSPartitionPanel.INIT_ANNOTATION_PANEL, CnSEventManager.PARTITION_PANEL);
+							ev = new CnSEvent(CnSPartitionPanel.INIT, CnSEventManager.PARTITION_PANEL);
 							if (partition != null) ev.addParameter(CnSPartitionPanel.PARTITION, partition);
 							CnSEventManager.handleMessage(ev);
 							
 							treeModel.addAnnotationFile(rootNode, annotationFile, results[1], results[0]);
-							treeModel.mapAnnotation(network);
 						}
 					}
 					else {

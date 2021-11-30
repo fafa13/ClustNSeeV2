@@ -86,10 +86,21 @@ public class CnSPartitionPanel extends CnSPanel implements CytoPanelComponent, C
 	public Object cnsEventOccured(CnSEvent event) {
 		Object ret = null;
 		CnSCluster cluster;
+		CnSPartition partition;
+		
 		switch (event.getAction()) {
 			case INIT :
-				CnSPartition partition = (CnSPartition)event.getParameter(PARTITION);
-				partitionPanel.init(partition);
+				System.err.println("INIT");
+				cluster = (CnSCluster)event.getParameter(CLUSTER);
+				partition = (CnSPartition)event.getParameter(PARTITION);
+				if (cluster != null)
+					annotationPanel.init(cluster);
+				else if (partition != null) {
+					partitionPanel.init(partition);
+					annotationPanel.init(partition);
+				}
+				else
+					annotationPanel.clear();
 				break;
 			
 			case CLEAR :
@@ -107,7 +118,7 @@ public class CnSPartitionPanel extends CnSPanel implements CytoPanelComponent, C
 				break;
 				
 			case INIT_ANNOTATION_PANEL :
-				System.err.println("COUCOU");
+				System.err.println("INIT_ANNOTATION_PANEL");
 				cluster = (CnSCluster)event.getParameter(CLUSTER);
 				partition = (CnSPartition)event.getParameter(PARTITION);
 				if (cluster != null)

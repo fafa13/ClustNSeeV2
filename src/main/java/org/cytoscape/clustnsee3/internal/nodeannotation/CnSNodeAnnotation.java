@@ -16,31 +16,27 @@ package org.cytoscape.clustnsee3.internal.nodeannotation;
 import java.util.Vector;
 
 import org.cytoscape.clustnsee3.internal.nodeannotation.trie.CnSTrieNode;
-import org.cytoscape.model.CyNode;
 
 /**
  * 
  */
 public class CnSNodeAnnotation {
-	private Vector<CnSNodeAnnotationFile> annotationFiles;
 	private CnSTrieNode trieNode;
-	private Vector<CyNode> targetNodes;
+	private Vector<CnSAnnotationTarget> targets;
 	
-	public CnSNodeAnnotation(CnSTrieNode trieNode, CnSNodeAnnotationFile file) {
+	public CnSNodeAnnotation(CnSTrieNode trieNode) {
 		super();
 		this.trieNode = trieNode;
-		annotationFiles = new Vector<CnSNodeAnnotationFile>();
-		annotationFiles.addElement(file);
-		targetNodes = new Vector<CyNode>();
+		targets = new Vector<CnSAnnotationTarget>();
 	}
-	public void addTargetNode(CyNode node) {
-		targetNodes.addElement(node);
+	public void addTarget(String node, CnSNodeAnnotationFile file) {
+		targets.addElement(new CnSAnnotationTarget(node, file));
 	}
 	public String getValue() {
 		return trieNode.getWord();
 	}
-	public Vector<CyNode> getTargetNodes() {
-		return targetNodes;
+	public Vector<CnSAnnotationTarget> getTargets() {
+		return targets;
 	}
 	public boolean equals(Object toCompare) {
 		String value = getValue();
@@ -52,12 +48,6 @@ public class CnSNodeAnnotation {
 	
 	public int hashCode() {
 		return trieNode.hashCode();
-	}
-	public Vector<CnSNodeAnnotationFile> getAnnotationFiles() {
-		return annotationFiles;
-	}
-	public void addAnnotationfile(CnSNodeAnnotationFile file) {
-		annotationFiles.addElement(file);
 	}
 	public String toString() {
 		return getValue();

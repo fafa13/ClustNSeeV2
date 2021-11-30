@@ -74,13 +74,4 @@ public class CnSAFTreeModel extends CnSPanelTreeModel {
 		}
 		return false;
 	}
-
-	/**
-	 * 
-	 * @param
-	 * @return
-	 */
-	public void mapAnnotation(CyNetwork network) {
-		
-	}
 }

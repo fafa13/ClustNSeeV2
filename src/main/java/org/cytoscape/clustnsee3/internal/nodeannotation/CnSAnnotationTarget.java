@@ -2,7 +2,7 @@
 /* Copyright (C) 2018 TAGC, Luminy, Marseille
 /*
 /* @author Fabrice Lopez (TAGC/BCF, Luminy, Marseille)
-/* @date 3 févr. 2021
+/* @date 30 nov. 2021
 /*
 /* with contributions from:
 /* Lionel Spinelli (CIML/TAGC, Luminy, Marseille)
@@ -11,17 +11,23 @@
 /* Philippe Gambette (LIGM, Marne-la-Vallée)
  */
 
-package org.cytoscape.clustnsee3.internal.gui.annotationpanel.annotationtable;
-
-import javax.swing.JTable;
+package org.cytoscape.clustnsee3.internal.nodeannotation;
 
 /**
  * 
  */
-public class CnSAnnotationTable extends JTable {
-	private static final long serialVersionUID = -5658527590778206930L;
-
-	public CnSAnnotationTable() {
-		super();
+public class CnSAnnotationTarget {
+	private CnSNodeAnnotationFile file;
+	String target;
+	
+	public CnSAnnotationTarget(String node, CnSNodeAnnotationFile file) {
+		target = node;
+		this.file = file;
+	}
+	public String getTarget() {
+		return target;
+	}
+	public CnSNodeAnnotationFile getFile() {
+		return file;
 	}
 }

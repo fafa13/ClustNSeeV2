@@ -14,31 +14,59 @@
 package org.cytoscape.clustnsee3.internal.nodeannotation;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Set;
 import java.util.Vector;
+
+import org.cytoscape.clustnsee3.internal.nodeannotation.trie.CnSTrieNode;
 
 /**
  * 
  */
 public class CnSNodeAnnotationFile {
 	private File file;
-	private Vector<CnSNodeAnnotation> annotations;
+	private HashMap<String, Vector<CnSTrieNode>> rawAnnotations;
+	private HashMap<CnSTrieNode, Vector<String>> rawTargets;
 	
 	public CnSNodeAnnotationFile(File file) {
 		super();
 		this.file = file;
-		annotations = new Vector<CnSNodeAnnotation>();
+		rawAnnotations = new HashMap<String, Vector<CnSTrieNode>>();
+		rawTargets = new HashMap<CnSTrieNode, Vector<String>>();
 	}
 	
 	public File getFile() { 
 		return file;
 	}
-	public Vector<CnSNodeAnnotation> getAnnotations() {
-		return annotations;
+	public Vector<CnSTrieNode> getAnnotations(String target) {
+		return rawAnnotations.get(target);
+	}
+	public Vector<String> getTargets(CnSTrieNode annotation) {
+		return rawTargets.get(annotation);
+	}
+	public Set<String> getAllTargets() {
+		return rawAnnotations.keySet();
+	}
+	public Set<CnSTrieNode> getAllAnnotations() {
+		return rawTargets.keySet();
 	}
 	public String toString() {
 		return file.getAbsolutePath();
 	}
-	public void addAnnotation(CnSNodeAnnotation annotation) {
-		if (!annotations.contains(annotation)) annotations.addElement(annotation);
+	public void addElement(CnSTrieNode annotation, String target) {
+		Vector<String> v = rawTargets.get(annotation);
+		if (v == null) {
+			v = new Vector<String>();
+			v.addElement(target);
+			rawTargets.put(annotation, v);
+		}
+		else if (!v.contains(target)) v.addElement(target);
+		Vector<CnSTrieNode> v2 = rawAnnotations.get(target);
+		if (v2 == null) {
+			v2 = new Vector<CnSTrieNode>();
+			v2.addElement(annotation);
+			rawAnnotations.put(target, v2);
+		}
+		else if (!v2.contains(annotation)) v2.addElement(annotation);
 	}
 }
