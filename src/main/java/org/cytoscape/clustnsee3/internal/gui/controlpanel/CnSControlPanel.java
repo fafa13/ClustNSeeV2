@@ -148,28 +148,16 @@ public class CnSControlPanel extends CnSPanel implements CytoPanelComponent {
 					
 				if (dialog.getExitOption() == CnSLoadAnnotationFileDialog.OK_OPTION) {
 					if (! treeModel.contains(dialog.getSelectedFile())) {
-						ev = new CnSEvent(CnSNodeAnnotationManager.PARSE_ANNOTATIONS, CnSEventManager.ANNOTATION_MANAGER);
+						ev = new CnSEvent(CnSNodeAnnotationManager.LOAD_ANNOTATIONS, CnSEventManager.ANNOTATION_MANAGER);
 						ev.addParameter(CnSNodeAnnotationManager.FILE, dialog.getSelectedFile());
 						ev.addParameter(CnSNodeAnnotationManager.FROM_LINE, dialog.getFromLine());
-						ev.addParameter(CnSNodeAnnotationManager.NETWORK, network);
-						int[] results = (int[])CnSEventManager.handleMessage(ev);
+						CnSNodeAnnotationFile annotationFile = (CnSNodeAnnotationFile)CnSEventManager.handleMessage(ev);
 						
-						CnSAnnotationFileStatsDialog statsDialog = new CnSAnnotationFileStatsDialog(results[0], results[1], results[2]);
-						statsDialog.setLocation((screenSize.width - statsDialog.getWidth()) / 2, (screenSize.height - statsDialog.getHeight()) / 2);
-						statsDialog.setVisible(true);
-						if (statsDialog.getExitOption() == CnSAnnotationFileStatsDialog.OK_OPTION) {
-							ev = new CnSEvent(CnSNodeAnnotationManager.LOAD_ANNOTATIONS, CnSEventManager.ANNOTATION_MANAGER);
-							ev.addParameter(CnSNodeAnnotationManager.FILE, dialog.getSelectedFile());
-							ev.addParameter(CnSNodeAnnotationManager.FROM_LINE, dialog.getFromLine());
-							ev.addParameter(CnSNodeAnnotationManager.NETWORK, network);
-							CnSNodeAnnotationFile annotationFile = (CnSNodeAnnotationFile)CnSEventManager.handleMessage(ev);
+						ev = new CnSEvent(CnSPartitionPanel.INIT, CnSEventManager.PARTITION_PANEL);
+						if (partition != null) ev.addParameter(CnSPartitionPanel.PARTITION, partition);
+						CnSEventManager.handleMessage(ev);
 						
-							ev = new CnSEvent(CnSPartitionPanel.INIT, CnSEventManager.PARTITION_PANEL);
-							if (partition != null) ev.addParameter(CnSPartitionPanel.PARTITION, partition);
-							CnSEventManager.handleMessage(ev);
-							
-							treeModel.addAnnotationFile(rootNode, annotationFile, results[1], results[0]);
-						}
+						treeModel.addAnnotationFile(rootNode, annotationFile, annotationFile.getAllAnnotations().size(), annotationFile.getAllTargets().size());
 					}
 					else {
 						JOptionPane.showMessageDialog(null, "Annotation file " + dialog.getSelectedFile().getName() + " is already loaded.");

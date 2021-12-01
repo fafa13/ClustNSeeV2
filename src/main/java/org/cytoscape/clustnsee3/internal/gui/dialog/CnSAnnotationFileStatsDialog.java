@@ -49,7 +49,7 @@ public class CnSAnnotationFileStatsDialog extends JDialog {
 	public void initGraphics() {
 		CnSPanel mainPanel = new CnSPanel();
 		setContentPane(mainPanel);
-		setTitle("Import annotations");
+		setTitle("Annotate network");
 		
 		CnSPanel p1 = new CnSPanel();
 		p1.addComponent(new JLabel("The annotation file contains"), 0, 0, 1, 1, 0.0, 0.0, CnSPanel.WEST, CnSPanel.NONE, 5, 5, 0, 0, 0, 0);
@@ -88,11 +88,10 @@ public class CnSAnnotationFileStatsDialog extends JDialog {
 		mainPanel.addComponent(p3, 0, 2, 1, 1, 1.0, 1.0, CnSPanel.CENTER, CnSPanel.HORIZONTAL, 0, 5, 0, 5, 0, 0);
 		
 		CnSPanel commandPanel = new CnSPanel();
-		importButton = new CnSButton("Import");
+		importButton = new CnSButton("Annotate");
 		commandPanel.addComponent(importButton, 0, 0, 1, 1, 0.0, 0.0, CnSPanel.CENTER, CnSPanel.NONE, 5, 5, 5, 0, 0, 0);
 		cancelButton = new CnSButton("Cancel");
 		commandPanel.addComponent(cancelButton, 1, 0, 1, 1, 0.0, 0.0, CnSPanel.CENTER, CnSPanel.NONE, 5, 5, 5, 5, 0, 0);
-		//commandPanel.setBorder(BorderFactory.createEtchedBorder());
 		
 		mainPanel.addComponent(commandPanel, 0, 3, 1, 1, 1.0, 1.0, CnSPanel.EAST, CnSPanel.NONE, 10, 5, 5, 10, 0, 0);
 		pack();

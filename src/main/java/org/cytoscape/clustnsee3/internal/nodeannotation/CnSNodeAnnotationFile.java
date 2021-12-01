@@ -25,18 +25,23 @@ import org.cytoscape.clustnsee3.internal.nodeannotation.trie.CnSTrieNode;
  */
 public class CnSNodeAnnotationFile {
 	private File file;
+	private int fromLine;
 	private HashMap<String, Vector<CnSTrieNode>> rawAnnotations;
 	private HashMap<CnSTrieNode, Vector<String>> rawTargets;
 	
-	public CnSNodeAnnotationFile(File file) {
+	public CnSNodeAnnotationFile(File file, int fromLine) {
 		super();
 		this.file = file;
+		this.fromLine = fromLine;
 		rawAnnotations = new HashMap<String, Vector<CnSTrieNode>>();
 		rawTargets = new HashMap<CnSTrieNode, Vector<String>>();
 	}
 	
 	public File getFile() { 
 		return file;
+	}
+	public int getFromLine() {
+		return fromLine;
 	}
 	public Vector<CnSTrieNode> getAnnotations(String target) {
 		return rawAnnotations.get(target);

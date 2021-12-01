@@ -113,6 +113,7 @@ public class CnSAnnotationTableModel extends AbstractTableModel {
 			 		 ev = new CnSEvent(CnSNodeAnnotationManager.GET_NODES, CnSEventManager.ANNOTATION_MANAGER);
 					 ev.addParameter(CnSNodeAnnotationManager.ANNOTATION, annotations.elementAt(row));
 					 annotation_count = ((Vector<?>)CnSEventManager.handleMessage(ev)).size();
+					 //System.err.println(annotation_count + " / " + node_count + " = " + (int)(annotation_count * 1000D / node_count) / 1000D);
 					 return (int)(annotation_count * 1000D / node_count) / 1000D;
 			case 3 : ev = new CnSEvent(CnSNodeAnnotationManager.GET_NODES, CnSEventManager.ANNOTATION_MANAGER);
 	 		 		 ev.addParameter(CnSNodeAnnotationManager.ANNOTATION, annotations.elementAt(row));

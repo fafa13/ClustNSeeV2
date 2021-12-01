@@ -114,6 +114,26 @@ public class CnSAnnotationTablePanel extends CnSPanel {
 	public void init(CnSCluster cluster) {
 		((CnSAnnotationTableModel)annotationTable.getModel()).setSelectedCluster(cluster);
 		((CnSAnnotationTableModel)annotationTable.getModel()).fireTableDataChanged();
+		RowFilter<CnSAnnotationTableModel,Integer> annotationFilter = new RowFilter<CnSAnnotationTableModel,Integer>() {
+			@Override
+			public boolean include(Entry<? extends CnSAnnotationTableModel, ? extends Integer> entry) {
+				if (viewAllCheckBox.isSelected()) 
+					return true;
+				else {
+					CnSAnnotationTableModel model = entry.getModel();
+					CnSCluster cluster = model.getSelectedCluster();
+					if (cluster == null) return true;
+					CnSEvent ev = new CnSEvent(CnSNodeAnnotationManager.GET_CLUSTER_ANNOTATIONS, CnSEventManager.ANNOTATION_MANAGER);
+					ev.addParameter(CnSNodeAnnotationManager.CLUSTER, cluster);
+					Vector<?> clusterAnnotations = (Vector<?>)CnSEventManager.handleMessage(ev);
+					return clusterAnnotations.contains(model.getAnnotation(entry.getIdentifier()));
+				}
+			}
+		};
+		TableRowSorter<CnSAnnotationTableModel> sorter = new TableRowSorter<CnSAnnotationTableModel>((CnSAnnotationTableModel)(annotationTable.getModel()));
+		sorter.setRowFilter(annotationFilter);
+		sorter.setMaxSortKeys(1);
+		annotationTable.setRowSorter(sorter);
 	}
 	
 	public void clear() {

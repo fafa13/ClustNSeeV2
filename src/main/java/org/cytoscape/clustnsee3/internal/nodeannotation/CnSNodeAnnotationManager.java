@@ -33,6 +33,7 @@ import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventListener;import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
 import org.cytoscape.clustnsee3.internal.nodeannotation.trie.CnSAnnotationTrie;
 import org.cytoscape.clustnsee3.internal.nodeannotation.trie.CnSTrieNode;
+import org.cytoscape.clustnsee3.internal.partition.CnSPartitionManager;
 import org.cytoscape.model.CyNetwork;
 import org.cytoscape.model.CyNode;
 import org.cytoscape.model.CyRow;
@@ -174,9 +175,9 @@ public class CnSNodeAnnotationManager implements CnSEventListener {
 			
 			case LOAD_ANNOTATIONS :
 				inputFile = (File)event.getParameter(FILE);
-				CnSNodeAnnotationFile aif = new CnSNodeAnnotationFile(inputFile);
-				
 				fromLine = (Integer)event.getParameter(FROM_LINE);
+				CnSNodeAnnotationFile aif = new CnSNodeAnnotationFile(inputFile, fromLine);
+				
 				files.addElement(aif);
 				
 				System.err.println("Importing annotations from " + aif.getFile().getName());
@@ -314,40 +315,20 @@ public class CnSNodeAnnotationManager implements CnSEventListener {
 				System.err.println("ANNOTATE_NETWORK");
 				af = (CnSNodeAnnotationFile)event.getParameter(ANNOTATION_FILE);
 				network = (CyNetwork)event.getParameter(NETWORK);
-				/*for (CyNode cn : network.getNodeList()) {
-					Vector<CnSNodeAnnotation> anns = cyNodes.get(cn);
-					if (anns != null) {/*for (CyNode cn : network.getNodeList()) {
-					Vector<CnSNodeAnnotation> anns = cyNodes.get(cn);
-					if (anns != null) {
-						System.err.println(network.getRow(cn).get("shared name", String.class).toString());
-						for (CnSNodeAnnotation toto : anns)
-							System.err.println("  " + toto.getValue());
-					}
-				
-						System.err.println(network.getRow(cn).get("shared name", String.class).toString());
-						for (CnSNodeAnnotation toto : anns)
-							System.err.println("  " + toto.getValue());
-					}
-				}*/
 				List<String> netNodes = network.getDefaultNodeTable().getColumn("shared name").getValues(String.class);
-				System.err.println("net nodes : " + netNodes.size() + " : " + netNodes.iterator().next());
 				
 				Set<CyNode> nodes;
+				CyNode cn;
 				for (CnSNodeAnnotation na : annotations.keySet()) {
-					//System.err.println(na.getValue() + " : " + na.getTargets().size() + " targets");
 					for (CnSAnnotationTarget t : na.getTargets()) {
-						if (netNodes.contains(t.getTarget())) {
-							nodes = getNodesWithValue(network, network.getDefaultNodeTable(), "shared name", t.getTarget());
-							annotations.get(na).addElement(nodes.iterator().next());
-							System.err.println("annotating " + t.getTarget() + " with " + na.getValue());
-						}
+						if (t.getFile() == af)
+							if (netNodes.contains(t.getTarget())) {
+								nodes = getNodesWithValue(network, network.getDefaultNodeTable(), "shared name", t.getTarget());
+								cn = nodes.iterator().next();
+								if (!annotations.get(na).contains(cn)) annotations.get(na).addElement(cn);
+							}
 					}
-					if (annotations.get(na).size() > 0)
-						System.err.println(na.getValue() + " -> " + annotations.get(na).size());
 				}
-				//nodes = annotations.get(annotation);
-				//if (! nodes.contains(node)) nodes.addElement(node);
-				//w.setAnnotation(annotation);
 				makeCyNodesHashMap();
 				makeClustersHashMap();
 				
@@ -443,6 +424,7 @@ public class CnSNodeAnnotationManager implements CnSEventListener {
 			while (it.hasNext()) {
 				ann = it.next();
 				nodeAnnotation = new CnSNodeAnnotation(ann);
+				ann.setAnnotation(nodeAnnotation);
 				for (String tar : file.getTargets(ann)) nodeAnnotation.addTarget(tar, file);
 				annotations.put(nodeAnnotation, new Vector<CyNode>());
 			}
@@ -450,9 +432,9 @@ public class CnSNodeAnnotationManager implements CnSEventListener {
 	}
 	
 	private void makeCyNodesHashMap() {
-		/*cyNodes.clear();
-		for (CnSNodeAnnotation annotation : rawAnnotations.values()) {
-			Vector<CyNode> nodes = annotation.getTargetNodes();
+		cyNodes.clear();
+		for (CnSNodeAnnotation annotation : annotations.keySet()) {
+			Vector<CyNode> nodes = annotations.get(annotation);
 			for (CyNode node : nodes) {
 				Vector<CnSNodeAnnotation> a = cyNodes.get(node);
 				if (a == null) {
@@ -463,11 +445,11 @@ public class CnSNodeAnnotationManager implements CnSEventListener {
 				else if (!a.contains(annotation))
 					a.addElement(annotation);
 			}
-		}*/
+		}
 	}
 	
 	private void makeClustersHashMap() {
-		/*CnSEvent ev = new CnSEvent(CnSPartitionManager.GET_ALL_CLUSTERS, CnSEventManager.PARTITION_MANAGER);
+		CnSEvent ev = new CnSEvent(CnSPartitionManager.GET_ALL_CLUSTERS, CnSEventManager.PARTITION_MANAGER);
 		Vector<CnSCluster> all_clusters = (Vector<CnSCluster>)CnSEventManager.handleMessage(ev);
 		clusters.clear();
 		for (CnSCluster cl : all_clusters)
@@ -489,7 +471,7 @@ public class CnSNodeAnnotationManager implements CnSEventListener {
 							}
 				}
 				clusters.put(cl, annot);
-			}*/
+			}
 	}
 	public void printAnnotations() {
 		for (CnSNodeAnnotation key : annotations.keySet()) {
