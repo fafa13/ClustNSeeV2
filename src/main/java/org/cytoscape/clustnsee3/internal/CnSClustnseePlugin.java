@@ -86,7 +86,6 @@ public class CnSClustnseePlugin implements CnSEventListener {
 		partitionManager = CnSPartitionManager.getInstance();
 		styleManager = CnSStyleManager.getInstance();
 		nodeAnnotationManager = CnSNodeAnnotationManager.getInstance();
-		
 		CnSEventManager.getCnsEventManager(this, analysisManager, menuManager, dataPanel, resultsPanel, algorithmManager, 
 				algorithmEngine, viewManager, networkManager, partitionManager, styleManager, partitionPanel, nodeAnnotationManager, ca);
 		CnSEvent ev = new CnSEvent(CnSAlgorithmManager.INIT, CnSEventManager.ALGORITHM_MANAGER);
@@ -98,7 +97,8 @@ public class CnSClustnseePlugin implements CnSEventListener {
 	public void registerServices() {
 		CnSEvent ev = new CnSEvent(CnSClustnseePlugin.GET_PANEL, CnSEventManager.CLUSTNSEE_PLUGIN);
 		controlPanel = (CnSControlPanel)CnSEventManager.handleMessage(ev);
-
+		CnSEventManager.addControlPanel(controlPanel);
+		
 		ref = new Vector<ServiceRegistration>();
 		ref.addElement(bc.registerService(CytoPanelComponent.class.getName(), controlPanel, new Properties()));
 		ref.addElement(bc.registerService(CytoPanelComponent.class.getName(), resultsPanel, new Properties()));

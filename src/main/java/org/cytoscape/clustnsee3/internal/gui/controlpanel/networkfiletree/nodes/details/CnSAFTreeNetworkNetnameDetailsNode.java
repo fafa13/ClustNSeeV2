@@ -2,7 +2,7 @@
 /* Copyright (C) 2018 TAGC, Luminy, Marseille
 /*
 /* @author Fabrice Lopez (TAGC/BCF, Luminy, Marseille)
-/* @date 23 mars 2021
+/* @date 2 déc. 2021
 /*
 /* with contributions from:
 /* Lionel Spinelli (CIML/TAGC, Luminy, Marseille)
@@ -11,27 +11,24 @@
 /* Philippe Gambette (LIGM, Marne-la-Vallée)
  */
 
-package org.cytoscape.clustnsee3.internal.gui.controlpanel.networkfiletree.nodes.netname;
+package org.cytoscape.clustnsee3.internal.gui.controlpanel.networkfiletree.nodes.details;
 
 import java.awt.event.ActionEvent;
 import java.util.Hashtable;
 
+import org.cytoscape.clustnsee3.internal.gui.controlpanel.annotationfiletree.nodes.details.CnSAFTreeDetailsNodePanel;
 import org.cytoscape.clustnsee3.internal.gui.widget.paneltree.CnSPanelTreeNode;
-import org.cytoscape.model.CyNetwork;
 
 /**
  * 
  */
-public class CnSAFTreeNetworkNetnameNode extends CnSPanelTreeNode {
-	public final static int NETWORK_NAME = 1;
-	public static final int NETWORK = 2;
+public class CnSAFTreeNetworkNetnameDetailsNode extends CnSPanelTreeNode {
 
-	public CnSAFTreeNetworkNetnameNode(CnSPanelTreeNode parent, Hashtable<Integer, Object> v) {
+	public CnSAFTreeNetworkNetnameDetailsNode(CnSPanelTreeNode parent, Hashtable<Integer, Object> v) {
 		super(parent, v);
-		panel = new CnSAFTreeNetworkNetnameNodePanel(((CyNetwork)v.get(NETWORK)).toString());
-		panel.initGraphics();
+		panel = new CnSAFTreeNetworkNetnameDetailsNodePanel(v);
 	}
-
+	
 	/* (non-Javadoc)
 	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
 	 */
@@ -40,4 +37,5 @@ public class CnSAFTreeNetworkNetnameNode extends CnSPanelTreeNode {
 		// TODO Auto-generated method stub
 		
 	}
+
 }

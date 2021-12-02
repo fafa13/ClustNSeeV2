@@ -22,14 +22,14 @@ import org.cytoscape.clustnsee3.internal.gui.widget.paneltree.CnSPanelTreePanel;
 /**
  * 
  */
-public class CnSAFTreeNetworksNetnameNodePanel extends CnSPanelTreePanel {
+public class CnSAFTreeNetworkNetnameNodePanel extends CnSPanelTreePanel {
 	private static final long serialVersionUID = 8723572659604754855L;
 	public static final int TITLE = 1;
 	public static final int DATA = 2;
 	
 	private String value;
 	
-	public CnSAFTreeNetworksNetnameNodePanel(String networkName) {
+	public CnSAFTreeNetworkNetnameNodePanel(String networkName) {
 		super();
 		value = networkName;
 	}

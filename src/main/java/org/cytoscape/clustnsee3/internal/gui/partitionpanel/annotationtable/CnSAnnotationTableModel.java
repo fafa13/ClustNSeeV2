@@ -47,6 +47,12 @@ public class CnSAnnotationTableModel extends AbstractTableModel {
 		this.partition = partition;
 	}
 	
+	public CnSAnnotationTableModel(Vector<CnSNodeAnnotation> annotations) {
+		super();
+		this.annotations = annotations;
+		selectedCluster = null;
+		partition = null;
+	}
 	public void setSelectedCluster(CnSCluster cluster) {
 		selectedCluster = cluster;
 	}
@@ -104,34 +110,44 @@ public class CnSAnnotationTableModel extends AbstractTableModel {
 		int annotated_node_count;
 		int annotated_cluster_count = 0;
 		Vector<?> v;
+				
 		switch(column) {
-			case 0 : return annotations.elementAt(row).getValue();
-			case 1 : ev = new CnSEvent(CnSNodeAnnotationManager.GET_NODES, CnSEventManager.ANNOTATION_MANAGER);
-					 ev.addParameter(CnSNodeAnnotationManager.ANNOTATION, annotations.elementAt(row));
-					 return ((Vector<?>)CnSEventManager.handleMessage(ev)).size();
-			case 2 : node_count = partition.getInputNetwork().getNodeCount();
-			 		 ev = new CnSEvent(CnSNodeAnnotationManager.GET_NODES, CnSEventManager.ANNOTATION_MANAGER);
-					 ev.addParameter(CnSNodeAnnotationManager.ANNOTATION, annotations.elementAt(row));
-					 annotation_count = ((Vector<?>)CnSEventManager.handleMessage(ev)).size();
-					 //System.err.println(annotation_count + " / " + node_count + " = " + (int)(annotation_count * 1000D / node_count) / 1000D);
-					 return (int)(annotation_count * 1000D / node_count) / 1000D;
-			case 3 : ev = new CnSEvent(CnSNodeAnnotationManager.GET_NODES, CnSEventManager.ANNOTATION_MANAGER);
-	 		 		 ev.addParameter(CnSNodeAnnotationManager.ANNOTATION, annotations.elementAt(row));
-	 		 		 annotation_count = ((Vector<?>)CnSEventManager.handleMessage(ev)).size();
-	 		 		 ev = new CnSEvent(CnSNodeAnnotationManager.GET_ANNOTATED_NODES, CnSEventManager.ANNOTATION_MANAGER);
-	 		 		 annotated_node_count = ((Vector<?>)CnSEventManager.handleMessage(ev)).size();
-	 		 		 return (int)(annotation_count * 1000D / annotated_node_count) / 1000D;
-			case 4 : ev = new CnSEvent(CnSNodeAnnotationManager.GET_ANNOTATED_CLUSTERS, CnSEventManager.ANNOTATION_MANAGER);
-					 ev.addParameter(CnSNodeAnnotationManager.ANNOTATION, annotations.elementAt(row));
-					 v = (Vector<?>)(CnSEventManager.handleMessage(ev));
-					 if (v != null) annotated_cluster_count = v.size();
-					 return annotated_cluster_count;
-			case 5 : ev = new CnSEvent(CnSNodeAnnotationManager.GET_ANNOTATED_CLUSTERS, CnSEventManager.ANNOTATION_MANAGER);
-			 		 ev.addParameter(CnSNodeAnnotationManager.ANNOTATION, annotations.elementAt(row));
-			 		 v = (Vector<?>)(CnSEventManager.handleMessage(ev));
-			 		 if (v != null) annotated_cluster_count = v.size();
-			 		 return (int)(annotated_cluster_count * 1000D / partition.getClusters().size()) / 1000D;
-			 
+			case 0 :	return annotations.elementAt(row).getValue();
+			case 1 : 	ev = new CnSEvent(CnSNodeAnnotationManager.GET_NODES, CnSEventManager.ANNOTATION_MANAGER);
+					 	ev.addParameter(CnSNodeAnnotationManager.ANNOTATION, annotations.elementAt(row));
+					 	return ((Vector<?>)CnSEventManager.handleMessage(ev)).size();
+			case 2 : 	if (partition != null) {
+							node_count = partition.getInputNetwork().getNodeCount();
+							ev = new CnSEvent(CnSNodeAnnotationManager.GET_NODES, CnSEventManager.ANNOTATION_MANAGER);
+							ev.addParameter(CnSNodeAnnotationManager.ANNOTATION, annotations.elementAt(row));
+							annotation_count = ((Vector<?>)CnSEventManager.handleMessage(ev)).size();
+							return (int)(annotation_count * 1000D / node_count) / 1000D;
+					 	}
+						else 
+							return null;
+					 	
+			case 3 : 	ev = new CnSEvent(CnSNodeAnnotationManager.GET_NODES, CnSEventManager.ANNOTATION_MANAGER);
+	 		 		 	ev.addParameter(CnSNodeAnnotationManager.ANNOTATION, annotations.elementAt(row));
+	 		 		 	annotation_count = ((Vector<?>)CnSEventManager.handleMessage(ev)).size();
+	 		 		 	ev = new CnSEvent(CnSNodeAnnotationManager.GET_ANNOTATED_NODES, CnSEventManager.ANNOTATION_MANAGER);
+	 		 		 	annotated_node_count = ((Vector<?>)CnSEventManager.handleMessage(ev)).size();
+	 		 		 	return Double.valueOf((int)(annotation_count * 1000D / annotated_node_count) / 1000D);
+	 		 		 	
+			case 4 : 	ev = new CnSEvent(CnSNodeAnnotationManager.GET_ANNOTATED_CLUSTERS, CnSEventManager.ANNOTATION_MANAGER);
+					 	ev.addParameter(CnSNodeAnnotationManager.ANNOTATION, annotations.elementAt(row));
+					 	v = (Vector<?>)(CnSEventManager.handleMessage(ev));
+					 	if (v != null) annotated_cluster_count = v.size();
+					 	return annotated_cluster_count;
+					 	
+			case 5 : 	if (partition != null) {
+							ev = new CnSEvent(CnSNodeAnnotationManager.GET_ANNOTATED_CLUSTERS, CnSEventManager.ANNOTATION_MANAGER);
+							ev.addParameter(CnSNodeAnnotationManager.ANNOTATION, annotations.elementAt(row));
+							v = (Vector<?>)(CnSEventManager.handleMessage(ev));
+							if (v != null) annotated_cluster_count = v.size();
+							return (int)(annotated_cluster_count * 1000D / partition.getClusters().size()) / 1000D;
+						}
+						else 
+							return null;
 		}
 		return null;
 	}

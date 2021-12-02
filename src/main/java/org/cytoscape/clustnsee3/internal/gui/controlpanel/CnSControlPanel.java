@@ -19,10 +19,13 @@ import org.cytoscape.application.swing.CytoPanelComponent;
 import org.cytoscape.application.swing.CytoPanelName;
 import org.cytoscape.clustnsee3.internal.CyActivator;
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
+import org.cytoscape.clustnsee3.internal.event.CnSEventListener;
 import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
+import org.cytoscape.clustnsee3.internal.gui.controlpanel.annotationfiletree.nodes.details.CnSAFTreeDetailsNode;
+import org.cytoscape.clustnsee3.internal.gui.controlpanel.annotationfiletree.nodes.details.CnSAFTreeDetailsNodePanel;
+import org.cytoscape.clustnsee3.internal.gui.controlpanel.annotationfiletree.nodes.file.CnSAFTreeFileNode;
 import org.cytoscape.clustnsee3.internal.gui.controlpanel.annotationfiletree.nodes.root.CnSAFTreeRootNode;
 import org.cytoscape.clustnsee3.internal.gui.controlpanel.annotationfiletree.CnSAFTreeModel;
-import org.cytoscape.clustnsee3.internal.gui.dialog.CnSAnnotationFileStatsDialog;
 import org.cytoscape.clustnsee3.internal.gui.dialog.CnSLoadAnnotationFileDialog;
 import org.cytoscape.clustnsee3.internal.gui.partitionpanel.CnSPartitionPanel;
 import org.cytoscape.clustnsee3.internal.gui.resultspanel.CnSResultsPanel;
@@ -39,8 +42,14 @@ import org.cytoscape.model.CyNetwork;
 import org.cytoscape.work.TaskIterator;
 import org.cytoscape.work.swing.DialogTaskManager;
 
-public class CnSControlPanel extends CnSPanel implements CytoPanelComponent {
+public class CnSControlPanel extends CnSPanel implements CytoPanelComponent, CnSEventListener  {
 	private static final long serialVersionUID = -5798886682673421450L;
+	
+	public static final int ADD_MAPPED_NETWORK = 1;
+	
+	public static final int ANNOTATION_FILE = 1001;
+	public static final int NETWORK = 1002;
+	public static final int TREE_FILE_NODE = 1003;
 
 	private CnSControlScopePanel scopePanel;
 	private CnSControlAlgorithmPanel algorithmPanel;
@@ -139,12 +148,6 @@ public class CnSControlPanel extends CnSPanel implements CytoPanelComponent {
 				dialog.setLocation((screenSize.width - dialog.getWidth()) / 2, (screenSize.height - dialog.getHeight()) / 2);
 				dialog.setVisible(true);
 				ev = new CnSEvent(CyActivator.GET_APPLICATION_MANAGER, CnSEventManager.CY_ACTIVATOR);
-				CyApplicationManager cam = (CyApplicationManager)CnSEventManager.handleMessage(ev);
-				CyNetwork network;
-				if (partition == null)
-					network = cam.getCurrentNetwork();
-				else
-					network = partition.getInputNetwork();
 					
 				if (dialog.getExitOption() == CnSLoadAnnotationFileDialog.OK_OPTION) {
 					if (! treeModel.contains(dialog.getSelectedFile())) {
@@ -180,7 +183,23 @@ public class CnSControlPanel extends CnSPanel implements CytoPanelComponent {
 			}
 		});
 	}
-
+	
+	/* (non-Javadoc)
+	 * @see org.cytoscape.clustnsee3.internal.event.CnSEventListener#cnsEventOccured(org.cytoscape.clustnsee3.internal.event.CnSEvent)
+	 */
+	@Override
+	public Object cnsEventOccured(CnSEvent event) {
+		switch(event.getAction()) {
+			case ADD_MAPPED_NETWORK:
+				CyNetwork network = (CyNetwork)event.getParameter(NETWORK);
+				CnSNodeAnnotationFile annFile = (CnSNodeAnnotationFile)event.getParameter(ANNOTATION_FILE);
+				CnSAFTreeFileNode tfn = (CnSAFTreeFileNode)event.getParameter(TREE_FILE_NODE);
+				treeModel.addMappedNetwork(annFile, network, ((CnSAFTreeDetailsNodePanel)((CnSAFTreeDetailsNode)tfn.getChildAt(0)).getPanel()).getNetworksRootNode(), 0, 0);
+				break;
+		}
+		return null;
+	}
+	
 	@Override
 	public Component getComponent() {
 		return this;

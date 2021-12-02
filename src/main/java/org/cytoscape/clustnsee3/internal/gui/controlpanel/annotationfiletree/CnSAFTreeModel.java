@@ -19,7 +19,11 @@ import java.util.Hashtable;
 import java.util.Vector;
 
 import org.cytoscape.clustnsee3.internal.gui.controlpanel.annotationfiletree.nodes.details.CnSAFTreeDetailsNode;
+import org.cytoscape.clustnsee3.internal.gui.controlpanel.annotationfiletree.nodes.details.CnSAFTreeDetailsNodePanel;
 import org.cytoscape.clustnsee3.internal.gui.controlpanel.annotationfiletree.nodes.file.CnSAFTreeFileNode;
+import org.cytoscape.clustnsee3.internal.gui.controlpanel.networkfiletree.nodes.details.CnSAFTreeNetworkNetnameDetailsNode;
+import org.cytoscape.clustnsee3.internal.gui.controlpanel.networkfiletree.nodes.netname.CnSAFTreeNetworkNetnameNode;
+import org.cytoscape.clustnsee3.internal.gui.controlpanel.networkfiletree.nodes.root.CnSAFTreeNetworksRootNode;
 import org.cytoscape.clustnsee3.internal.gui.widget.paneltree.CnSPanelTreeModel;
 import org.cytoscape.clustnsee3.internal.gui.widget.paneltree.CnSPanelTreeNode;
 import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeAnnotationFile;
@@ -41,7 +45,7 @@ public class CnSAFTreeModel extends CnSPanelTreeModel {
 			v.put(CnSAFTreeFileNode.ANNOTATION_FILE, annotationFile);
 			v.put(CnSAFTreeFileNode.NB_ANNOTATIONS, nbAnnotations);
 			v.put(CnSAFTreeFileNode.NB_NODES, nbNodes);
-			v.put(CnSAFTreeFileNode.NETWORKS, new Vector<Vector<Object>>());
+			//v.put(CnSAFTreeFileNode.NETWORKS, new Vector<Vector<Object>>());
 			CnSAFTreeFileNode node = new CnSAFTreeFileNode(parent, v);
 			node.setEditable(true);
 			node.getPanel().initGraphics();
@@ -54,12 +58,20 @@ public class CnSAFTreeModel extends CnSPanelTreeModel {
 		}
 	}
 	
-	public void addMappedNetwork(CnSNodeAnnotationFile annotationFile, CyNetwork network, int nbAnnotations, int nbNodes) {
+	public void addMappedNetwork(CnSNodeAnnotationFile annotationFile, CyNetwork network, CnSAFTreeNetworksRootNode rootNode,  int nbAnnotations, int nbNodes) {
 		Enumeration<CnSPanelTreeNode> fileNodes = (Enumeration<CnSPanelTreeNode>)(getRootNode().children());
 		while (fileNodes.hasMoreElements()) {
 			CnSAFTreeFileNode node = (CnSAFTreeFileNode)fileNodes.nextElement();
-			if (node.getData(CnSAFTreeFileNode.ANNOTATION_FILE) == annotationFile) {
-				
+			if (((CnSNodeAnnotationFile)node.getData(CnSAFTreeFileNode.ANNOTATION_FILE)).getFile().getAbsolutePath().equals(annotationFile.getFile().getAbsolutePath())) {
+				Hashtable<Integer, Object> v = new Hashtable<Integer, Object>();
+				v.put(CnSAFTreeNetworkNetnameNode.NETWORK, network);
+				CnSAFTreeNetworkNetnameNode networkNode = new CnSAFTreeNetworkNetnameNode(node, v);
+				insertNodeInto(networkNode, rootNode, rootNode.getChildCount());
+				CnSAFTreeNetworkNetnameDetailsNode detailsNode = new CnSAFTreeNetworkNetnameDetailsNode(node, v);
+				detailsNode.setEditable(true);
+				detailsNode.getPanel().deriveFont(11);
+				detailsNode.getPanel().initGraphics();
+				insertNodeInto(detailsNode, networkNode, networkNode.getChildCount());
 				break;
 			}
 		}
@@ -70,7 +82,7 @@ public class CnSAFTreeModel extends CnSPanelTreeModel {
 		while (nodes.hasMoreElements()) {
 			CnSPanelTreeNode node = nodes.nextElement();
 			CnSNodeAnnotationFile af = (CnSNodeAnnotationFile)node.getData(CnSAFTreeFileNode.ANNOTATION_FILE);
-			if (af.getFile() == f) return true;
+			if (af.getFile().getAbsolutePath().equals(f.getAbsolutePath())) return true;
 		}
 		return false;
 	}

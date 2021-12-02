@@ -37,6 +37,7 @@ public class CnSEventManager {
 	public static final int PARTITION_MANAGER = 11;
 	public static final int STYLE_MANAGER = 12;
 	public static final int PARTITION_PANEL = 13;
+	public static final int CONTROL_PANEL = 14;
 	public static final int ANNOTATION_MANAGER = 15;
 	
 	private static CnSEventListener plugin;
@@ -52,6 +53,7 @@ public class CnSEventManager {
 	private static CnSEventListener partitionManager;
 	private static CnSEventListener styleManager;
 	private static CnSEventListener partitionPanel;
+	private static CnSEventListener controlPanel;
 	private static CnSEventListener nodeAnnotationManager;
 	
 	private static CnSEventManager instance;
@@ -85,7 +87,9 @@ public class CnSEventManager {
 		}
 		return instance;
 	}
-	
+	public static void addControlPanel(CnSEventListener _controlPanel) {
+		controlPanel = _controlPanel;
+	}
 	public static Object handleMessage(CnSEvent event) {
 	    int target = event.getTarget();
 	    Object ret = null;
@@ -145,6 +149,10 @@ public class CnSEventManager {
 	      	case CY_ACTIVATOR:
 	    	  if (cyActivator != null) ret = cyActivator.cnsEventOccured(event);
 	    	  break;
+	    	
+	      	case CONTROL_PANEL:
+	      	  if (controlPanel != null) ret = controlPanel.cnsEventOccured(event);
+	      	  break;
 	    }
 	    return ret;
 	}

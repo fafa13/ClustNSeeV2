@@ -100,7 +100,7 @@ public class CnSPartitionPanel extends CnSPanel implements CytoPanelComponent, C
 					annotationPanel.init(partition);
 				}
 				else
-					annotationPanel.clear();
+					annotationPanel.init();
 				break;
 			
 			case CLEAR :

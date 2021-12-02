@@ -135,6 +135,33 @@ public class CnSAnnotationTablePanel extends CnSPanel {
 		sorter.setMaxSortKeys(1);
 		annotationTable.setRowSorter(sorter);
 	}
+	public void init() {
+		CnSEvent ev = new CnSEvent(CnSNodeAnnotationManager.GET_ANNOTATIONS, CnSEventManager.ANNOTATION_MANAGER);
+		Vector<CnSNodeAnnotation> annotations = (Vector<CnSNodeAnnotation>)CnSEventManager.handleMessage(ev);
+		CnSAnnotationTableModel model = new CnSAnnotationTableModel(annotations);
+		annotationTable.setModel(model);
+		System.err.println("nb annotations = " + annotations.size());
+		RowFilter<CnSAnnotationTableModel,Integer> annotationFilter = new RowFilter<CnSAnnotationTableModel,Integer>() {
+			@Override
+			public boolean include(Entry<? extends CnSAnnotationTableModel, ? extends Integer> entry) {
+				if (viewAllCheckBox.isSelected()) 
+					return true;
+				else {
+					CnSAnnotationTableModel model = entry.getModel();
+					CnSCluster cluster = model.getSelectedCluster();
+					if (cluster == null) return true;
+					CnSEvent ev = new CnSEvent(CnSNodeAnnotationManager.GET_CLUSTER_ANNOTATIONS, CnSEventManager.ANNOTATION_MANAGER);
+					ev.addParameter(CnSNodeAnnotationManager.CLUSTER, cluster);
+					Vector<?> clusterAnnotations = (Vector<?>)CnSEventManager.handleMessage(ev);
+					return clusterAnnotations.contains(model.getAnnotation(entry.getIdentifier()));
+				}
+			}
+		};
+		TableRowSorter<CnSAnnotationTableModel> sorter = new TableRowSorter<CnSAnnotationTableModel>(model);
+		sorter.setRowFilter(annotationFilter);
+		sorter.setMaxSortKeys(1);
+		annotationTable.setRowSorter(sorter);
+	}
 	
 	public void clear() {
 		

@@ -81,14 +81,18 @@ public class CnSAFTreeDetailsNodePanel extends CnSPanelTreePanel {
 		rootNode.getPanel().initGraphics();
 		
 		networksTreeModel = new CnSNetworksTreeModel(rootNode);
+		//networksTreeModel.addNetwork(rootNode, null, NB_ANNOTATIONS, NB_NODES);
+		
 		networksTree = new CnSPanelTree(networksTreeModel);
 		networksTree.setShowsRootHandles(true);
 		networksTree.setCellRenderer(new CnSPanelTreeCellRenderer());
 		networksTree.setCellEditor(new CnSPanelTreeCellEditor());
-		
 		addComponent(networksTree, 0, 3, 1, 1, 1.0, 1.0, CnSPanel.CENTER ,CnSPanel.BOTH, 5, 5, 5, 5, 0, 0);
 		
 		setBackground(Color.WHITE);
 		setOpaque(false);
+	}
+	public CnSAFTreeNetworksRootNode getNetworksRootNode() {
+		return rootNode;
 	}
 }
