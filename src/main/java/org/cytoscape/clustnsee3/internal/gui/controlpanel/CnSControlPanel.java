@@ -25,6 +25,8 @@ import org.cytoscape.clustnsee3.internal.gui.controlpanel.annotationfiletree.nod
 import org.cytoscape.clustnsee3.internal.gui.controlpanel.annotationfiletree.nodes.details.CnSAFTreeDetailsNodePanel;
 import org.cytoscape.clustnsee3.internal.gui.controlpanel.annotationfiletree.nodes.file.CnSAFTreeFileNode;
 import org.cytoscape.clustnsee3.internal.gui.controlpanel.annotationfiletree.nodes.root.CnSAFTreeRootNode;
+import org.cytoscape.clustnsee3.internal.gui.controlpanel.networkfiletree.CnSNetworksTreeModel;
+import org.cytoscape.clustnsee3.internal.gui.controlpanel.networkfiletree.nodes.details.CnSAFTreeNetworkNetnameDetailsNodePanel;
 import org.cytoscape.clustnsee3.internal.gui.controlpanel.annotationfiletree.CnSAFTreeModel;
 import org.cytoscape.clustnsee3.internal.gui.dialog.CnSLoadAnnotationFileDialog;
 import org.cytoscape.clustnsee3.internal.gui.partitionpanel.CnSPartitionPanel;
@@ -50,6 +52,10 @@ public class CnSControlPanel extends CnSPanel implements CytoPanelComponent, CnS
 	public static final int ANNOTATION_FILE = 1001;
 	public static final int NETWORK = 1002;
 	public static final int TREE_FILE_NODE = 1003;
+	public static final int MAPPED_NODES = 1004;
+	public static final int MAPPED_ANNOTATIONS = 1005;
+	public static final int NETWORK_NODES = 1006;
+	public static final int FILE_ANNOTATIONS = 1007;
 
 	private CnSControlScopePanel scopePanel;
 	private CnSControlAlgorithmPanel algorithmPanel;
@@ -192,9 +198,12 @@ public class CnSControlPanel extends CnSPanel implements CytoPanelComponent, CnS
 		switch(event.getAction()) {
 			case ADD_MAPPED_NETWORK:
 				CyNetwork network = (CyNetwork)event.getParameter(NETWORK);
-				CnSNodeAnnotationFile annFile = (CnSNodeAnnotationFile)event.getParameter(ANNOTATION_FILE);
 				CnSAFTreeFileNode tfn = (CnSAFTreeFileNode)event.getParameter(TREE_FILE_NODE);
-				treeModel.addMappedNetwork(annFile, network, ((CnSAFTreeDetailsNodePanel)((CnSAFTreeDetailsNode)tfn.getChildAt(0)).getPanel()).getNetworksRootNode(), 0, 0);
+				CnSAFTreeDetailsNode detailsNode = (CnSAFTreeDetailsNode)tfn.getChildAt(0);
+				CnSAFTreeDetailsNodePanel detailsNodePanel = (CnSAFTreeDetailsNodePanel)detailsNode.getPanel();
+				CnSNetworksTreeModel networksTreeModel = detailsNodePanel.getNetworksTreeModel();
+				networksTreeModel.addNetwork(tfn, network, (Integer)event.getParameter(MAPPED_ANNOTATIONS),
+						(Integer)event.getParameter(MAPPED_NODES), (Integer)event.getParameter(NETWORK_NODES), (Integer)event.getParameter(FILE_ANNOTATIONS));
 				break;
 		}
 		return null;

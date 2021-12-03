@@ -152,11 +152,13 @@ public class CnSNodeAnnotationManager implements CnSEventListener {
 					}
 					br.close();
 					
-					int[] results = new int[4];
+					int[] results = new int[6];
 					results[0] = nodes_in_file.size();
 					results[1] = annotations_in_file.size();
 					results[2] = found_nodes;
 					results[3] = mapped_annotations;
+					results[4] = network.getNodeCount();
+					results[5] = annotations_in_file.size();
 					
 					ret = results;
 					System.err.println("Total nodes in file : " + nodes_in_file.size());
@@ -196,7 +198,6 @@ public class CnSNodeAnnotationManager implements CnSEventListener {
 					}
 					br.close();
 					makeAnnotations();
-					printAnnotations();
 					makeCyNodesHashMap();
 					makeClustersHashMap();
 					ret = aif;

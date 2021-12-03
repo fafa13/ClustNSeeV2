@@ -84,9 +84,12 @@ public class CnSAFTreeFileNode extends CnSPanelTreeNode {
 						CnSEventManager.handleMessage(ev);
 						
 						ev = new CnSEvent(CnSControlPanel.ADD_MAPPED_NETWORK, CnSEventManager.CONTROL_PANEL);
-						ev.addParameter(CnSControlPanel.ANNOTATION_FILE, getData(ANNOTATION_FILE));
 						ev.addParameter(CnSControlPanel.TREE_FILE_NODE, this);
 						ev.addParameter(CnSControlPanel.NETWORK, network);
+						ev.addParameter(CnSControlPanel.MAPPED_NODES, results[2]);
+						ev.addParameter(CnSControlPanel.MAPPED_ANNOTATIONS, results[3]);
+						ev.addParameter(CnSControlPanel.NETWORK_NODES, results[4]);
+						ev.addParameter(CnSControlPanel.FILE_ANNOTATIONS, results[5]);
 						CnSEventManager.handleMessage(ev);
 					}
 				}

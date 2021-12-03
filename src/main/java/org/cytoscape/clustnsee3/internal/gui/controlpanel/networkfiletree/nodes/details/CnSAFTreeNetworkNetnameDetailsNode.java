@@ -16,14 +16,12 @@ package org.cytoscape.clustnsee3.internal.gui.controlpanel.networkfiletree.nodes
 import java.awt.event.ActionEvent;
 import java.util.Hashtable;
 
-import org.cytoscape.clustnsee3.internal.gui.controlpanel.annotationfiletree.nodes.details.CnSAFTreeDetailsNodePanel;
 import org.cytoscape.clustnsee3.internal.gui.widget.paneltree.CnSPanelTreeNode;
 
 /**
  * 
  */
 public class CnSAFTreeNetworkNetnameDetailsNode extends CnSPanelTreeNode {
-
 	public CnSAFTreeNetworkNetnameDetailsNode(CnSPanelTreeNode parent, Hashtable<Integer, Object> v) {
 		super(parent, v);
 		panel = new CnSAFTreeNetworkNetnameDetailsNodePanel(v);

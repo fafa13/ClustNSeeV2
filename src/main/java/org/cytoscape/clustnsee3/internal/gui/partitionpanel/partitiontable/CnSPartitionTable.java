@@ -37,7 +37,7 @@ public class CnSPartitionTable implements ChangeListener, PropertyChangeListener
 	
 	public CnSPartitionTable() {
 		super();
-		table = new JTable();
+		table = new JTable(new CnSPartitionTableModel(null));
 		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		table.setRowHeight(26);
 		scrollPane = new JScrollPane(table);
