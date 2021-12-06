@@ -14,6 +14,7 @@
 package org.cytoscape.clustnsee3.internal.gui.partitionpanel.annotationtable;
 
 import java.awt.Color;
+import java.util.TreeSet;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
@@ -114,6 +115,10 @@ public class CnSAnnotationTablePanel extends CnSPanel {
 	public void init(CnSCluster cluster) {
 		((CnSAnnotationTableModel)annotationTable.getModel()).setSelectedCluster(cluster);
 		((CnSAnnotationTableModel)annotationTable.getModel()).fireTableDataChanged();
+		CnSEvent ev = new CnSEvent(CnSNodeAnnotationManager.GET_CLUSTER_ANNOTATIONS, CnSEventManager.ANNOTATION_MANAGER);
+		ev.addParameter(CnSNodeAnnotationManager.CLUSTER, cluster);
+		Vector<CnSNodeAnnotation> clusterAnnotations = (Vector<CnSNodeAnnotation>)CnSEventManager.handleMessage(ev);
+		final TreeSet<CnSNodeAnnotation> ts = new TreeSet<CnSNodeAnnotation>(clusterAnnotations);
 		RowFilter<CnSAnnotationTableModel,Integer> annotationFilter = new RowFilter<CnSAnnotationTableModel,Integer>() {
 			@Override
 			public boolean include(Entry<? extends CnSAnnotationTableModel, ? extends Integer> entry) {
@@ -123,10 +128,7 @@ public class CnSAnnotationTablePanel extends CnSPanel {
 					CnSAnnotationTableModel model = entry.getModel();
 					CnSCluster cluster = model.getSelectedCluster();
 					if (cluster == null) return true;
-					CnSEvent ev = new CnSEvent(CnSNodeAnnotationManager.GET_CLUSTER_ANNOTATIONS, CnSEventManager.ANNOTATION_MANAGER);
-					ev.addParameter(CnSNodeAnnotationManager.CLUSTER, cluster);
-					Vector<?> clusterAnnotations = (Vector<?>)CnSEventManager.handleMessage(ev);
-					return clusterAnnotations.contains(model.getAnnotation(entry.getIdentifier()));
+					return ts.contains(model.getAnnotation(entry.getIdentifier()));
 				}
 			}
 		};

@@ -26,7 +26,6 @@ import org.cytoscape.clustnsee3.internal.gui.controlpanel.annotationfiletree.nod
 import org.cytoscape.clustnsee3.internal.gui.controlpanel.annotationfiletree.nodes.file.CnSAFTreeFileNode;
 import org.cytoscape.clustnsee3.internal.gui.controlpanel.annotationfiletree.nodes.root.CnSAFTreeRootNode;
 import org.cytoscape.clustnsee3.internal.gui.controlpanel.networkfiletree.CnSNetworksTreeModel;
-import org.cytoscape.clustnsee3.internal.gui.controlpanel.networkfiletree.nodes.details.CnSAFTreeNetworkNetnameDetailsNodePanel;
 import org.cytoscape.clustnsee3.internal.gui.controlpanel.annotationfiletree.CnSAFTreeModel;
 import org.cytoscape.clustnsee3.internal.gui.dialog.CnSLoadAnnotationFileDialog;
 import org.cytoscape.clustnsee3.internal.gui.partitionpanel.CnSPartitionPanel;
@@ -91,16 +90,18 @@ public class CnSControlPanel extends CnSPanel implements CytoPanelComponent, CnS
 		analyzePanel.initGraphics();
 		mainPanel.addComponent(analyzePanel, 0, 0, 1, 1, 1.0, 0.0, NORTH, HORIZONTAL, 0, 0, 0, 0, 0, 0);
 		
-		importAnnotationPanel = new CnSPanel("Import annotation", TitledBorder.CENTER, TitledBorder.ABOVE_TOP);
+		//importAnnotationPanel = new CnSPanel("Import annotation", TitledBorder.CENTER, TitledBorder.ABOVE_TOP);
+		
+		
+		//importAnnotationPanel.initGraphics();
+		//mainPanel.addComponent(importAnnotationPanel, 0, 1, 1, 1, 1.0, 1.0, NORTH, HORIZONTAL, 10, 0, 0, 0, 0, 0);
+		
+		treeImportAnnotationPanel = new CnSPanel("Annotation files", TitledBorder.CENTER, TitledBorder.ABOVE_TOP);
 		addAnnotationButton = new CnSButton("Add");
-		importAnnotationPanel.addComponent(addAnnotationButton, 0, 1, 1, 1, 1.0, 0.0, NORTH, NONE, 0, 0, 0, 0, 0, 0);
+		treeImportAnnotationPanel.addComponent(addAnnotationButton, 0, 1, 1, 1, 1.0, 0.0, NORTH, NONE, 0, 0, 0, 0, 0, 0);
 		removeAnnotationButton = new CnSButton("Remove");
-		importAnnotationPanel.addComponent(removeAnnotationButton, 1, 1, 1, 1, 1.0, 0.0, NORTH, NONE, 0, 0, 0, 0, 0, 0);
+		treeImportAnnotationPanel.addComponent(removeAnnotationButton, 1, 1, 1, 1, 1.0, 0.0, NORTH, NONE, 0, 0, 0, 0, 0, 0);
 		
-		importAnnotationPanel.initGraphics();
-		mainPanel.addComponent(importAnnotationPanel, 0, 1, 1, 1, 1.0, 1.0, NORTH, HORIZONTAL, 10, 0, 0, 0, 0, 0);
-		
-		treeImportAnnotationPanel = new CnSPanel("XXX", TitledBorder.CENTER, TitledBorder.ABOVE_TOP);
 		Hashtable<Integer, Object> v= new Hashtable<Integer, Object>();
 		v.put(CnSAFTreeRootNode.TITLE, "Imported annotation files");
 		rootNode = new CnSAFTreeRootNode(v);
@@ -115,7 +116,7 @@ public class CnSControlPanel extends CnSPanel implements CytoPanelComponent, CnS
 		
 		JScrollPane jsp2 = new JScrollPane(tree);
 		jsp2.getViewport().setPreferredSize(new Dimension(0, 10*26));
-		treeImportAnnotationPanel.addComponent(jsp2, 0, 0, 1, 1, 1.0, 1.0, NORTH, BOTH, 0, 0, 0, 0, 0, 0);
+		treeImportAnnotationPanel.addComponent(jsp2, 0, 0, 2, 1, 1.0, 1.0, NORTH, BOTH, 0, 0, 0, 0, 0, 0);
 		treeImportAnnotationPanel.initGraphics();
 		mainPanel.addComponent(treeImportAnnotationPanel, 0, 2, 1, 1, 1.0, 1.0, NORTH, HORIZONTAL, 10, 0, 0, 0, 0, 0);
 		
