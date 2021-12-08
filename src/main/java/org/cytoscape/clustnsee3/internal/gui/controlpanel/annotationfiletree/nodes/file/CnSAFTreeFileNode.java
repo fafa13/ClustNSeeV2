@@ -39,7 +39,6 @@ public class CnSAFTreeFileNode extends CnSPanelTreeNode {
 	public final static int ANNOTATION_FILE = 1;
 	public final static int NB_ANNOTATIONS = 2;
 	public final static int NB_NODES = 3;
-	public final static int NETWORKS = 4;
 	
 	public CnSAFTreeFileNode(CnSPanelTreeNode parent, Hashtable<Integer, Object> v) {
 		super(parent, v);
@@ -55,7 +54,7 @@ public class CnSAFTreeFileNode extends CnSPanelTreeNode {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		CnSNodeAnnotationFile af = null;
-		if (e.getSource() instanceof CnSButton)
+		if (e.getSource() instanceof CnSButton) {
 			af = (CnSNodeAnnotationFile)getData(CnSAFTreeFileNode.ANNOTATION_FILE);
 			if (((CnSButton)e.getSource()).getActionCommand().equals("delete")) {
 				System.out.println("Pressed: delete " + af);
@@ -96,5 +95,6 @@ public class CnSAFTreeFileNode extends CnSPanelTreeNode {
 				else
 					JOptionPane.showMessageDialog(null, "There is no network to map annotations !");
 			}
+		}
 	}
 }

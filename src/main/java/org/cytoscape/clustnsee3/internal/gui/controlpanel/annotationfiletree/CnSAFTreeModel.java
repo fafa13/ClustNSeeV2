@@ -32,6 +32,10 @@ public class CnSAFTreeModel extends CnSPanelTreeModel {
 	public CnSAFTreeModel(CnSPanelTreeNode treeNode) {
 		super(treeNode);
 	}
+	
+	public void setRootNode(CnSPanelTreeNode treeNode) {
+		
+	}
 
 	public void addAnnotationFile(CnSPanelTreeNode parent, CnSNodeAnnotationFile annotationFile, int nbAnnotations, int nbNodes) {
 		if (!contains(annotationFile.getFile())) {
@@ -39,7 +43,6 @@ public class CnSAFTreeModel extends CnSPanelTreeModel {
 			v.put(CnSAFTreeFileNode.ANNOTATION_FILE, annotationFile);
 			v.put(CnSAFTreeFileNode.NB_ANNOTATIONS, nbAnnotations);
 			v.put(CnSAFTreeFileNode.NB_NODES, nbNodes);
-			//v.put(CnSAFTreeFileNode.NETWORKS, new Vector<Vector<Object>>());
 			CnSAFTreeFileNode node = new CnSAFTreeFileNode(parent, v);
 			node.setEditable(true);
 			node.getPanel().initGraphics();

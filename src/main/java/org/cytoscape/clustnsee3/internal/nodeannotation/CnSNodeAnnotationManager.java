@@ -198,6 +198,7 @@ public class CnSNodeAnnotationManager implements CnSEventListener {
 					}
 					br.close();
 					makeAnnotations();
+					//printAnnotations();
 					makeCyNodesHashMap();
 					makeClustersHashMap();
 					ret = aif;
@@ -216,7 +217,7 @@ public class CnSNodeAnnotationManager implements CnSEventListener {
 				//node = (CyNode)event.getParameter(NODE);
 				inputFile = (File)event.getParameter(FILE);
 				CnSTrieNode w = annotationTrie.addWord(value);
-				//addAnnotation(w, node, inputFile);
+				//addAnnotation(w, node, inputFile);0102391
 				break;
 				
 			case REMOVE_ANNOTATION :
@@ -418,16 +419,27 @@ public class CnSNodeAnnotationManager implements CnSEventListener {
 		CnSTrieNode ann;
 		Iterator<CnSTrieNode> it;
 		CnSNodeAnnotation nodeAnnotation;
+		Vector<CyNode> cyNodes;
 		
-		annotations.clear();
+		//annotations.clear();
 		for (CnSNodeAnnotationFile file : files) {
 			it = file.getAllAnnotations().iterator();
 			while (it.hasNext()) {
 				ann = it.next();
-				nodeAnnotation = new CnSNodeAnnotation(ann);
-				ann.setAnnotation(nodeAnnotation);
+				if (ann.getAnnotation() == null) {
+					nodeAnnotation = new CnSNodeAnnotation(ann);
+					ann.setAnnotation(nodeAnnotation);
+					cyNodes = new Vector<CyNode>();
+					//System.err.print(++N + "New annotation : ");
+				}
+				else {
+					nodeAnnotation = ann.getAnnotation();
+					cyNodes = annotations.get(nodeAnnotation);
+					//System.err.print(++N + "Annotation : ");
+				}
 				for (String tar : file.getTargets(ann)) nodeAnnotation.addTarget(tar, file);
-				annotations.put(nodeAnnotation, new Vector<CyNode>());
+				annotations.put(nodeAnnotation, cyNodes);
+				//System.err.println(nodeAnnotation.getValue() + " -> " + cyNodes);
 			}
 		}
 	}
@@ -475,8 +487,9 @@ public class CnSNodeAnnotationManager implements CnSEventListener {
 			}
 	}
 	public void printAnnotations() {
+		int N = 0;
 		for (CnSNodeAnnotation key : annotations.keySet()) {
-			System.out.println(key.getValue());
+			System.out.println(++N + " " + key.getValue());
 			for (CyNode value : annotations.get(key)) {
 				System.out.println("  " + value.getSUID());
 			}

@@ -55,7 +55,7 @@ public class CnSAFTreeNetworkNetnameNodePanel extends CnSPanelTreePanel {
 		closeButton.setPreferredSize(new Dimension(icon_delete.getIconWidth() + 4, icon_delete.getIconHeight() + 4));
 		//closeButton.setBorder(new LineBorder(Color.BLACK));
 		closeButton.setFocusable(false);
-		closeButton.setActionCommand("delete");
+		closeButton.setActionCommand("remove_network");
 		addComponent(closeButton, 1, 0, 1, 1, 0.0, 0.0, CnSPanel.EAST, CnSPanel.NONE, 5, 5, 5, 0, 0, 0);
 		
 		setBackground(Color.WHITE);

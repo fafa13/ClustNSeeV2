@@ -20,7 +20,7 @@ import org.cytoscape.clustnsee3.internal.nodeannotation.trie.CnSTrieNode;
 /**
  * 
  */
-public class CnSNodeAnnotation implements Comparable {
+public class CnSNodeAnnotation implements Comparable<CnSNodeAnnotation> {
 	private CnSTrieNode trieNode;
 	private Vector<CnSAnnotationTarget> targets;
 	
@@ -56,8 +56,7 @@ public class CnSNodeAnnotation implements Comparable {
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */
 	@Override
-	public int compareTo(Object o) {
-		CnSNodeAnnotation na = (CnSNodeAnnotation)o;
-		return na.getValue().compareTo(this.getValue());
+	public int compareTo(CnSNodeAnnotation o) {
+		return o.getValue().compareTo(this.getValue());
 	}
 }

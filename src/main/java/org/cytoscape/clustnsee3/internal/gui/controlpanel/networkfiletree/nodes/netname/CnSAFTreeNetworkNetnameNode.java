@@ -16,6 +16,7 @@ package org.cytoscape.clustnsee3.internal.gui.controlpanel.networkfiletree.nodes
 import java.awt.event.ActionEvent;
 import java.util.Hashtable;
 
+import org.cytoscape.clustnsee3.internal.gui.widget.CnSButton;
 import org.cytoscape.clustnsee3.internal.gui.widget.paneltree.CnSPanelTreeNode;
 import org.cytoscape.model.CyNetwork;
 
@@ -25,11 +26,15 @@ import org.cytoscape.model.CyNetwork;
 public class CnSAFTreeNetworkNetnameNode extends CnSPanelTreeNode {
 	public final static int NETWORK_NAME = 1;
 	public static final int NETWORK = 2;
+	
+	private CyNetwork network;
 
 	public CnSAFTreeNetworkNetnameNode(CnSPanelTreeNode parent, Hashtable<Integer, Object> v) {
 		super(parent, v);
-		panel = new CnSAFTreeNetworkNetnameNodePanel(((CyNetwork)v.get(NETWORK)).toString());
+		network = (CyNetwork)v.get(NETWORK);
+		panel = new CnSAFTreeNetworkNetnameNodePanel(network.toString());
 		panel.initGraphics();
+		((CnSAFTreeNetworkNetnameNodePanel)panel).getDeleteButton().addActionListener(this);
 	}
 
 	/* (non-Javadoc)
@@ -37,7 +42,10 @@ public class CnSAFTreeNetworkNetnameNode extends CnSPanelTreeNode {
 	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
-		
+		if (e.getSource() instanceof CnSButton) {
+			if (((CnSButton)e.getSource()).getActionCommand().equals("remove_network")) {
+				System.err.println("Removing network : " + network.toString());
+			}
+		}
 	}
 }
