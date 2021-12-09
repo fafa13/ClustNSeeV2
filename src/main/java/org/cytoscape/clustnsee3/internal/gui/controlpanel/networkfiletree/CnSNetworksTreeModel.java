@@ -15,11 +15,13 @@ package org.cytoscape.clustnsee3.internal.gui.controlpanel.networkfiletree;
 
 import java.util.Hashtable;
 
+import org.cytoscape.clustnsee3.internal.gui.controlpanel.annotationfiletree.nodes.file.CnSAFTreeFileNode;
 import org.cytoscape.clustnsee3.internal.gui.controlpanel.networkfiletree.nodes.details.CnSAFTreeNetworkNetnameDetailsNode;
 import org.cytoscape.clustnsee3.internal.gui.controlpanel.networkfiletree.nodes.details.CnSAFTreeNetworkNetnameDetailsNodePanel;
 import org.cytoscape.clustnsee3.internal.gui.controlpanel.networkfiletree.nodes.netname.CnSAFTreeNetworkNetnameNode;
 import org.cytoscape.clustnsee3.internal.gui.widget.paneltree.CnSPanelTreeModel;
 import org.cytoscape.clustnsee3.internal.gui.widget.paneltree.CnSPanelTreeNode;
+import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeAnnotationFile;
 import org.cytoscape.model.CyNetwork;
 
 /**
@@ -31,9 +33,10 @@ public class CnSNetworksTreeModel extends CnSPanelTreeModel {
 	public CnSNetworksTreeModel(CnSPanelTreeNode treeNode) {
 		super(treeNode);
 	}
-	public void addNetwork(CnSPanelTreeNode parent, CyNetwork network, int mappedAnnotations, int mappedNodes, int networkNodes, int fileAnnotations) {
+	public void addNetwork(CnSPanelTreeNode parent, CyNetwork network, CnSNodeAnnotationFile af, int mappedAnnotations, int mappedNodes, int networkNodes, int fileAnnotations) {
 		Hashtable<Integer, Object> v = new Hashtable<Integer, Object>();
 		v.put(CnSAFTreeNetworkNetnameNode.NETWORK, network);
+		v.put(CnSAFTreeNetworkNetnameNode.ANNOTATION_FILE, af);
 		CnSAFTreeNetworkNetnameNode networkNode = new CnSAFTreeNetworkNetnameNode(parent, v);
 		insertNodeInto(networkNode, rootNode, rootNode.getChildCount());
 		v.clear();
@@ -46,5 +49,14 @@ public class CnSNetworksTreeModel extends CnSPanelTreeModel {
 		detailsNode.getPanel().deriveFont(11);
 		detailsNode.getPanel().initGraphics();
 		insertNodeInto(detailsNode, networkNode, networkNode.getChildCount());
+	}
+	/**
+	 * 
+	 * @param treeFileNode 
+	 * @param
+	 * @return
+	 */
+	public void removeNetwork(CnSAFTreeNetworkNetnameNode netNode, CyNetwork network, CnSNodeAnnotationFile annotationFile) {
+		removeNodeFromParent(netNode);
 	}
 }

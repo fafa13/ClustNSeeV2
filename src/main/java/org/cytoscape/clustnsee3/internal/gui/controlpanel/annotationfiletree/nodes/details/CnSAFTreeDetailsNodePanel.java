@@ -76,6 +76,7 @@ public class CnSAFTreeDetailsNodePanel extends CnSPanelTreePanel {
 		
 		Hashtable<Integer, Object> v= new Hashtable<Integer, Object>();
 		v.put(CnSAFTreeNetworksRootNode.TITLE, "Networks");
+		v.put(CnSAFTreeNetworksRootNode.DETAILS_NODE_PANEL, this);
 		rootNode = new CnSAFTreeNetworksRootNode(v);
 		rootNode.getPanel().deriveFont(Font.PLAIN, 12);
 		rootNode.getPanel().initGraphics();

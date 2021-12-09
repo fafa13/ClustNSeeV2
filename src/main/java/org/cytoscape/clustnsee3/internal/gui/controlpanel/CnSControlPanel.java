@@ -24,12 +24,15 @@ import org.cytoscape.clustnsee3.internal.gui.controlpanel.annotationfiletree.nod
 import org.cytoscape.clustnsee3.internal.gui.controlpanel.annotationfiletree.nodes.file.CnSAFTreeFileNode;
 import org.cytoscape.clustnsee3.internal.gui.controlpanel.annotationfiletree.nodes.root.CnSAFTreeRootNode;
 import org.cytoscape.clustnsee3.internal.gui.controlpanel.networkfiletree.CnSNetworksTreeModel;
+import org.cytoscape.clustnsee3.internal.gui.controlpanel.networkfiletree.nodes.netname.CnSAFTreeNetworkNetnameNode;
+import org.cytoscape.clustnsee3.internal.gui.controlpanel.networkfiletree.nodes.root.CnSAFTreeNetworksRootNode;
 import org.cytoscape.clustnsee3.internal.gui.controlpanel.annotationfiletree.CnSAFTreeModel;
 import org.cytoscape.clustnsee3.internal.gui.widget.CnSButton;
 import org.cytoscape.clustnsee3.internal.gui.widget.CnSPanel;
 import org.cytoscape.clustnsee3.internal.gui.widget.paneltree.CnSPanelTree;
 import org.cytoscape.clustnsee3.internal.gui.widget.paneltree.CnSPanelTreeCellEditor;
 import org.cytoscape.clustnsee3.internal.gui.widget.paneltree.CnSPanelTreeCellRenderer;
+import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeAnnotationFile;
 import org.cytoscape.clustnsee3.internal.task.CnSAnalyzeTask;
 import org.cytoscape.model.CyNetwork;
 import org.cytoscape.work.TaskIterator;
@@ -39,7 +42,8 @@ public class CnSControlPanel extends CnSPanel implements CytoPanelComponent, CnS
 	private static final long serialVersionUID = -5798886682673421450L;
 	
 	public static final int ADD_MAPPED_NETWORK = 1;
-	
+	public static final int REMOVE_MAPPED_NETWORK = 2;
+
 	public static final int ANNOTATION_FILE = 1001;
 	public static final int NETWORK = 1002;
 	public static final int TREE_FILE_NODE = 1003;
@@ -48,6 +52,7 @@ public class CnSControlPanel extends CnSPanel implements CytoPanelComponent, CnS
 	public static final int NETWORK_NODES = 1006;
 	public static final int FILE_ANNOTATIONS = 1007;
 
+	
 	private CnSControlScopePanel scopePanel;
 	private CnSControlAlgorithmPanel algorithmPanel;
 	private CnSPanel analyzePanel;
@@ -130,15 +135,24 @@ public class CnSControlPanel extends CnSPanel implements CytoPanelComponent, CnS
 	 */
 	@Override
 	public Object cnsEventOccured(CnSEvent event) {
+		CyNetwork network = (CyNetwork)event.getParameter(NETWORK);
+		CnSNodeAnnotationFile af = (CnSNodeAnnotationFile)event.getParameter(ANNOTATION_FILE);
+		CnSNetworksTreeModel networksTreeModel;
 		switch(event.getAction()) {
 			case ADD_MAPPED_NETWORK:
-				CyNetwork network = (CyNetwork)event.getParameter(NETWORK);
 				CnSAFTreeFileNode tfn = (CnSAFTreeFileNode)event.getParameter(TREE_FILE_NODE);
 				CnSAFTreeDetailsNode detailsNode = (CnSAFTreeDetailsNode)tfn.getChildAt(0);
 				CnSAFTreeDetailsNodePanel detailsNodePanel = (CnSAFTreeDetailsNodePanel)detailsNode.getPanel();
-				CnSNetworksTreeModel networksTreeModel = detailsNodePanel.getNetworksTreeModel();
-				networksTreeModel.addNetwork(tfn, network, (Integer)event.getParameter(MAPPED_ANNOTATIONS),
-						(Integer)event.getParameter(MAPPED_NODES), (Integer)event.getParameter(NETWORK_NODES), (Integer)event.getParameter(FILE_ANNOTATIONS));
+				networksTreeModel = detailsNodePanel.getNetworksTreeModel();
+				networksTreeModel.addNetwork(tfn, network, af, (Integer)event.getParameter(MAPPED_ANNOTATIONS),
+						(Integer)event.getParameter(MAPPED_NODES), (Integer)event.getParameter(NETWORK_NODES), 
+						(Integer)event.getParameter(FILE_ANNOTATIONS));
+				break;
+				
+			case REMOVE_MAPPED_NETWORK:
+				CnSAFTreeNetworkNetnameNode tnn = (CnSAFTreeNetworkNetnameNode)event.getParameter(TREE_FILE_NODE);
+				networksTreeModel = ((CnSAFTreeNetworksRootNode)tnn.getParent()).getDetailsNodePanel().getNetworksTreeModel();
+				networksTreeModel.removeNetwork(tnn, network, af);
 				break;
 		}
 		return null;

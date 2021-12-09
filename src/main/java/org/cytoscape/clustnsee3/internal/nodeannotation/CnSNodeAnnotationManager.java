@@ -62,6 +62,7 @@ public class CnSNodeAnnotationManager implements CnSEventListener {
 	public static final int GET_ANNOTATED_CLUSTERS = 15;
 	public static final int UNLOAD_ANNOTATIONS = 16;
 	public static final int ANNOTATE_NETWORK = 17;
+	public static final int DEANNOTATE_NETWORK = 18;
 	
 	public static final int VALUE = 1001;
 	public static final int NODE = 1002;
@@ -312,6 +313,7 @@ public class CnSNodeAnnotationManager implements CnSEventListener {
 					makeCyNodesHashMap();
 					makeClustersHashMap();
 				}
+				break;
 				
 			case ANNOTATE_NETWORK :
 				System.err.println("ANNOTATE_NETWORK");
@@ -333,7 +335,27 @@ public class CnSNodeAnnotationManager implements CnSEventListener {
 				}
 				makeCyNodesHashMap();
 				makeClustersHashMap();
+				break;
 				
+			case DEANNOTATE_NETWORK :
+				System.err.println("DEANNOTATE_NETWORK");
+				af = (CnSNodeAnnotationFile)event.getParameter(ANNOTATION_FILE);
+				network = (CyNetwork)event.getParameter(NETWORK);
+				
+				for (CnSTrieNode trieNode : af.getAllAnnotations()) {
+					CnSNodeAnnotation nodeAnnotation = trieNode.getAnnotation();
+					Vector<CyNode> targets = annotations.get(nodeAnnotation);
+					Vector<CyNode> toRemove = new Vector<CyNode>();
+					for (CyNode cyNode : targets) {
+						if (network.containsNode(cyNode)) {
+							toRemove.addElement(cyNode);
+						}
+					}
+					targets.removeAll(toRemove);
+				}
+				
+				makeCyNodesHashMap();
+				makeClustersHashMap();
 				break;
 		}
 		return ret;
@@ -421,7 +443,7 @@ public class CnSNodeAnnotationManager implements CnSEventListener {
 		CnSNodeAnnotation nodeAnnotation;
 		Vector<CyNode> cyNodes;
 		
-		//annotations.clear();
+		annotations.clear();
 		for (CnSNodeAnnotationFile file : files) {
 			it = file.getAllAnnotations().iterator();
 			while (it.hasNext()) {

@@ -16,6 +16,7 @@ package org.cytoscape.clustnsee3.internal.gui.controlpanel.networkfiletree.nodes
 import java.awt.event.ActionEvent;
 import java.util.Hashtable;
 
+import org.cytoscape.clustnsee3.internal.gui.controlpanel.annotationfiletree.nodes.details.CnSAFTreeDetailsNodePanel;
 import org.cytoscape.clustnsee3.internal.gui.widget.paneltree.CnSPanelTreeNode;
 
 /**
@@ -23,10 +24,13 @@ import org.cytoscape.clustnsee3.internal.gui.widget.paneltree.CnSPanelTreeNode;
  */
 public class CnSAFTreeNetworksRootNode extends CnSPanelTreeNode {
 	public static final int TITLE = 1;
+	public static final int DETAILS_NODE_PANEL = 2;
 	
+	private CnSAFTreeDetailsNodePanel detailsNodePanel;
 	public CnSAFTreeNetworksRootNode(Hashtable<Integer, Object> v) {
 		super();
 		panel = new CnSAFTreeNetworksRootNodePanel(v.get(TITLE).toString());
+		detailsNodePanel = (CnSAFTreeDetailsNodePanel)v.get(DETAILS_NODE_PANEL);
 	}
 
 	/* (non-Javadoc)
@@ -36,5 +40,8 @@ public class CnSAFTreeNetworksRootNode extends CnSPanelTreeNode {
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
 		
+	}
+	public CnSAFTreeDetailsNodePanel getDetailsNodePanel() {
+		return detailsNodePanel;
 	}
 }

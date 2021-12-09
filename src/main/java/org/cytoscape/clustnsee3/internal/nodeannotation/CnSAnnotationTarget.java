@@ -18,7 +18,7 @@ package org.cytoscape.clustnsee3.internal.nodeannotation;
  */
 public class CnSAnnotationTarget {
 	private CnSNodeAnnotationFile file;
-	String target;
+	private String target;
 	
 	public CnSAnnotationTarget(String node, CnSNodeAnnotationFile file) {
 		target = node;
@@ -29,5 +29,9 @@ public class CnSAnnotationTarget {
 	}
 	public CnSNodeAnnotationFile getFile() {
 		return file;
+	}
+	public boolean equals(Object o) {
+		CnSAnnotationTarget t = (CnSAnnotationTarget)o;
+		return t.getFile().toString().equals(file.toString());
 	}
 }
