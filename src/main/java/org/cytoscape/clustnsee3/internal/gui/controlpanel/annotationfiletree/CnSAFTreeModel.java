@@ -38,12 +38,13 @@ public class CnSAFTreeModel extends CnSPanelTreeModel {
 	}
 
 	public void addAnnotationFile(CnSPanelTreeNode parent, CnSNodeAnnotationFile annotationFile, int nbAnnotations, int nbNodes) {
+		CnSAFTreeFileNode node = null;
 		if (!contains(annotationFile.getFile())) {
 			Hashtable<Integer, Object> v = new Hashtable<Integer, Object>();
 			v.put(CnSAFTreeFileNode.ANNOTATION_FILE, annotationFile);
 			v.put(CnSAFTreeFileNode.NB_ANNOTATIONS, nbAnnotations);
 			v.put(CnSAFTreeFileNode.NB_NODES, nbNodes);
-			CnSAFTreeFileNode node = new CnSAFTreeFileNode(parent, v);
+			node = new CnSAFTreeFileNode(parent, v);
 			node.setEditable(true);
 			node.getPanel().initGraphics();
 			insertNodeInto(node, parent, root.getChildCount());

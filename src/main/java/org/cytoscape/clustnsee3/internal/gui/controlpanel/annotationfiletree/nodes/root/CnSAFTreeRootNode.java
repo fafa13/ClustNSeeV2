@@ -37,6 +37,11 @@ import org.cytoscape.clustnsee3.internal.partition.CnSPartition;
  * 
  */
 public class CnSAFTreeRootNode extends CnSPanelTreeNode {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -2332524172357528722L;
+
 	public static final int TITLE = 1;
 	
 	private CnSAFTreeModel treeModel;
@@ -83,6 +88,7 @@ public class CnSAFTreeRootNode extends CnSPanelTreeNode {
 						CnSEventManager.handleMessage(ev);
 						
 						treeModel.addAnnotationFile(this, annotationFile, annotationFile.getAllAnnotations().size(), annotationFile.getAllTargets().size());
+						treeModel.nodeStructureChanged(this);
 					}
 					else {
 						JOptionPane.showMessageDialog(null, "Annotation file " + dialog.getSelectedFile().getName() + " is already loaded.");

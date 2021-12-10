@@ -44,6 +44,7 @@ public class CnSControlPanel extends CnSPanel implements CytoPanelComponent, CnS
 	
 	public static final int ADD_MAPPED_NETWORK = 1;
 	public static final int REMOVE_MAPPED_NETWORK = 2;
+	public static final int REFRESH = 3;
 
 	public static final int ANNOTATION_FILE = 1001;
 	public static final int NETWORK = 1002;
@@ -149,6 +150,7 @@ public class CnSControlPanel extends CnSPanel implements CytoPanelComponent, CnS
 						(Integer)event.getParameter(MAPPED_NODES), (Integer)event.getParameter(NETWORK_NODES), 
 						(Integer)event.getParameter(FILE_ANNOTATIONS));
 				tree.scrollPathToVisible(new TreePath(nnn.getPath()));
+				networksTreeModel.nodeStructureChanged(nnn);
 				//tree.revalidate();
 				//tree.repaint();
 				//detailsNodePanel.initGraphics();
@@ -161,6 +163,14 @@ public class CnSControlPanel extends CnSPanel implements CytoPanelComponent, CnS
 				networksTreeModel = ((CnSAFTreeNetworksRootNode)tnn.getParent()).getDetailsNodePanel().getNetworksTreeModel();
 				networksTreeModel.removeNetwork(tnn, network, af);
 				((CnSAFTreeNetworksRootNode)tnn.getParent()).getDetailsNodePanel().repaint();
+				break;
+				
+			case REFRESH :
+				treeImportAnnotationPanel.invalidate();
+				treeImportAnnotationPanel.repaint();
+				invalidate();
+				repaint();
+				
 				break;
 		}
 		return null;

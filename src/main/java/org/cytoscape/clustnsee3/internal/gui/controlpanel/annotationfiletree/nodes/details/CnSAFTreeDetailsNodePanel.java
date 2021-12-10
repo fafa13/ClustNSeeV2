@@ -19,7 +19,12 @@ import java.io.File;
 import java.util.Hashtable;
 
 import javax.swing.JLabel;
+import javax.swing.event.TreeExpansionEvent;
+import javax.swing.event.TreeExpansionListener;
 
+import org.cytoscape.clustnsee3.internal.event.CnSEvent;
+import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
+import org.cytoscape.clustnsee3.internal.gui.controlpanel.CnSControlPanel;
 import org.cytoscape.clustnsee3.internal.gui.controlpanel.networkfiletree.CnSNetworksTreeModel;
 import org.cytoscape.clustnsee3.internal.gui.controlpanel.networkfiletree.nodes.root.CnSAFTreeNetworksRootNode;
 import org.cytoscape.clustnsee3.internal.gui.widget.CnSPanel;
@@ -32,7 +37,7 @@ import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeAnnotationFile;
 /**
  * 
  */
-public class CnSAFTreeDetailsNodePanel extends CnSPanelTreePanel {
+public class CnSAFTreeDetailsNodePanel extends CnSPanelTreePanel implements TreeExpansionListener {
 	private static final long serialVersionUID = -3595555738562109511L;
 	private static final int ANNOTATION_FILE = 1;
 	private static final int NB_ANNOTATIONS = 2;
@@ -88,7 +93,7 @@ public class CnSAFTreeDetailsNodePanel extends CnSPanelTreePanel {
 		networksTree.setCellRenderer(new CnSPanelTreeCellRenderer());
 		networksTree.setCellEditor(new CnSPanelTreeCellEditor());
 		addComponent(networksTree, 0, 3, 2, 1, 1.0, 1.0, CnSPanel.CENTER ,CnSPanel.BOTH, 5, 10, 5, 10, 0, 0);
-		
+		networksTree.addTreeExpansionListener(this);
 		setBackground(Color.WHITE);
 		setOpaque(false);
 	}
@@ -97,5 +102,25 @@ public class CnSAFTreeDetailsNodePanel extends CnSPanelTreePanel {
 	}
 	public CnSNetworksTreeModel getNetworksTreeModel() {
 		return networksTreeModel;
+	}
+
+	/* (non-Javadoc)
+	 * @see javax.swing.event.TreeExpansionListener#treeExpanded(javax.swing.event.TreeExpansionEvent)
+	 */
+	@Override
+	public void treeExpanded(TreeExpansionEvent event) {
+		System.err.println("Expanded : " + event.getPath());
+		networksTreeModel.nodeStructureChanged(rootNode);
+		repaint();
+		CnSEvent ev = new CnSEvent(CnSControlPanel.REFRESH, CnSEventManager.CONTROL_PANEL);
+		CnSEventManager.handleMessage(ev);
+	}
+
+	/* (non-Javadoc)
+	 * @see javax.swing.event.TreeExpansionListener#treeCollapsed(javax.swing.event.TreeExpansionEvent)
+	 */
+	@Override
+	public void treeCollapsed(TreeExpansionEvent event) {
+		System.err.println("Collapsed : " + event.getPath());
 	}
 }
