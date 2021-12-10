@@ -13,25 +13,34 @@
 
 package org.cytoscape.clustnsee3.internal.nodeannotation;
 
+import java.util.Vector;
+
 /**
  * 
  */
 public class CnSAnnotationTarget {
-	private CnSNodeAnnotationFile file;
+	private Vector<CnSNodeAnnotationFile> files;
 	private String target;
 	
 	public CnSAnnotationTarget(String node, CnSNodeAnnotationFile file) {
 		target = node;
-		this.file = file;
+		files = new Vector<CnSNodeAnnotationFile>();
+		files.addElement(file);
+	}
+	public void addFile(CnSNodeAnnotationFile file) {
+		files.addElement(file);
+	}
+	public void removeFile(CnSNodeAnnotationFile file) {
+		files.removeElement(file);
 	}
 	public String getTarget() {
 		return target;
 	}
-	public CnSNodeAnnotationFile getFile() {
-		return file;
+	public Vector<CnSNodeAnnotationFile> getFiles() {
+		return files;
 	}
 	public boolean equals(Object o) {
 		CnSAnnotationTarget t = (CnSAnnotationTarget)o;
-		return t.getFile().toString().equals(file.toString());
+		return /*t.getFile().toString().equals(file.toString()) &&*/ target.equals(t.getTarget());
 	}
 }

@@ -18,6 +18,7 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 
+import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
 
@@ -26,7 +27,7 @@ import org.cytoscape.clustnsee3.internal.gui.widget.CnSButton;
 /**
  * 
  */
-public abstract class CnSPanelTreeNode implements MutableTreeNode, ActionListener {
+public abstract class CnSPanelTreeNode extends DefaultMutableTreeNode implements ActionListener {
 	private Hashtable<Integer, Object> data;
 	protected Vector<CnSPanelTreeNode> children;
 	protected CnSPanelTreeNode parent;

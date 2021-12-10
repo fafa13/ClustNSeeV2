@@ -30,7 +30,11 @@ public class CnSNodeAnnotation implements Comparable<CnSNodeAnnotation> {
 		targets = new Vector<CnSAnnotationTarget>();
 	}
 	public void addTarget(String node, CnSNodeAnnotationFile file) {
-		targets.addElement(new CnSAnnotationTarget(node, file));
+		CnSAnnotationTarget at = new CnSAnnotationTarget(node, file);
+		if (! targets.contains(at))
+			targets.addElement(at);
+		else 
+			targets.get(targets.indexOf(at)).addFile(file);
 	}
 	public String getValue() {
 		return trieNode.getWord();

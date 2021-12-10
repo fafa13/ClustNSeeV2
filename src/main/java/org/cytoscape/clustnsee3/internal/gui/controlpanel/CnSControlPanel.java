@@ -11,6 +11,7 @@ import javax.swing.Icon;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.border.TitledBorder;
+import javax.swing.tree.TreePath;
 
 import org.cytoscape.application.CyApplicationManager;
 import org.cytoscape.application.swing.CytoPanelComponent;
@@ -102,7 +103,7 @@ public class CnSControlPanel extends CnSPanel implements CytoPanelComponent, CnS
 		jsp2.getViewport().setPreferredSize(new Dimension(0, 10*26));
 		treeImportAnnotationPanel.addComponent(jsp2, 0, 0, 2, 1, 1.0, 1.0, NORTH, BOTH, 0, 0, 0, 0, 0, 0);
 		treeImportAnnotationPanel.initGraphics();
-		mainPanel.addComponent(treeImportAnnotationPanel, 0, 2, 1, 1, 1.0, 1.0, NORTH, HORIZONTAL, 10, 0, 0, 0, 0, 0);
+		mainPanel.addComponent(treeImportAnnotationPanel, 0, 2, 1, 1, 1.0, 1.0, NORTH, BOTH, 10, 0, 0, 0, 0, 0);
 		
 		addComponent(mainPanel, 0, 0, 1, 1, 1.0, 1.0, NORTH, BOTH, 0, 0, 0, 0, 0, 0);
 		
@@ -144,15 +145,22 @@ public class CnSControlPanel extends CnSPanel implements CytoPanelComponent, CnS
 				CnSAFTreeDetailsNode detailsNode = (CnSAFTreeDetailsNode)tfn.getChildAt(0);
 				CnSAFTreeDetailsNodePanel detailsNodePanel = (CnSAFTreeDetailsNodePanel)detailsNode.getPanel();
 				networksTreeModel = detailsNodePanel.getNetworksTreeModel();
-				networksTreeModel.addNetwork(tfn, network, af, (Integer)event.getParameter(MAPPED_ANNOTATIONS),
+				CnSAFTreeNetworkNetnameNode nnn = networksTreeModel.addNetwork(network, af, (Integer)event.getParameter(MAPPED_ANNOTATIONS),
 						(Integer)event.getParameter(MAPPED_NODES), (Integer)event.getParameter(NETWORK_NODES), 
 						(Integer)event.getParameter(FILE_ANNOTATIONS));
+				tree.scrollPathToVisible(new TreePath(nnn.getPath()));
+				//tree.revalidate();
+				//tree.repaint();
+				//detailsNodePanel.initGraphics();
+				detailsNodePanel.revalidate();
+				detailsNodePanel.repaint();
 				break;
 				
 			case REMOVE_MAPPED_NETWORK:
 				CnSAFTreeNetworkNetnameNode tnn = (CnSAFTreeNetworkNetnameNode)event.getParameter(TREE_FILE_NODE);
 				networksTreeModel = ((CnSAFTreeNetworksRootNode)tnn.getParent()).getDetailsNodePanel().getNetworksTreeModel();
 				networksTreeModel.removeNetwork(tnn, network, af);
+				((CnSAFTreeNetworksRootNode)tnn.getParent()).getDetailsNodePanel().repaint();
 				break;
 		}
 		return null;
