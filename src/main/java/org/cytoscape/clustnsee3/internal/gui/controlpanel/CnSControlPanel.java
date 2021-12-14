@@ -153,7 +153,7 @@ public class CnSControlPanel extends CnSPanel implements CytoPanelComponent, CnS
 				networksTreeModel.nodeStructureChanged(nnn);
 				//tree.revalidate();
 				//tree.repaint();
-				//detailsNodePanel.initGraphics();
+				detailsNodePanel.initGraphics();
 				detailsNodePanel.revalidate();
 				detailsNodePanel.repaint();
 				break;

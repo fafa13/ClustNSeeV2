@@ -218,7 +218,7 @@ public class CnSNodeAnnotationManager implements CnSEventListener {
 				value = (String)event.getParameter(VALUE);
 				//node = (CyNode)event.getParameter(NODE);
 				inputFile = (File)event.getParameter(FILE);
-				CnSTrieNode w = annotationTrie.addWord(value);
+				//CnSTrieNode w = annotationTrie.addWord(value);
 				//addAnnotation(w, node, inputFile);0102391
 				break;
 				
@@ -230,7 +230,7 @@ public class CnSNodeAnnotationManager implements CnSEventListener {
 			case REMOVE_NODE_ANNOTATION :
 				//node = (CyNode)event.getParameter(NODE);
 				value = (String)event.getParameter(VALUE);
-				w = annotationTrie.get(value);
+				//w = annotationTrie.get(value);
 				//annotation = new CnSNodeAnnotation(w, null);
 				//nodes = annotations.get(annotation);
 				//if (nodes != null) nodes.removeElement(node);
