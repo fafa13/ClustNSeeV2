@@ -118,17 +118,17 @@
 		<dependency>
 			<groupId>org.cytoscape</groupId>
 			<artifactId>service-api</artifactId>
-			<version>3.2.0</version>
+			<version>3.8.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.cytoscape</groupId>
 			<artifactId>swing-application-api</artifactId>
-			<version>3.2.0</version>
+			<version>3.8.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.cytoscape</groupId>
 			<artifactId>session-api</artifactId>
-			<version>3.2.0</version>
+			<version>3.8.0</version>
 		</dependency>
 
 		<!-- Logging -->
@@ -148,16 +148,8 @@
 			<groupId>org.cytoscape</groupId>
 			<artifactId>app-api</artifactId>
 			<scope>provided</scope>
-			</dependency>
+			<version>3.8.0</version>
+		</dependency>
 	</dependencies>
 
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>org.cytoscape</groupId>
-				<artifactId>app-api</artifactId>
-				<version>3.1.0</version>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
 </project>
