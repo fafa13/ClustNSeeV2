@@ -33,21 +33,20 @@ public class CnSAFTreeModel extends CnSPanelTreeModel {
 		super(treeNode);
 	}
 	
-	public void setRootNode(CnSPanelTreeNode treeNode) {
-		
-	}
-
 	public void addAnnotationFile(CnSPanelTreeNode parent, CnSNodeAnnotationFile annotationFile, int nbAnnotations, int nbNodes) {
+		CnSAFTreeFileNode node = null;
 		if (!contains(annotationFile.getFile())) {
 			Hashtable<Integer, Object> v = new Hashtable<Integer, Object>();
 			v.put(CnSAFTreeFileNode.ANNOTATION_FILE, annotationFile);
 			v.put(CnSAFTreeFileNode.NB_ANNOTATIONS, nbAnnotations);
 			v.put(CnSAFTreeFileNode.NB_NODES, nbNodes);
-			CnSAFTreeFileNode node = new CnSAFTreeFileNode(parent, v);
+			node = new CnSAFTreeFileNode(v);
 			node.setEditable(true);
 			node.getPanel().initGraphics();
-			insertNodeInto(node, parent, root.getChildCount());
-			CnSAFTreeDetailsNode detailsNode = new CnSAFTreeDetailsNode(node, v);
+			System.err.println("node : " + node.getClass());
+			System.err.println("parent : " + parent.getClass());
+			insertNodeInto(node, parent, parent.getChildCount());
+			CnSAFTreeDetailsNode detailsNode = new CnSAFTreeDetailsNode(v);
 			detailsNode.setEditable(true);
 			detailsNode.getPanel().deriveFont(11);
 			detailsNode.getPanel().initGraphics();
@@ -56,7 +55,7 @@ public class CnSAFTreeModel extends CnSPanelTreeModel {
 	}
 	
 	public boolean contains(File f) {
-		Enumeration<CnSPanelTreeNode> nodes = rootNode.children();
+		Enumeration<CnSPanelTreeNode> nodes = (Enumeration<CnSPanelTreeNode>)(((CnSPanelTreeNode)getRoot()).children());
 		while (nodes.hasMoreElements()) {
 			CnSPanelTreeNode node = nodes.nextElement();
 			CnSNodeAnnotationFile af = (CnSNodeAnnotationFile)node.getData(CnSAFTreeFileNode.ANNOTATION_FILE);

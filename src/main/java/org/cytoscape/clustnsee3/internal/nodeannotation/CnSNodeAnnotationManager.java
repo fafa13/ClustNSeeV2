@@ -198,7 +198,8 @@ public class CnSNodeAnnotationManager implements CnSEventListener {
 							}
 					}
 					br.close();
-					makeAnnotations();
+					addAnnotations(aif);
+					//makeAnnotations();
 					//printAnnotations();
 					makeCyNodesHashMap();
 					makeClustersHashMap();
@@ -217,7 +218,7 @@ public class CnSNodeAnnotationManager implements CnSEventListener {
 				value = (String)event.getParameter(VALUE);
 				//node = (CyNode)event.getParameter(NODE);
 				inputFile = (File)event.getParameter(FILE);
-				CnSTrieNode w = annotationTrie.addWord(value);
+				//CnSTrieNode w = annotationTrie.addWord(value);
 				//addAnnotation(w, node, inputFile);0102391
 				break;
 				
@@ -229,7 +230,7 @@ public class CnSNodeAnnotationManager implements CnSEventListener {
 			case REMOVE_NODE_ANNOTATION :
 				//node = (CyNode)event.getParameter(NODE);
 				value = (String)event.getParameter(VALUE);
-				w = annotationTrie.get(value);
+				//w = annotationTrie.get(value);
 				//annotation = new CnSNodeAnnotation(w, null);
 				//nodes = annotations.get(annotation);
 				//if (nodes != null) nodes.removeElement(node);
@@ -325,7 +326,7 @@ public class CnSNodeAnnotationManager implements CnSEventListener {
 				CyNode cn;
 				for (CnSNodeAnnotation na : annotations.keySet()) {
 					for (CnSAnnotationTarget t : na.getTargets()) {
-						if (t.getFile() == af)
+						if (t.getFiles().contains(af))
 							if (netNodes.contains(t.getTarget())) {
 								nodes = getNodesWithValue(network, network.getDefaultNodeTable(), "shared name", t.getTarget());
 								cn = nodes.iterator().next();
@@ -437,11 +438,12 @@ public class CnSNodeAnnotationManager implements CnSEventListener {
 		return annotation;
 	}*/
 	
-	private void makeAnnotations() {
+/*	private void makeAnnotations() {
 		CnSTrieNode ann;
 		Iterator<CnSTrieNode> it;
 		CnSNodeAnnotation nodeAnnotation;
 		Vector<CyNode> cyNodes;
+		int N = 0;
 		
 		annotations.clear();
 		for (CnSNodeAnnotationFile file : files) {
@@ -452,19 +454,52 @@ public class CnSNodeAnnotationManager implements CnSEventListener {
 					nodeAnnotation = new CnSNodeAnnotation(ann);
 					ann.setAnnotation(nodeAnnotation);
 					cyNodes = new Vector<CyNode>();
-					//System.err.print(++N + "New annotation : ");
+					System.err.print(++N + " New annotation : ");
 				}
 				else {
 					nodeAnnotation = ann.getAnnotation();
 					cyNodes = annotations.get(nodeAnnotation);
-					//System.err.print(++N + "Annotation : ");
+					System.err.print(++N + " Annotation : (" + cyNodes + ") ");
 				}
 				for (String tar : file.getTargets(ann)) nodeAnnotation.addTarget(tar, file);
 				annotations.put(nodeAnnotation, cyNodes);
-				//System.err.println(nodeAnnotation.getValue() + " -> " + cyNodes);
+				System.err.println(nodeAnnotation.getValue() + " -> " + cyNodes + " ; " + nodeAnnotation.getTargets().size() + " targets");
 			}
 		}
+	}*/
+	
+	/**
+	 * 
+	 * @param
+	 * @return
+	 */
+	private void addAnnotations(CnSNodeAnnotationFile aif) {
+		Iterator<CnSTrieNode> it = aif.getAllAnnotations().iterator();
+		CnSTrieNode ann;
+		CnSNodeAnnotation nodeAnnotation;
+		Vector<CyNode> cyNodes;
+		int N = 0;
+		while (it.hasNext()) {
+			ann = it.next();
+			if (ann.getAnnotation() == null) {
+				nodeAnnotation = new CnSNodeAnnotation(ann);
+				ann.setAnnotation(nodeAnnotation);
+				cyNodes = new Vector<CyNode>();
+				System.err.print(++N + " New annotation : ");
+			}
+			else {
+				nodeAnnotation = ann.getAnnotation();
+				cyNodes = annotations.get(nodeAnnotation);
+				System.err.print(++N + " Annotation : (" + cyNodes + ") ");
+			}
+			for (String tar : aif.getTargets(ann)) nodeAnnotation.addTarget(tar, aif);
+			annotations.put(nodeAnnotation, cyNodes);
+			System.err.print(nodeAnnotation.getValue() + " -> " + cyNodes + " ; " + nodeAnnotation.getTargets().size() + " targets :");
+			for (CnSAnnotationTarget at : nodeAnnotation.getTargets()) System.err.print(" " + at.getTarget() + "(" + at.getFiles().size() + ")");
+			System.err.println();
+		}
 	}
+
 	
 	private void makeCyNodesHashMap() {
 		cyNodes.clear();
