@@ -91,6 +91,18 @@ public class CnSAFTreeDetailsNodePanel extends CnSPanelTreePanel implements Tree
 		label.setFont(font.deriveFont(Font.PLAIN, 11));
 		addComponent(label, 1, 2, 1, 1, 0.0, 0.0, CnSPanel.WEST ,CnSPanel.NONE, 5, 5, 0, 10, 0, 0);
 		
+		Hashtable<Integer, Object> v= new Hashtable<Integer, Object>();
+		v.put(CnSAFTreeNetworksRootNode.TITLE, "Networks");
+		rootNode = new CnSAFTreeNetworksRootNode(v);
+		rootNode.getPanel().deriveFont(Font.PLAIN, 12);
+		rootNode.getPanel().initGraphics();
+		
+		networksTreeModel = new CnSNetworksTreeModel(rootNode);
+		
+		networksTree = new CnSPanelTree(networksTreeModel);
+		networksTree.setShowsRootHandles(true);
+		networksTree.setCellRenderer(new CnSPanelTreeCellRenderer());
+		networksTree.setCellEditor(new CnSPanelTreeCellEditor());
 		addComponent(networksTree, 0, 3, 2, 1, 1.0, 1.0, CnSPanel.CENTER ,CnSPanel.BOTH, 5, 10, 5, 10, 0, 0);
 		
 		setBackground(Color.WHITE);
