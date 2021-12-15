@@ -13,92 +13,53 @@
 
 package org.cytoscape.clustnsee3.internal.gui.widget.paneltree;
 
+import java.util.Vector;
+
 import javax.swing.event.TreeModelListener;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 
-/**
- * 
- */
-public class CnSPanelTreeModel extends DefaultTreeModel {
-	private static final long serialVersionUID = -756318152964187525L;
+public class CnSPanelTreeModel implements TreeModel {
 	protected CnSPanelTreeNode rootNode;
+	private Vector<TreeModelListener> listeners;
 	
-	/**
-	 * @param
-	 * @return
-	 */
 	public CnSPanelTreeModel(CnSPanelTreeNode treeNode) {
-		super(treeNode);
+		super();
+		System.err.println("init tree model !!!");
 		rootNode = treeNode;
+		listeners = new Vector<TreeModelListener>();
 	}
 	
-	public CnSPanelTreeNode getRootNode() {
-		return rootNode;
-	}
-
-	/* (non-Javadoc)
-	 * @see javax.swing.tree.TreeModel#addTreeModelListener(javax.swing.event.TreeModelListener)
-	 */
-	@Override
-	public void addTreeModelListener(TreeModelListener listener) {
-		super.addTreeModelListener(listener);
-	}
-
-	/* (non-Javadoc)
-	 * @see javax.swing.tree.TreeModel#getChild(java.lang.Object, int)
-	 */
-	@Override
-	public Object getChild(Object parent, int index) {
-		return ((CnSPanelTreeNode)parent).getChildAt(index);
-	}
-
-	/* (non-Javadoc)
-	 * @see javax.swing.tree.TreeModel#getChildCount(java.lang.Object)
-	 */
-	@Override
-	public int getChildCount(Object parent) {
-		return ((CnSPanelTreeNode)parent).getChildCount();
-	}
-
-	/* (non-Javadoc)
-	 * @see javax.swing.tree.TreeModel#getIndexOfChild(java.lang.Object, java.lang.Object)
-	 */
-	@Override
-	public int getIndexOfChild(Object parent, Object child) {
-		return ((CnSPanelTreeNode)parent).getIndex((TreeNode)child);
-	}
-
-	/* (non-Javadoc)
-	 * @see javax.swing.tree.TreeModel#getRoot()
-	 */
-	@Override
 	public Object getRoot() {
 		return rootNode;
 	}
 
-	/* (non-Javadoc)
-	 * @see javax.swing.tree.TreeModel#isLeaf(java.lang.Object)
-	 */
-	@Override
+	public Object getChild(Object parent, int index) {
+		return ((CnSPanelTreeNode)parent).getChildAt(index);
+	}
+
+	public int getChildCount(Object parent) {
+		return ((CnSPanelTreeNode)parent).getChildCount();
+	}
+
 	public boolean isLeaf(Object node) {
-		return ((CnSPanelTreeNode)node).isLeaf();
+		return ((CnSPanelTreeNode)node).getChildCount() == 0;
 	}
 
-	/* (non-Javadoc)
-	 * @see javax.swing.tree.TreeModel#removeTreeModelListener(javax.swing.event.TreeModelListener)
-	 */
-	@Override
-	public void removeTreeModelListener(TreeModelListener listener) {
-		super.removeTreeModelListener(listener);
-	}
-
-	/* (non-Javadoc)
-	 * @see javax.swing.tree.TreeModel#valueForPathChanged(javax.swing.tree.TreePath, java.lang.Object)
-	 */
-	@Override
 	public void valueForPathChanged(TreePath path, Object newValue) {
-		super.valueForPathChanged(path, newValue);
+		System.err.println("Value for path " + path + " has changed.");
 	}
+	
+	public int getIndexOfChild(Object parent, Object child) {
+		return ((CnSPanelTreeNode)parent).getIndex((CnSPanelTreeNode)child);
+	}
+
+	public void addTreeModelListener(TreeModelListener listener) {
+		listeners.addElement(listener);
+	}
+
+	public void removeTreeModelListener(TreeModelListener listener) {
+		listeners.removeElement(listener);
+	}
+
 }

@@ -14,36 +14,34 @@
 package org.cytoscape.clustnsee3.internal.gui.widget.paneltree;
 
 import java.awt.event.ActionListener;
+import java.util.Enumeration;
 import java.util.Hashtable;
-
-import javax.swing.tree.DefaultMutableTreeNode;
+import java.util.Vector;
 
 import org.cytoscape.clustnsee3.internal.gui.widget.CnSButton;
 
-/**
- * 
- */
-public abstract class CnSPanelTreeNode extends DefaultMutableTreeNode implements ActionListener {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 2180665833624336648L;
+public abstract class CnSPanelTreeNode implements ActionListener {
 	private Hashtable<Integer, Object> data;
 	protected CnSPanelTreePanel panel;
 	private boolean editable;
+	private CnSPanelTreeNode parent;
+	private Vector<CnSPanelTreeNode> children;
 	
-	public CnSPanelTreeNode() {
-		super();
+	public CnSPanelTreeNode(CnSPanelTreeNode parent) {
 		panel = new CnSPanelTreePanel();
 		editable = false;
+		this.parent = parent;
+		children = new Vector<CnSPanelTreeNode>();
+		if (parent != null) parent.addChild(this);
 	}
-	public CnSPanelTreeNode(CnSPanelTreeNode parent) {
-		this();
-		setParent(parent);
-	}
-	public CnSPanelTreeNode(Hashtable<Integer, Object> v) {
-		this();
+	public CnSPanelTreeNode(CnSPanelTreeNode parent, Hashtable<Integer, Object> v) {
+		this(parent);
 		data = v;
+	}
+	public abstract Object getValue();
+	
+	public CnSPanelTreeNode getParent() {
+		return parent;
 	}
 	public Object getData(int key) {
 		return data.get(key);
@@ -60,8 +58,26 @@ public abstract class CnSPanelTreeNode extends DefaultMutableTreeNode implements
 	public void setEditable(boolean ed) {
 		editable = ed;
 	}
-	public void addActionListener(ActionListener actionListener) {
-		
+	public int getChildCount() {
+		return children.size();
 	}
-	
+	public CnSPanelTreeNode getChildAt(int index) {
+		return children.elementAt(index);
+	}
+	public int getIndex(CnSPanelTreeNode node) {
+		return children.indexOf(node);
+	}
+	public void addChild(CnSPanelTreeNode child) {
+		children.addElement(child);
+	}
+	public void removeChild(CnSPanelTreeNode child) {
+		children.removeElement(child);
+	}
+	public void removeFromParent() {
+		parent.removeChild(this);
+	}
+	public Enumeration<CnSPanelTreeNode> children() {
+		return children.elements();
+	}
+//	public abstract void addActionListener(ActionListener actionListener);
 }

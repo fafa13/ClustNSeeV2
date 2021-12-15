@@ -23,6 +23,7 @@ import javax.swing.JOptionPane;
 import org.cytoscape.clustnsee3.internal.CyActivator;
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
+import org.cytoscape.clustnsee3.internal.gui.controlpanel.CnSControlPanel;
 import org.cytoscape.clustnsee3.internal.gui.controlpanel.annotationfiletree.CnSAFTreeModel;
 import org.cytoscape.clustnsee3.internal.gui.dialog.CnSLoadAnnotationFileDialog;
 import org.cytoscape.clustnsee3.internal.gui.partitionpanel.CnSPartitionPanel;
@@ -33,15 +34,7 @@ import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeAnnotationFile;
 import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeAnnotationManager;
 import org.cytoscape.clustnsee3.internal.partition.CnSPartition;
 
-/**
- * 
- */
 public class CnSAFTreeRootNode extends CnSPanelTreeNode {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -2332524172357528722L;
-
 	public static final int TITLE = 1;
 	
 	private CnSAFTreeModel treeModel;
@@ -51,7 +44,7 @@ public class CnSAFTreeRootNode extends CnSPanelTreeNode {
 	 * @return
 	 */
 	public CnSAFTreeRootNode(Hashtable<Integer, Object> v) {
-		super();
+		super(null, v);
 		panel = new CnSAFTreeRootNodePanel(v.get(TITLE).toString());
 		((CnSAFTreeRootNodePanel)panel).getAddButton().addActionListener(this);
 	}
@@ -86,9 +79,10 @@ public class CnSAFTreeRootNode extends CnSPanelTreeNode {
 						ev = new CnSEvent(CnSPartitionPanel.INIT, CnSEventManager.PARTITION_PANEL);
 						if (partition != null) ev.addParameter(CnSPartitionPanel.PARTITION, partition);
 						CnSEventManager.handleMessage(ev);
-						
 						treeModel.addAnnotationFile(this, annotationFile, annotationFile.getAllAnnotations().size(), annotationFile.getAllTargets().size());
-						treeModel.nodeStructureChanged(this);
+						treeModel.printStructure(this, 0);
+						ev = new CnSEvent(CnSControlPanel.REFRESH, CnSEventManager.CONTROL_PANEL);
+						CnSEventManager.handleMessage(ev);
 					}
 					else {
 						JOptionPane.showMessageDialog(null, "Annotation file " + dialog.getSelectedFile().getName() + " is already loaded.");
@@ -96,5 +90,14 @@ public class CnSAFTreeRootNode extends CnSPanelTreeNode {
 				}
 			}
 		}
+	}
+
+	/* (non-Javadoc)
+	 * @see org.cytoscape.clustnsee3.internal.gui.widget.paneltree.CnSPanelTreeNode#getValue()
+	 */
+	@Override
+	public Object getValue() {
+		// TODO Auto-generated method stub
+		return ((CnSAFTreeRootNodePanel)panel).getValue();
 	}
 }

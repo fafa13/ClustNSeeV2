@@ -11,7 +11,6 @@ import javax.swing.Icon;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.border.TitledBorder;
-import javax.swing.tree.TreePath;
 
 import org.cytoscape.application.CyApplicationManager;
 import org.cytoscape.application.swing.CytoPanelComponent;
@@ -33,6 +32,7 @@ import org.cytoscape.clustnsee3.internal.gui.widget.CnSPanel;
 import org.cytoscape.clustnsee3.internal.gui.widget.paneltree.CnSPanelTree;
 import org.cytoscape.clustnsee3.internal.gui.widget.paneltree.CnSPanelTreeCellEditor;
 import org.cytoscape.clustnsee3.internal.gui.widget.paneltree.CnSPanelTreeCellRenderer;
+import org.cytoscape.clustnsee3.internal.gui.widget.paneltree.CnSPanelTreeNode;
 import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeAnnotationFile;
 import org.cytoscape.clustnsee3.internal.task.CnSAnalyzeTask;
 import org.cytoscape.model.CyNetwork;
@@ -146,14 +146,17 @@ public class CnSControlPanel extends CnSPanel implements CytoPanelComponent, CnS
 				CnSAFTreeDetailsNode detailsNode = (CnSAFTreeDetailsNode)tfn.getChildAt(0);
 				CnSAFTreeDetailsNodePanel detailsNodePanel = (CnSAFTreeDetailsNodePanel)detailsNode.getPanel();
 				networksTreeModel = detailsNodePanel.getNetworksTreeModel();
-				CnSAFTreeNetworkNetnameNode nnn = networksTreeModel.addNetwork(network, af, (Integer)event.getParameter(MAPPED_ANNOTATIONS),
+				networksTreeModel.addNetwork(network, af, (Integer)event.getParameter(MAPPED_ANNOTATIONS),
 						(Integer)event.getParameter(MAPPED_NODES), (Integer)event.getParameter(NETWORK_NODES), 
 						(Integer)event.getParameter(FILE_ANNOTATIONS));
-				tree.scrollPathToVisible(new TreePath(nnn.getPath()));
-				networksTreeModel.nodeStructureChanged(nnn);
+				networksTreeModel.printStructure((CnSPanelTreeNode) networksTreeModel.getRoot(), 0);
+				//tree.scrollPathToVisible(new TreePath(nnn.getPath()));
+				//networksTreeModel.nodeStructureChanged(nnn);
 				//tree.revalidate();
 				//tree.repaint();
-				detailsNodePanel.initGraphics();
+				//tree.treeDidChange();
+				//detailsNodePanel.initGraphics();
+				detailsNodePanel.getNetworksTree().updateUI();
 				detailsNodePanel.revalidate();
 				detailsNodePanel.repaint();
 				break;
@@ -166,6 +169,7 @@ public class CnSControlPanel extends CnSPanel implements CytoPanelComponent, CnS
 				break;
 				
 			case REFRESH :
+				tree.updateUI();
 				treeImportAnnotationPanel.invalidate();
 				treeImportAnnotationPanel.repaint();
 				invalidate();

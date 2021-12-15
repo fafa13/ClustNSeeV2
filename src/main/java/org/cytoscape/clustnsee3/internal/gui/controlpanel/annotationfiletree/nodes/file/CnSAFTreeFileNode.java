@@ -25,6 +25,7 @@ import org.cytoscape.clustnsee3.internal.CyActivator;
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
 import org.cytoscape.clustnsee3.internal.gui.controlpanel.CnSControlPanel;
+import org.cytoscape.clustnsee3.internal.gui.controlpanel.annotationfiletree.nodes.root.CnSAFTreeRootNode;
 import org.cytoscape.clustnsee3.internal.gui.dialog.CnSAnnotationFileStatsDialog;
 import org.cytoscape.clustnsee3.internal.gui.widget.CnSButton;
 import org.cytoscape.clustnsee3.internal.gui.widget.paneltree.CnSPanelTreeNode;
@@ -32,20 +33,13 @@ import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeAnnotationFile;
 import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeAnnotationManager;
 import org.cytoscape.model.CyNetwork;
 
-/**
- * 
- */
 public class CnSAFTreeFileNode extends CnSPanelTreeNode {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 7940428368628376899L;
 	public final static int ANNOTATION_FILE = 1;
 	public final static int NB_ANNOTATIONS = 2;
 	public final static int NB_NODES = 3;
 	
-	public CnSAFTreeFileNode(Hashtable<Integer, Object> v) {
-		super(v);
+	public CnSAFTreeFileNode(CnSAFTreeRootNode parent, Hashtable<Integer, Object> v) {
+		super(parent, v);
 		panel = new CnSAFTreeFileNodePanel((CnSNodeAnnotationFile)v.get(ANNOTATION_FILE));
 		panel.initGraphics();
 		((CnSAFTreeFileNodePanel)panel).getDeleteButton().addActionListener(this);
@@ -93,6 +87,7 @@ public class CnSAFTreeFileNode extends CnSPanelTreeNode {
 						ev.addParameter(CnSControlPanel.MAPPED_ANNOTATIONS, results[3]);
 						ev.addParameter(CnSControlPanel.NETWORK_NODES, results[4]);
 						ev.addParameter(CnSControlPanel.FILE_ANNOTATIONS, results[5]);
+						ev.addParameter(CnSControlPanel.ANNOTATION_FILE, getData(ANNOTATION_FILE));
 						CnSEventManager.handleMessage(ev);
 					}
 				}
@@ -100,5 +95,13 @@ public class CnSAFTreeFileNode extends CnSPanelTreeNode {
 					JOptionPane.showMessageDialog(null, "There is no network to map annotations !");
 			}
 		}
+	}
+
+	/* (non-Javadoc)
+	 * @see org.cytoscape.clustnsee3.internal.gui.widget.paneltree.CnSPanelTreeNode#getValue()
+	 */
+	@Override
+	public Object getValue() {
+		return ((CnSAFTreeFileNodePanel)panel).getValue();
 	}
 }

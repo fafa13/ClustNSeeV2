@@ -59,4 +59,12 @@ public class CnSAFTreeNetworkNetnameDetailsNodePanel extends CnSPanelTreePanel {
 		setBackground(Color.WHITE);
 		setOpaque(false);
 	}
+	/**
+	 * 
+	 * @param
+	 * @return
+	 */
+	public Object getValue() {
+		 return value;
+	}
 }

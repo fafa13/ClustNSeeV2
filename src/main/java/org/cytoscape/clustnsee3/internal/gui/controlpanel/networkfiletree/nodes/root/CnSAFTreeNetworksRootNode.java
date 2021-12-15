@@ -28,7 +28,7 @@ public class CnSAFTreeNetworksRootNode extends CnSPanelTreeNode {
 	
 	private CnSAFTreeDetailsNodePanel detailsNodePanel;
 	public CnSAFTreeNetworksRootNode(Hashtable<Integer, Object> v) {
-		super();
+		super(null, v);
 		panel = new CnSAFTreeNetworksRootNodePanel(v.get(TITLE).toString());
 		detailsNodePanel = (CnSAFTreeDetailsNodePanel)v.get(DETAILS_NODE_PANEL);
 	}
@@ -43,5 +43,13 @@ public class CnSAFTreeNetworksRootNode extends CnSPanelTreeNode {
 	}
 	public CnSAFTreeDetailsNodePanel getDetailsNodePanel() {
 		return detailsNodePanel;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.cytoscape.clustnsee3.internal.gui.widget.paneltree.CnSPanelTreeNode#getValue()
+	 */
+	@Override
+	public Object getValue() {
+		return ((CnSAFTreeNetworksRootNodePanel)panel).getValue();
 	}
 }

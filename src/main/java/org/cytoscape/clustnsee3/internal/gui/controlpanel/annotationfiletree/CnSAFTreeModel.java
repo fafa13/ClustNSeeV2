@@ -19,16 +19,12 @@ import java.util.Hashtable;
 
 import org.cytoscape.clustnsee3.internal.gui.controlpanel.annotationfiletree.nodes.details.CnSAFTreeDetailsNode;
 import org.cytoscape.clustnsee3.internal.gui.controlpanel.annotationfiletree.nodes.file.CnSAFTreeFileNode;
+import org.cytoscape.clustnsee3.internal.gui.controlpanel.annotationfiletree.nodes.root.CnSAFTreeRootNode;
 import org.cytoscape.clustnsee3.internal.gui.widget.paneltree.CnSPanelTreeModel;
 import org.cytoscape.clustnsee3.internal.gui.widget.paneltree.CnSPanelTreeNode;
 import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeAnnotationFile;
 
-/**
- * 
- */
 public class CnSAFTreeModel extends CnSPanelTreeModel {
-	private static final long serialVersionUID = 7818357834166609872L;
-	
 	public CnSAFTreeModel(CnSPanelTreeNode treeNode) {
 		super(treeNode);
 	}
@@ -40,17 +36,21 @@ public class CnSAFTreeModel extends CnSPanelTreeModel {
 			v.put(CnSAFTreeFileNode.ANNOTATION_FILE, annotationFile);
 			v.put(CnSAFTreeFileNode.NB_ANNOTATIONS, nbAnnotations);
 			v.put(CnSAFTreeFileNode.NB_NODES, nbNodes);
-			node = new CnSAFTreeFileNode(v);
+			node = new CnSAFTreeFileNode((CnSAFTreeRootNode)getRoot(), v);
 			node.setEditable(true);
-			node.getPanel().initGraphics();
+			//node.getPanel().initGraphics();
 			System.err.println("node : " + node.getClass());
 			System.err.println("parent : " + parent.getClass());
-			insertNodeInto(node, parent, parent.getChildCount());
-			CnSAFTreeDetailsNode detailsNode = new CnSAFTreeDetailsNode(parent, v);
+			//parent.addChild(node);
+			System.err.println("nb child : " + parent.getChildCount());
+			//insertNodeInto(node, parent, parent.getChildCount());
+			CnSAFTreeDetailsNode detailsNode = new CnSAFTreeDetailsNode(node, v);
 			detailsNode.setEditable(true);
 			detailsNode.getPanel().deriveFont(11);
 			detailsNode.getPanel().initGraphics();
-			insertNodeInto(detailsNode, node, node.getChildCount());
+			
+			//node.addChild(detailsNode);
+			//insertNodeInto(detailsNode, node, node.getChildCount());
 		}
 	}
 	
@@ -62,5 +62,14 @@ public class CnSAFTreeModel extends CnSPanelTreeModel {
 			if (af.getFile().getAbsolutePath().equals(f.getAbsolutePath())) return true;
 		}
 		return false;
+	}
+
+	public void printStructure(CnSPanelTreeNode node, int level) {
+		printNode(node, level);
+		for (int i = 0; i < node.getChildCount(); i++) printStructure(node.getChildAt(i), level + 1);
+	}
+	private void printNode(CnSPanelTreeNode node, int level) {
+		for (int i = 0; i < level; i++) System.err.print("  ");
+		System.err.println(node.getValue());
 	}
 }

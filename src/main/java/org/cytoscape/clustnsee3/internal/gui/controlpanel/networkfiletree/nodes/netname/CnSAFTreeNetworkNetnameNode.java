@@ -31,7 +31,7 @@ public class CnSAFTreeNetworkNetnameNode extends CnSPanelTreeNode {
 	private CyNetwork network;
 
 	public CnSAFTreeNetworkNetnameNode(CnSPanelTreeNode parent, Hashtable<Integer, Object> v) {
-		super(v);
+		super(parent, v);
 		network = (CyNetwork)v.get(NETWORK);
 		panel = new CnSAFTreeNetworkNetnameNodePanel(network.toString());
 		panel.initGraphics();
@@ -48,5 +48,13 @@ public class CnSAFTreeNetworkNetnameNode extends CnSPanelTreeNode {
 				System.err.println("Removing network : " + network.toString());
 			}
 		}
+	}
+
+	/* (non-Javadoc)
+	 * @see org.cytoscape.clustnsee3.internal.gui.widget.paneltree.CnSPanelTreeNode#getValue()
+	 */
+	@Override
+	public Object getValue() {
+		return ((CnSAFTreeNetworkNetnameNodePanel)panel).getValue();
 	}
 }

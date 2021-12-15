@@ -27,7 +27,7 @@ public class CnSAFTreeDetailsNode extends CnSPanelTreeNode {
 	 * @return
 	 */
 	public CnSAFTreeDetailsNode(CnSPanelTreeNode parent, Hashtable<Integer, Object> v) {
-		super(v);
+		super(parent, v);
 		panel = new CnSAFTreeDetailsNodePanel(v);
 	}
 
@@ -38,5 +38,13 @@ public class CnSAFTreeDetailsNode extends CnSPanelTreeNode {
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	/* (non-Javadoc)
+	 * @see org.cytoscape.clustnsee3.internal.gui.widget.paneltree.CnSPanelTreeNode#getValue()
+	 */
+	@Override
+	public Object getValue() {
+		return ((CnSAFTreeDetailsNodePanel)panel).getValue();
 	}
 }

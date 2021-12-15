@@ -16,22 +16,15 @@ package org.cytoscape.clustnsee3.internal.gui.controlpanel.networkfiletree.nodes
 import java.awt.event.ActionEvent;
 import java.util.Hashtable;
 
+import org.cytoscape.clustnsee3.internal.gui.controlpanel.networkfiletree.nodes.netname.CnSAFTreeNetworkNetnameNode;
 import org.cytoscape.clustnsee3.internal.gui.widget.paneltree.CnSPanelTreeNode;
 
-/**
- * 
- */
 public class CnSAFTreeNetworkNetnameDetailsNode extends CnSPanelTreeNode {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 4694232795562773696L;
-
-	public CnSAFTreeNetworkNetnameDetailsNode(Hashtable<Integer, Object> v) {
-		super(v);
+	public CnSAFTreeNetworkNetnameDetailsNode(CnSAFTreeNetworkNetnameNode parent, Hashtable<Integer, Object> v) {
+		super(parent, v);
 		panel = new CnSAFTreeNetworkNetnameDetailsNodePanel(v);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
 	 */
@@ -41,4 +34,11 @@ public class CnSAFTreeNetworkNetnameDetailsNode extends CnSPanelTreeNode {
 		
 	}
 
+	/* (non-Javadoc)
+	 * @see org.cytoscape.clustnsee3.internal.gui.widget.paneltree.CnSPanelTreeNode#getValue()
+	 */
+	@Override
+	public Object getValue() {
+		return ((CnSAFTreeNetworkNetnameDetailsNodePanel)panel).getValue();
+	}
 }

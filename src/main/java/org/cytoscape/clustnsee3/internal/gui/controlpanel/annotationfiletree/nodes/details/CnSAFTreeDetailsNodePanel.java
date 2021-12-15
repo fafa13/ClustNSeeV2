@@ -121,7 +121,6 @@ public class CnSAFTreeDetailsNodePanel extends CnSPanelTreePanel implements Tree
 	@Override
 	public void treeExpanded(TreeExpansionEvent event) {
 		System.err.println("Expanded : " + event.getPath());
-		networksTreeModel.nodeStructureChanged(rootNode);
 		repaint();
 		CnSEvent ev = new CnSEvent(CnSControlPanel.REFRESH, CnSEventManager.CONTROL_PANEL);
 		CnSEventManager.handleMessage(ev);
@@ -133,5 +132,17 @@ public class CnSAFTreeDetailsNodePanel extends CnSPanelTreePanel implements Tree
 	@Override
 	public void treeCollapsed(TreeExpansionEvent event) {
 		System.err.println("Collapsed : " + event.getPath());
+	}
+
+	/**
+	 * 
+	 * @param
+	 * @return
+	 */
+	public Object getValue() {
+		return value;
+	}
+	public CnSPanelTree getNetworksTree() {
+		return networksTree;
 	}
 }

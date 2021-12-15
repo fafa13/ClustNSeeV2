@@ -42,4 +42,13 @@ public class CnSAFTreeNetworksRootNodePanel extends CnSPanelTreePanel {
 		setBorder(null);
 		setOpaque(false);
 	}
+
+	/**
+	 * 
+	 * @param
+	 * @return
+	 */
+	public Object getValue() {
+		return value;
+	}
 }
