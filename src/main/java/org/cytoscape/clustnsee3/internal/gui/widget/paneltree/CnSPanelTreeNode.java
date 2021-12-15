@@ -15,18 +15,20 @@ package org.cytoscape.clustnsee3.internal.gui.widget.paneltree;
 
 import java.awt.event.ActionListener;
 import java.util.Hashtable;
-import java.util.Vector;
+
+import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.cytoscape.clustnsee3.internal.gui.widget.CnSButton;
 
 /**
  * 
  */
-public abstract class CnSPanelTreeNode implements ActionListener {
+public abstract class CnSPanelTreeNode extends DefaultMutableTreeNode implements ActionListener {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2180665833624336648L;
 	private Hashtable<Integer, Object> data;
-	private Vector<CnSPanelTreeNode> children;
-	private CnSPanelTreeNode parent;
-	
 	protected CnSPanelTreePanel panel;
 	private boolean editable;
 	
@@ -37,7 +39,7 @@ public abstract class CnSPanelTreeNode implements ActionListener {
 	}
 	public CnSPanelTreeNode(CnSPanelTreeNode parent) {
 		this();
-		this.parent = parent;
+		setParent(parent);
 	}
 	public CnSPanelTreeNode(Hashtable<Integer, Object> v) {
 		this();
@@ -61,18 +63,5 @@ public abstract class CnSPanelTreeNode implements ActionListener {
 	public void addActionListener(ActionListener actionListener) {
 		
 	}
-	public CnSPanelTreeNode getChildAt(int index) {
-		return children.elementAt(index);
-	}
-	public int getChildCount() {
-		return children.size();
-	}
-	/**
-	 * 
-	 * @param
-	 * @return
-	 */
-	public int getIndexOfChild(CnSPanelTreeNode child) {
-		return children.indexOf(child);
-	}
+	
 }

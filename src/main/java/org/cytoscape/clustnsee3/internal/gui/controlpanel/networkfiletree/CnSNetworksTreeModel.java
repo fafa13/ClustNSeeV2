@@ -40,7 +40,7 @@ public class CnSNetworksTreeModel extends CnSPanelTreeModel {
 		Hashtable<Integer, Object> v = new Hashtable<Integer, Object>();
 		v.put(CnSAFTreeNetworkNetnameNode.NETWORK, network);
 		v.put(CnSAFTreeNetworkNetnameNode.ANNOTATION_FILE, af);
-		CnSAFTreeNetworkNetnameNode networkNode = new CnSAFTreeNetworkNetnameNode(v);
+		CnSAFTreeNetworkNetnameNode networkNode = new CnSAFTreeNetworkNetnameNode(rootNode, v);
 		System.err.println("inserting " + af + " in " + getRoot().hashCode() + " , position " + ((DefaultMutableTreeNode)getRoot()).getChildCount());
 		insertNodeInto(networkNode, (DefaultMutableTreeNode)getRoot(), ((DefaultMutableTreeNode)getRoot()).getChildCount());
 		v.clear();

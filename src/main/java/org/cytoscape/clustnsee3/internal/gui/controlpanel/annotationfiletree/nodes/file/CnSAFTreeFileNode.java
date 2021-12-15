@@ -36,12 +36,16 @@ import org.cytoscape.model.CyNetwork;
  * 
  */
 public class CnSAFTreeFileNode extends CnSPanelTreeNode {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 7940428368628376899L;
 	public final static int ANNOTATION_FILE = 1;
 	public final static int NB_ANNOTATIONS = 2;
 	public final static int NB_NODES = 3;
 	
-	public CnSAFTreeFileNode(CnSPanelTreeNode parent, Hashtable<Integer, Object> v) {
-		super(parent, v);
+	public CnSAFTreeFileNode(Hashtable<Integer, Object> v) {
+		super(v);
 		panel = new CnSAFTreeFileNodePanel((CnSNodeAnnotationFile)v.get(ANNOTATION_FILE));
 		panel.initGraphics();
 		((CnSAFTreeFileNodePanel)panel).getDeleteButton().addActionListener(this);

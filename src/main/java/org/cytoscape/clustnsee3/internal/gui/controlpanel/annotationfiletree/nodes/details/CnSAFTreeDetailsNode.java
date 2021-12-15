@@ -27,7 +27,7 @@ public class CnSAFTreeDetailsNode extends CnSPanelTreeNode {
 	 * @return
 	 */
 	public CnSAFTreeDetailsNode(CnSPanelTreeNode parent, Hashtable<Integer, Object> v) {
-		super(parent, v);
+		super(v);
 		panel = new CnSAFTreeDetailsNodePanel(v);
 	}
 

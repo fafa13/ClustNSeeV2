@@ -22,8 +22,13 @@ import org.cytoscape.clustnsee3.internal.gui.widget.paneltree.CnSPanelTreeNode;
  * 
  */
 public class CnSAFTreeNetworkNetnameDetailsNode extends CnSPanelTreeNode {
-	public CnSAFTreeNetworkNetnameDetailsNode(CnSPanelTreeNode parent, Hashtable<Integer, Object> v) {
-		super(parent, v);
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4694232795562773696L;
+
+	public CnSAFTreeNetworkNetnameDetailsNode(Hashtable<Integer, Object> v) {
+		super(v);
 		panel = new CnSAFTreeNetworkNetnameDetailsNodePanel(v);
 	}
 	
