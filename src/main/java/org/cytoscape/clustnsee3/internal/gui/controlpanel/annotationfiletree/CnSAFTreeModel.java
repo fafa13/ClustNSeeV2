@@ -38,16 +38,15 @@ public class CnSAFTreeModel extends CnSPanelTreeModel {
 			v.put(CnSAFTreeFileNode.NB_NODES, nbNodes);
 			node = new CnSAFTreeFileNode((CnSAFTreeRootNode)getRoot(), v);
 			node.setEditable(true);
-			//node.getPanel().initGraphics();
+			
 			System.err.println("node : " + node.getClass());
 			System.err.println("parent : " + parent.getClass());
-			//parent.addChild(node);
 			System.err.println("nb child : " + parent.getChildCount());
-			//insertNodeInto(node, parent, parent.getChildCount());
+
 			CnSAFTreeDetailsNode detailsNode = new CnSAFTreeDetailsNode(node, v);
 			detailsNode.setEditable(true);
 			detailsNode.getPanel().deriveFont(11);
-			detailsNode.getPanel().initGraphics();
+			//detailsNode.getPanel().initGraphics();
 			
 			//node.addChild(detailsNode);
 			//insertNodeInto(detailsNode, node, node.getChildCount());

@@ -13,6 +13,7 @@
 
 package org.cytoscape.clustnsee3.internal.gui.widget.paneltree;
 
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -27,7 +28,7 @@ public abstract class CnSPanelTreeNode implements ActionListener {
 	private CnSPanelTreeNode parent;
 	private Vector<CnSPanelTreeNode> children;
 	
-	public CnSPanelTreeNode(CnSPanelTreeNode parent) {
+	private CnSPanelTreeNode(CnSPanelTreeNode parent) {
 		panel = new CnSPanelTreePanel();
 		editable = false;
 		this.parent = parent;
@@ -79,5 +80,7 @@ public abstract class CnSPanelTreeNode implements ActionListener {
 	public Enumeration<CnSPanelTreeNode> children() {
 		return children.elements();
 	}
-//	public abstract void addActionListener(ActionListener actionListener);
+	public void actionPerformed(ActionEvent e) {
+		
+	}
 }

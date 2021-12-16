@@ -19,12 +19,6 @@ import java.io.File;
 import java.util.Hashtable;
 
 import javax.swing.JLabel;
-import javax.swing.event.TreeExpansionEvent;
-import javax.swing.event.TreeExpansionListener;
-
-import org.cytoscape.clustnsee3.internal.event.CnSEvent;
-import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
-import org.cytoscape.clustnsee3.internal.gui.controlpanel.CnSControlPanel;
 import org.cytoscape.clustnsee3.internal.gui.controlpanel.networkfiletree.CnSNetworksTreeModel;
 import org.cytoscape.clustnsee3.internal.gui.controlpanel.networkfiletree.nodes.root.CnSAFTreeNetworksRootNode;
 import org.cytoscape.clustnsee3.internal.gui.widget.CnSPanel;
@@ -34,45 +28,41 @@ import org.cytoscape.clustnsee3.internal.gui.widget.paneltree.CnSPanelTreeCellRe
 import org.cytoscape.clustnsee3.internal.gui.widget.paneltree.CnSPanelTreePanel;
 import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeAnnotationFile;
 
-/**
- * 
- */
-public class CnSAFTreeDetailsNodePanel extends CnSPanelTreePanel implements TreeExpansionListener {
+public class CnSAFTreeDetailsNodePanel extends CnSPanelTreePanel {
 	private static final long serialVersionUID = -3595555738562109511L;
-	private static final int ANNOTATION_FILE = 1;
-	private static final int NB_ANNOTATIONS = 2;
-	private static final int NB_NODES = 3;
-
-	private Hashtable<Integer, Object> value;
+	
 	private CnSPanelTree networksTree;
 	private CnSNetworksTreeModel networksTreeModel;
 	private CnSAFTreeNetworksRootNode rootNode;
+	private CnSNodeAnnotationFile annotationFile;
+	private int nbAnnotations, nbNodes;
 	
-	public CnSAFTreeDetailsNodePanel(Hashtable<Integer, Object> v) {
+	public CnSAFTreeDetailsNodePanel(CnSNodeAnnotationFile annotationFile, int nbAnnotations, int nbNodes) {
 		super();
-		value = v;
-		Hashtable<Integer, Object> v2= new Hashtable<Integer, Object>();
-		v2.put(CnSAFTreeNetworksRootNode.TITLE, "Networks");
-		v2.put(CnSAFTreeNetworksRootNode.DETAILS_NODE_PANEL, this);
-		rootNode = new CnSAFTreeNetworksRootNode(v2);
-		//initGraphics();
+		this.annotationFile = annotationFile;
+		this.nbAnnotations = nbAnnotations;
+		this.nbNodes = nbNodes;
+		Hashtable<Integer, Object> v= new Hashtable<Integer, Object>();
+		v.put(CnSAFTreeNetworksRootNode.TITLE, "Networks");
+		v.put(CnSAFTreeNetworksRootNode.DETAILS_NODE_PANEL, this);
+		rootNode = new CnSAFTreeNetworksRootNode(v);
+		
+		initGraphics();
 	}
 	
 	public void initGraphics() {
 		super.initGraphics();
 		rootNode.getPanel().deriveFont(Font.PLAIN, 12);
-		rootNode.getPanel().initGraphics();
 		networksTreeModel = new CnSNetworksTreeModel(rootNode);
 		networksTree = new CnSPanelTree(networksTreeModel);
 		networksTree.setShowsRootHandles(true);
 		networksTree.setCellRenderer(new CnSPanelTreeCellRenderer());
 		networksTree.setCellEditor(new CnSPanelTreeCellEditor());
-		networksTree.addTreeExpansionListener(this);JLabel label = new JLabel("Location :");
+		JLabel label = new JLabel("Location :");
 		label.setFont(font.deriveFont(Font.BOLD, 11));
 		label.setForeground(Color.BLUE);
 		addComponent(label, 0, 0, 1, 1, 0.0, 0.0, CnSPanel.EAST ,CnSPanel.NONE, 5, 10, 0, 0, 0, 0);
-		CnSNodeAnnotationFile nodeAnnotationFile = (CnSNodeAnnotationFile)value.get(ANNOTATION_FILE);
-		String path = nodeAnnotationFile.getFile().getPath();
+		String path = annotationFile.getFile().getPath();
 		label = new JLabel(path.substring(0, path.lastIndexOf(File.separatorChar)));
 		label.setFont(font.deriveFont(Font.PLAIN, 11));
 		addComponent(label, 1, 0, 1, 1, 0.0, 0.0, CnSPanel.WEST, CnSPanel.NONE, 5, 5, 0, 10, 0, 0);
@@ -80,14 +70,14 @@ public class CnSAFTreeDetailsNodePanel extends CnSPanelTreePanel implements Tree
 		label.setFont(font.deriveFont(Font.BOLD, 11));
 		label.setForeground(Color.BLUE);
 		addComponent(label, 0, 1, 1, 1, 0.0, 0.0, CnSPanel.EAST ,CnSPanel.NONE, 5, 10, 0, 0, 0, 0);
-		label = new JLabel(value.get(NB_ANNOTATIONS).toString());
+		label = new JLabel(String.valueOf(nbAnnotations));
 		label.setFont(font.deriveFont(Font.PLAIN, 11));
 		addComponent(label, 1, 1, 1, 1, 0.0, 0.0, CnSPanel.WEST ,CnSPanel.NONE, 5, 5, 0, 10, 0, 0);
 		label = new JLabel("Targets :");
 		label.setFont(font.deriveFont(Font.BOLD, 11));
 		label.setForeground(Color.BLUE);
 		addComponent(label, 0, 2, 1, 1, 0.0, 0.0, CnSPanel.EAST ,CnSPanel.NONE, 5, 10, 0, 0, 0, 0);
-		label = new JLabel(value.get(NB_NODES).toString());
+		label = new JLabel(String.valueOf(nbNodes));
 		label.setFont(font.deriveFont(Font.PLAIN, 11));
 		addComponent(label, 1, 2, 1, 1, 0.0, 0.0, CnSPanel.WEST ,CnSPanel.NONE, 5, 5, 0, 10, 0, 0);
 		
@@ -95,7 +85,6 @@ public class CnSAFTreeDetailsNodePanel extends CnSPanelTreePanel implements Tree
 		v.put(CnSAFTreeNetworksRootNode.TITLE, "Networks");
 		rootNode = new CnSAFTreeNetworksRootNode(v);
 		rootNode.getPanel().deriveFont(Font.PLAIN, 12);
-		rootNode.getPanel().initGraphics();
 		
 		networksTreeModel = new CnSNetworksTreeModel(rootNode);
 		
@@ -115,33 +104,6 @@ public class CnSAFTreeDetailsNodePanel extends CnSPanelTreePanel implements Tree
 		return networksTreeModel;
 	}
 
-	/* (non-Javadoc)
-	 * @see javax.swing.event.TreeExpansionListener#treeExpanded(javax.swing.event.TreeExpansionEvent)
-	 */
-	@Override
-	public void treeExpanded(TreeExpansionEvent event) {
-		System.err.println("Expanded : " + event.getPath());
-		repaint();
-		CnSEvent ev = new CnSEvent(CnSControlPanel.REFRESH, CnSEventManager.CONTROL_PANEL);
-		CnSEventManager.handleMessage(ev);
-	}
-
-	/* (non-Javadoc)
-	 * @see javax.swing.event.TreeExpansionListener#treeCollapsed(javax.swing.event.TreeExpansionEvent)
-	 */
-	@Override
-	public void treeCollapsed(TreeExpansionEvent event) {
-		System.err.println("Collapsed : " + event.getPath());
-	}
-
-	/**
-	 * 
-	 * @param
-	 * @return
-	 */
-	public Object getValue() {
-		return value;
-	}
 	public CnSPanelTree getNetworksTree() {
 		return networksTree;
 	}

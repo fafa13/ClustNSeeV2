@@ -13,31 +13,22 @@
 
 package org.cytoscape.clustnsee3.internal.gui.controlpanel.annotationfiletree.nodes.details;
 
-import java.awt.event.ActionEvent;
 import java.util.Hashtable;
 
 import org.cytoscape.clustnsee3.internal.gui.widget.paneltree.CnSPanelTreeNode;
+import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeAnnotationFile;
 
 /**
  * 
  */
 public class CnSAFTreeDetailsNode extends CnSPanelTreeNode {
-	/**
-	 * @param
-	 * @return
-	 */
+	private static final int ANNOTATION_FILE = 1;
+	private static final int NB_ANNOTATIONS = 2;
+	private static final int NB_NODES = 3;
+
 	public CnSAFTreeDetailsNode(CnSPanelTreeNode parent, Hashtable<Integer, Object> v) {
 		super(parent, v);
-		panel = new CnSAFTreeDetailsNodePanel(v);
-	}
-
-	/* (non-Javadoc)
-	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
-	 */
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
-		
+		panel = new CnSAFTreeDetailsNodePanel((CnSNodeAnnotationFile)getData(ANNOTATION_FILE), (Integer)getData(NB_ANNOTATIONS), (Integer)getData(NB_NODES));
 	}
 
 	/* (non-Javadoc)
@@ -45,6 +36,6 @@ public class CnSAFTreeDetailsNode extends CnSPanelTreeNode {
 	 */
 	@Override
 	public Object getValue() {
-		return ((CnSAFTreeDetailsNodePanel)panel).getValue();
+		return getData(ANNOTATION_FILE);
 	}
 }

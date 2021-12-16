@@ -19,9 +19,6 @@ import javax.swing.JLabel;
 import org.cytoscape.clustnsee3.internal.gui.widget.CnSPanel;
 import org.cytoscape.clustnsee3.internal.gui.widget.paneltree.CnSPanelTreePanel;
 
-/**
- * 
- */
 public class CnSAFTreeNetworksRootNodePanel extends CnSPanelTreePanel {
 	private static final long serialVersionUID = 8311613134967963237L;
 	private String value;
@@ -29,6 +26,7 @@ public class CnSAFTreeNetworksRootNodePanel extends CnSPanelTreePanel {
 	public CnSAFTreeNetworksRootNodePanel(String value) {
 		super();
 		this.value = value;
+		initGraphics();
 	}
 	
 	public void initGraphics() {
@@ -41,14 +39,5 @@ public class CnSAFTreeNetworksRootNodePanel extends CnSPanelTreePanel {
 		setBackground(Color.WHITE);
 		setBorder(null);
 		setOpaque(false);
-	}
-
-	/**
-	 * 
-	 * @param
-	 * @return
-	 */
-	public Object getValue() {
-		return value;
 	}
 }

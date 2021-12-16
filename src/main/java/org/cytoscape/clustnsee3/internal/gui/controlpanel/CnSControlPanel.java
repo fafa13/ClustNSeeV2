@@ -92,7 +92,6 @@ public class CnSControlPanel extends CnSPanel implements CytoPanelComponent, CnS
 		v.put(CnSAFTreeRootNode.TITLE, "Imported annotation files");
 		rootNode = new CnSAFTreeRootNode(v);
 		rootNode.getPanel().deriveFont(Font.PLAIN, 14);
-		rootNode.getPanel().initGraphics();
 		treeModel = new CnSAFTreeModel(rootNode);
 		rootNode.setTreeModel(treeModel);
 		tree = new CnSPanelTree(treeModel);
@@ -160,21 +159,21 @@ public class CnSControlPanel extends CnSPanel implements CytoPanelComponent, CnS
 				detailsNodePanel.revalidate();
 				detailsNodePanel.repaint();
 				break;
-				
+
 			case REMOVE_MAPPED_NETWORK:
 				CnSAFTreeNetworkNetnameNode tnn = (CnSAFTreeNetworkNetnameNode)event.getParameter(TREE_FILE_NODE);
 				networksTreeModel = ((CnSAFTreeNetworksRootNode)tnn.getParent()).getDetailsNodePanel().getNetworksTreeModel();
 				networksTreeModel.removeNetwork(tnn, network, af);
 				((CnSAFTreeNetworksRootNode)tnn.getParent()).getDetailsNodePanel().repaint();
 				break;
-				
+
 			case REFRESH :
 				tree.updateUI();
 				treeImportAnnotationPanel.invalidate();
 				treeImportAnnotationPanel.repaint();
 				invalidate();
 				repaint();
-				
+
 				break;
 		}
 		return null;

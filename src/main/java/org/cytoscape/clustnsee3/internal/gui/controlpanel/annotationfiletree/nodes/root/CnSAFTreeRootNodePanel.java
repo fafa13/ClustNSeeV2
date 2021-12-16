@@ -31,12 +31,13 @@ public class CnSAFTreeRootNodePanel extends CnSPanelTreePanel {
 	private String value;
 	private CnSButton addButton;
 	private ImageIcon icon_delete;
-	
+
 	public CnSAFTreeRootNodePanel(String value) {
 		super();
 		this.value = value;
 		icon_delete = new ImageIcon(getClass().getResource("/plus.png"));
 		addButton = new CnSButton(icon_delete);
+		initGraphics();
 	}
 	public CnSButton getAddButton() {
 		return addButton;
@@ -48,22 +49,14 @@ public class CnSAFTreeRootNodePanel extends CnSPanelTreePanel {
 		label.setForeground(Color.BLACK);
 		System.err.println("value = " + value);
 		addComponent(label, 0, 0, 1, 1, 1.0, 1.0, CnSPanel.CENTER ,CnSPanel.HORIZONTAL, 5, 5, 5, 5, 0, 0);
-		
+
 		addButton.setPreferredSize(new Dimension(icon_delete.getIconWidth() + 4, icon_delete.getIconHeight() + 4));
 		addButton.setFocusable(false);
 		addButton.setActionCommand("add_file");
 		addComponent(addButton, 1, 0, 1, 1, 0.0, 0.0, CnSPanel.EAST, CnSPanel.NONE, 5, 5, 5, 0, 0, 0);
-		
+
 		setBackground(Color.WHITE);
 		setBorder(null);
 		setOpaque(false);
-	}
-	/**
-	 * 
-	 * @param
-	 * @return
-	 */
-	public Object getValue() {
-		return value;
 	}
 }

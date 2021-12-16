@@ -39,13 +39,9 @@ public class CnSAFTreeRootNode extends CnSPanelTreeNode {
 	
 	private CnSAFTreeModel treeModel;
 	
-	/**
-	 * @param
-	 * @return
-	 */
 	public CnSAFTreeRootNode(Hashtable<Integer, Object> v) {
 		super(null, v);
-		panel = new CnSAFTreeRootNodePanel(v.get(TITLE).toString());
+		panel = new CnSAFTreeRootNodePanel(getData(TITLE).toString());
 		((CnSAFTreeRootNodePanel)panel).getAddButton().addActionListener(this);
 	}
 	
@@ -80,7 +76,7 @@ public class CnSAFTreeRootNode extends CnSPanelTreeNode {
 						if (partition != null) ev.addParameter(CnSPartitionPanel.PARTITION, partition);
 						CnSEventManager.handleMessage(ev);
 						treeModel.addAnnotationFile(this, annotationFile, annotationFile.getAllAnnotations().size(), annotationFile.getAllTargets().size());
-						treeModel.printStructure(this, 0);
+						
 						ev = new CnSEvent(CnSControlPanel.REFRESH, CnSEventManager.CONTROL_PANEL);
 						CnSEventManager.handleMessage(ev);
 					}
@@ -97,7 +93,6 @@ public class CnSAFTreeRootNode extends CnSPanelTreeNode {
 	 */
 	@Override
 	public Object getValue() {
-		// TODO Auto-generated method stub
-		return ((CnSAFTreeRootNodePanel)panel).getValue();
+		return getData(TITLE).toString();
 	}
 }

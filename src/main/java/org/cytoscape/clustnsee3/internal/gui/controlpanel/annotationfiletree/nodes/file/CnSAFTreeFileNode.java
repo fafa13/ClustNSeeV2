@@ -40,8 +40,7 @@ public class CnSAFTreeFileNode extends CnSPanelTreeNode {
 	
 	public CnSAFTreeFileNode(CnSAFTreeRootNode parent, Hashtable<Integer, Object> v) {
 		super(parent, v);
-		panel = new CnSAFTreeFileNodePanel((CnSNodeAnnotationFile)v.get(ANNOTATION_FILE));
-		panel.initGraphics();
+		panel = new CnSAFTreeFileNodePanel((CnSNodeAnnotationFile)getData(ANNOTATION_FILE));
 		((CnSAFTreeFileNodePanel)panel).getDeleteButton().addActionListener(this);
 		((CnSAFTreeFileNodePanel)panel).getAnnotateButton().addActionListener(this);
 	}
@@ -102,6 +101,6 @@ public class CnSAFTreeFileNode extends CnSPanelTreeNode {
 	 */
 	@Override
 	public Object getValue() {
-		return ((CnSAFTreeFileNodePanel)panel).getValue();
+		return getData(ANNOTATION_FILE);
 	}
 }

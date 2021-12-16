@@ -35,6 +35,7 @@ public class CnSAFTreeFileNodePanel extends CnSPanelTreePanel {
 	public CnSAFTreeFileNodePanel(CnSNodeAnnotationFile nodeAnnotationFile) {
 		super();
 		value = nodeAnnotationFile;
+		initGraphics();
 	}
 	public CnSButton getDeleteButton() {
 		return closeButton;
@@ -52,7 +53,6 @@ public class CnSAFTreeFileNodePanel extends CnSPanelTreePanel {
 		ImageIcon icon_delete = new ImageIcon(getClass().getResource("/delete_annotation.gif"));
 		closeButton = new CnSButton(icon_delete);
 		closeButton.setPreferredSize(new Dimension(icon_delete.getIconWidth() + 4, icon_delete.getIconHeight() + 4));
-		//closeButton.setBorder(new LineBorder(Color.BLACK));
 		closeButton.setFocusable(false);
 		closeButton.setActionCommand("delete");
 		addComponent(closeButton, 1, 0, 1, 1, 0.0, 0.0, CnSPanel.EAST, CnSPanel.NONE, 5, 5, 5, 0, 0, 0);
@@ -60,7 +60,6 @@ public class CnSAFTreeFileNodePanel extends CnSPanelTreePanel {
 		ImageIcon icon_right = new ImageIcon(getClass().getResource("/right-arrow.gif"));
 		annotate_button = new CnSButton(icon_right);
 		annotate_button.setPreferredSize(new Dimension(icon_right.getIconWidth() + 4, icon_right.getIconHeight() + 4));
-		//annotate_button.setBorder(new LineBorder(Color.BLACK));
 		annotate_button.setFocusable(false);
 		annotate_button.setActionCommand("annotate");
 		addComponent(annotate_button, 2, 0, 1, 1, 0.0, 0.0, CnSPanel.EAST, CnSPanel.NONE, 5, 5, 5, 0, 0, 0);
@@ -68,13 +67,5 @@ public class CnSAFTreeFileNodePanel extends CnSPanelTreePanel {
 		setBackground(Color.WHITE);
 		setBorder(null);
 		setOpaque(false);
-	}
-	/**
-	 * 
-	 * @param
-	 * @return
-	 */
-	public Object getValue() {
-		return value;
 	}
 }
