@@ -25,6 +25,7 @@ import org.cytoscape.clustnsee3.internal.CyActivator;
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
 import org.cytoscape.clustnsee3.internal.gui.controlpanel.CnSControlPanel;
+import org.cytoscape.clustnsee3.internal.gui.controlpanel.annotationfiletree.nodes.details.CnSAFTreeDetailsNodePanel;
 import org.cytoscape.clustnsee3.internal.gui.controlpanel.annotationfiletree.nodes.root.CnSAFTreeRootNode;
 import org.cytoscape.clustnsee3.internal.gui.dialog.CnSAnnotationFileStatsDialog;
 import org.cytoscape.clustnsee3.internal.gui.widget.CnSButton;
@@ -87,6 +88,10 @@ public class CnSAFTreeFileNode extends CnSPanelTreeNode {
 						ev.addParameter(CnSControlPanel.NETWORK_NODES, results[4]);
 						ev.addParameter(CnSControlPanel.FILE_ANNOTATIONS, results[5]);
 						ev.addParameter(CnSControlPanel.ANNOTATION_FILE, getData(ANNOTATION_FILE));
+						CnSEventManager.handleMessage(ev);
+						
+						((CnSAFTreeDetailsNodePanel)getChildAt(0).getPanel()).getNetworksTree().expandRow(0);
+						ev = new CnSEvent(CnSControlPanel.REFRESH, CnSEventManager.CONTROL_PANEL);
 						CnSEventManager.handleMessage(ev);
 					}
 				}

@@ -168,6 +168,7 @@ public class CnSControlPanel extends CnSPanel implements CytoPanelComponent, CnS
 				break;
 
 			case REFRESH :
+				tree.expandRow(0);
 				tree.updateUI();
 				treeImportAnnotationPanel.invalidate();
 				treeImportAnnotationPanel.repaint();

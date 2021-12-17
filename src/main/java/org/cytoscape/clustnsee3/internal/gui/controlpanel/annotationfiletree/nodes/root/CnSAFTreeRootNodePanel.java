@@ -35,8 +35,6 @@ public class CnSAFTreeRootNodePanel extends CnSPanelTreePanel {
 	public CnSAFTreeRootNodePanel(String value) {
 		super();
 		this.value = value;
-		icon_delete = new ImageIcon(getClass().getResource("/plus.png"));
-		addButton = new CnSButton(icon_delete);
 		initGraphics();
 	}
 	public CnSButton getAddButton() {
@@ -47,9 +45,11 @@ public class CnSAFTreeRootNodePanel extends CnSPanelTreePanel {
 		JLabel label = new JLabel(value);
 		label.setFont(font);
 		label.setForeground(Color.BLACK);
-		System.err.println("value = " + value);
+		
 		addComponent(label, 0, 0, 1, 1, 1.0, 1.0, CnSPanel.CENTER ,CnSPanel.HORIZONTAL, 5, 5, 5, 5, 0, 0);
 
+		icon_delete = new ImageIcon(getClass().getResource("/plus.png"));
+		addButton = new CnSButton(icon_delete);
 		addButton.setPreferredSize(new Dimension(icon_delete.getIconWidth() + 4, icon_delete.getIconHeight() + 4));
 		addButton.setFocusable(false);
 		addButton.setActionCommand("add_file");
