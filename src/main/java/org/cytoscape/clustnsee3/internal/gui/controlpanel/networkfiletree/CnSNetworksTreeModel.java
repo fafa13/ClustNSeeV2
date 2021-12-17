@@ -47,9 +47,7 @@ public class CnSNetworksTreeModel extends CnSPanelTreeModel {
 		return networkNode;
 	}
 	public void removeNetwork(CnSAFTreeNetworkNetnameNode netNode, CyNetwork network, CnSNodeAnnotationFile annotationFile) {
-		netNode.removeFromParent();
-		((CnSPanelTreeNode)netNode.getParent()).removeChild(netNode);
-		//removeNodeFromParent(netNode);
+		netNode.remove();
 	}
 	public void printStructure(CnSPanelTreeNode node, int level) {
 		printNode(node, level);

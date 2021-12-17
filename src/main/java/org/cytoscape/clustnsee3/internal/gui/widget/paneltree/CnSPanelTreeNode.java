@@ -37,7 +37,8 @@ public abstract class CnSPanelTreeNode implements ActionListener {
 	}
 	public CnSPanelTreeNode(CnSPanelTreeNode parent, Hashtable<Integer, Object> v) {
 		this(parent);
-		data = v;
+		data= new Hashtable<Integer, Object>(v);
+		
 	}
 	public abstract Object getValue();
 	
@@ -73,9 +74,14 @@ public abstract class CnSPanelTreeNode implements ActionListener {
 	}
 	public void removeChild(CnSPanelTreeNode child) {
 		children.removeElement(child);
+		child.removeFromParent();
 	}
 	public void removeFromParent() {
-		parent.removeChild(this);
+		parent = null;
+	}
+	public void remove() {
+		if (parent != null) parent.removeChild(this);
+		parent = null;
 	}
 	public Enumeration<CnSPanelTreeNode> children() {
 		return children.elements();

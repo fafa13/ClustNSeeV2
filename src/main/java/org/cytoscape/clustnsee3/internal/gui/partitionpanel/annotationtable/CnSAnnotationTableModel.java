@@ -22,6 +22,7 @@ import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
 import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeAnnotation;
 import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeAnnotationManager;
+import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeNetworkSet;
 import org.cytoscape.clustnsee3.internal.partition.CnSPartition;
 
 /**
@@ -115,12 +116,12 @@ public class CnSAnnotationTableModel extends AbstractTableModel {
 			case 0 :	return annotations.elementAt(row).getValue();
 			case 1 : 	ev = new CnSEvent(CnSNodeAnnotationManager.GET_NODES, CnSEventManager.ANNOTATION_MANAGER);
 					 	ev.addParameter(CnSNodeAnnotationManager.ANNOTATION, annotations.elementAt(row));
-					 	return ((Vector<?>)CnSEventManager.handleMessage(ev)).size();
+					 	return ((CnSNodeNetworkSet)CnSEventManager.handleMessage(ev)).getNodeNetworks().size();
 			case 2 : 	if (partition != null) {
 							node_count = partition.getInputNetwork().getNodeCount();
 							ev = new CnSEvent(CnSNodeAnnotationManager.GET_NODES, CnSEventManager.ANNOTATION_MANAGER);
 							ev.addParameter(CnSNodeAnnotationManager.ANNOTATION, annotations.elementAt(row));
-							annotation_count = ((Vector<?>)CnSEventManager.handleMessage(ev)).size();
+							annotation_count = ((CnSNodeNetworkSet)CnSEventManager.handleMessage(ev)).getNodeNetworks().size();
 							return (int)(annotation_count * 1000D / node_count) / 1000D;
 					 	}
 						else 
@@ -128,7 +129,7 @@ public class CnSAnnotationTableModel extends AbstractTableModel {
 					 	
 			case 3 : 	ev = new CnSEvent(CnSNodeAnnotationManager.GET_NODES, CnSEventManager.ANNOTATION_MANAGER);
 	 		 		 	ev.addParameter(CnSNodeAnnotationManager.ANNOTATION, annotations.elementAt(row));
-	 		 		 	annotation_count = ((Vector<?>)CnSEventManager.handleMessage(ev)).size();
+	 		 		 	annotation_count = ((CnSNodeNetworkSet)CnSEventManager.handleMessage(ev)).getNodeNetworks().size();
 	 		 		 	ev = new CnSEvent(CnSNodeAnnotationManager.GET_ANNOTATED_NODES, CnSEventManager.ANNOTATION_MANAGER);
 	 		 		 	annotated_node_count = ((Vector<?>)CnSEventManager.handleMessage(ev)).size();
 	 		 		 	return Double.valueOf((int)(annotation_count * 1000D / annotated_node_count) / 1000D);

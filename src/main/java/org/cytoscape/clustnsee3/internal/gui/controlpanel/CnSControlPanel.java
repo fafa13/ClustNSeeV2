@@ -149,32 +149,22 @@ public class CnSControlPanel extends CnSPanel implements CytoPanelComponent, CnS
 						(Integer)event.getParameter(MAPPED_NODES), (Integer)event.getParameter(NETWORK_NODES), 
 						(Integer)event.getParameter(FILE_ANNOTATIONS));
 				networksTreeModel.printStructure((CnSPanelTreeNode) networksTreeModel.getRoot(), 0);
-				//tree.scrollPathToVisible(new TreePath(nnn.getPath()));
-				//networksTreeModel.nodeStructureChanged(nnn);
-				//tree.revalidate();
-				//tree.repaint();
-				//tree.treeDidChange();
-				//detailsNodePanel.initGraphics();
 				detailsNodePanel.getNetworksTree().updateUI();
-				detailsNodePanel.revalidate();
-				detailsNodePanel.repaint();
 				break;
 
 			case REMOVE_MAPPED_NETWORK:
 				CnSAFTreeNetworkNetnameNode tnn = (CnSAFTreeNetworkNetnameNode)event.getParameter(TREE_FILE_NODE);
-				networksTreeModel = ((CnSAFTreeNetworksRootNode)tnn.getParent()).getDetailsNodePanel().getNetworksTreeModel();
+				CnSAFTreeNetworksRootNode rootNode = (CnSAFTreeNetworksRootNode)tnn.getParent();
+				CnSAFTreeDetailsNodePanel detailsPanel = rootNode.getDetailsNodePanel();
+				networksTreeModel = detailsPanel.getNetworksTreeModel();
 				networksTreeModel.removeNetwork(tnn, network, af);
-				((CnSAFTreeNetworksRootNode)tnn.getParent()).getDetailsNodePanel().repaint();
+				detailsPanel.getNetworksTree().updateUI();
+				tree.updateUI();
+				updateUI();
 				break;
 
 			case REFRESH :
-				tree.expandRow(0);
 				tree.updateUI();
-				treeImportAnnotationPanel.invalidate();
-				treeImportAnnotationPanel.repaint();
-				invalidate();
-				repaint();
-
 				break;
 		}
 		return null;
