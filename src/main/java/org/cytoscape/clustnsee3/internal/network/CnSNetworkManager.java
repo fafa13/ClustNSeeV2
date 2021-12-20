@@ -166,6 +166,10 @@ public class CnSNetworkManager implements CnSEventListener, NetworkAboutToBeDest
 				ret = cnsn;
 				break;
 			}
+			else if (cnsn.getBaseNetwork() == n) {
+				ret = cnsn;
+				break;
+			}
 		}
 		return ret;
 	}

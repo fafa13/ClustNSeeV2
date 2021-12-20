@@ -92,10 +92,12 @@ public class CnSClusterListPanel extends CnSPanel {
 						ev.addParameter(CnSPartitionManager.PARTITION, p);
 						CnSNetwork nw = (CnSNetwork)CnSEventManager.handleMessage(ev);
 						
-						ev = new CnSEvent(CnSNetworkManager.SELECT_CLUSTER, CnSEventManager.NETWORK_MANAGER);
-						ev.addParameter(CnSNetworkManager.CLUSTER, cluster);
-						ev.addParameter(CnSNetworkManager.NETWORK, nw);
-						CnSEventManager.handleMessage(ev);
+						if (nw != null) {
+							ev = new CnSEvent(CnSNetworkManager.SELECT_CLUSTER, CnSEventManager.NETWORK_MANAGER);
+							ev.addParameter(CnSNetworkManager.CLUSTER, cluster);
+							ev.addParameter(CnSNetworkManager.NETWORK, nw);
+							CnSEventManager.handleMessage(ev);
+						}
 					}
 					else {
 						CnSEvent ev = new CnSEvent(CnSInfoPanel.CLEAR, CnSEventManager.INFO_PANEL);

@@ -24,10 +24,12 @@ import org.cytoscape.model.subnetwork.CySubNetwork;
  */
 public class CnSNetwork {
 	private CySubNetwork network;
+	private CyNetwork baseNetwork;
 	private HashMap<String, Class<?>> cnsNodeColumns, cnsEdgeColumns;
 	
-	public CnSNetwork(CySubNetwork network) {
+	public CnSNetwork(CySubNetwork network, CyNetwork inputNetwork) {
 		this.network = network;
+		baseNetwork = inputNetwork;
 		cnsNodeColumns = new HashMap<String, Class<?>>();
 		cnsNodeColumns.put("CnS:isCluster", Boolean.class);
 		if (network.getDefaultNodeTable().getColumn("CnS:isCluster") == null)
@@ -52,6 +54,9 @@ public class CnSNetwork {
 	}
 	public CySubNetwork getNetwork() {
 		return network;
+	}
+	public CyNetwork getBaseNetwork() {
+		return baseNetwork;
 	}
 	public String getName() {
 		return network.getRow(network).get(CySubNetwork.NAME, String.class);

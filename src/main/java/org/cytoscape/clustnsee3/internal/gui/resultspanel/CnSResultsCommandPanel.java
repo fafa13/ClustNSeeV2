@@ -201,7 +201,7 @@ public class CnSResultsCommandPanel extends CnSPanel {
 
 						// register the partition network
 						partitionView = new CnSView(partCyView, new CnSPartitionViewState(partition));
-						CnSNetwork partNetwork = new CnSNetwork(partNet);
+						CnSNetwork partNetwork = new CnSNetwork(partNet, inputNetwork);
 					
 						ev = new CnSEvent(CnSNetworkManager.ADD_NETWORK, CnSEventManager.NETWORK_MANAGER);
 						ev.addParameter(CnSNetworkManager.NETWORK, partNetwork);
@@ -526,7 +526,7 @@ public class CnSResultsCommandPanel extends CnSPanel {
 		networkViewManager.addNetworkView(clView);
 		
 		// register the sub-network
-		CnSNetwork network = new CnSNetwork(clNet);
+		CnSNetwork network = new CnSNetwork(clNet, partition.getInputNetwork());
         ev = new CnSEvent(CnSNetworkManager.ADD_NETWORK, CnSEventManager.NETWORK_MANAGER);
         ev.addParameter(CnSNetworkManager.NETWORK, network);
         CnSEventManager.handleMessage(ev);
@@ -625,7 +625,7 @@ public class CnSResultsCommandPanel extends CnSPanel {
 		networkViewManager.addNetworkView(cyView);
 		
 		// register network
-		CnSNetwork partNetwork = new CnSNetwork(clNet);
+		CnSNetwork partNetwork = new CnSNetwork(clNet, partition.getInputNetwork());
 		ev = new CnSEvent(CnSNetworkManager.ADD_NETWORK, CnSEventManager.NETWORK_MANAGER);
         ev.addParameter(CnSNetworkManager.NETWORK, partNetwork);
         CnSEventManager.handleMessage(ev);

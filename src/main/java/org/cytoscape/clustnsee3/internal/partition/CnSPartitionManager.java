@@ -495,7 +495,7 @@ public class CnSPartitionManager implements CnSEventListener {
             //System.err.println("done.");
             
             // create the network and register it
-            CnSNetwork network = new CnSNetwork(clusterNet);
+            CnSNetwork network = new CnSNetwork(clusterNet, inputNetwork);
             ev = new CnSEvent(CnSNetworkManager.ADD_NETWORK, CnSEventManager.NETWORK_MANAGER);
             ev.addParameter(CnSNetworkManager.NETWORK, network);
             CnSEventManager.handleMessage(ev);
@@ -723,7 +723,7 @@ public class CnSPartitionManager implements CnSEventListener {
             tm.execute(tit, to);
             
             // create the network and register it
-            CnSNetwork network = new CnSNetwork(clusterNet);
+            CnSNetwork network = new CnSNetwork(clusterNet, inputNetwork);
             ev = new CnSEvent(CnSNetworkManager.ADD_NETWORK, CnSEventManager.NETWORK_MANAGER);
             ev.addParameter(CnSNetworkManager.NETWORK, network);
             CnSEventManager.handleMessage(ev);
