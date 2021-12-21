@@ -45,6 +45,7 @@ public class CnSControlPanel extends CnSPanel implements CytoPanelComponent, CnS
 	public static final int ADD_MAPPED_NETWORK = 1;
 	public static final int REMOVE_MAPPED_NETWORK = 2;
 	public static final int REFRESH = 3;
+	public static final int REMOVE_ANNOTATION_FILE = 4;
 
 	public static final int ANNOTATION_FILE = 1001;
 	public static final int NETWORK = 1002;
@@ -53,7 +54,7 @@ public class CnSControlPanel extends CnSPanel implements CytoPanelComponent, CnS
 	public static final int MAPPED_ANNOTATIONS = 1005;
 	public static final int NETWORK_NODES = 1006;
 	public static final int FILE_ANNOTATIONS = 1007;
-
+	public static final int FILE_NODE = 1008;
 	
 	private CnSControlScopePanel scopePanel;
 	private CnSControlAlgorithmPanel algorithmPanel;
@@ -70,6 +71,7 @@ public class CnSControlPanel extends CnSPanel implements CytoPanelComponent, CnS
 	
 	public CnSControlPanel(String title) {
 		super(title);
+		rootNode = null;
 		initGraphics();
 		initListeners();
 	}
@@ -138,6 +140,7 @@ public class CnSControlPanel extends CnSPanel implements CytoPanelComponent, CnS
 	public Object cnsEventOccured(CnSEvent event) {
 		CyNetwork network = (CyNetwork)event.getParameter(NETWORK);
 		CnSNodeAnnotationFile af = (CnSNodeAnnotationFile)event.getParameter(ANNOTATION_FILE);
+		CnSPanelTreeNode fileNode = (CnSPanelTreeNode)event.getParameter(TREE_FILE_NODE);
 		CnSNetworksTreeModel networksTreeModel;
 		switch(event.getAction()) {
 			case ADD_MAPPED_NETWORK:
@@ -154,8 +157,8 @@ public class CnSControlPanel extends CnSPanel implements CytoPanelComponent, CnS
 
 			case REMOVE_MAPPED_NETWORK:
 				CnSAFTreeNetworkNetnameNode tnn = (CnSAFTreeNetworkNetnameNode)event.getParameter(TREE_FILE_NODE);
-				CnSAFTreeNetworksRootNode rootNode = (CnSAFTreeNetworksRootNode)tnn.getParent();
-				CnSAFTreeDetailsNodePanel detailsPanel = rootNode.getDetailsNodePanel();
+				CnSAFTreeNetworksRootNode networksRootNode = (CnSAFTreeNetworksRootNode)fileNode.getParent();
+				CnSAFTreeDetailsNodePanel detailsPanel = networksRootNode.getDetailsNodePanel();
 				networksTreeModel = detailsPanel.getNetworksTreeModel();
 				networksTreeModel.removeNetwork(tnn, network, af);
 				detailsPanel.getNetworksTree().updateUI();
@@ -165,6 +168,10 @@ public class CnSControlPanel extends CnSPanel implements CytoPanelComponent, CnS
 
 			case REFRESH :
 				tree.updateUI();
+				break;
+				
+			case REMOVE_ANNOTATION_FILE :
+				if (rootNode != null) rootNode.removeChild(fileNode);
 				break;
 		}
 		return null;

@@ -58,6 +58,16 @@ public class CnSAFTreeFileNode extends CnSPanelTreeNode {
 			af = (CnSNodeAnnotationFile)getData(CnSAFTreeFileNode.ANNOTATION_FILE);
 			if (((CnSButton)e.getSource()).getActionCommand().equals("delete")) {
 				System.out.println("Pressed: delete " + af);
+				CnSEvent ev = new CnSEvent(CnSNodeAnnotationManager.UNLOAD_ANNOTATIONS, CnSEventManager.ANNOTATION_MANAGER);
+				ev.addParameter(CnSNodeAnnotationManager.ANNOTATION_FILE, getData(ANNOTATION_FILE));
+				CnSEventManager.handleMessage(ev);
+				
+				ev = new CnSEvent(CnSControlPanel.REMOVE_ANNOTATION_FILE, CnSEventManager.CONTROL_PANEL);
+				ev.addParameter(CnSControlPanel.TREE_FILE_NODE, this);
+				CnSEventManager.handleMessage(ev);
+				
+				ev = new CnSEvent(CnSControlPanel.REFRESH, CnSEventManager.CONTROL_PANEL);
+				CnSEventManager.handleMessage(ev);
 			}
 			else if (((CnSButton)e.getSource()).getActionCommand().equals("annotate")) {
 				System.out.println("Pressed: annotate " + af);

@@ -31,7 +31,6 @@ public class CnSAFTreeNetworkNetnameNode extends CnSPanelTreeNode {
 	public CnSAFTreeNetworkNetnameNode(CnSPanelTreeNode parent, Hashtable<Integer, Object> v) {
 		super(parent, v);
 		panel = new CnSAFTreeNetworkNetnameNodePanel(getData(NETWORK).toString());
-		System.err.println("CONSTRUCTOR - getData(ANNOTATION_FILE) = " + getData(ANNOTATION_FILE));
 		((CnSAFTreeNetworkNetnameNodePanel)panel).getDeleteButton().addActionListener(this);
 	}
 

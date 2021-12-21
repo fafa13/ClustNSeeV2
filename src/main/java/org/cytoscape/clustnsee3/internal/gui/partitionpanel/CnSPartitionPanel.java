@@ -44,6 +44,7 @@ public class CnSPartitionPanel extends CnSPanel implements CytoPanelComponent, C
 	public static final int SELECT_CLUSTER = 3;
 	public static final int SEARCH = 4;
 	public static final int INIT_ANNOTATION_PANEL = 5;
+	public static final int REFRESH = 6;
 	
 	public static final int PARTITION = 1001;
 	public static final int CLUSTER = 1002;
@@ -127,6 +128,11 @@ public class CnSPartitionPanel extends CnSPanel implements CytoPanelComponent, C
 					annotationPanel.init(partition);
 				else
 					annotationPanel.clear();
+				break;
+				
+			case REFRESH :
+				partitionPanel.refresh();
+				annotationPanel.refresh();
 				break;
 		}
 		return ret;

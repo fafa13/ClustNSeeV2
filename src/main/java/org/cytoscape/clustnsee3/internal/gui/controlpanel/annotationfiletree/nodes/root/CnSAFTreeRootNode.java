@@ -79,6 +79,9 @@ public class CnSAFTreeRootNode extends CnSPanelTreeNode {
 						
 						ev = new CnSEvent(CnSControlPanel.REFRESH, CnSEventManager.CONTROL_PANEL);
 						CnSEventManager.handleMessage(ev);
+						
+						ev = new CnSEvent(CnSPartitionPanel.REFRESH, CnSEventManager.PARTITION_PANEL);
+						CnSEventManager.handleMessage(ev);
 					}
 					else {
 						JOptionPane.showMessageDialog(null, "Annotation file " + dialog.getSelectedFile().getName() + " is already loaded.");
@@ -87,7 +90,7 @@ public class CnSAFTreeRootNode extends CnSPanelTreeNode {
 			}
 		}
 	}
-
+	
 	/* (non-Javadoc)
 	 * @see org.cytoscape.clustnsee3.internal.gui.widget.paneltree.CnSPanelTreeNode#getValue()
 	 */

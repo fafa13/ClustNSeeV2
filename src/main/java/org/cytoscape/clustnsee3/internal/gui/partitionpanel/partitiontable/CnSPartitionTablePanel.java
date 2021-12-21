@@ -205,4 +205,10 @@ public class CnSPartitionTablePanel extends CnSPanel {
 		table.getTable().repaint();
 		table.getFixedTable().repaint();
 	}
+	public void refresh() {
+		table.getModel().fireTableDataChanged();
+		table.getTable().doLayout();
+		table.getTable().repaint();
+		table.getFixedTable().repaint();
+	}
 }

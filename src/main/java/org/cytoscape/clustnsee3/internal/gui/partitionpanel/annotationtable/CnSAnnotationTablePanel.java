@@ -168,4 +168,8 @@ public class CnSAnnotationTablePanel extends CnSPanel {
 	public void clear() {
 		
 	}
+	
+	public void refresh() {
+		annotationTable.repaint();
+	}
 }

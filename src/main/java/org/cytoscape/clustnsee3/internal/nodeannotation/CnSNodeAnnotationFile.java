@@ -20,9 +20,6 @@ import java.util.Vector;
 
 import org.cytoscape.clustnsee3.internal.nodeannotation.trie.CnSTrieNode;
 
-/**
- * 
- */
 public class CnSNodeAnnotationFile {
 	private File file;
 	private int fromLine;
