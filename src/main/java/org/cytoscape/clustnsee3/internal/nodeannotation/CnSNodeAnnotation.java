@@ -17,9 +17,6 @@ import java.util.Vector;
 
 import org.cytoscape.clustnsee3.internal.nodeannotation.trie.CnSTrieNode;
 
-/**
- * 
- */
 public class CnSNodeAnnotation implements Comparable<CnSNodeAnnotation> {
 	private CnSTrieNode trieNode;
 	private Vector<CnSAnnotationTarget> targets;
