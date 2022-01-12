@@ -318,6 +318,8 @@ public class CnSNodeAnnotationManager implements CnSEventListener {
 					makeCyNodesHashMap();
 					makeClustersHashMap();
 					files.removeElement(af);
+					CnSEvent ev = new CnSEvent(CnSPartitionPanel.REFRESH, CnSEventManager.PARTITION_PANEL);
+					CnSEventManager.handleMessage(ev);
 				}
 				break;
 				
