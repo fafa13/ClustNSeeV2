@@ -63,5 +63,7 @@ public abstract class CnSTrieNode {
 	public void removeChild(CnSTrieNode node) {
 		if (getChildren() != null) getChildren().removeElement(node);
 	}
-	
+	public void removeAnnotation() {
+		
+	}
 }

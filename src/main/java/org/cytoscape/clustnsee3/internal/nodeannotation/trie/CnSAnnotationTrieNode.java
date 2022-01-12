@@ -36,4 +36,7 @@ public class CnSAnnotationTrieNode extends CnSTrieNode {
 			return parent.getWord();
 		return  null;
 	}
+	public void removeAnnotation() {
+		this.annotation = null;
+	}
 }

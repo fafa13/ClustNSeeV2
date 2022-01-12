@@ -317,6 +317,7 @@ public class CnSNodeAnnotationManager implements CnSEventListener {
 					removeAnnotations(af);
 					makeCyNodesHashMap();
 					makeClustersHashMap();
+					files.removeElement(af);
 				}
 				break;
 				
@@ -381,9 +382,9 @@ public class CnSNodeAnnotationManager implements CnSEventListener {
 				
 			case GET_NETWORK_ANNOTATIONS :
 				network = (CyNetwork)event.getParameter(NETWORK);
-				for (CnSNodeNetworkSet nns : annotations.values()) {
+				//for (CnSNodeNetworkSet nns : annotations.values()) {
 					//nns.getNodeNetworks().
-				}
+				//}
 				break;
 		}
 		return ret;
@@ -462,7 +463,7 @@ public class CnSNodeAnnotationManager implements CnSEventListener {
 			ann = it.next();
 			nodeAnnotation = ann.getAnnotation();
 			annotations.remove(nodeAnnotation);
-			
+			ann.removeAnnotation();
 		}
 	}
 
