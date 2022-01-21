@@ -559,6 +559,7 @@ UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, SelectedNodesAndEd
 	@Override
 	public void handleEvent(SelectedNodesAndEdgesEvent e) {
 		CnSEvent ev;
+		System.err.println("*** HANDLE EVENT");
 		if (selectedView != null && USER_ENABLED) {
 			Collection<CyNode> cn = e.getSelectedNodes();
 			if (cn.size() == 1) {

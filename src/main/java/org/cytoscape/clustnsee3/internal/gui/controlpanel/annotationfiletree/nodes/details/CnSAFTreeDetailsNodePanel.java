@@ -19,7 +19,6 @@ import java.io.File;
 import java.util.Hashtable;
 
 import javax.swing.JLabel;
-import javax.swing.SwingUtilities;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeExpansionListener;
 
