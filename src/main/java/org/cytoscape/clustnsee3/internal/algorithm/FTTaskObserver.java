@@ -43,32 +43,7 @@ public class FTTaskObserver implements TaskObserver {
 	private CyNetworkView view;
 	private CnSCluster cluster;
 	private RenderingEngine<?> re = null;
-	
-	/**
-	 * @param
-	 * @return
-	 */
-	public FTTaskObserver(CyNetworkView v, CnSCluster c) {
-		super();
-		cluster = c;
-		view = v;
-		CnSEvent ev = new CnSEvent(CyActivator.GET_RENDERING_ENGINE_MANAGER, CnSEventManager.CY_ACTIVATOR);
-		RenderingEngineManager rem = (RenderingEngineManager)CnSEventManager.handleMessage(ev);
-	
-		Iterator<RenderingEngine<?>> it = rem.getAllRenderingEngines().iterator();
-		while (it.hasNext()) {
-			re = it.next();
-			if (re.getViewModel() == view) break;
-		}
-	}
-
-	/* (non-Javadoc)
-	 * @see org.cytoscape.work.TaskObserver#allFinished(org.cytoscape.work.FinishStatus)
-	 */
-	@Override
-	public void allFinished(FinishStatus arg0) {
-		BufferedImage i = (BufferedImage)re.createImage(200, 100);
-		ImageFilter filter = new RGBImageFilter() {
+	private ImageFilter filter = new RGBImageFilter() {
 	         int transparentColor = Color.white.getRGB() | 0xFF000000;
 
 	         public final int filterRGB(int x, int y, int rgb) {
@@ -79,10 +54,40 @@ public class FTTaskObserver implements TaskObserver {
 	            }
 	         }
 	      };
-		ImageProducer filteredImgProd = new FilteredImageSource(i.getSource(), filter);
-	    Image transparentImg = Toolkit.getDefaultToolkit().createImage(filteredImgProd);
+		
+	/**
+	 * @param
+	 * @return
+	 */
+	public FTTaskObserver(CyNetworkView v, CnSCluster c) {
+		super();
+		cluster = c;
+		view = v;
+		
+	}
 
-		cluster.setSnapshot(new ImageIcon(transparentImg));
+	/* (non-Javadoc)
+	 * @see org.cytoscape.work.TaskObserver#allFinished(org.cytoscape.work.FinishStatus)
+	 */
+	@Override
+	public void allFinished(FinishStatus arg0) {
+		CnSEvent ev = new CnSEvent(CyActivator.GET_RENDERING_ENGINE_MANAGER, CnSEventManager.CY_ACTIVATOR);
+		RenderingEngineManager rem = (RenderingEngineManager)CnSEventManager.handleMessage(ev);
+	
+		Iterator<RenderingEngine<?>> it = rem.getRenderingEngines(view).iterator();
+		while (it.hasNext()) {
+			re = it.next();
+			if (re.getViewModel() == view) break; else re = null;
+		}
+		if (re != null) {
+			//System.out.println("--- re = " + re);
+			BufferedImage i = (BufferedImage)re.createImage(200, 100);
+			//System.out.println("--- i = " + i);
+			ImageProducer filteredImgProd = new FilteredImageSource(i.getSource(), filter);
+			Image transparentImg = Toolkit.getDefaultToolkit().createImage(filteredImgProd);
+
+			cluster.setSnapshot(new ImageIcon(transparentImg));
+		}
 	}
 	
 	/* (non-Javadoc)
