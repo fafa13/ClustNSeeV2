@@ -26,6 +26,7 @@ import org.cytoscape.clustnsee3.internal.analysis.node.CnSNode;
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventListener;
 import org.cytoscape.clustnsee3.internal.gui.widget.CnSPanel;
+import org.cytoscape.clustnsee3.internal.partition.CnSPartition;
 import org.cytoscape.clustnsee3.internal.view.CnSView;
 import org.cytoscape.model.CyEdge;
 
@@ -46,6 +47,7 @@ public class CnSInfoPanel extends CnSPanel implements CytoPanelComponent, CnSEve
 	public static final int NETWORK = 1005;
 	public static final int VIEW = 1006;
 	public static final int NODE = 1007;
+	public static final int PARTITION = 1008;
 	
 	public static final int INIT = 1;
 	public static final int SELECT_PANEL = 2;
@@ -86,7 +88,8 @@ public class CnSInfoPanel extends CnSPanel implements CytoPanelComponent, CnSEve
 					CyEdge edge = (CyEdge)event.getParameter(EDGE);
 					CnSClusterLink clusterLink = (CnSClusterLink)event.getParameter(CLUSTER_LINK);
 					CnSView view = (CnSView)event.getParameter(VIEW);
-					edgeDetailsPanel.init(clusterLink, edge, view);	
+					CnSPartition p = (CnSPartition)event.getParameter(PARTITION);
+					edgeDetailsPanel.init(clusterLink, edge, view, p);	
 					edgeDetailsPanel.repaint();
 				}
 				else if (((String)event.getParameter(PANEL)).equals(NODE_DETAILS)) {

@@ -192,12 +192,20 @@ public class CnSPartitionManager implements CnSEventListener {
 				
 			case GET_NODE :
 				p = (CnSPartition)event.getParameter(PARTITION);
+				cyNode = (CyNode)event.getParameter(CY_NODE);
+				suid = (Long)event.getParameter(NODE_SUID);
 				if (p != null) {
-					suid = (Long)event.getParameter(NODE_SUID);
-					ret = p.getNode(suid);
+					if (suid != null) 
+						ret = p.getNode(suid);
+					else {
+						cnsNode = p.getClusterNode(cyNode);
+						if (cnsNode == null) cnsNode = p.getNode(cyNode);
+							if (cnsNode != null) {
+								ret = cnsNode;
+						}
+					}
 				}
 				else {
-					cyNode = (CyNode)event.getParameter(CY_NODE);
 					cnsNode = null;
 					
 					for (CnSPartition part : partitions) {
@@ -255,8 +263,9 @@ public class CnSPartitionManager implements CnSEventListener {
 				
 			case GET_CLUSTER_LINK :
 				cyEdge = (CyEdge)event.getParameter(CY_EDGE);
-				for (CnSPartition part : partitions) {
-					for (CnSClusterLink cl : part.getClusterLinks()) {
+				p = (CnSPartition)event.getParameter(PARTITION);
+				if (p != null) {
+					for (CnSClusterLink cl : p.getClusterLinks()) {
 						if (cl.getInteractionEdge() != null)
 							if (cyEdge == cl.getInteractionEdge().getCyEdge()) {
 								ret = cl;
@@ -268,6 +277,21 @@ public class CnSPartitionManager implements CnSEventListener {
 								break;
 							}
 					}
+				}
+				else
+					for (CnSPartition part : partitions) {
+						for (CnSClusterLink cl : part.getClusterLinks()) {
+							if (cl.getInteractionEdge() != null)
+								if (cyEdge == cl.getInteractionEdge().getCyEdge()) {
+									ret = cl;
+									break;
+								}
+							if (cl.getMulticlassEdge() != null)
+								if (cyEdge == cl.getMulticlassEdge().getCyEdge()) {
+									ret = cl;
+									break;
+								}
+						}
 				}
 				break;
 				

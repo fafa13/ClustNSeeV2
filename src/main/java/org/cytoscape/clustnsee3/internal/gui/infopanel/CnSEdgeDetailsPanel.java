@@ -25,6 +25,7 @@ import org.cytoscape.clustnsee3.internal.analysis.node.CnSNode;
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
 import org.cytoscape.clustnsee3.internal.gui.widget.CnSPanel;
+import org.cytoscape.clustnsee3.internal.partition.CnSPartition;
 import org.cytoscape.clustnsee3.internal.partition.CnSPartitionManager;
 import org.cytoscape.clustnsee3.internal.view.CnSView;
 import org.cytoscape.model.CyEdge;
@@ -100,7 +101,7 @@ public class CnSEdgeDetailsPanel extends CnSPanel {
 		addComponent(mainPanel, 0, 1, 1, 1, 1.0, 1.0, CnSPanel.WEST, CnSPanel.BOTH, 5, 5, 5, 5, 0, 0);
 		
 	}
-	public void init(CnSClusterLink clusterLink, CyEdge edge, CnSView view) {
+	public void init(CnSClusterLink clusterLink, CyEdge edge, CnSView view, CnSPartition part) {
 		if (clusterLink != null) {
 			leftLayout.show(leftPanel, CLUSTER_DETAILS);
 			rightLayout.show(rightPanel, CLUSTER_DETAILS);
@@ -124,6 +125,7 @@ public class CnSEdgeDetailsPanel extends CnSPanel {
 		else {
 			CnSEvent ev = new CnSEvent(CnSPartitionManager.GET_NODE, CnSEventManager.PARTITION_MANAGER);
 			ev.addParameter(CnSPartitionManager.CY_NODE, edge.getSource());
+			ev.addParameter(CnSPartitionManager.PARTITION, part);
 			CnSNode node1 = (CnSNode)CnSEventManager.handleMessage(ev);
 			ev.addParameter(CnSPartitionManager.CY_NODE, edge.getTarget());
 			CnSNode node2 = (CnSNode)CnSEventManager.handleMessage(ev);
