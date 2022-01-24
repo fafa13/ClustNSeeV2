@@ -45,6 +45,7 @@ public class CnSPartitionPanel extends CnSPanel implements CytoPanelComponent, C
 	public static final int SEARCH = 4;
 	public static final int INIT_ANNOTATION_PANEL = 5;
 	public static final int REFRESH = 6;
+	public static final int SET_SEARCH_ANNOTATION = 7;
 	
 	public static final int PARTITION = 1001;
 	public static final int CLUSTER = 1002;
@@ -114,7 +115,7 @@ public class CnSPartitionPanel extends CnSPanel implements CytoPanelComponent, C
 				break;
 				
 			case SEARCH :
-				CnSNodeAnnotation annotation = (CnSNodeAnnotation)event.getParameter(ANNOTATION);	
+				CnSNodeAnnotation annotation = (CnSNodeAnnotation)event.getParameter(ANNOTATION);
 				partitionPanel.setSelectedAnnotation(annotation);
 				break;
 				
@@ -133,6 +134,11 @@ public class CnSPartitionPanel extends CnSPanel implements CytoPanelComponent, C
 			case REFRESH :
 				partitionPanel.refresh();
 				annotationPanel.refresh();
+				break;
+				
+			case SET_SEARCH_ANNOTATION :
+				annotation = (CnSNodeAnnotation)event.getParameter(ANNOTATION);
+				partitionPanel.setAnnotation(annotation);
 				break;
 		}
 		return ret;

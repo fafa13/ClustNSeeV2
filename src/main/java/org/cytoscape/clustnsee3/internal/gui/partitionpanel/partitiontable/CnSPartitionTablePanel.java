@@ -194,6 +194,9 @@ public class CnSPartitionTablePanel extends CnSPanel {
 		table.getModel().fireTableDataChanged();
 		repaintTable();
 	}
+	public void setAnnotation(CnSNodeAnnotation annot) {
+		annotationSearchComponent.setAnnotation(annot);
+	}
 	
 	public void clear() {
 		table.getTable().setModel(new DefaultTableModel());

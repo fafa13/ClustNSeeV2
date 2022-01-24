@@ -113,7 +113,7 @@ public class CnSAnnotationTableModel extends AbstractTableModel {
 		Vector<?> v;
 				
 		switch(column) {
-			case 0 :	return annotations.elementAt(row).getValue();
+			case 0 :	return annotations.elementAt(row);
 			case 1 : 	ev = new CnSEvent(CnSNodeAnnotationManager.GET_NODES, CnSEventManager.ANNOTATION_MANAGER);
 					 	ev.addParameter(CnSNodeAnnotationManager.ANNOTATION, annotations.elementAt(row));
 					 	return ((CnSNodeNetworkSet)CnSEventManager.handleMessage(ev)).getNodeNetworks().size();

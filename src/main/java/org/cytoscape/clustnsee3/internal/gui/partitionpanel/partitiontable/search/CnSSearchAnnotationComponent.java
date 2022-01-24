@@ -20,8 +20,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.Vector;
 
 import javax.swing.JTextField;
@@ -37,7 +37,7 @@ import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeAnnotationManager
 /**
  * 
  */
-public class CnSSearchAnnotationComponent implements KeyListener, ActionListener, MouseListener {
+public class CnSSearchAnnotationComponent extends MouseAdapter implements KeyListener, ActionListener {
 	private CnSSearchAnnotationPopupWindow popupWindow;
 	private JTextField textField;
 	private Point popupPos = null;
@@ -51,6 +51,15 @@ public class CnSSearchAnnotationComponent implements KeyListener, ActionListener
 		popupWindow = new CnSSearchAnnotationPopupWindow(this);
 		
 		initListeners();
+	}
+	
+	public void setAnnotation(CnSNodeAnnotation annot) {
+		textField.setText(annot.getValue());
+		CnSEvent ev;
+		if (annot != null) textField.setBackground(Color.GREEN);
+		ev = new CnSEvent(CnSPartitionPanel.SEARCH, CnSEventManager.PARTITION_PANEL);
+		if (annot != null) ev.addParameter(CnSPartitionPanel.ANNOTATION, annot);
+		CnSEventManager.handleMessage(ev);
 	}
 	
 	private void initListeners() {
@@ -209,33 +218,5 @@ public class CnSSearchAnnotationComponent implements KeyListener, ActionListener
 				CnSEventManager.handleMessage(ev);
 			}
 		}
-	}
-
-	/* (non-Javadoc)
-	 * @see java.awt.event.MouseListener#mouseEntered(java.awt.event.MouseEvent)
-	 */
-	@Override
-	public void mouseEntered(MouseEvent e) {
-	}
-
-	/* (non-Javadoc)
-	 * @see java.awt.event.MouseListener#mouseExited(java.awt.event.MouseEvent)
-	 */
-	@Override
-	public void mouseExited(MouseEvent e) {
-	}
-
-	/* (non-Javadoc)
-	 * @see java.awt.event.MouseListener#mousePressed(java.awt.event.MouseEvent)
-	 */
-	@Override
-	public void mousePressed(MouseEvent e) {
-	}
-
-	/* (non-Javadoc)
-	 * @see java.awt.event.MouseListener#mouseReleased(java.awt.event.MouseEvent)
-	 */
-	@Override
-	public void mouseReleased(MouseEvent e) {
 	}
 }

@@ -14,6 +14,9 @@
 package org.cytoscape.clustnsee3.internal.gui.partitionpanel.annotationtable;
 
 import java.awt.Color;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.TreeSet;
 import java.util.Vector;
 
@@ -29,6 +32,7 @@ import javax.swing.table.TableRowSorter;
 import org.cytoscape.clustnsee3.internal.analysis.CnSCluster;
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
+import org.cytoscape.clustnsee3.internal.gui.partitionpanel.CnSPartitionPanel;
 import org.cytoscape.clustnsee3.internal.gui.widget.CnSButton;
 import org.cytoscape.clustnsee3.internal.gui.widget.CnSPanel;
 import org.cytoscape.clustnsee3.internal.gui.widget.CnSTableHeaderRenderer;
@@ -70,6 +74,16 @@ public class CnSAnnotationTablePanel extends CnSPanel {
 		annotationTable.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
 		annotationTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		annotationTable.getTableHeader().setDefaultRenderer(new CnSTableHeaderRenderer());
+		annotationTable.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (e.getClickCount() == 2) {	
+					CnSEvent ev = new CnSEvent(CnSPartitionPanel.SET_SEARCH_ANNOTATION, CnSEventManager.PARTITION_PANEL);
+					ev.addParameter(CnSPartitionPanel.ANNOTATION, annotationTable.getValueAt(annotationTable.getSelectedRow(), 0));
+					CnSEventManager.handleMessage(ev);
+				}
+			}
+		});
 		
 		addComponent(new JScrollPane(annotationTable), 0, 1, 1, 1, 1.0, 1.0, CENTER, BOTH, 0, 5, 0, 5, 0, 0);
 		
