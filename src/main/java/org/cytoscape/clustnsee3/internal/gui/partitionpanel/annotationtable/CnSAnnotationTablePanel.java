@@ -14,9 +14,10 @@
 package org.cytoscape.clustnsee3.internal.gui.partitionpanel.annotationtable;
 
 import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.TreeSet;
 import java.util.Vector;
 
@@ -27,6 +28,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.RowFilter;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.table.TableRowSorter;
 
 import org.cytoscape.clustnsee3.internal.analysis.CnSCluster;
@@ -74,16 +77,6 @@ public class CnSAnnotationTablePanel extends CnSPanel {
 		annotationTable.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
 		annotationTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		annotationTable.getTableHeader().setDefaultRenderer(new CnSTableHeaderRenderer());
-		annotationTable.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				if (e.getClickCount() == 2) {	
-					CnSEvent ev = new CnSEvent(CnSPartitionPanel.SET_SEARCH_ANNOTATION, CnSEventManager.PARTITION_PANEL);
-					ev.addParameter(CnSPartitionPanel.ANNOTATION, annotationTable.getValueAt(annotationTable.getSelectedRow(), 0));
-					CnSEventManager.handleMessage(ev);
-				}
-			}
-		});
 		
 		addComponent(new JScrollPane(annotationTable), 0, 1, 1, 1, 1.0, 1.0, CENTER, BOTH, 0, 5, 0, 5, 0, 0);
 		
@@ -95,7 +88,30 @@ public class CnSAnnotationTablePanel extends CnSPanel {
 	}
 	
 	private void initListeners() {
-		
+		annotationTable.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (e.getClickCount() == 2) {	
+					CnSEvent ev = new CnSEvent(CnSPartitionPanel.SET_SEARCH_ANNOTATION, CnSEventManager.PARTITION_PANEL);
+					ev.addParameter(CnSPartitionPanel.ANNOTATION, annotationTable.getValueAt(annotationTable.getSelectedRow(), 0));
+					CnSEventManager.handleMessage(ev);
+				}
+			}
+		});
+		viewAllCheckBox.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				System.err.println("viewAllCheckBox : " + viewAllCheckBox.isSelected());
+				System.err.println("clusterSelectionCheckBox : " + clusterSelectionCheckBox.isSelected());
+			}
+		});
+		clusterSelectionCheckBox.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				System.err.println("viewAllCheckBox : " + viewAllCheckBox.isSelected());
+				System.err.println("clusterSelectionCheckBox : " + clusterSelectionCheckBox.isSelected());
+			}
+		});
 	}
 	
 	public void init(CnSPartition partition) {
