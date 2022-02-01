@@ -31,7 +31,7 @@ import org.cytoscape.clustnsee3.internal.partition.CnSPartitionManager;
  */
 public class CnSPartitionTableModel extends AbstractTableModel {
 	private static final long serialVersionUID = 3984889084020756303L;
-	private static final String[] columnNames = {"Cluster ID", "Nodes", "Links", "Multiclassed nodes", "Density", "Annotations", "Enrichment nb.", "Enrichment stat."}; 
+	private static final String[] columnNames = {"Cluster ID", "Nodes", "Links", /*"Multiclassed nodes", "Density",*/ "Annotations", "Enrichment nb.", "Enrichment stat."}; 
 	private CnSPartition partition;
 	private CnSNodeAnnotation selectedAnnotation;
 	
@@ -87,13 +87,13 @@ public class CnSPartitionTableModel extends AbstractTableModel {
 			case 0 : return cluster.getID();
 			case 1 : return cluster.getNbNodes();
 			case 2 : return cluster.getEdges().size();
-			case 3 : ev = new CnSEvent(CnSPartitionManager.GET_NB_MULTICLASS_NODES, CnSEventManager.PARTITION_MANAGER);
+			/*case 3 : ev = new CnSEvent(CnSPartitionManager.GET_NB_MULTICLASS_NODES, CnSEventManager.PARTITION_MANAGER);
 					 ev.addParameter(CnSPartitionManager.PARTITION, partition);
 					 ev.addParameter(CnSPartitionManager.CLUSTER, cluster);
 					 nb = (Integer)CnSEventManager.handleMessage(ev);
 					 return nb;
-			case 4 : return ((int)(cluster.getDensity() * 1000)) / 1000D;
-			case 5 : ev = new CnSEvent(CnSNodeAnnotationManager.GET_CLUSTER_ANNOTATIONS, CnSEventManager.ANNOTATION_MANAGER);
+			case 4 : return ((int)(cluster.getDensity() * 1000)) / 1000D;*/
+			case 3 : ev = new CnSEvent(CnSNodeAnnotationManager.GET_CLUSTER_ANNOTATIONS, CnSEventManager.ANNOTATION_MANAGER);
 			 		 ev.addParameter(CnSNodeAnnotationManager.CLUSTER, cluster);
 			 		 nb = ((Vector<?>)CnSEventManager.handleMessage(ev)).size();
 			 		 return nb;

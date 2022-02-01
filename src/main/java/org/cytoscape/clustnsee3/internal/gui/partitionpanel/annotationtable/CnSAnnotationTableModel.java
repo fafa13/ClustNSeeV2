@@ -110,7 +110,7 @@ public class CnSAnnotationTableModel extends AbstractTableModel {
 		int annotation_count;
 		int annotated_node_count;
 		int annotated_cluster_count = 0;
-		Vector<?> v;
+		Vector<CnSCluster> v;
 				
 		switch(column) {
 			case 0 :	return annotations.elementAt(row);
@@ -136,14 +136,16 @@ public class CnSAnnotationTableModel extends AbstractTableModel {
 	 		 		 	
 			case 4 : 	ev = new CnSEvent(CnSNodeAnnotationManager.GET_ANNOTATED_CLUSTERS, CnSEventManager.ANNOTATION_MANAGER);
 					 	ev.addParameter(CnSNodeAnnotationManager.ANNOTATION, annotations.elementAt(row));
-					 	v = (Vector<?>)(CnSEventManager.handleMessage(ev));
+					 	//ev.addParameter(CnSNodeAnnotationManager.PARTITION, partition);
+					 	v = (Vector<CnSCluster>)(CnSEventManager.handleMessage(ev));
 					 	if (v != null) annotated_cluster_count = v.size();
 					 	return annotated_cluster_count;
 					 	
 			case 5 : 	if (partition != null) {
 							ev = new CnSEvent(CnSNodeAnnotationManager.GET_ANNOTATED_CLUSTERS, CnSEventManager.ANNOTATION_MANAGER);
 							ev.addParameter(CnSNodeAnnotationManager.ANNOTATION, annotations.elementAt(row));
-							v = (Vector<?>)(CnSEventManager.handleMessage(ev));
+							//ev.addParameter(CnSNodeAnnotationManager.PARTITION, partition);
+							v = (Vector<CnSCluster>)(CnSEventManager.handleMessage(ev));
 							if (v != null) annotated_cluster_count = v.size();
 							return (int)(annotated_cluster_count * 1000D / partition.getClusters().size()) / 1000D;
 						}
