@@ -24,7 +24,6 @@ import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
 import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeAnnotation;
 import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeAnnotationManager;
 import org.cytoscape.clustnsee3.internal.partition.CnSPartition;
-import org.cytoscape.clustnsee3.internal.partition.CnSPartitionManager;
 
 /**
  * 

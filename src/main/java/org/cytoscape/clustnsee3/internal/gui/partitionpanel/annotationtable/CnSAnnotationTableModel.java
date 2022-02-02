@@ -24,6 +24,7 @@ import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeAnnotation;
 import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeAnnotationManager;
 import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeNetworkSet;
 import org.cytoscape.clustnsee3.internal.partition.CnSPartition;
+import org.cytoscape.clustnsee3.internal.partition.CnSPartitionManager;
 
 /**
  * 
@@ -111,7 +112,8 @@ public class CnSAnnotationTableModel extends AbstractTableModel {
 		int annotated_node_count;
 		int annotated_cluster_count = 0;
 		Vector<CnSCluster> v;
-				
+		CnSPartition part;
+		
 		switch(column) {
 			case 0 :	return annotations.elementAt(row);
 			case 1 : 	ev = new CnSEvent(CnSNodeAnnotationManager.GET_NODES, CnSEventManager.ANNOTATION_MANAGER);
@@ -136,17 +138,29 @@ public class CnSAnnotationTableModel extends AbstractTableModel {
 	 		 		 	
 			case 4 : 	ev = new CnSEvent(CnSNodeAnnotationManager.GET_ANNOTATED_CLUSTERS, CnSEventManager.ANNOTATION_MANAGER);
 					 	ev.addParameter(CnSNodeAnnotationManager.ANNOTATION, annotations.elementAt(row));
-					 	//ev.addParameter(CnSNodeAnnotationManager.PARTITION, partition);
 					 	v = (Vector<CnSCluster>)(CnSEventManager.handleMessage(ev));
-					 	if (v != null) annotated_cluster_count = v.size();
+					 	annotated_cluster_count = 0;
+						if (v != null) 
+					 		for (CnSCluster c : v) {
+					 			ev = new CnSEvent(CnSPartitionManager.GET_PARTITION, CnSEventManager.PARTITION_MANAGER);
+							 	ev.addParameter(CnSPartitionManager.CLUSTER, c);
+							 	part = (CnSPartition)CnSEventManager.handleMessage(ev);
+							 	if (part == partition) annotated_cluster_count++;
+					 		}
 					 	return annotated_cluster_count;
 					 	
 			case 5 : 	if (partition != null) {
 							ev = new CnSEvent(CnSNodeAnnotationManager.GET_ANNOTATED_CLUSTERS, CnSEventManager.ANNOTATION_MANAGER);
 							ev.addParameter(CnSNodeAnnotationManager.ANNOTATION, annotations.elementAt(row));
-							//ev.addParameter(CnSNodeAnnotationManager.PARTITION, partition);
 							v = (Vector<CnSCluster>)(CnSEventManager.handleMessage(ev));
-							if (v != null) annotated_cluster_count = v.size();
+							annotated_cluster_count = 0;
+							if (v != null) 
+								for (CnSCluster c : v) {
+						 			ev = new CnSEvent(CnSPartitionManager.GET_PARTITION, CnSEventManager.PARTITION_MANAGER);
+								 	ev.addParameter(CnSPartitionManager.CLUSTER, c);
+								 	part = (CnSPartition)CnSEventManager.handleMessage(ev);
+								 	if (part == partition) annotated_cluster_count++;
+						 		}
 							return (int)(annotated_cluster_count * 1000D / partition.getClusters().size()) / 1000D;
 						}
 						else 

@@ -190,8 +190,8 @@ public class CnSPartitionTablePanel extends CnSPanel {
 	}
 	
 	public void setSelectedAnnotation(CnSNodeAnnotation annotation) {
-		table.getModel().setSelectedAnnotation(annotation);
-		table.getModel().fireTableDataChanged();
+		table.setSelectedAnnotation(annotation);
+		table.fireTableDataChanged();
 		repaintTable();
 	}
 	public void setAnnotation(CnSNodeAnnotation annot) {
@@ -209,7 +209,7 @@ public class CnSPartitionTablePanel extends CnSPanel {
 		table.getFixedTable().repaint();
 	}
 	public void refresh() {
-		table.getModel().fireTableDataChanged();
+		table.fireTableDataChanged();
 		table.getTable().doLayout();
 		table.getTable().repaint();
 		table.getFixedTable().repaint();

@@ -26,6 +26,9 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableModel;
+
+import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeAnnotation;
 
 /**
  * 
@@ -86,8 +89,8 @@ public class CnSPartitionTable implements ChangeListener, PropertyChangeListener
     	fixed.getColumnModel().getColumn(0).setCellRenderer(new CnSPartitionTableFixedColumnRenderer());
 	}
 	
-	public CnSPartitionTableModel getModel() {
-		return (CnSPartitionTableModel)table.getModel();
+	public TableModel getModel() {
+		return table.getModel();
 	}
 
 	/* (non-Javadoc)
@@ -111,6 +114,10 @@ public class CnSPartitionTable implements ChangeListener, PropertyChangeListener
 	}
 	
 	public void fireTableDataChanged() {
-		getModel().fireTableDataChanged();
+		((CnSPartitionTableModel)getModel()).fireTableDataChanged();
+	}
+
+	public void setSelectedAnnotation(CnSNodeAnnotation annotation) {
+		((CnSPartitionTableModel)getModel()).setSelectedAnnotation(annotation);
 	}
 }
