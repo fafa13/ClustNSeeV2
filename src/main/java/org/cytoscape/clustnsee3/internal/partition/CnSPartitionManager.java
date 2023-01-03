@@ -325,7 +325,8 @@ public class CnSPartitionManager implements CnSEventListener {
 				algorithm = (CnSAlgorithm)event.getParameter(ALGORITHM);
 				partition_import = (Vector<Vector<Long>>)event.getParameter(PARTITION_IMPORT);
 				annotation_import = (Vector<Vector<String>>)event.getParameter(ANNOTATION_IMPORT);
-				p = importPartition(inputNetwork, partition_import, annotation_import, algorithm, scope);
+				taskMonitor = (TaskMonitor)event.getParameter(TASK_MONITOR);
+				p = importPartition(inputNetwork, partition_import, annotation_import, algorithm, scope, taskMonitor);
 				if (!partitions.contains(p)) partitions.addElement(p);
 				ret = p;
 				break;
@@ -363,7 +364,7 @@ public class CnSPartitionManager implements CnSEventListener {
 		return ret;
 	}
 	
-	private CnSPartition importPartition(CyNetwork inputNetwork, Vector<Vector<Long>> imported_partition, Vector<Vector<String>> imported_annotation, CnSAlgorithm algorithm, String scope) {
+	private CnSPartition importPartition(CyNetwork inputNetwork, Vector<Vector<Long>> imported_partition, Vector<Vector<String>> imported_annotation, CnSAlgorithm algorithm, String scope, TaskMonitor taskMonitor) {
 		// get services needed for network and view creation in cytoscape
 		CnSEvent ev = new CnSEvent(CyActivator.GET_ROOT_NETWORK_MANAGER, CnSEventManager.CY_ACTIVATOR);
 		CyRootNetworkManager crnm = (CyRootNetworkManager)CnSEventManager.handleMessage(ev);
@@ -398,6 +399,7 @@ public class CnSPartitionManager implements CnSEventListener {
         //System.err.println("----------------------------");
         
         // the main loop on clusters
+        taskMonitor.setProgress(0.0);
         for( int k = 0; k < imported_partition.size(); k++) {
         	
         	// create a new cluster
@@ -553,6 +555,8 @@ public class CnSPartitionManager implements CnSEventListener {
             
             // add the new cluster in the partition
             partition.addCluster(cluster);
+            
+            taskMonitor.setProgress((double)(k+1) / (double)imported_partition.size());
         }
         
         // go back to the CnS default style
@@ -722,7 +726,7 @@ public class CnSPartitionManager implements CnSEventListener {
 			cluster.print();
 			
 			//System.err.println("Cluster #" + cluster.getName());
-			//System.err.println("  CnS:isCluster : " + cluster.getAttributes().get("CnS:isCluster"));
+			//System.err.println("  CnS:isCluster : 				" + cluster.getAttributes().get("CnS:isCluster"));
 			//System.err.println("  CnS:size : " + cluster.getAttributes().get("CnS:size"));
 			//System.err.println("  CyNetwork.NAME : " + cluster.getAttributes().get(CyNetwork.NAME));
 			//System.err.println("  canonicalName : " + cluster.getAttributes().get("canonicalName"));

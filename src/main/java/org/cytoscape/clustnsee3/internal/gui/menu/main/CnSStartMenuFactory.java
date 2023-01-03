@@ -15,19 +15,21 @@ package org.cytoscape.clustnsee3.internal.gui.menu.main;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Hashtable;
 import java.util.Properties;
 
 import javax.swing.JMenuItem;
 
 import org.cytoscape.application.swing.CyMenuItem;
 import org.cytoscape.application.swing.CyNodeViewContextMenuFactory;
-import org.cytoscape.clustnsee3.internal.CnSClustnseePlugin;
 import org.cytoscape.clustnsee3.internal.CyActivator;
 import org.cytoscape.model.CyNode;
 import org.cytoscape.view.model.CyNetworkView;
 import org.cytoscape.view.model.View;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
+
+import org.cytoscape.clustnsee3.internal.CnSClustnseePlugin;
 
 /**
  * 
@@ -52,7 +54,8 @@ public class CnSStartMenuFactory implements CyNodeViewContextMenuFactory, Action
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
-		ref = context.registerService(CnSClustnseePlugin.class.getName(), CnSClustnseePlugin.getInstance(context, cyActivator), new Properties());
+		Hashtable<String, ?> dict = new Hashtable<String, Object>();
+		ref = context.registerService(CnSClustnseePlugin.class.getName(), CnSClustnseePlugin.getInstance(context, cyActivator), dict);
 	}
 
 	/* (non-Javadoc)

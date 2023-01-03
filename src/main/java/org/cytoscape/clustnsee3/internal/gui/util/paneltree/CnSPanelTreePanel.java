@@ -11,11 +11,11 @@
 /* Philippe Gambette (LIGM, Marne-la-Vallée)
  */
 
-package org.cytoscape.clustnsee3.internal.gui.widget.paneltree;
+package org.cytoscape.clustnsee3.internal.gui.util.paneltree;
 
 import java.awt.Font;
 
-import org.cytoscape.clustnsee3.internal.gui.widget.CnSPanel;
+import org.cytoscape.clustnsee3.internal.gui.util.CnSPanel;
 
 public class CnSPanelTreePanel extends CnSPanel {
 	private static final long serialVersionUID = -3014417831630947233L;
@@ -24,6 +24,7 @@ public class CnSPanelTreePanel extends CnSPanel {
 	public void initGraphics() {
 		super.initGraphics();
 	}
+	public void initListeners(CnSPanelTreeNode node) { };
 	public void setFont(Font f) {
 		font = f;
 	}

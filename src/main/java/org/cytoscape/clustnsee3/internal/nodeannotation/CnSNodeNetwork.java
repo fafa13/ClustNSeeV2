@@ -13,18 +13,21 @@
 
 package org.cytoscape.clustnsee3.internal.nodeannotation;
 
+import java.util.Vector;
+
 import org.cytoscape.model.CyNetwork;
 import org.cytoscape.model.CyNode;
 
 public class CnSNodeNetwork {
 	private CyNetwork network;
 	private CyNode node;
-	private CnSNodeAnnotationFile annotationFile;
+	private Vector<CnSNodeAnnotationFile> annotationFiles;
 	
-	public CnSNodeNetwork(CyNetwork nw, CyNode no, CnSNodeAnnotationFile af) {
+	public CnSNodeNetwork(CyNetwork nw, CyNode no/*, CnSNodeAnnotationFile af*/) {
 		network = nw;
 		node = no;
-		annotationFile = af;
+		annotationFiles = new Vector<CnSNodeAnnotationFile>();
+		//annotationFile = af;
 	}
 	public CyNetwork getNetwork() {
 		return network;
@@ -32,11 +35,17 @@ public class CnSNodeNetwork {
 	public CyNode getNode() {
 		return node;
 	}
-	public CnSNodeAnnotationFile getAnnotationFile() {
-		return annotationFile;
+	
+	public void addAnnotationFile(CnSNodeAnnotationFile af) {
+		annotationFiles.addElement(af);
 	}
+	
+	public Vector<CnSNodeAnnotationFile> getAnnotationFiles() {
+		return annotationFiles;
+	}
+	
 	public boolean equals(Object o) {
 		CnSNodeNetwork cnn = (CnSNodeNetwork)o;
-		return cnn.getNetwork().equals(network) & cnn.getNode().equals(node) & cnn.getAnnotationFile().equals(annotationFile);
+		return cnn.getNetwork().equals(network) & cnn.getNode().equals(node)/* & cnn.getAnnotationFile().equals(annotationFile)*/;
 	}
 }

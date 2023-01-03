@@ -23,9 +23,10 @@ import org.cytoscape.application.swing.CytoPanelName;
 import org.cytoscape.clustnsee3.internal.analysis.CnSCluster;
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventListener;
+import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
 import org.cytoscape.clustnsee3.internal.gui.partitionpanel.annotationtable.CnSAnnotationTablePanel;
 import org.cytoscape.clustnsee3.internal.gui.partitionpanel.partitiontable.CnSPartitionTablePanel;
-import org.cytoscape.clustnsee3.internal.gui.widget.CnSPanel;
+import org.cytoscape.clustnsee3.internal.gui.util.CnSPanel;
 import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeAnnotation;
 import org.cytoscape.clustnsee3.internal.partition.CnSPartition;
 
@@ -46,6 +47,9 @@ public class CnSPartitionPanel extends CnSPanel implements CytoPanelComponent, C
 	public static final int INIT_ANNOTATION_PANEL = 5;
 	public static final int REFRESH = 6;
 	public static final int SET_SEARCH_ANNOTATION = 7;
+	public static final int GET_SELECTED_ANNOTATION = 8;
+	public static final int GET_SEARCHED_ANNOTATION = 9;
+	public static final int SEARCH_ANNOTATION = 10;
 	
 	public static final int PARTITION = 1001;
 	public static final int CLUSTER = 1002;
@@ -87,8 +91,8 @@ public class CnSPartitionPanel extends CnSPanel implements CytoPanelComponent, C
 	@Override
 	public Object cnsEventOccured(CnSEvent event) {
 		Object ret = null;
-		CnSCluster cluster;
-		CnSPartition partition;
+		final CnSCluster cluster;
+		final CnSPartition partition;
 		
 		switch (event.getAction()) {
 			case INIT :
@@ -107,6 +111,7 @@ public class CnSPartitionPanel extends CnSPanel implements CytoPanelComponent, C
 			
 			case CLEAR :
 				partitionPanel.clear();
+				annotationPanel.clear();
 				break;
 				
 			case SELECT_CLUSTER :
@@ -115,12 +120,24 @@ public class CnSPartitionPanel extends CnSPanel implements CytoPanelComponent, C
 				break;
 				
 			case SEARCH :
+				System.err.println("SEARCH");
 				CnSNodeAnnotation annotation = (CnSNodeAnnotation)event.getParameter(ANNOTATION);
+				cluster = partitionPanel.getSelectedCluster();
 				partitionPanel.setSelectedAnnotation(annotation);
+				annotationPanel.refresh();
+				partitionPanel.selectCluster(cluster);
+				break;
+				
+			case SEARCH_ANNOTATION :
+				System.err.println("SEARCH_ANNOTATION");
+				annotation = (CnSNodeAnnotation)event.getParameter(ANNOTATION);
+				CnSEvent ev = new CnSEvent(CnSPartitionPanel.SET_SEARCH_ANNOTATION, CnSEventManager.PARTITION_PANEL);
+				ev.addParameter(CnSPartitionPanel.ANNOTATION, annotation);
+				CnSEventManager.handleMessage(ev);
+				annotationPanel.selectAnnotation(annotation);
 				break;
 				
 			case INIT_ANNOTATION_PANEL :
-				System.err.println("INIT_ANNOTATION_PANEL");
 				cluster = (CnSCluster)event.getParameter(CLUSTER);
 				partition = (CnSPartition)event.getParameter(PARTITION);
 				if (cluster != null)
@@ -137,8 +154,19 @@ public class CnSPartitionPanel extends CnSPanel implements CytoPanelComponent, C
 				break;
 				
 			case SET_SEARCH_ANNOTATION :
+				System.err.println("SET_SEARCH_ANNOTATION");
 				annotation = (CnSNodeAnnotation)event.getParameter(ANNOTATION);
+				cluster = partitionPanel.getSelectedCluster();
 				partitionPanel.setAnnotation(annotation);
+				partitionPanel.selectCluster(cluster);
+				break;
+				
+			case GET_SELECTED_ANNOTATION :
+				ret = annotationPanel.getSelectedAnnotation();
+				break;
+				
+			case GET_SEARCHED_ANNOTATION :
+				ret = partitionPanel.getSearchedAnnotation();
 				break;
 		}
 		return ret;

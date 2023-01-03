@@ -16,6 +16,7 @@ package org.cytoscape.clustnsee3.internal.task;
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
 import org.cytoscape.clustnsee3.internal.gui.resultspanel.CnSResultsPanel;
+import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeAnnotationManager;
 import org.cytoscape.clustnsee3.internal.partition.CnSPartition;
 import org.cytoscape.clustnsee3.internal.partition.CnSPartitionManager;
 import org.cytoscape.work.AbstractTask;
@@ -50,6 +51,13 @@ public class CnSDiscardPartitionTask extends AbstractTask {
 		ev = new CnSEvent(CnSPartitionManager.REMOVE_PARTITION, CnSEventManager.PARTITION_MANAGER);
 		ev.addParameter(CnSPartitionManager.PARTITION, partition);
 		CnSEventManager.handleMessage(ev);
+		
+		taskMonitor.setStatusMessage("Removing annotation enrichment.");
+		
+		// remove annotation enrichment of the partition
+		ev = new CnSEvent(CnSNodeAnnotationManager.REMOVE_ENRICHMENT, CnSEventManager.ANNOTATION_MANAGER);
+		ev.addParameter(CnSPartitionManager.PARTITION, partition);
+        CnSEventManager.handleMessage(ev);
 		
 		taskMonitor.setProgress(1.0);
 	}

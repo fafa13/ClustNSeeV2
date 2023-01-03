@@ -20,7 +20,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 
 import org.cytoscape.clustnsee3.internal.analysis.CnSCluster;
-import org.cytoscape.clustnsee3.internal.gui.widget.CnSPanel;
+import org.cytoscape.clustnsee3.internal.gui.util.CnSPanel;
 
 /**
  * 

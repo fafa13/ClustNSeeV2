@@ -16,7 +16,7 @@ package org.cytoscape.clustnsee3.internal.algorithm;
 import java.util.Hashtable;
 import java.util.Iterator;
 
-import org.cytoscape.clustnsee3.internal.gui.widget.CnSPanel;
+import org.cytoscape.clustnsee3.internal.gui.util.CnSPanel;
 
 /**
  * 

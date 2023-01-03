@@ -20,8 +20,8 @@ import java.util.Hashtable;
 import org.cytoscape.clustnsee3.internal.gui.controlpanel.annotationfiletree.nodes.details.CnSAFTreeDetailsNode;
 import org.cytoscape.clustnsee3.internal.gui.controlpanel.annotationfiletree.nodes.file.CnSAFTreeFileNode;
 import org.cytoscape.clustnsee3.internal.gui.controlpanel.annotationfiletree.nodes.root.CnSAFTreeRootNode;
-import org.cytoscape.clustnsee3.internal.gui.widget.paneltree.CnSPanelTreeModel;
-import org.cytoscape.clustnsee3.internal.gui.widget.paneltree.CnSPanelTreeNode;
+import org.cytoscape.clustnsee3.internal.gui.util.paneltree.CnSPanelTreeModel;
+import org.cytoscape.clustnsee3.internal.gui.util.paneltree.CnSPanelTreeNode;
 import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeAnnotationFile;
 
 public class CnSAFTreeModel extends CnSPanelTreeModel {

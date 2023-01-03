@@ -16,8 +16,8 @@ package org.cytoscape.clustnsee3.internal.gui.controlpanel.networkfiletree.nodes
 import java.awt.Color;
 import javax.swing.JLabel;
 
-import org.cytoscape.clustnsee3.internal.gui.widget.CnSPanel;
-import org.cytoscape.clustnsee3.internal.gui.widget.paneltree.CnSPanelTreePanel;
+import org.cytoscape.clustnsee3.internal.gui.util.CnSPanel;
+import org.cytoscape.clustnsee3.internal.gui.util.paneltree.CnSPanelTreePanel;
 
 public class CnSAFTreeNetworksRootNodePanel extends CnSPanelTreePanel {
 	private static final long serialVersionUID = 8311613134967963237L;

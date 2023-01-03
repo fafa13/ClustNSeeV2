@@ -19,11 +19,13 @@ import org.cytoscape.clustnsee3.internal.nodeannotation.trie.CnSTrieNode;
 
 public class CnSNodeAnnotation implements Comparable<CnSNodeAnnotation> {
 	private CnSTrieNode trieNode;
+	//private CnSNodeAnnotationFile annotationFile;
 	private Vector<CnSAnnotationTarget> targets;
 	
-	public CnSNodeAnnotation(CnSTrieNode trieNode) {
+	public CnSNodeAnnotation(CnSTrieNode trieNode/*, CnSNodeAnnotationFile aif*/) {
 		super();
 		this.trieNode = trieNode;
+		//annotationFile = aif;
 		targets = new Vector<CnSAnnotationTarget>();
 	}
 	public void addTarget(String node, CnSNodeAnnotationFile file) {
@@ -35,7 +37,11 @@ public class CnSNodeAnnotation implements Comparable<CnSNodeAnnotation> {
 	}
 	public String getValue() {
 		return trieNode.getWord();
+		
 	}
+	//public CnSNodeAnnotationFile getAnnotationFile() {
+	//	return annotationFile;
+	//}
 	public Vector<CnSAnnotationTarget> getTargets() {
 		return targets;
 	}
@@ -58,6 +64,6 @@ public class CnSNodeAnnotation implements Comparable<CnSNodeAnnotation> {
 	 */
 	@Override
 	public int compareTo(CnSNodeAnnotation o) {
-		return o.getValue().compareTo(this.getValue());
+		return getValue().compareTo(o.getValue());
 	}
 }

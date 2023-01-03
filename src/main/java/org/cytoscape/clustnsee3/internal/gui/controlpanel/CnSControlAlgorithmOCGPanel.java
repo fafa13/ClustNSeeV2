@@ -9,7 +9,7 @@ import org.cytoscape.clustnsee3.internal.algorithm.CnSAlgorithmManager;
 import org.cytoscape.clustnsee3.internal.algorithm.CnSOCGAlgorithm;
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
-import org.cytoscape.clustnsee3.internal.gui.widget.CnSPanel;
+import org.cytoscape.clustnsee3.internal.gui.util.CnSPanel;
 
 public class CnSControlAlgorithmOCGPanel extends CnSPanel implements ChangeListener {
 	private static final long serialVersionUID = -1974071277000782747L;

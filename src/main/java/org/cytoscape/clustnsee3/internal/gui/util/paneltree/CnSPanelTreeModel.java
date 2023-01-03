@@ -11,20 +11,21 @@
 /* Philippe Gambette (LIGM, Marne-la-Vallée)
  */
 
-package org.cytoscape.clustnsee3.internal.gui.widget.paneltree;
+package org.cytoscape.clustnsee3.internal.gui.util.paneltree;
 
 import java.util.Vector;
 
 import javax.swing.event.TreeModelListener;
-import javax.swing.tree.TreeModel;
+import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
-public class CnSPanelTreeModel implements TreeModel {
+public class CnSPanelTreeModel extends DefaultTreeModel {
+	private static final long serialVersionUID = 1L;
 	protected CnSPanelTreeNode rootNode;
 	private Vector<TreeModelListener> listeners;
 	
 	public CnSPanelTreeModel(CnSPanelTreeNode treeNode) {
-		super();
+		super(treeNode);
 		System.err.println("init tree model !!!");
 		rootNode = treeNode;
 		listeners = new Vector<TreeModelListener>();
@@ -48,6 +49,7 @@ public class CnSPanelTreeModel implements TreeModel {
 
 	public void valueForPathChanged(TreePath path, Object newValue) {
 		System.err.println("Value for path " + path + " has changed.");
+		super.valueForPathChanged(path, newValue);
 	}
 	
 	public int getIndexOfChild(Object parent, Object child) {
@@ -61,5 +63,4 @@ public class CnSPanelTreeModel implements TreeModel {
 	public void removeTreeModelListener(TreeModelListener listener) {
 		listeners.removeElement(listener);
 	}
-
 }

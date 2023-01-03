@@ -15,6 +15,9 @@ package org.cytoscape.clustnsee3.internal.nodeannotation;
 
 import java.util.Vector;
 
+import org.cytoscape.model.CyNetwork;
+import org.cytoscape.model.CyNode;
+
 /**
  * 
  */
@@ -24,10 +27,20 @@ public class CnSNodeNetworkSet {
 	public CnSNodeNetworkSet() {
 		nodeNetworks = new Vector<CnSNodeNetwork>();
 	}
-	public CnSNodeNetworkSet(Vector<CnSNodeNetwork> nn) {
-		nodeNetworks = nn;
-	}
 	public Vector<CnSNodeNetwork> getNodeNetworks() {
 		return nodeNetworks;
+	}
+	/**
+	 * 
+	 * @param
+	 * @return
+	 */
+	public CnSNodeNetwork getNodeNetwork(CyNetwork network, CyNode cn) {
+		for (CnSNodeNetwork nn : nodeNetworks) {
+			if (nn.getNetwork() == network && nn.getNode() == cn) {
+				return nn;
+			}
+		}
+		return null;
 	}
 }

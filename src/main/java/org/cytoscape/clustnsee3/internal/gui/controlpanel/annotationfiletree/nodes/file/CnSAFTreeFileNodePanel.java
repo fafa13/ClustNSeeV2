@@ -19,9 +19,9 @@ import java.awt.Dimension;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
-import org.cytoscape.clustnsee3.internal.gui.widget.CnSButton;
-import org.cytoscape.clustnsee3.internal.gui.widget.CnSPanel;
-import org.cytoscape.clustnsee3.internal.gui.widget.paneltree.CnSPanelTreePanel;
+import org.cytoscape.clustnsee3.internal.gui.util.CnSButton;
+import org.cytoscape.clustnsee3.internal.gui.util.CnSPanel;
+import org.cytoscape.clustnsee3.internal.gui.util.paneltree.CnSPanelTreePanel;
 import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeAnnotationFile;
 
 /**
@@ -50,14 +50,14 @@ public class CnSAFTreeFileNodePanel extends CnSPanelTreePanel {
 		
 		addComponent(label, 0, 0, 1, 1, 1.0, 0.0, CnSPanel.WEST, CnSPanel.HORIZONTAL, 5, 5, 5, 0, 0, 0);
 		
-		ImageIcon icon_delete = new ImageIcon(getClass().getResource("/delete_annotation.gif"));
+		ImageIcon icon_delete = new ImageIcon(getClass().getResource("/org/cytoscape/clustnsee3/internal/resources/delete_annotation.gif"));
 		closeButton = new CnSButton(icon_delete);
 		closeButton.setPreferredSize(new Dimension(icon_delete.getIconWidth() + 4, icon_delete.getIconHeight() + 4));
 		closeButton.setFocusable(false);
 		closeButton.setActionCommand("delete");
 		addComponent(closeButton, 1, 0, 1, 1, 0.0, 0.0, CnSPanel.EAST, CnSPanel.NONE, 5, 5, 5, 0, 0, 0);
 		
-		ImageIcon icon_right = new ImageIcon(getClass().getResource("/right-arrow.gif"));
+		ImageIcon icon_right = new ImageIcon(getClass().getResource("/org/cytoscape/clustnsee3/internal/resources/right-arrow.gif"));
 		annotate_button = new CnSButton(icon_right);
 		annotate_button.setPreferredSize(new Dimension(icon_right.getIconWidth() + 4, icon_right.getIconHeight() + 4));
 		annotate_button.setFocusable(false);

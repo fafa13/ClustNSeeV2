@@ -15,10 +15,12 @@ package org.cytoscape.clustnsee3.internal.gui.controlpanel.networkfiletree;
 
 import java.util.Hashtable;
 
+import javax.swing.SwingUtilities;
+
 import org.cytoscape.clustnsee3.internal.gui.controlpanel.networkfiletree.nodes.details.CnSAFTreeNetworkNetnameDetailsNode;
 import org.cytoscape.clustnsee3.internal.gui.controlpanel.networkfiletree.nodes.netname.CnSAFTreeNetworkNetnameNode;
-import org.cytoscape.clustnsee3.internal.gui.widget.paneltree.CnSPanelTreeModel;
-import org.cytoscape.clustnsee3.internal.gui.widget.paneltree.CnSPanelTreeNode;
+import org.cytoscape.clustnsee3.internal.gui.util.paneltree.CnSPanelTreeModel;
+import org.cytoscape.clustnsee3.internal.gui.util.paneltree.CnSPanelTreeNode;
 import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeAnnotationFile;
 import org.cytoscape.model.CyNetwork;
 
@@ -30,19 +32,27 @@ public class CnSNetworksTreeModel extends CnSPanelTreeModel {
 		super(treeNode);
 	}
 	public CnSAFTreeNetworkNetnameNode addNetwork(CyNetwork network, CnSNodeAnnotationFile af, int mappedAnnotations, int mappedNodes, int networkNodes, int fileAnnotations) {
-		Hashtable<Integer, Object> v = new Hashtable<Integer, Object>();
+		final Hashtable<Integer, Object> v = new Hashtable<Integer, Object>();
 		v.put(CnSAFTreeNetworkNetnameNode.NETWORK, network);
 		v.put(CnSAFTreeNetworkNetnameNode.ANNOTATION_FILE, af);
-		CnSAFTreeNetworkNetnameNode networkNode = new CnSAFTreeNetworkNetnameNode(rootNode, v);
+		final CnSAFTreeNetworkNetnameNode networkNode = new CnSAFTreeNetworkNetnameNode(rootNode, v);
 		System.err.println("inserting " + af + " in " + rootNode.hashCode() + " , position " + rootNode.getChildCount());
 		v.clear();
 		v.put(CnSAFTreeNetworkNetnameDetailsNode.MAPPED_ANNOTATIONS, mappedAnnotations);
 		v.put(CnSAFTreeNetworkNetnameDetailsNode.MAPPED_NODES, mappedNodes);
 		v.put(CnSAFTreeNetworkNetnameDetailsNode.NETWORK_NODES, networkNodes);
 		v.put(CnSAFTreeNetworkNetnameDetailsNode.FILE_ANNOTATIONS, fileAnnotations);
-		CnSAFTreeNetworkNetnameDetailsNode detailsNode = new CnSAFTreeNetworkNetnameDetailsNode(networkNode, v);
-		detailsNode.setEditable(true);
-		detailsNode.getPanel().deriveFont(11);
+		SwingUtilities.invokeLater(new Runnable() {
+
+			@Override
+			public void run() {
+				CnSAFTreeNetworkNetnameDetailsNode detailsNode = new CnSAFTreeNetworkNetnameDetailsNode(networkNode, v);
+				detailsNode.setEditable(true);
+				detailsNode.getPanel().deriveFont(11);
+			}
+			
+		});
+		
 		
 		return networkNode;
 	}

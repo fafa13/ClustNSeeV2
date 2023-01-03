@@ -16,12 +16,18 @@ package org.cytoscape.clustnsee3.internal.gui.partitionpanel.partitiontable;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.border.Border;
 import javax.swing.table.DefaultTableCellRenderer;
+
+import org.cytoscape.clustnsee3.internal.event.CnSEvent;
+import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
+import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeAnnotationManager;
 
 /**
  * 
@@ -32,16 +38,36 @@ public class CnSPartitionTableCellRenderer extends DefaultTableCellRenderer {
 	private Border paddingBorder = BorderFactory.createEmptyBorder(0, 10, 0, 10);
 
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-		JLabel label = new JLabel(value.toString());
-	    label.setFont(font);
-	    label.setOpaque(true);
-	    label.setBorder(paddingBorder);
-	    if (isSelected) {
-	    	label.setFont(label.getFont().deriveFont(Font.BOLD));
-			label.setBackground(Color.yellow.darker());
+		JLabel label = new JLabel();
+		try {
+			label.setText(value.toString());
+		    label.setFont(font);
+		    label.setOpaque(true);
+		    label.setBorder(paddingBorder);
+		    double alpha;
+		    CnSEvent ev = new CnSEvent(CnSNodeAnnotationManager.GET_ALPHA, CnSEventManager.ANNOTATION_MANAGER);
+		    alpha = (Double)CnSEventManager.handleMessage(ev);
+	    
+		    if (isSelected) {
+		    	label.setFont(label.getFont().deriveFont(Font.BOLD));
+		    	label.setBackground(Color.yellow.darker());
+		    }
+		    else
+		    	label.setBackground(Color.white);
+		    if (column == 5) {
+		    	if (value instanceof CnSEnrichmentStatValue) {
+		    		CnSEnrichmentStatValue v = (CnSEnrichmentStatValue)value;
+		    		NumberFormat format = new DecimalFormat("##.00%");
+		    		label.setText(v.toString());
+		    		if (!isSelected && v.getBhValue() <= alpha) {
+		    			label.setBackground(Color.lightGray);
+		    		}
+		    	}
+		    }
 		}
-		else
-			label.setBackground(Color.white);
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 	    return label;
 	}
 }

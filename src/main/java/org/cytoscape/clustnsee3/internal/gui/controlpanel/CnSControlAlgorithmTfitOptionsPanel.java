@@ -10,7 +10,7 @@ import org.cytoscape.clustnsee3.internal.algorithm.CnSAlgorithmManager;
 import org.cytoscape.clustnsee3.internal.algorithm.CnSTFitAlgorithm;
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
-import org.cytoscape.clustnsee3.internal.gui.widget.CnSPanel;
+import org.cytoscape.clustnsee3.internal.gui.util.CnSPanel;
 
 public class CnSControlAlgorithmTfitOptionsPanel extends CnSPanel {
 	private static final long serialVersionUID = -5755723765170248942L;

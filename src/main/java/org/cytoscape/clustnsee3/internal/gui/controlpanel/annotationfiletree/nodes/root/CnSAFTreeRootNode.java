@@ -19,20 +19,20 @@ import java.awt.event.ActionEvent;
 import java.util.Hashtable;
 
 import javax.swing.JOptionPane;
+import javax.swing.tree.TreeNode;
 
 import org.cytoscape.clustnsee3.internal.CyActivator;
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
-import org.cytoscape.clustnsee3.internal.gui.controlpanel.CnSControlPanel;
 import org.cytoscape.clustnsee3.internal.gui.controlpanel.annotationfiletree.CnSAFTreeModel;
 import org.cytoscape.clustnsee3.internal.gui.dialog.CnSLoadAnnotationFileDialog;
-import org.cytoscape.clustnsee3.internal.gui.partitionpanel.CnSPartitionPanel;
 import org.cytoscape.clustnsee3.internal.gui.resultspanel.CnSResultsPanel;
-import org.cytoscape.clustnsee3.internal.gui.widget.CnSButton;
-import org.cytoscape.clustnsee3.internal.gui.widget.paneltree.CnSPanelTreeNode;
-import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeAnnotationFile;
-import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeAnnotationManager;
+import org.cytoscape.clustnsee3.internal.gui.util.CnSButton;
+import org.cytoscape.clustnsee3.internal.gui.util.paneltree.CnSPanelTreeNode;
 import org.cytoscape.clustnsee3.internal.partition.CnSPartition;
+import org.cytoscape.clustnsee3.internal.task.CnSLoadAnnotationFileTask;
+import org.cytoscape.work.TaskIterator;
+import org.cytoscape.work.swing.DialogTaskManager;
 
 public class CnSAFTreeRootNode extends CnSPanelTreeNode {
 	public static final int TITLE = 1;
@@ -47,6 +47,9 @@ public class CnSAFTreeRootNode extends CnSPanelTreeNode {
 	
 	public void setTreeModel(CnSAFTreeModel tm) {
 		treeModel = tm;
+	}
+	public CnSAFTreeModel getTreeModel() {
+		return treeModel;
 	}
 
 	/* (non-Javadoc)
@@ -67,7 +70,14 @@ public class CnSAFTreeRootNode extends CnSPanelTreeNode {
 					
 				if (dialog.getExitOption() == CnSLoadAnnotationFileDialog.OK_OPTION) {
 					if (! treeModel.contains(dialog.getSelectedFile())) {
-						ev = new CnSEvent(CnSNodeAnnotationManager.LOAD_ANNOTATIONS, CnSEventManager.ANNOTATION_MANAGER);
+						ev = new CnSEvent(CyActivator.GET_TASK_MANAGER, CnSEventManager.CY_ACTIVATOR);
+						DialogTaskManager dialogTaskManager = (DialogTaskManager)CnSEventManager.handleMessage(ev);
+						TaskIterator ti = new TaskIterator();
+						CnSLoadAnnotationFileTask task = new CnSLoadAnnotationFileTask(dialog.getSelectedFile(), dialog.getFromLine(), partition, this);
+						ti.append(task);
+						dialogTaskManager.execute(ti);
+						
+						/*ev = new CnSEvent(CnSNodeAnnotationManager.LOAD_ANNOTATIONS, CnSEventManager.ANNOTATION_MANAGER);
 						ev.addParameter(CnSNodeAnnotationManager.FILE, dialog.getSelectedFile());
 						ev.addParameter(CnSNodeAnnotationManager.FROM_LINE, dialog.getFromLine());
 						CnSNodeAnnotationFile annotationFile = (CnSNodeAnnotationFile)CnSEventManager.handleMessage(ev);
@@ -81,7 +91,7 @@ public class CnSAFTreeRootNode extends CnSPanelTreeNode {
 						CnSEventManager.handleMessage(ev);
 						
 						ev = new CnSEvent(CnSPartitionPanel.REFRESH, CnSEventManager.PARTITION_PANEL);
-						CnSEventManager.handleMessage(ev);
+						CnSEventManager.handleMessage(ev);*/
 					}
 					else {
 						JOptionPane.showMessageDialog(null, "Annotation file " + dialog.getSelectedFile().getName() + " is already loaded.");
@@ -92,10 +102,37 @@ public class CnSAFTreeRootNode extends CnSPanelTreeNode {
 	}
 	
 	/* (non-Javadoc)
-	 * @see org.cytoscape.clustnsee3.internal.gui.widget.paneltree.CnSPanelTreeNode#getValue()
+	 * @see org.cytoscape.clustnsee3.internal.gui.util.paneltree.CnSPanelTreeNode#getValue()
 	 */
 	@Override
 	public Object getValue() {
 		return getData(TITLE).toString();
+	}
+
+	/* (non-Javadoc)
+	 * @see javax.swing.tree.TreeNode#getIndex(javax.swing.tree.TreeNode)
+	 */
+	@Override
+	public int getIndex(TreeNode node) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	/* (non-Javadoc)
+	 * @see javax.swing.tree.TreeNode#getAllowsChildren()
+	 */
+	@Override
+	public boolean getAllowsChildren() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	/* (non-Javadoc)
+	 * @see javax.swing.tree.TreeNode#isLeaf()
+	 */
+	@Override
+	public boolean isLeaf() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

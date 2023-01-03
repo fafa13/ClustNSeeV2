@@ -20,8 +20,8 @@ import java.awt.event.ActionListener;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 
-import org.cytoscape.clustnsee3.internal.gui.widget.CnSButton;
-import org.cytoscape.clustnsee3.internal.gui.widget.CnSPanel;
+import org.cytoscape.clustnsee3.internal.gui.util.CnSButton;
+import org.cytoscape.clustnsee3.internal.gui.util.CnSPanel;
 
 /**
  * 

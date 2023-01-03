@@ -1,6 +1,9 @@
 package org.cytoscape.clustnsee3.internal;
 
+import java.util.Hashtable;
+import java.util.Locale;
 import java.util.Properties;
+import java.util.ResourceBundle;
 
 import org.cytoscape.application.CyApplicationManager;
 import org.cytoscape.application.swing.CySwingApplication;
@@ -65,6 +68,8 @@ public class CyActivator extends AbstractCyActivator implements CnSEventListener
 	public static final int GET_SWING_APPLICATION = 25;
 	public static final int GET_TASK_MANAGER = 26;
 	public static final int START = 27;
+	public static final int GET_RESOURCES_BUNDLE = 28;
+	
 	
 	public static final int NAME = 1000;
 
@@ -76,10 +81,14 @@ public class CyActivator extends AbstractCyActivator implements CnSEventListener
 	private CnSComparePartitionsMenu clustnseeComparePartitions;
 	private CnSBuildNeighborhoodNetworkMenu clustnseeBuildNeighborhoodNetwork;
 	private ServiceRegistration plugin;
-	
+	private static ResourceBundle resourceBundle;
+		
 	@Override
 	public void start(BundleContext context) throws Exception {
 		bc = context;
+				
+		resourceBundle = ResourceBundle.getBundle("org.cytoscape.clustnsee3.internal.resources.cns", Locale.getDefault());
+		
 		CnSClustnseePlugin.getInstance(bc, this);
 		
 		// Definit le menu item
@@ -203,7 +212,8 @@ public class CyActivator extends AbstractCyActivator implements CnSEventListener
 				break;
 			case START :
 				CnSClustnseePlugin.getInstance(bc, this).registerServices();
-				plugin = bc.registerService(CnSClustnseePlugin.class.getName(), CnSClustnseePlugin.getInstance(bc, this), new Properties());
+				Hashtable<String, ?> dict = new Hashtable<String, Object>();
+				plugin = bc.registerService(CnSClustnseePlugin.class.getName(), CnSClustnseePlugin.getInstance(bc, this), dict);
 				clustnseeStop.setEnabled_(true);
 				clustnseeStart.setEnabled_(false);
 				clustnseeImportPartition.setEnabled_(true);
@@ -235,7 +245,13 @@ public class CyActivator extends AbstractCyActivator implements CnSEventListener
 			case GET_TASK_MANAGER :
 				ret = getService(bc, DialogTaskManager.class);
 				break;
+			case GET_RESOURCES_BUNDLE :
+				ret = resourceBundle;
+				break;
 		}
 		return ret;
+	}
+	public static ResourceBundle getResourcesBundle() {
+		return resourceBundle;
 	}
 }

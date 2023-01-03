@@ -14,11 +14,12 @@
 package org.cytoscape.clustnsee3.internal.gui.controlpanel.networkfiletree.nodes.details;
 
 import javax.swing.JLabel;
+
+import org.cytoscape.clustnsee3.internal.gui.util.CnSPanel;
+import org.cytoscape.clustnsee3.internal.gui.util.paneltree.CnSPanelTreePanel;
+
 import java.awt.Color;
 import java.awt.Font;
-
-import org.cytoscape.clustnsee3.internal.gui.widget.CnSPanel;
-import org.cytoscape.clustnsee3.internal.gui.widget.paneltree.CnSPanelTreePanel;
 
 public class CnSAFTreeNetworkNetnameDetailsNodePanel extends CnSPanelTreePanel {
 	private static final long serialVersionUID = -2767529159005195713L;

@@ -11,7 +11,7 @@
 /* Philippe Gambette (LIGM, Marne-la-Vallée)
  */
 
-package org.cytoscape.clustnsee3.internal.gui.widget.paneltree;
+package org.cytoscape.clustnsee3.internal.gui.util.paneltree;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -19,9 +19,11 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 
-import org.cytoscape.clustnsee3.internal.gui.widget.CnSButton;
+import javax.swing.tree.TreeNode;
 
-public abstract class CnSPanelTreeNode implements ActionListener {
+import org.cytoscape.clustnsee3.internal.gui.util.CnSButton;
+
+public abstract class CnSPanelTreeNode implements ActionListener, TreeNode {
 	private Hashtable<Integer, Object> data;
 	protected CnSPanelTreePanel panel;
 	private boolean editable;

@@ -10,6 +10,8 @@ import java.util.Hashtable;
 import javax.swing.Icon;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
+import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 import javax.swing.border.TitledBorder;
 
 import org.cytoscape.application.CyApplicationManager;
@@ -26,19 +28,36 @@ import org.cytoscape.clustnsee3.internal.gui.controlpanel.annotationfiletree.nod
 import org.cytoscape.clustnsee3.internal.gui.controlpanel.networkfiletree.CnSNetworksTreeModel;
 import org.cytoscape.clustnsee3.internal.gui.controlpanel.networkfiletree.nodes.netname.CnSAFTreeNetworkNetnameNode;
 import org.cytoscape.clustnsee3.internal.gui.controlpanel.networkfiletree.nodes.root.CnSAFTreeNetworksRootNode;
+import org.cytoscape.clustnsee3.internal.gui.util.CnSButton;
+import org.cytoscape.clustnsee3.internal.gui.util.CnSPanel;
+import org.cytoscape.clustnsee3.internal.gui.util.paneltree.CnSPanelTree;
+import org.cytoscape.clustnsee3.internal.gui.util.paneltree.CnSPanelTreeCellEditor;
+import org.cytoscape.clustnsee3.internal.gui.util.paneltree.CnSPanelTreeCellRenderer;
+import org.cytoscape.clustnsee3.internal.gui.util.paneltree.CnSPanelTreeNode;
 import org.cytoscape.clustnsee3.internal.gui.controlpanel.annotationfiletree.CnSAFTreeModel;
-import org.cytoscape.clustnsee3.internal.gui.widget.CnSButton;
-import org.cytoscape.clustnsee3.internal.gui.widget.CnSPanel;
-import org.cytoscape.clustnsee3.internal.gui.widget.paneltree.CnSPanelTree;
-import org.cytoscape.clustnsee3.internal.gui.widget.paneltree.CnSPanelTreeCellEditor;
-import org.cytoscape.clustnsee3.internal.gui.widget.paneltree.CnSPanelTreeCellRenderer;
-import org.cytoscape.clustnsee3.internal.gui.widget.paneltree.CnSPanelTreeNode;
 import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeAnnotationFile;
 import org.cytoscape.clustnsee3.internal.task.CnSAnalyzeTask;
 import org.cytoscape.model.CyNetwork;
 import org.cytoscape.work.TaskIterator;
 import org.cytoscape.work.swing.DialogTaskManager;
 
+class RefreshTree extends SwingWorker<String, Object> {
+	CnSPanelTree tree;
+	
+	public RefreshTree(CnSPanelTree tree) {
+		this.tree = tree;
+	}
+	@Override
+	public String doInBackground() {
+		SwingUtilities.invokeLater(new Runnable() { public void run() { tree.updateUI(); } });
+		return "";
+   }
+
+	@Override
+	protected void done() {
+		
+	}
+}
 public class CnSControlPanel extends CnSPanel implements CytoPanelComponent, CnSEventListener  {
 	private static final long serialVersionUID = -5798886682673421450L;
 	
@@ -100,6 +119,7 @@ public class CnSControlPanel extends CnSPanel implements CytoPanelComponent, CnS
 		tree.setShowsRootHandles(true);
 		tree.setCellRenderer(new CnSPanelTreeCellRenderer());
 		tree.setCellEditor(new CnSPanelTreeCellEditor());
+		tree.setRowHeight(0);
 		
 		JScrollPane jsp2 = new JScrollPane(tree);
 		jsp2.getViewport().setPreferredSize(new Dimension(0, 10*26));
@@ -128,6 +148,7 @@ public class CnSControlPanel extends CnSPanel implements CytoPanelComponent, CnS
 					CnSAnalyzeTask task = new CnSAnalyzeTask(network);
 					ti.append(task);
 					dialogTaskManager.execute(ti);
+					System.err.println("fini");
 				}
 			}
 		});
@@ -167,7 +188,10 @@ public class CnSControlPanel extends CnSPanel implements CytoPanelComponent, CnS
 				break;
 
 			case REFRESH :
-				tree.updateUI();
+				tree.validate();
+				tree.expandRow(0);
+				(new RefreshTree(tree)).execute();
+				//tree.updateUI();
 				break;
 				
 			case REMOVE_ANNOTATION_FILE :

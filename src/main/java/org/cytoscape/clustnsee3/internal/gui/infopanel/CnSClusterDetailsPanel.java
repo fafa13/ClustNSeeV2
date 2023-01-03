@@ -23,11 +23,12 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.border.BevelBorder;
+import javax.swing.table.DefaultTableModel;
 
 import org.cytoscape.clustnsee3.internal.analysis.CnSCluster;
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
-import org.cytoscape.clustnsee3.internal.gui.widget.CnSPanel;
+import org.cytoscape.clustnsee3.internal.gui.util.CnSPanel;
 import org.cytoscape.clustnsee3.internal.partition.CnSPartition;
 import org.cytoscape.clustnsee3.internal.partition.CnSPartitionManager;
 
@@ -45,10 +46,12 @@ public class CnSClusterDetailsPanel extends CnSPanel {
 	public CnSClusterDetailsPanel() {
 		super();
 		nodeTable = new JTable();
+		nodeTable.setAutoCreateRowSorter(true);
 		Vector<String> columnNames = new Vector<String>();
 		columnNames.addElement("Annotation");
 		data = new Vector<Vector<String>>();
 		annotationTable = new JTable(data, columnNames);
+		annotationTable.setAutoCreateRowSorter(true);
 		initGraphics();
 	}
 	
@@ -119,7 +122,7 @@ public class CnSClusterDetailsPanel extends CnSPanel {
 			data.addElement(v);
 		}
 		
-		annotationTable.repaint();
+		((DefaultTableModel)annotationTable.getModel()).fireTableDataChanged();
 	}
 
 	public void clear() {

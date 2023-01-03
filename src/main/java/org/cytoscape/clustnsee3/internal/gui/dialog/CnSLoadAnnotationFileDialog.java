@@ -44,8 +44,8 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 
-import org.cytoscape.clustnsee3.internal.gui.widget.CnSButton;
-import org.cytoscape.clustnsee3.internal.gui.widget.CnSPanel;
+import org.cytoscape.clustnsee3.internal.gui.util.CnSButton;
+import org.cytoscape.clustnsee3.internal.gui.util.CnSPanel;
 
 /**
  * 
@@ -223,7 +223,7 @@ public class CnSLoadAnnotationFileDialog extends JDialog implements ActionListen
 		filePanel.initGraphics();
 		fileTextField = new JTextField(30);
 		filePanel.addComponent(fileTextField, 1, 0, 1, 1, 1.0, 0.0, CnSPanel.WEST, CnSPanel.HORIZONTAL, 5, 5, 5, 0, 0, 0);
-		ImageIcon icon = new ImageIcon(getClass().getResource("/open.gif"));
+		ImageIcon icon = new ImageIcon(getClass().getResource("/org/cytoscape/clustnsee3/internal/resources/open.gif"));
 		fileButton = new CnSButton(icon);
 		filePanel.addComponent(fileButton, 2, 0, 1, 1, 0.0, 0.0, CnSPanel.WEST, CnSPanel.NONE, 5, 5, 5, 5, 0, 0);
 		mainPanel.addComponent(filePanel, 0, 0, 2, 1, 1.0, 0.0, CnSPanel.CENTER, CnSPanel.HORIZONTAL, 5, 5, 0, 5, 0, 0);

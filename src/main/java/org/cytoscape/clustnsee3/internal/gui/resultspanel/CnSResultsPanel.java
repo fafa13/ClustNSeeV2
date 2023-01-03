@@ -14,6 +14,7 @@
 package org.cytoscape.clustnsee3.internal.gui.resultspanel;
 
 import java.awt.Component;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Vector;
 
@@ -21,6 +22,7 @@ import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JTabbedPane;
+import javax.swing.SwingUtilities;
 import javax.swing.border.EtchedBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -36,15 +38,17 @@ import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventListener;
 import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
 import org.cytoscape.clustnsee3.internal.gui.partitionpanel.CnSPartitionPanel;
-import org.cytoscape.clustnsee3.internal.gui.widget.CnSPanel;
+import org.cytoscape.clustnsee3.internal.gui.util.CnSPanel;
 import org.cytoscape.clustnsee3.internal.network.CnSNetwork;
 import org.cytoscape.clustnsee3.internal.network.CnSNetworkManager;
+import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeAnnotationManager;
 import org.cytoscape.clustnsee3.internal.partition.CnSPartition;
 import org.cytoscape.clustnsee3.internal.partition.CnSPartitionManager;
 import org.cytoscape.clustnsee3.internal.view.CnSView;
 import org.cytoscape.clustnsee3.internal.view.CnSViewManager;
 import org.cytoscape.model.CyNetwork;
 import org.cytoscape.model.CyNetworkManager;
+import org.cytoscape.view.model.CyNetworkViewManager;
 import org.cytoscape.work.TaskMonitor;
 
 /**
@@ -171,13 +175,13 @@ public class CnSResultsPanel extends CnSPanel implements CytoPanelComponent, CnS
 		int action = event.getAction();
 	    Object ret = null;
 	    CnSEvent ev;
-	    CnSAlgorithmResult result;
+	    final CnSAlgorithmResult result;
 	    Vector<Vector<Long>> imported_partition;
 	    Vector<Vector<String>> imported_annotation;
-	    CyNetwork network;
-	    CnSAlgorithm algo;
+	    final CyNetwork network;
+	    final CnSAlgorithm algo;
 	    String scope;
-	    TaskMonitor taskMonitor;
+	    final TaskMonitor taskMonitor;
 	    
 	    switch (action) {
 	    	case ADD_PARTITION:
@@ -186,6 +190,7 @@ public class CnSResultsPanel extends CnSPanel implements CytoPanelComponent, CnS
 	    		algo = (CnSAlgorithm)event.getParameter(ALGO);
 	    		taskMonitor = (TaskMonitor)event.getParameter(TASK_MONITOR);
 	    		initResultPanel(result, network, algo, taskMonitor);
+			
 	    		commandPanel.setEnabled(true);
 	    		sortPanel.setEnabled(true);
 	    		break;
@@ -196,7 +201,8 @@ public class CnSResultsPanel extends CnSPanel implements CytoPanelComponent, CnS
 	    		network = (CyNetwork)event.getParameter(NETWORK);
 	    		algo = (CnSAlgorithm)event.getParameter(ALGO);
 	    		scope = (String)event.getParameter(SCOPE);
-	    		initResultPanel(imported_partition, imported_annotation, network, algo, scope);
+	    		taskMonitor = (TaskMonitor)event.getParameter(TASK_MONITOR);
+	    		initResultPanel(imported_partition, imported_annotation, network, algo, scope, taskMonitor);
 	    		commandPanel.setEnabled(true);
 	    		sortPanel.setEnabled(true);
 	    		break;
@@ -234,6 +240,7 @@ public class CnSResultsPanel extends CnSPanel implements CytoPanelComponent, CnS
 	    			else {
 	    				index = jtp.getModel().getSelectedIndex();
 	    				if (index != -1) {
+	    					System.err.println("CnSResultsPanel.SELECT_CLUSTER(" + name + ")");
 	    					((CnSClusterListPanel)jtp.getComponentAt(index)).selectCluster(name);
 	    					sortPanel.setSelectedCluster(name);
 	    				}
@@ -249,7 +256,9 @@ public class CnSResultsPanel extends CnSPanel implements CytoPanelComponent, CnS
 	    		
 	    		ev = new CnSEvent(CyActivator.GET_NETWORK_MANAGER, CnSEventManager.CY_ACTIVATOR);
 	    	    CyNetworkManager crnm = (CyNetworkManager)CnSEventManager.handleMessage(ev);
-	    	    
+	    	    ev = new CnSEvent(CyActivator.GET_NETWORK_VIEW_MANAGER, CnSEventManager.CY_ACTIVATOR);
+	            CyNetworkViewManager networkViewManager = (CyNetworkViewManager)CnSEventManager.handleMessage(ev);
+	            
 	    	    ev = new CnSEvent(CnSViewManager.REMOVE_VIEWS, CnSEventManager.VIEW_MANAGER);
     			ev.addParameter(CnSViewManager.REFERENCE, partition);
     			Vector<CnSView> deleted_views = (Vector<CnSView>)CnSEventManager.handleMessage(ev);
@@ -278,8 +287,10 @@ public class CnSResultsPanel extends CnSPanel implements CytoPanelComponent, CnS
 	    	    
 	    	    for (CnSView v : deleted_views) {
 	    	    	taskMonitor.setProgress((double)n / (double)N);
-    				if (crnm.networkExists(v.getView().getModel().getSUID())) 
+    				if (crnm.networkExists(v.getView().getModel().getSUID())) {
+    					networkViewManager.destroyNetworkView(v.getView());
     					crnm.destroyNetwork(v.getView().getModel());
+    				}
     				n++;
     			}
     			jtp.remove(clusterListPanel.get(partition));
@@ -290,7 +301,6 @@ public class CnSResultsPanel extends CnSPanel implements CytoPanelComponent, CnS
 	    			ev = new CnSEvent(CnSPartitionPanel.CLEAR, CnSEventManager.PARTITION_PANEL);
 	    			CnSEventManager.handleMessage(ev);
 	    		}
-	    		
 	    		break;
 	    		
 	    	case SORT_RESULTS :
@@ -313,7 +323,7 @@ public class CnSResultsPanel extends CnSPanel implements CytoPanelComponent, CnS
 			instance = new CnSResultsPanel();
 		return instance;
 	}
-	private void initResultPanel(Vector<Vector<Long>> imported_partition, Vector<Vector<String>> imported_annotation, CyNetwork inputNetwork, CnSAlgorithm algo, String scope) {
+	private void initResultPanel(Vector<Vector<Long>> imported_partition, Vector<Vector<String>> imported_annotation, CyNetwork inputNetwork, CnSAlgorithm algo, String scope, TaskMonitor taskMonitor) {
 		CnSEvent ev = new CnSEvent(CyActivator.GET_APPLICATION_MANAGER, CnSEventManager.CY_ACTIVATOR);
         CyApplicationManager applicationManager = (CyApplicationManager)CnSEventManager.handleMessage(ev);
         
@@ -323,7 +333,7 @@ public class CnSResultsPanel extends CnSPanel implements CytoPanelComponent, CnS
         ev.addParameter(CnSPartitionManager.PARTITION_IMPORT, imported_partition);
         ev.addParameter(CnSPartitionManager.ANNOTATION_IMPORT, imported_annotation);
         ev.addParameter(CnSPartitionManager.NETWORK, inputNetwork);
-        //ev.addParameter(CnSPartitionManager.TASK_MONITOR, taskMonitor);
+        ev.addParameter(CnSPartitionManager.TASK_MONITOR, taskMonitor);
         CnSPartition newPartition = (CnSPartition)CnSEventManager.handleMessage(ev);
         
         CnSClusterListPanel clp = new CnSClusterListPanel();
@@ -333,6 +343,12 @@ public class CnSResultsPanel extends CnSPanel implements CytoPanelComponent, CnS
 		nbClustersLabel.setText(String.valueOf(newPartition.getClusters().size()));
 		applicationManager.setCurrentNetwork(inputNetwork);
 		jtp.setSelectedComponent(clp);
+		
+		ev = new CnSEvent(CnSNodeAnnotationManager.REFRESH_CLUSTER_HASMAP, CnSEventManager.ANNOTATION_MANAGER);
+        //ev.addParameter(CnSNodeAnnotationManager.NETWORK, inputNetwork);
+        ev.addParameter(CnSNodeAnnotationManager.PARTITION, newPartition);
+        ev.addParameter(CnSNodeAnnotationManager.TASK, taskMonitor);
+        CnSEventManager.handleMessage(ev);
 	}
 	
 	private void initResultPanel(CnSAlgorithmResult result, CyNetwork inputNetwork, CnSAlgorithm algo, TaskMonitor taskMonitor) {
@@ -353,5 +369,11 @@ public class CnSResultsPanel extends CnSPanel implements CytoPanelComponent, CnS
 		nbClustersLabel.setText(String.valueOf(newPartition.getClusters().size()));
 		applicationManager.setCurrentNetwork(inputNetwork);
 		jtp.setSelectedComponent(clp);
+		
+		ev = new CnSEvent(CnSNodeAnnotationManager.REFRESH_CLUSTER_HASMAP, CnSEventManager.ANNOTATION_MANAGER);
+        //ev.addParameter(CnSNodeAnnotationManager.NETWORK, inputNetwork);
+        ev.addParameter(CnSNodeAnnotationManager.PARTITION, newPartition);
+        ev.addParameter(CnSNodeAnnotationManager.TASK, taskMonitor);
+        CnSEventManager.handleMessage(ev);
 	}
 }

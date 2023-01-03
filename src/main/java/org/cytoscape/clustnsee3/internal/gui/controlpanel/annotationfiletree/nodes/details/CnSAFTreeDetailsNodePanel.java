@@ -27,11 +27,11 @@ import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
 import org.cytoscape.clustnsee3.internal.gui.controlpanel.CnSControlPanel;
 import org.cytoscape.clustnsee3.internal.gui.controlpanel.networkfiletree.CnSNetworksTreeModel;
 import org.cytoscape.clustnsee3.internal.gui.controlpanel.networkfiletree.nodes.root.CnSAFTreeNetworksRootNode;
-import org.cytoscape.clustnsee3.internal.gui.widget.CnSPanel;
-import org.cytoscape.clustnsee3.internal.gui.widget.paneltree.CnSPanelTree;
-import org.cytoscape.clustnsee3.internal.gui.widget.paneltree.CnSPanelTreeCellEditor;
-import org.cytoscape.clustnsee3.internal.gui.widget.paneltree.CnSPanelTreeCellRenderer;
-import org.cytoscape.clustnsee3.internal.gui.widget.paneltree.CnSPanelTreePanel;
+import org.cytoscape.clustnsee3.internal.gui.util.CnSPanel;
+import org.cytoscape.clustnsee3.internal.gui.util.paneltree.CnSPanelTree;
+import org.cytoscape.clustnsee3.internal.gui.util.paneltree.CnSPanelTreeCellEditor;
+import org.cytoscape.clustnsee3.internal.gui.util.paneltree.CnSPanelTreeCellRenderer;
+import org.cytoscape.clustnsee3.internal.gui.util.paneltree.CnSPanelTreePanel;
 import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeAnnotationFile;
 
 public class CnSAFTreeDetailsNodePanel extends CnSPanelTreePanel implements TreeExpansionListener {
@@ -87,6 +87,7 @@ public class CnSAFTreeDetailsNodePanel extends CnSPanelTreePanel implements Tree
 		networksTree.setShowsRootHandles(true);
 		networksTree.setCellRenderer(new CnSPanelTreeCellRenderer());
 		networksTree.setCellEditor(new CnSPanelTreeCellEditor());
+		networksTree.setRowHeight(0);
 		addComponent(networksTree, 0, 3, 2, 1, 1.0, 1.0, CnSPanel.CENTER ,CnSPanel.BOTH, 5, 10, 5, 10, 0, 0);
 		
 		setBackground(Color.WHITE);

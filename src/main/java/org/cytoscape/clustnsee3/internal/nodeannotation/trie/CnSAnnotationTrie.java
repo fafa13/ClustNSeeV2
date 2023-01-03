@@ -17,6 +17,7 @@ import java.util.Vector;
 
 import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeAnnotation;
 //import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeAnnotationFile;
+import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeAnnotationFile;
 
 /**
  * 
@@ -44,6 +45,18 @@ public class CnSAnnotationTrie {
 			return node.addChild((char)0);
 		else
 			return node.getChild((char)0);
+	}
+	
+	public void removeWord(String word) {
+		CnSTrieNode node = root, parent;
+		
+		for (char c : word.toCharArray()) node = node.getChild(c);
+		for (node = node.getChild((char)0); node != root; node = node.getParent()) {
+			parent =  node.getParent();
+			parent.removeChild(node);
+			if (parent.getChildren().size() != 0) break;
+		}
+		
 	}
 	
 	public Vector<String> getWords(String prefix) {
@@ -104,7 +117,8 @@ public class CnSAnnotationTrie {
 		}
 		return n;
 	}
-/*	public void removeAnnotations(CnSNodeAnnotationFile annotationFile) {
+	
+	/*public void removeAnnotations(CnSNodeAnnotationFile annotationFile) {
 		removeAllAnnotations(annotationFile, root);
 	}
 	

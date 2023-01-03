@@ -1,4 +1,4 @@
-package org.cytoscape.clustnsee3.internal.gui.widget;
+package org.cytoscape.clustnsee3.internal.gui.util;
 
 import java.awt.Color;
 import java.awt.Component;

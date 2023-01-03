@@ -91,7 +91,9 @@ public class CnSEventManager {
 		controlPanel = _controlPanel;
 	}
 	public static Object handleMessage(CnSEvent event) {
+	//public static CnSEventResult<? extends Object> handleMessage(CnSEvent event) {
 	    int target = event.getTarget();
+	    //CnSEventResult<? extends Object> ret = null;
 	    Object ret = null;
 	    switch (target) {
 	      	case CLUSTNSEE_PLUGIN:

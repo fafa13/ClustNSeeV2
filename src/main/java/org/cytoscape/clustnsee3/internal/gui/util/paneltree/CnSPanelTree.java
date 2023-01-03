@@ -11,9 +11,10 @@
 /* Philippe Gambette (LIGM, Marne-la-Vallée)
  */
 
-package org.cytoscape.clustnsee3.internal.gui.widget.paneltree;
+package org.cytoscape.clustnsee3.internal.gui.util.paneltree;
 
 import javax.swing.JTree;
+import javax.swing.UIManager;
 
 /**
  * 
@@ -25,8 +26,8 @@ public class CnSPanelTree extends JTree {
 		super(treeModel);
 		setSelectionModel(null);
 		setEditable(true);
-		//setUI(new CnSPanelTreeUI());
-		//UIManager.put("JTree.lineStyle", "Angled");
-		//UIManager.put("Tree.paintLines", true);
+		setUI(new CnSPanelTreeUI());
+		UIManager.put("JTree.lineStyle", "Angled");
+		UIManager.put("Tree.paintLines", true);
 	}
 }

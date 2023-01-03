@@ -15,6 +15,10 @@ package org.cytoscape.clustnsee3.internal.gui.partitionpanel.annotationtable;
 
 import javax.swing.JTable;
 
+import org.cytoscape.clustnsee3.internal.gui.partitionpanel.partitiontable.CnSPartitionTableCellRenderer;
+import org.cytoscape.clustnsee3.internal.gui.partitionpanel.partitiontable.CnSPartitionTableModel;
+import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeAnnotation;
+
 /**
  * 
  */
@@ -23,5 +27,20 @@ public class CnSAnnotationTable extends JTable {
 
 	public CnSAnnotationTable() {
 		super();
+		setDefaultRenderer(Object.class, new CnSAnnotationTableCellRenderer());
+    	
+	}
+	public void fireTableDataChanged() {
+		if (getModel() instanceof CnSAnnotationTableModel) {
+			((CnSAnnotationTableModel)getModel()).refreshModel();
+			((CnSAnnotationTableModel)getModel()).fireTableDataChanged();
+		}
+	}
+	
+	public void clear() {
+		
+	}
+	public int indexOf(CnSNodeAnnotation ann) {
+		return ((CnSAnnotationTableModel)getModel()).getIndex(ann);
 	}
 }

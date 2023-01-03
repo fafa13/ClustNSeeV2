@@ -19,6 +19,7 @@ import java.awt.event.ActionEvent;
 import java.util.Hashtable;
 
 import javax.swing.JOptionPane;
+import javax.swing.tree.TreeNode;
 
 import org.cytoscape.application.CyApplicationManager;
 import org.cytoscape.clustnsee3.internal.CyActivator;
@@ -27,14 +28,20 @@ import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
 import org.cytoscape.clustnsee3.internal.gui.controlpanel.CnSControlPanel;
 import org.cytoscape.clustnsee3.internal.gui.controlpanel.annotationfiletree.nodes.details.CnSAFTreeDetailsNodePanel;
 import org.cytoscape.clustnsee3.internal.gui.controlpanel.annotationfiletree.nodes.root.CnSAFTreeRootNode;
+import org.cytoscape.clustnsee3.internal.gui.controlpanel.networkfiletree.nodes.netname.CnSAFTreeNetworkNetnameNode;
 import org.cytoscape.clustnsee3.internal.gui.dialog.CnSAnnotationFileStatsDialog;
-import org.cytoscape.clustnsee3.internal.gui.widget.CnSButton;
-import org.cytoscape.clustnsee3.internal.gui.widget.paneltree.CnSPanelTreeNode;
+import org.cytoscape.clustnsee3.internal.gui.partitionpanel.CnSPartitionPanel;
+import org.cytoscape.clustnsee3.internal.gui.util.CnSButton;
+import org.cytoscape.clustnsee3.internal.gui.util.paneltree.CnSPanelTreeNode;
 import org.cytoscape.clustnsee3.internal.network.CnSNetwork;
 import org.cytoscape.clustnsee3.internal.network.CnSNetworkManager;
 import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeAnnotationFile;
 import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeAnnotationManager;
+import org.cytoscape.clustnsee3.internal.task.CnSAnnotateGraphTask;
+import org.cytoscape.clustnsee3.internal.task.CnSDeleteAnnotationFileTask;
 import org.cytoscape.model.CyNetwork;
+import org.cytoscape.work.TaskIterator;
+import org.cytoscape.work.swing.DialogTaskManager;
 
 public class CnSAFTreeFileNode extends CnSPanelTreeNode {
 	public final static int ANNOTATION_FILE = 1;
@@ -58,16 +65,55 @@ public class CnSAFTreeFileNode extends CnSPanelTreeNode {
 			af = (CnSNodeAnnotationFile)getData(CnSAFTreeFileNode.ANNOTATION_FILE);
 			if (((CnSButton)e.getSource()).getActionCommand().equals("delete")) {
 				System.out.println("Pressed: delete " + af);
+				System.out.println("Child count = " + getChildCount());
+				
+				CnSEvent ev = new CnSEvent(CyActivator.GET_TASK_MANAGER, CnSEventManager.CY_ACTIVATOR);
+				DialogTaskManager dialogTaskManager = (DialogTaskManager)CnSEventManager.handleMessage(ev);
+				TaskIterator ti = new TaskIterator();
+				CnSPanelTreeNode rootNode = (CnSPanelTreeNode)((CnSAFTreeDetailsNodePanel)getChildAt(0).getPanel()).getNetworksTree().getModel().getRoot();
+				
+				CnSDeleteAnnotationFileTask task = new CnSDeleteAnnotationFileTask(af, rootNode, this);
+				ti.append(task);
+				dialogTaskManager.execute(ti);
+				
+				/*for (int i = 0; i < getChildCount(); i++) {
+					CnSPanelTreeNode rootNode = (CnSPanelTreeNode)((CnSAFTreeDetailsNodePanel)getChildAt(i).getPanel()).getNetworksTree().getModel().getRoot();
+					for (int k = 0;  k < rootNode.getChildCount(); k++) {
+						CyNetwork nw = (CyNetwork)rootNode.getChildAt(k).getData(CnSAFTreeNetworkNetnameNode.NETWORK);
+						CnSEvent ev = new CnSEvent(CnSNodeAnnotationManager.DEANNOTATE_NETWORK, CnSEventManager.ANNOTATION_MANAGER);
+						ev.addParameter(CnSNodeAnnotationManager.ANNOTATION_FILE, af);
+						ev.addParameter(CnSNodeAnnotationManager.NETWORK, nw);
+						CnSEventManager.handleMessage(ev);
+						
+						System.err.println("------ " + nw);
+					}
+				}
+				System.err.println("OK1");
+				
 				CnSEvent ev = new CnSEvent(CnSNodeAnnotationManager.UNLOAD_ANNOTATIONS, CnSEventManager.ANNOTATION_MANAGER);
 				ev.addParameter(CnSNodeAnnotationManager.ANNOTATION_FILE, getData(ANNOTATION_FILE));
 				CnSEventManager.handleMessage(ev);
+				System.err.println("OK2");
+				
+				ev = new CnSEvent(CnSNodeAnnotationManager.REFRESH_CLUSTER_HASMAP, CnSEventManager.ANNOTATION_MANAGER);
+				CnSEventManager.handleMessage(ev);
+				System.err.println("OK3");
+				
+				ev = new CnSEvent(CnSPartitionPanel.REFRESH, CnSEventManager.PARTITION_PANEL);
+				CnSEventManager.handleMessage(ev);
+				System.err.println("OK4");
 				
 				ev = new CnSEvent(CnSControlPanel.REMOVE_ANNOTATION_FILE, CnSEventManager.CONTROL_PANEL);
 				ev.addParameter(CnSControlPanel.TREE_FILE_NODE, this);
 				CnSEventManager.handleMessage(ev);
+				System.err.println("OK5");
+				
+				
 				
 				ev = new CnSEvent(CnSControlPanel.REFRESH, CnSEventManager.CONTROL_PANEL);
 				CnSEventManager.handleMessage(ev);
+				System.err.println("OK6");*/
+				
 			}
 			else if (((CnSButton)e.getSource()).getActionCommand().equals("annotate")) {
 				System.out.println("Pressed: annotate " + af);
@@ -90,30 +136,19 @@ public class CnSAFTreeFileNode extends CnSPanelTreeNode {
 						ev.addParameter(CnSNodeAnnotationManager.FROM_LINE, af.getFromLine());
 						ev.addParameter(CnSNodeAnnotationManager.NETWORK, network);
 						int[] results = (int[])CnSEventManager.handleMessage(ev);
+						
 						Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 				
 						CnSAnnotationFileStatsDialog statsDialog = new CnSAnnotationFileStatsDialog(results[0], results[1], results[2]);
 						statsDialog.setLocation((screenSize.width - statsDialog.getWidth()) / 2, (screenSize.height - statsDialog.getHeight()) / 2);
 						statsDialog.setVisible(true);
 						if (statsDialog.getExitOption() == CnSAnnotationFileStatsDialog.OK_OPTION) {
-							ev = new CnSEvent(CnSNodeAnnotationManager.ANNOTATE_NETWORK, CnSEventManager.ANNOTATION_MANAGER);
-							ev.addParameter(CnSNodeAnnotationManager.ANNOTATION_FILE, getData(ANNOTATION_FILE));
-							ev.addParameter(CnSNodeAnnotationManager.NETWORK, network);
-							CnSEventManager.handleMessage(ev);
-						
-							ev = new CnSEvent(CnSControlPanel.ADD_MAPPED_NETWORK, CnSEventManager.CONTROL_PANEL);
-							ev.addParameter(CnSControlPanel.TREE_FILE_NODE, this);
-							ev.addParameter(CnSControlPanel.NETWORK, network);
-							ev.addParameter(CnSControlPanel.MAPPED_NODES, results[2]);
-							ev.addParameter(CnSControlPanel.MAPPED_ANNOTATIONS, results[3]);
-							ev.addParameter(CnSControlPanel.NETWORK_NODES, results[4]);
-							ev.addParameter(CnSControlPanel.FILE_ANNOTATIONS, results[5]);
-							ev.addParameter(CnSControlPanel.ANNOTATION_FILE, getData(ANNOTATION_FILE));
-							CnSEventManager.handleMessage(ev);
-							
-							((CnSAFTreeDetailsNodePanel)getChildAt(0).getPanel()).getNetworksTree().expandRow(0);
-							ev = new CnSEvent(CnSControlPanel.REFRESH, CnSEventManager.CONTROL_PANEL);
-							CnSEventManager.handleMessage(ev);
+							ev = new CnSEvent(CyActivator.GET_TASK_MANAGER, CnSEventManager.CY_ACTIVATOR);
+							DialogTaskManager dialogTaskManager = (DialogTaskManager)CnSEventManager.handleMessage(ev);
+							TaskIterator ti = new TaskIterator();
+							CnSAnnotateGraphTask task = new CnSAnnotateGraphTask(af, network, results, this);
+							ti.append(task);
+							dialogTaskManager.execute(ti);
 						}
 					}
 					else
@@ -126,10 +161,37 @@ public class CnSAFTreeFileNode extends CnSPanelTreeNode {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.cytoscape.clustnsee3.internal.gui.widget.paneltree.CnSPanelTreeNode#getValue()
+	 * @see org.cytoscape.clustnsee3.internal.gui.util.paneltree.CnSPanelTreeNode#getValue()
 	 */
 	@Override
 	public Object getValue() {
 		return getData(ANNOTATION_FILE);
+	}
+
+	/* (non-Javadoc)
+	 * @see javax.swing.tree.TreeNode#getIndex(javax.swing.tree.TreeNode)
+	 */
+	@Override
+	public int getIndex(TreeNode node) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	/* (non-Javadoc)
+	 * @see javax.swing.tree.TreeNode#getAllowsChildren()
+	 */
+	@Override
+	public boolean getAllowsChildren() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	/* (non-Javadoc)
+	 * @see javax.swing.tree.TreeNode#isLeaf()
+	 */
+	@Override
+	public boolean isLeaf() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

@@ -14,16 +14,20 @@
 package org.cytoscape.clustnsee3.internal.gui.partitionpanel.partitiontable;
 
 import java.awt.Color;
+import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import javax.swing.BorderFactory;
+import javax.swing.DefaultListSelectionModel;
+import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JViewport;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
@@ -40,14 +44,22 @@ public class CnSPartitionTable implements ChangeListener, PropertyChangeListener
 	
 	public CnSPartitionTable() {
 		super();
-		table = new JTable(new CnSPartitionTableModel(null));
+		table = new JTable(new CnSPartitionTableModel(null)) {
+			public String getToolTipText(MouseEvent me) {
+				int c = columnAtPoint(me.getPoint());
+				int r = rowAtPoint(me.getPoint());
+				return table.getValueAt(r, c).toString();
+			}
+		};
 		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		table.setRowHeight(26);
 		scrollPane = new JScrollPane(table);
 		table.addPropertyChangeListener(this);
 		fixed = new JTable();
 		fixed.setAutoCreateColumnsFromModel(false);
+		
 		fixed.setSelectionModel(table.getSelectionModel());
+		
 		fixed.setFocusable(false);
 		fixed.setRowHeight(26);
 		fixed.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
@@ -87,7 +99,7 @@ public class CnSPartitionTable implements ChangeListener, PropertyChangeListener
     	if (fixed.getColumnModel().getColumnCount() > 0) fixed.getColumnModel().removeColumn(fixed.getColumnModel().getColumn(0));
     	fixed.getColumnModel().addColumn(column);
     	fixed.getColumnModel().getColumn(0).setCellRenderer(new CnSPartitionTableFixedColumnRenderer());
-	}
+   	}
 	
 	public TableModel getModel() {
 		return table.getModel();
@@ -98,6 +110,7 @@ public class CnSPartitionTable implements ChangeListener, PropertyChangeListener
 	 */
 	@Override
 	public void propertyChange(PropertyChangeEvent e) {
+		System.err.println("propertyChange : " + e.getPropertyName());
 		if (e.getPropertyName().equals("selectionModel"))
 			fixed.setSelectionModel(table.getSelectionModel());
 		else if (e.getPropertyName().equals("model"))
@@ -114,10 +127,12 @@ public class CnSPartitionTable implements ChangeListener, PropertyChangeListener
 	}
 	
 	public void fireTableDataChanged() {
-		((CnSPartitionTableModel)getModel()).fireTableDataChanged();
+		if (getModel() instanceof CnSPartitionTableModel)
+			((CnSPartitionTableModel)getModel()).fireTableDataChanged();
 	}
 
 	public void setSelectedAnnotation(CnSNodeAnnotation annotation) {
-		((CnSPartitionTableModel)getModel()).setSelectedAnnotation(annotation);
+		if (getModel() instanceof CnSPartitionTableModel)
+			((CnSPartitionTableModel)getModel()).setSelectedAnnotation(annotation);
 	}
 }

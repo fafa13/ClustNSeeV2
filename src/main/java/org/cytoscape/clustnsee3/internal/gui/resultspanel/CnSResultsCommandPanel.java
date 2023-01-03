@@ -31,6 +31,9 @@ import javax.swing.border.EtchedBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.cytoscape.application.CyApplicationManager;
+import org.cytoscape.application.swing.CySwingApplication;
+import org.cytoscape.application.swing.CytoPanel;
+import org.cytoscape.application.swing.CytoPanelName;
 import org.cytoscape.clustnsee3.internal.CyActivator;
 import org.cytoscape.clustnsee3.internal.analysis.CnSCluster;
 import org.cytoscape.clustnsee3.internal.analysis.CnSClusterLink;
@@ -38,8 +41,8 @@ import org.cytoscape.clustnsee3.internal.analysis.edge.CnSEdge;
 import org.cytoscape.clustnsee3.internal.analysis.node.CnSNode;
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
-import org.cytoscape.clustnsee3.internal.gui.widget.CnSButton;
-import org.cytoscape.clustnsee3.internal.gui.widget.CnSPanel;
+import org.cytoscape.clustnsee3.internal.gui.util.CnSButton;
+import org.cytoscape.clustnsee3.internal.gui.util.CnSPanel;
 import org.cytoscape.clustnsee3.internal.network.CnSNetwork;
 import org.cytoscape.clustnsee3.internal.network.CnSNetworkManager;
 import org.cytoscape.clustnsee3.internal.partition.CnSPartition;
@@ -122,7 +125,16 @@ public class CnSResultsCommandPanel extends CnSPanel {
 				CnSEvent ev = new CnSEvent(CnSResultsPanel.GET_SELECTED_CLUSTER, CnSEventManager.RESULTS_PANEL);
 		        CnSCluster cluster = (CnSCluster)CnSEventManager.handleMessage(ev);
 		        if (cluster != null) {
+		        	// get the selected tab in south panel
+		        	ev = new CnSEvent(CyActivator.GET_SWING_APPLICATION, CnSEventManager.CY_ACTIVATOR);
+		        	CySwingApplication app = (CySwingApplication)CnSEventManager.handleMessage(ev);
+		        	CytoPanel cp = app.getCytoPanel(CytoPanelName.SOUTH);
+		        	int beforeIndex = cp.getSelectedIndex();
+		        	
 		        	Long suid = makeClusterView(cluster);
+		        	
+		        	// restore the previous selected tab in south panel
+		        	cp.setSelectedIndex(beforeIndex);
 		        	
 		        	ev = new CnSEvent(CnSViewManager.EXPAND_CLUSTER, CnSEventManager.VIEW_MANAGER);
 		        	ev.addParameter(CnSViewManager.SUID, suid);
@@ -140,7 +152,16 @@ public class CnSResultsCommandPanel extends CnSPanel {
 				CnSEvent ev = new CnSEvent(CnSResultsPanel.GET_SELECTED_CLUSTER, CnSEventManager.RESULTS_PANEL);
 		        CnSCluster cluster = (CnSCluster)CnSEventManager.handleMessage(ev);
 				if (cluster != null) {
+					// get the selected tab in south panel
+					ev = new CnSEvent(CyActivator.GET_SWING_APPLICATION, CnSEventManager.CY_ACTIVATOR);
+		        	CySwingApplication app = (CySwingApplication)CnSEventManager.handleMessage(ev);
+		        	CytoPanel cp = app.getCytoPanel(CytoPanelName.SOUTH);
+		        	int beforeIndex = cp.getSelectedIndex();
+		        	
 					makeClusterView(cluster);
+					
+					// restore the previous selected tab in south panel
+					cp.setSelectedIndex(beforeIndex);
 					
 					// create CnS attributes in the partition network table
 					ev = new CnSEvent(CnSViewManager.GET_SELECTED_VIEW, CnSEventManager.VIEW_MANAGER);
@@ -167,6 +188,12 @@ public class CnSResultsCommandPanel extends CnSPanel {
 				ev = new CnSEvent(CnSViewManager.GET_PARTITION_VIEW, CnSEventManager.VIEW_MANAGER);
 				ev.addParameter(CnSViewManager.REFERENCE, partition);
 				CnSView partitionView = (CnSView)CnSEventManager.handleMessage(ev);
+				
+				// get the selected tab in south panel
+				ev = new CnSEvent(CyActivator.GET_SWING_APPLICATION, CnSEventManager.CY_ACTIVATOR);
+	        	CySwingApplication app = (CySwingApplication)CnSEventManager.handleMessage(ev);
+	        	CytoPanel cp = app.getCytoPanel(CytoPanelName.SOUTH);
+	        	int beforeIndex = cp.getSelectedIndex();
 				
 				if (partitionView == null) { // partition network is not yet existing
 					CyNetwork inputNetwork = partition.getInputNetwork();
@@ -354,6 +381,9 @@ public class CnSResultsCommandPanel extends CnSPanel {
 				CyApplicationManager applicationManager = (CyApplicationManager)CnSEventManager.handleMessage(ev);
 				applicationManager.setCurrentNetworkView(partitionView.getView());
 				applicationManager.setCurrentNetwork(network.getNetwork());
+				
+				// restore the previous selected tab in south panel
+				cp.setSelectedIndex(beforeIndex);
 				
 				// Apply the CnS visual style to the view
 				ev = new CnSEvent(CnSStyleManager.APPLY_CURRENT_STYLE, CnSEventManager.STYLE_MANAGER);
@@ -594,7 +624,7 @@ public class CnSResultsCommandPanel extends CnSPanel {
 		// Add the network to Cytoscape
 		ev = new CnSEvent(CyActivator.GET_NETWORK_MANAGER, CnSEventManager.CY_ACTIVATOR);
 		CyNetworkManager networkManager = (CyNetworkManager)CnSEventManager.handleMessage(ev);
-		networkManager.addNetwork(clNet);
+		networkManager.addNetwork(clNet, true);
 
 		// Add a node in partition network
 		CyNode clNode = cluster.getCyNode();

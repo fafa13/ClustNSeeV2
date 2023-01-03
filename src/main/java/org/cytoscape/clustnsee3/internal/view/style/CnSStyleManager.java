@@ -78,7 +78,7 @@ public class CnSStyleManager implements CnSEventListener {
 			}
 		}
 		if (!dejala) {
-			InputStream is = getClass().getResourceAsStream("/cns.xml");
+			InputStream is = getClass().getResourceAsStream("/org/cytoscape/clustnsee3/internal/resources/cns.xml");
 			if (is != null) {
 				vsSet = lvtf.loadStyles(is);
 				vs = vsSet.iterator().next();
@@ -96,7 +96,7 @@ public class CnSStyleManager implements CnSEventListener {
 			}
 		}
 		if (!dejala) {
-			InputStream is = getClass().getResourceAsStream("/snapshot.xml");
+			InputStream is = getClass().getResourceAsStream("/org/cytoscape/clustnsee3/internal/resources/snapshot.xml");
 			if (is != null) {
 				vsSet = lvtf.loadStyles(is);
 				vs = vsSet.iterator().next();
@@ -135,7 +135,8 @@ public class CnSStyleManager implements CnSEventListener {
 				}
 				if (view != null) {
 					vmm.setVisualStyle(currentStyle, view.getView());
-					currentStyle.apply(view.getView());
+					if (currentStyle == null) currentStyle = style.get(event.getParameter(STYLE));
+					if (currentStyle != null) currentStyle.apply(view.getView());
 					view.getView().updateView();
 				}
 				break;

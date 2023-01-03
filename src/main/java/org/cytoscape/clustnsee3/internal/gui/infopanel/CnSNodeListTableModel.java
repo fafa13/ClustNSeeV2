@@ -27,7 +27,7 @@ public class CnSNodeListTableModel extends AbstractTableModel {
 	 * 
 	 */
 	private static final long serialVersionUID = 5044909086728506896L;
-	private String colName[] = {"Name", "# clusters", "Degree"};
+	private String colName[] = {"Name", "Degree", "# clusters"};
 	private CnSCluster cluster;
 	
 	public CnSNodeListTableModel(CnSCluster cluster) {
@@ -70,9 +70,9 @@ public class CnSNodeListTableModel extends AbstractTableModel {
 				//}
 				return name;
 			}
-			else if (columnIndex == 1)
-				return cluster.getNodes().get(rowIndex).getNbClusters();
 			else if (columnIndex == 2)
+				return cluster.getNodes().get(rowIndex).getNbClusters();
+			else if (columnIndex == 1)
 				return cluster.getNodeDegree(cluster.getNodes().get(rowIndex));
 		return null;
 	}
@@ -92,9 +92,9 @@ public class CnSNodeListTableModel extends AbstractTableModel {
 	public Class<?> getColumnClass(int columnIndex) {
 		if (columnIndex == 0)
 			return String.class;
-		else if (columnIndex == 1)
-			return Integer.class;
 		else if (columnIndex == 2)
+			return Integer.class;
+		else if (columnIndex == 1)
 			return Integer.class;
 		return null;
 	}

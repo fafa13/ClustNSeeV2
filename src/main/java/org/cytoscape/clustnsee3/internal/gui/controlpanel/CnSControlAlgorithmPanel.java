@@ -9,7 +9,7 @@ import javax.swing.event.ChangeListener;
 import org.cytoscape.clustnsee3.internal.algorithm.CnSAlgorithmManager;
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
-import org.cytoscape.clustnsee3.internal.gui.widget.CnSPanel;
+import org.cytoscape.clustnsee3.internal.gui.util.CnSPanel;
 
 public class CnSControlAlgorithmPanel extends CnSPanel implements ChangeListener {
 	private static final long serialVersionUID = 6943247192606993605L;

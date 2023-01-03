@@ -15,8 +15,10 @@ package org.cytoscape.clustnsee3.internal.gui.controlpanel.networkfiletree.nodes
 
 import java.util.Hashtable;
 
+import javax.swing.tree.TreeNode;
+
 import org.cytoscape.clustnsee3.internal.gui.controlpanel.networkfiletree.nodes.netname.CnSAFTreeNetworkNetnameNode;
-import org.cytoscape.clustnsee3.internal.gui.widget.paneltree.CnSPanelTreeNode;
+import org.cytoscape.clustnsee3.internal.gui.util.paneltree.CnSPanelTreeNode;
 
 public class CnSAFTreeNetworkNetnameDetailsNode extends CnSPanelTreeNode {
 	public static final int MAPPED_ANNOTATIONS = 1;
@@ -31,10 +33,37 @@ public class CnSAFTreeNetworkNetnameDetailsNode extends CnSPanelTreeNode {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.cytoscape.clustnsee3.internal.gui.widget.paneltree.CnSPanelTreeNode#getValue()
+	 * @see org.cytoscape.clustnsee3.internal.gui.util.paneltree.CnSPanelTreeNode#getValue()
 	 */
 	@Override
 	public Object getValue() {
 		return getData(MAPPED_ANNOTATIONS);
+	}
+
+	/* (non-Javadoc)
+	 * @see javax.swing.tree.TreeNode#getIndex(javax.swing.tree.TreeNode)
+	 */
+	@Override
+	public int getIndex(TreeNode node) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	/* (non-Javadoc)
+	 * @see javax.swing.tree.TreeNode#getAllowsChildren()
+	 */
+	@Override
+	public boolean getAllowsChildren() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	/* (non-Javadoc)
+	 * @see javax.swing.tree.TreeNode#isLeaf()
+	 */
+	@Override
+	public boolean isLeaf() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

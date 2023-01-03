@@ -18,4 +18,5 @@ package org.cytoscape.clustnsee3.internal.event;
  */
 public interface CnSEventListener {
 	public Object cnsEventOccured(CnSEvent event);
+	//public CnSEventResult<? extends Object> cnsEventOccured(CnSEvent event);
 }

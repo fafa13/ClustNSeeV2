@@ -16,6 +16,8 @@ package org.cytoscape.clustnsee3.internal.gui.dialog;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
@@ -30,8 +32,12 @@ import javax.swing.border.BevelBorder;
 
 import org.cytoscape.clustnsee3.internal.analysis.CnSCluster;
 import org.cytoscape.clustnsee3.internal.analysis.annotation.CnSClusterAnnotation;
-import org.cytoscape.clustnsee3.internal.gui.widget.CnSButton;
-import org.cytoscape.clustnsee3.internal.gui.widget.CnSPanel;
+import org.cytoscape.clustnsee3.internal.event.CnSEvent;
+import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
+import org.cytoscape.clustnsee3.internal.gui.infopanel.CnSInfoPanel;
+import org.cytoscape.clustnsee3.internal.gui.partitionpanel.CnSPartitionPanel;
+import org.cytoscape.clustnsee3.internal.gui.util.CnSButton;
+import org.cytoscape.clustnsee3.internal.gui.util.CnSPanel;
 
 /**
  * 
@@ -43,16 +49,18 @@ public class CnSAnnotateClusterDialog extends JDialog implements ActionListener 
 	private JTable annotationTable;
 	private Vector<Vector<String>> data;
 	private CnSButton upButton, downButton, removeButton, closeButton;
+	private CnSCluster cluster;
 	
 	public CnSAnnotateClusterDialog(CnSCluster cluster) {
 		super();
 		setModal(true);
 		data = new Vector<Vector<String>>();
-		initGraphics(cluster);
-		initListeners(cluster);
+		this.cluster = cluster;
+		initGraphics();
+		initListeners();
 	}
 	
-	private void initGraphics(CnSCluster cluster) {
+	private void initGraphics() {
 		setTitle("Annotate cluster " + cluster.getName());
 		CnSPanel panel = new CnSPanel();
 		panel.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
@@ -103,7 +111,13 @@ public class CnSAnnotateClusterDialog extends JDialog implements ActionListener 
 		getContentPane().add(panel);
 	}
 	
-	private void initListeners(final CnSCluster cluster) {
+	private void initListeners() {
+		addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent e) {
+		        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+		        actionPerformed(null);
+		    }
+		});
 		addButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -188,6 +202,15 @@ public class CnSAnnotateClusterDialog extends JDialog implements ActionListener 
 	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		CnSEvent ev = new CnSEvent(CnSPartitionPanel.REFRESH, CnSEventManager.PARTITION_PANEL);
+		CnSEventManager.handleMessage(ev);
+		ev = new CnSEvent(CnSPartitionPanel.SELECT_CLUSTER, CnSEventManager.PARTITION_PANEL);
+		ev.addParameter(CnSPartitionPanel.CLUSTER, cluster);
+		CnSEventManager.handleMessage(ev);
+		ev = new CnSEvent(CnSInfoPanel.INIT, CnSEventManager.INFO_PANEL);
+		ev.addParameter(CnSInfoPanel.CLUSTER, cluster);
+		ev.addParameter(CnSInfoPanel.PANEL, CnSInfoPanel.CLUSTER_DETAILS);
+		CnSEventManager.handleMessage(ev);
 		dispose();
 	}
 }
