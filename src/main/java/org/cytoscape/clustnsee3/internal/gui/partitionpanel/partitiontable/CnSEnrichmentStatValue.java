@@ -55,7 +55,7 @@ public class CnSEnrichmentStatValue implements Comparable<CnSEnrichmentStatValue
 	}
 	
 	public String toString() {
-		NumberFormat format = new DecimalFormat("##.00%");
+		NumberFormat format = new DecimalFormat("#0.00%");
 		return getNbNodes() + " (" + format.format(getPc()) + ") ; " + String.format("%G", getBhValue());
 		//return "*-*- " + pc + " -> " + bhValue;
 	}

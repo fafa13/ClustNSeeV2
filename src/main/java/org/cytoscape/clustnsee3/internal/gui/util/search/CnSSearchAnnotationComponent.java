@@ -199,7 +199,8 @@ public class CnSSearchAnnotationComponent extends MouseAdapter implements KeyLis
 		else
 			textField.setBackground(Color.WHITE);
 		ev = new CnSEvent(ACTION, TARGET);
-		if (ann != null) ev.addParameter(KEY, ann);
+		if (ann != null)
+			ev.addParameter(KEY, ann);
 		CnSEventManager.handleMessage(ev);
 	}
 	

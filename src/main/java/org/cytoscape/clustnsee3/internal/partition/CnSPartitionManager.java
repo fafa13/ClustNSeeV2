@@ -596,6 +596,7 @@ public class CnSPartitionManager implements CnSEventListener {
 		CnSEvent ev = new CnSEvent(CyActivator.GET_ROOT_NETWORK_MANAGER, CnSEventManager.CY_ACTIVATOR);
         CyRootNetworkManager crnm = (CyRootNetworkManager)CnSEventManager.handleMessage(ev);
         CyRootNetwork crn = crnm.getRootNetwork(inputNetwork);
+        System.err.println("CRN = " + crn);
         ev = new CnSEvent(CyActivator.GET_NETWORK_MANAGER, CnSEventManager.CY_ACTIVATOR);
         CyNetworkManager networkManager = (CyNetworkManager)CnSEventManager.handleMessage(ev);
         ev = new CnSEvent(CyActivator.GET_NETWORK_VIEW_FACTORY, CnSEventManager.CY_ACTIVATOR);

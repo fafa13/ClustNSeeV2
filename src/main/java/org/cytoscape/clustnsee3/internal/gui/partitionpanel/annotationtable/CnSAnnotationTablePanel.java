@@ -14,18 +14,20 @@
 package org.cytoscape.clustnsee3.internal.gui.partitionpanel.annotationtable;
 
 import java.awt.Color;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+//import java.awt.event.ActionEvent;
+//import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.BufferedWriter;
+import java.io.IOException;
 import java.util.ResourceBundle;
 import java.util.TreeSet;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
-import javax.swing.ButtonGroup;
-import javax.swing.JCheckBox;
-import javax.swing.JLabel;
+//import javax.swing.ButtonGroup;
+//import javax.swing.JCheckBox;
+//import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
@@ -39,10 +41,10 @@ import org.cytoscape.clustnsee3.internal.analysis.CnSCluster;
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
 import org.cytoscape.clustnsee3.internal.gui.partitionpanel.CnSPartitionPanel;
-import org.cytoscape.clustnsee3.internal.gui.util.CnSButton;
+//import org.cytoscape.clustnsee3.internal.gui.util.CnSButton;
 import org.cytoscape.clustnsee3.internal.gui.util.CnSPanel;
 import org.cytoscape.clustnsee3.internal.gui.util.CnSTableHeaderRenderer;
-import org.cytoscape.clustnsee3.internal.gui.util.search.CnSSearchAnnotationComponent;
+//import org.cytoscape.clustnsee3.internal.gui.util.search.CnSSearchAnnotationComponent;
 import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeAnnotation;
 import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeAnnotationManager;
 import org.cytoscape.clustnsee3.internal.partition.CnSPartition;
@@ -54,10 +56,10 @@ import org.cytoscape.model.CyNetwork;
 public class CnSAnnotationTablePanel extends CnSPanel {
 	private static final long serialVersionUID = 9174731642049743947L;
 	
-	private JCheckBox viewAllCheckBox, clusterSelectionCheckBox;
+	//private JCheckBox viewAllCheckBox, clusterSelectionCheckBox;
 	private CnSAnnotationTable annotationTable;
-	private CnSButton exportDataButton;
-	private CnSSearchAnnotationComponent annotationSearchComponent;
+	//private CnSButton exportDataButton;
+	//private CnSSearchAnnotationComponent annotationSearchComponent;
 	
 	public CnSAnnotationTablePanel() {
 		super();
@@ -66,20 +68,20 @@ public class CnSAnnotationTablePanel extends CnSPanel {
 	}
 	
 	public void initGraphics( ) {
-		annotationSearchComponent = new CnSSearchAnnotationComponent(CnSPartitionPanel.SEARCH_ANNOTATION, CnSEventManager.PARTITION_PANEL, CnSPartitionPanel.ANNOTATION);
-		addComponent(new JLabel("Focus on annotation :"), 0, 0, 1, 1, 0.0, 0.0, WEST, NONE, 0, 5, 0, 5, 0, 0);
-		addComponent(annotationSearchComponent.getTextField(), 1, 0, 1, 1, 1.0, 0.0, WEST, HORIZONTAL, 0, 5, 0, 5, 0, 0);
+		//annotationSearchComponent = new CnSSearchAnnotationComponent(CnSPartitionPanel.SEARCH_ANNOTATION, CnSEventManager.PARTITION_PANEL, CnSPartitionPanel.ANNOTATION);
+		//addComponent(new JLabel("Focus on annotation :"), 0, 0, 1, 1, 0.0, 0.0, WEST, NONE, 0, 5, 0, 5, 0, 0);
+		//addComponent(annotationSearchComponent.getTextField(), 1, 0, 1, 1, 1.0, 0.0, WEST, HORIZONTAL, 0, 5, 0, 5, 0, 0);
 		
-		CnSPanel selectionPanel = new CnSPanel();
-		viewAllCheckBox = new JCheckBox("All annotations", true);
-		clusterSelectionCheckBox = new JCheckBox("Selected cluster annotations");
-		ButtonGroup bg = new ButtonGroup();
-		bg.add(clusterSelectionCheckBox);
-		bg.add(viewAllCheckBox);
-		selectionPanel.addComponent(viewAllCheckBox, 1, 0, 1, 1, 0.0, 0.0, WEST, NONE, 5, 5, 5, 0, 0, 0);
-		selectionPanel.addComponent(clusterSelectionCheckBox, 2, 0, 1, 1, 0.0, 0.0, WEST, NONE, 5, 20, 5, 5, 0, 0);
-		selectionPanel.setBorder(BorderFactory.createEtchedBorder());
-		addComponent(selectionPanel, 2, 0, 1, 1, 1.0, 0.0, CENTER, NONE, 0, 5, 5, 5, 0, 0);
+		//CnSPanel selectionPanel = new CnSPanel();
+		//viewAllCheckBox = new JCheckBox("All annotations", true);
+		//clusterSelectionCheckBox = new JCheckBox("Selected cluster annotations");
+		//ButtonGroup bg = new ButtonGroup();
+		//bg.add(clusterSelectionCheckBox);
+		//bg.add(viewAllCheckBox);
+		//selectionPanel.addComponent(viewAllCheckBox, 1, 0, 1, 1, 0.0, 0.0, WEST, NONE, 5, 5, 5, 0, 0, 0);
+		//selectionPanel.addComponent(clusterSelectionCheckBox, 2, 0, 1, 1, 0.0, 0.0, WEST, NONE, 5, 20, 5, 5, 0, 0);
+		//selectionPanel.setBorder(BorderFactory.createEtchedBorder());
+		//addComponent(selectionPanel, 2, 0, 1, 1, 1.0, 0.0, CENTER, NONE, 0, 5, 5, 5, 0, 0);
 		
 		annotationTable = new CnSAnnotationTable();
 		annotationTable.setRowHeight(26);
@@ -111,11 +113,11 @@ public class CnSAnnotationTablePanel extends CnSPanel {
 		
 		addComponent(new JScrollPane(annotationTable), 0, 1, 3, 1, 1.0, 1.0, CENTER, BOTH, 0, 5, 0, 5, 0, 0);
 		
-		CnSPanel commandPanel = new CnSPanel();
-		commandPanel.setBorder(BorderFactory.createEtchedBorder());
-		exportDataButton = new CnSButton("Export data");
-		commandPanel.addComponent(exportDataButton, 0, 0, 1, 1, 0.0, 1.0, CnSPanel.CENTER, CnSPanel.NONE, 5, 5, 5, 5, 0, 0);
-		addComponent(commandPanel, 0, 2, 2, 1, 0.0, 0.0, CnSPanel.SOUTH, CnSPanel.HORIZONTAL, 5, 5, 5, 5, 0, 0);
+//		CnSPanel commandPanel = new CnSPanel();
+//		commandPanel.setBorder(BorderFactory.createEtchedBorder());
+//		exportDataButton = new CnSButton("Export data");
+//		commandPanel.addComponent(exportDataButton, 0, 0, 1, 1, 0.0, 1.0, CnSPanel.CENTER, CnSPanel.NONE, 5, 5, 5, 5, 0, 0);
+//		addComponent(commandPanel, 0, 2, 2, 1, 0.0, 0.0, CnSPanel.SOUTH, CnSPanel.HORIZONTAL, 5, 5, 5, 5, 0, 0);
 	}
 	
 	public CnSNodeAnnotation getSelectedAnnotation() {
@@ -141,7 +143,7 @@ public class CnSAnnotationTablePanel extends CnSPanel {
 		});
 		//viewAllCheckBox.addActionListener((e) -> annotationTable.fireTableDataChanged());
 			
-		viewAllCheckBox.addActionListener(new ActionListener() {
+		/*viewAllCheckBox.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				annotationTable.fireTableDataChanged();
@@ -152,13 +154,20 @@ public class CnSAnnotationTablePanel extends CnSPanel {
 			public void actionPerformed(ActionEvent e) {
 				annotationTable.fireTableDataChanged();
 			}
-		});
+		});*/
 	}
 	
 	public void selectAnnotation(CnSNodeAnnotation ann) {
-		int index = annotationTable.indexOf(ann);
-		annotationTable.getSelectionModel().setSelectionInterval(index, index);
-		annotationTable.scrollRectToVisible(annotationTable.getCellRect(index, 0, true));
+		if (ann != null ) {
+			int index = annotationTable.getRowSorter().convertRowIndexToView(annotationTable.indexOf(ann));
+			System.err.println("Index of " + ann.getValue() + " : " + index);
+			annotationTable.getSelectionModel().setSelectionInterval(index, index);
+			annotationTable.scrollRectToVisible(annotationTable.getCellRect(index, 0, true));
+		}
+		else {
+			annotationTable.getSelectionModel().clearSelection();
+			annotationTable.scrollRectToVisible(annotationTable.getCellRect(0, 0, true));
+		}
 	}
 	
 	public void init(CnSPartition partition) {
@@ -170,13 +179,15 @@ public class CnSAnnotationTablePanel extends CnSPanel {
 		RowFilter<CnSAnnotationTableModel,Integer> annotationFilter = new RowFilter<CnSAnnotationTableModel,Integer>() {
 			@Override
 			public boolean include(Entry<? extends CnSAnnotationTableModel, ? extends Integer> entry) {
-				if (viewAllCheckBox.isSelected()) 
+				CnSEvent ev = new CnSEvent(CnSPartitionPanel.GET_SELECTED_CLUSTER, CnSEventManager.PARTITION_PANEL);
+				int i = (int)CnSEventManager.handleMessage(ev);
+				if (i == 0) 
 					return true;
 				else {
 					CnSAnnotationTableModel model = entry.getModel();
 					CnSCluster cluster = model.getSelectedCluster();
 					if (cluster == null) return false;
-					CnSEvent ev = new CnSEvent(CnSNodeAnnotationManager.GET_CLUSTER_ANNOTATIONS, CnSEventManager.ANNOTATION_MANAGER);
+					ev = new CnSEvent(CnSNodeAnnotationManager.GET_CLUSTER_ANNOTATIONS, CnSEventManager.ANNOTATION_MANAGER);
 					ev.addParameter(CnSNodeAnnotationManager.CLUSTER, cluster);
 					Vector<CnSNodeAnnotation> clusterAnnotations = (Vector<CnSNodeAnnotation>)CnSEventManager.handleMessage(ev);
 					TreeSet<CnSNodeAnnotation> ts = new TreeSet<CnSNodeAnnotation>(clusterAnnotations);
@@ -205,7 +216,9 @@ public class CnSAnnotationTablePanel extends CnSPanel {
 			RowFilter<CnSAnnotationTableModel,Integer> annotationFilter = new RowFilter<CnSAnnotationTableModel,Integer>() {
 				@Override
 				public boolean include(Entry<? extends CnSAnnotationTableModel, ? extends Integer> entry) {
-					if (viewAllCheckBox.isSelected()) 
+					CnSEvent ev = new CnSEvent(CnSPartitionPanel.GET_SELECTED_CLUSTER, CnSEventManager.PARTITION_PANEL);
+					int i = (int)CnSEventManager.handleMessage(ev);
+					if (i == 0) 
 						return true;
 					else {
 						CnSAnnotationTableModel model = entry.getModel();
@@ -219,6 +232,10 @@ public class CnSAnnotationTablePanel extends CnSPanel {
 			sorter.setRowFilter(annotationFilter);
 			sorter.setMaxSortKeys(1);
 			annotationTable.setRowSorter(sorter);
+			System.err.println("ATTENTION");
+			ev = new CnSEvent(CnSPartitionPanel.SET_SELECTED_CLUSTER, CnSEventManager.PARTITION_PANEL);
+			ev.addParameter(CnSPartitionPanel.CLUSTER, cluster.getID());
+			CnSEventManager.handleMessage(ev);
 		}
 	}
 	public void init() {
@@ -233,13 +250,15 @@ public class CnSAnnotationTablePanel extends CnSPanel {
 		RowFilter<CnSAnnotationTableModel,Integer> annotationFilter = new RowFilter<CnSAnnotationTableModel,Integer>() {
 			@Override
 			public boolean include(Entry<? extends CnSAnnotationTableModel, ? extends Integer> entry) {
-				if (viewAllCheckBox.isSelected()) 
+				CnSEvent ev = new CnSEvent(CnSPartitionPanel.GET_SELECTED_CLUSTER, CnSEventManager.PARTITION_PANEL);
+				int i = (int)CnSEventManager.handleMessage(ev);
+				if (i == 0) 
 					return true;
 				else {
 					CnSAnnotationTableModel model = entry.getModel();
 					CnSCluster cluster = model.getSelectedCluster();
 					if (cluster == null) return true;
-					CnSEvent ev = new CnSEvent(CnSNodeAnnotationManager.GET_CLUSTER_ANNOTATIONS, CnSEventManager.ANNOTATION_MANAGER);
+					ev = new CnSEvent(CnSNodeAnnotationManager.GET_CLUSTER_ANNOTATIONS, CnSEventManager.ANNOTATION_MANAGER);
 					ev.addParameter(CnSNodeAnnotationManager.CLUSTER, cluster);
 					Vector<?> clusterAnnotations = (Vector<?>)CnSEventManager.handleMessage(ev);
 					return clusterAnnotations.contains(model.getAnnotation(entry.getIdentifier()));
@@ -266,5 +285,28 @@ public class CnSAnnotationTablePanel extends CnSPanel {
 		annotationTable.fireTableDataChanged();
 		//annotationTable.doLayout();
 		//annotationTable.repaint();
+	}
+
+	/**
+	 * 
+	 * @param
+	 * @return
+	 * @throws IOException 
+	 */
+	public void write(BufferedWriter br) throws IOException {
+		for (int col = 0; col < annotationTable.getModel().getColumnCount(); col++) {
+			br.write(annotationTable.getModel().getColumnName(col));
+			br.write("\t");
+		}
+		br.newLine();
+		for (int row = 0; row < annotationTable.getModel().getRowCount(); row++) {
+			if (annotationTable.getRowSorter().convertRowIndexToView(row) != -1) {
+				for (int col = 0; col < annotationTable.getModel().getColumnCount(); col++) {
+					br.write(annotationTable.getModel().getValueAt(row, col).toString());
+					br.write("\t");
+				}
+				br.newLine();
+			}
+		}
 	}
 }

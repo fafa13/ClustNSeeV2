@@ -13,17 +13,19 @@
 
 package org.cytoscape.clustnsee3.internal.gui.partitionpanel.partitiontable;
 
-import java.awt.Dimension;
+//import java.awt.Dimension;
 import java.awt.FontMetrics;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+//import java.awt.event.ActionEvent;
+//import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
+import java.io.BufferedWriter;
+import java.io.IOException;
 import java.util.ResourceBundle;
 import java.util.Vector;
 
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
+//import javax.swing.BorderFactory;
+//import javax.swing.ImageIcon;
+//import javax.swing.JLabel;
 import javax.swing.RowFilter;
 import javax.swing.UIManager;
 import javax.swing.event.ListSelectionEvent;
@@ -40,9 +42,9 @@ import org.cytoscape.clustnsee3.internal.analysis.CnSCluster;
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
 import org.cytoscape.clustnsee3.internal.gui.partitionpanel.CnSPartitionPanel;
-import org.cytoscape.clustnsee3.internal.gui.util.search.CnSSearchAnnotationComponent;
+//import org.cytoscape.clustnsee3.internal.gui.util.search.CnSSearchAnnotationComponent;
 import org.cytoscape.clustnsee3.internal.gui.resultspanel.CnSResultsPanel;
-import org.cytoscape.clustnsee3.internal.gui.util.CnSButton;
+//import org.cytoscape.clustnsee3.internal.gui.util.CnSButton;
 import org.cytoscape.clustnsee3.internal.gui.util.CnSPanel;
 import org.cytoscape.clustnsee3.internal.gui.util.CnSTableHeaderRenderer;
 import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeAnnotation;
@@ -55,11 +57,11 @@ import org.cytoscape.clustnsee3.internal.partition.CnSPartition;
 public class CnSPartitionTablePanel extends CnSPanel {
 	private static final long serialVersionUID = 4538284737604540732L;
 	
-	private CnSSearchAnnotationComponent annotationSearchComponent;
+	//private CnSSearchAnnotationComponent annotationSearchComponent;
 	private CnSPartitionTable table;
-	private CnSButton exportDataButton;
-	private CnSButton clearButton;
-	private ImageIcon icon_delete;
+	//private CnSButton exportDataButton;
+	//private CnSButton clearButton;
+	//private ImageIcon icon_delete;
 	private CnSCluster selectedCluster;
 	
 	public CnSPartitionTablePanel() {
@@ -70,16 +72,16 @@ public class CnSPartitionTablePanel extends CnSPanel {
 	}
 	
 	public void initGraphics() {
-		annotationSearchComponent = new CnSSearchAnnotationComponent(CnSPartitionPanel.SEARCH, CnSEventManager.PARTITION_PANEL, CnSPartitionPanel.ANNOTATION);
-		addComponent(new JLabel("Focus on annotation :"), 0, 0, 1, 1, 0.0, 0.0, WEST, NONE, 0, 5, 0, 5, 0, 0);
-		addComponent(annotationSearchComponent.getTextField(), 1, 0, 1, 1, 1.0, 0.0, WEST, HORIZONTAL, 0, 5, 0, 5, 0, 0);
-		icon_delete = new ImageIcon(getClass().getResource("/org/cytoscape/clustnsee3/internal/resources/delete_annotation.gif"));
-		clearButton = new CnSButton(icon_delete);
-		clearButton.setPreferredSize(new Dimension(icon_delete.getIconWidth(), icon_delete.getIconHeight()));
-		clearButton.setFocusable(false);
-		
-		addComponent(clearButton, 2, 0, 1, 1, 0.0, 0.0, WEST, NONE, 0, 5, 0, 5, 0, 0);
-		
+//		annotationSearchComponent = new CnSSearchAnnotationComponent(CnSPartitionPanel.SEARCH, CnSEventManager.PARTITION_PANEL, CnSPartitionPanel.ANNOTATION);
+//		addComponent(new JLabel("Focus on annotation :"), 0, 0, 1, 1, 0.0, 0.0, WEST, NONE, 0, 5, 0, 5, 0, 0);
+//		addComponent(annotationSearchComponent.getTextField(), 1, 0, 1, 1, 1.0, 0.0, WEST, HORIZONTAL, 0, 5, 0, 5, 0, 0);
+//		icon_delete = new ImageIcon(getClass().getResource("/org/cytoscape/clustnsee3/internal/resources/delete_annotation.gif"));
+//		clearButton = new CnSButton(icon_delete);
+//		clearButton.setPreferredSize(new Dimension(icon_delete.getIconWidth(), icon_delete.getIconHeight()));
+//		clearButton.setFocusable(false);
+//		
+//		addComponent(clearButton, 2, 0, 1, 1, 0.0, 0.0, WEST, NONE, 0, 5, 0, 5, 0, 0);
+//		
 		table = new CnSPartitionTable();
 		addComponent(table.getScrollPane(), 0, 1, 3, 1, 1.0, 1.0, CnSPanel.CENTER, CnSPanel.BOTH, 5, 5, 0, 5, 0, 0);
 		
@@ -103,30 +105,30 @@ public class CnSPartitionTablePanel extends CnSPanel {
 		
 		
 		table.getFixedTable().getTableHeader().setDefaultRenderer(new CnSTableHeaderRenderer());
-		CnSPanel commandPanel = new CnSPanel();
-		commandPanel.setBorder(BorderFactory.createEtchedBorder());
-		exportDataButton = new CnSButton("Export data");
-		commandPanel.addComponent(exportDataButton, 0, 0, 1, 1, 0.0, 1.0, CnSPanel.CENTER, CnSPanel.NONE, 5, 5, 5, 5, 0, 0);
-		addComponent(commandPanel, 0, 2, 3, 1, 0.0, 0.0, CnSPanel.SOUTH, CnSPanel.HORIZONTAL, 5, 5, 5, 5, 0, 0);
+//		CnSPanel commandPanel = new CnSPanel();
+//		commandPanel.setBorder(BorderFactory.createEtchedBorder());
+//		exportDataButton = new CnSButton("Export data");
+//		commandPanel.addComponent(exportDataButton, 0, 0, 1, 1, 0.0, 1.0, CnSPanel.CENTER, CnSPanel.NONE, 5, 5, 5, 5, 0, 0);
+//		addComponent(commandPanel, 0, 2, 3, 1, 0.0, 0.0, CnSPanel.SOUTH, CnSPanel.HORIZONTAL, 5, 5, 5, 5, 0, 0);
 	}
 	
 	private void initListeners() {
-		exportDataButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				CnSEvent ev = new CnSEvent(CnSNodeAnnotationManager.LOOK_FOR_ANNOTATIONS, CnSEventManager.ANNOTATION_MANAGER);
-				ev.addParameter(CnSNodeAnnotationManager.PREFIX, "GO:0012");
-				Vector<?> ret = (Vector<?>)CnSEventManager.handleMessage(ev);
-				for (Object s : ret) System.err.println(s.toString());
-			}
-		});
-		clearButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				annotationSearchComponent.getTextField().setText("");
-				annotationSearchComponent.searchForAnnotation();
-			}
-		});
+//		exportDataButton.addActionListener(new ActionListener() {
+//			@Override
+//			public void actionPerformed(ActionEvent e) {
+//				CnSEvent ev = new CnSEvent(CnSNodeAnnotationManager.LOOK_FOR_ANNOTATIONS, CnSEventManager.ANNOTATION_MANAGER);
+//				ev.addParameter(CnSNodeAnnotationManager.PREFIX, "GO:0012");
+//				Vector<?> ret = (Vector<?>)CnSEventManager.handleMessage(ev);
+//				for (Object s : ret) System.err.println(s.toString());
+//			}
+//		});
+//		clearButton.addActionListener(new ActionListener() {
+//			@Override
+//			public void actionPerformed(ActionEvent e) {
+//				annotationSearchComponent.getTextField().setText("");
+//				annotationSearchComponent.searchForAnnotation();
+//			}
+//		});
 		table.getTable().getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 		    public void valueChanged(ListSelectionEvent e) {
 		    	CnSEvent ev = new CnSEvent(CnSResultsPanel.SELECT_CLUSTER, CnSEventManager.RESULTS_PANEL);
@@ -274,10 +276,13 @@ public class CnSPartitionTablePanel extends CnSPanel {
 		table.fireTableDataChanged();
 		repaintTable();
 	}
-	public void setAnnotation(CnSNodeAnnotation annot) {
-		System.err.println("CnSPartitionTablePanel.setAnnotation : " + annot.getValue());
-		annotationSearchComponent.setAnnotation(annot);
+	public CnSNodeAnnotation getSelectedAnnotation() {
+		return table.getSelectedAnnotation();
 	}
+//	public void setAnnotation(CnSNodeAnnotation annot) {
+//		System.err.println("CnSPartitionTablePanel.setAnnotation : " + annot.getValue());
+//		annotationSearchComponent.setAnnotation(annot);
+//	}
 	
 	public void clear() {
 		System.err.println("CnSPartitionTablePanel.clear");
@@ -300,9 +305,9 @@ public class CnSPartitionTablePanel extends CnSPanel {
 		table.getFixedTable().repaint();
 	}
 	
-	public String getSearchedAnnotation() {
-		return annotationSearchComponent.getText();
-	}
+//	public String getSearchedAnnotation() {
+//		return annotationSearchComponent.getText();
+//	}
 
 	/**
 	 * 
@@ -311,5 +316,28 @@ public class CnSPartitionTablePanel extends CnSPanel {
 	 */
 	public CnSCluster getSelectedCluster() {
 		return selectedCluster;
+	}
+
+	/**
+	 * 
+	 * @param
+	 * @return
+	 * @throws IOException 
+	 */
+	public void write(BufferedWriter br) throws IOException {
+		for (int col = 0; col < table.getModel().getColumnCount(); col++) {
+			br.write(table.getModel().getColumnName(col));
+			br.write("\t");
+		}
+		br.newLine();
+		for (int row = 0; row < table.getModel().getRowCount(); row++) {
+			if (table.getTable().getRowSorter().convertRowIndexToView(row) != -1) {
+				for (int col = 0; col < table.getModel().getColumnCount(); col++) {
+					br.write(table.getModel().getValueAt(row, col).toString());
+					br.write("\t");
+				}
+				br.newLine();
+			}
+		}
 	}
 }

@@ -135,4 +135,7 @@ public class CnSPartitionTable implements ChangeListener, PropertyChangeListener
 		if (getModel() instanceof CnSPartitionTableModel)
 			((CnSPartitionTableModel)getModel()).setSelectedAnnotation(annotation);
 	}
+	public CnSNodeAnnotation getSelectedAnnotation() {
+		return ((CnSPartitionTableModel)getModel()).getSelectedAnnotation();
+	}
 }
