@@ -21,6 +21,7 @@ import org.cytoscape.clustnsee3.internal.CyActivator;
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventListener;
 import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
+import org.cytoscape.clustnsee3.internal.utils.CnSLogger;
 import org.cytoscape.clustnsee3.internal.view.CnSView;
 import org.cytoscape.clustnsee3.internal.view.CnSViewManager;
 import org.cytoscape.task.read.LoadVizmapFileTaskFactory;
@@ -47,6 +48,9 @@ public class CnSStyleManager implements CnSEventListener {
 	private HashMap<Integer, VisualStyle> style;
 	private VisualStyle currentStyle;
 	
+	
+	private HashMap<Integer, String> action;
+	private HashMap<Integer, String> parameter;
 	/**
 	 * @param
 	 * @return
@@ -54,6 +58,36 @@ public class CnSStyleManager implements CnSEventListener {
 	private CnSStyleManager() {
 		super();
 		style = new HashMap<Integer, VisualStyle>();
+		action = new HashMap<Integer, String>();
+		action.put(SET_CURRENT_STYLE, "SET_CURRENT_STYLE");
+		action.put(APPLY_CURRENT_STYLE, "APPLY_CURRENT_STYLE");
+		action.put(REMOVE_CNS_STYLES, "REMOVE_CNS_STYLES");
+		action.put(INIT, "INIT");
+		parameter = new HashMap<Integer, String>();
+		parameter.put(STYLE, "STYLE");
+		parameter.put(VIEW, "VIEW");
+		parameter.put(CNS_STYLE, "CNS_STYLE");
+		parameter.put(SNAPSHOT_STYLE, "SNAPSHOT_STYLE");
+	}
+	
+	public String getActionName(int k) {
+		switch(k) {
+			case SET_CURRENT_STYLE : return "SET_CURRENT_STYLE";
+			case APPLY_CURRENT_STYLE : return "APPLY_CURRENT_STYLE";
+			case REMOVE_CNS_STYLES : return "REMOVE_CNS_STYLES";
+			case INIT : return "INIT";
+			default : return "UNDEFINED_ACTION : " + k;
+		}
+	}
+
+	public String getParameterName(int k) {
+		switch(k) {
+			case STYLE : return "STYLE";
+			case VIEW : return "VIEW";
+			case CNS_STYLE : return "CNS_STYLE";
+			case SNAPSHOT_STYLE : return "SNAPSHOT_STYLE";
+			default : return "UNDEFINED_PARAMETER : " + k;
+		}
 	}
 	
 	public static CnSStyleManager getInstance() {
@@ -65,10 +99,10 @@ public class CnSStyleManager implements CnSEventListener {
 		Set<VisualStyle> vsSet;
 		VisualStyle vs;
 		
-		CnSEvent ev = new CnSEvent(CyActivator.GET_LOAD_VIZMAP_FILE_TASK_FACTORY, CnSEventManager.CY_ACTIVATOR);
-		LoadVizmapFileTaskFactory lvtf = (LoadVizmapFileTaskFactory)CnSEventManager.handleMessage(ev);
-		ev = new CnSEvent(CyActivator.GET_VIZMAP_MANAGER, CnSEventManager.CY_ACTIVATOR);
-		VisualMappingManager vmm = (VisualMappingManager)CnSEventManager.handleMessage(ev);
+		CnSEvent ev = new CnSEvent(CyActivator.GET_LOAD_VIZMAP_FILE_TASK_FACTORY, CnSEventManager.CY_ACTIVATOR, this.getClass());
+		LoadVizmapFileTaskFactory lvtf = (LoadVizmapFileTaskFactory)CnSEventManager.handleMessage(ev, true);
+		ev = new CnSEvent(CyActivator.GET_VIZMAP_MANAGER, CnSEventManager.CY_ACTIVATOR, this.getClass());
+		VisualMappingManager vmm = (VisualMappingManager)CnSEventManager.handleMessage(ev, true);
 		
 		boolean dejala = false;
 		for (VisualStyle vss : vmm.getAllVisualStyles()) {
@@ -115,9 +149,11 @@ public class CnSStyleManager implements CnSEventListener {
 	 * @see org.cytoscape.clustnsee3.internal.event.CnSEventListener#cnsEventOccured(org.cytoscape.clustnsee3.internal.event.CnSEvent)
 	 */
 	@Override
-	public Object cnsEventOccured(CnSEvent event) {
+	public Object cnsEventOccured(CnSEvent event, boolean log) {
 		Object ret = null;
 		CnSEvent ev;
+		
+		if (log) CnSLogger.LogCnSEvent(event, this);
 		
 		switch (event.getAction()) {
 			case SET_CURRENT_STYLE :
@@ -125,13 +161,13 @@ public class CnSStyleManager implements CnSEventListener {
 				break;
 				
 			case APPLY_CURRENT_STYLE :
-				ev = new CnSEvent(CyActivator.GET_VIZMAP_MANAGER, CnSEventManager.CY_ACTIVATOR);
-				VisualMappingManager vmm = (VisualMappingManager)CnSEventManager.handleMessage(ev);
+				ev = new CnSEvent(CyActivator.GET_VIZMAP_MANAGER, CnSEventManager.CY_ACTIVATOR, this.getClass());
+				VisualMappingManager vmm = (VisualMappingManager)CnSEventManager.handleMessage(ev, true);
 				
 				CnSView view = (CnSView)event.getParameter(VIEW);
 				if (view == null) {
-					ev = new CnSEvent(CnSViewManager.GET_SELECTED_VIEW, CnSEventManager.VIEW_MANAGER);
-					view = (CnSView)CnSEventManager.handleMessage(ev);
+					ev = new CnSEvent(CnSViewManager.GET_SELECTED_VIEW, CnSEventManager.VIEW_MANAGER, this.getClass());
+					view = (CnSView)CnSEventManager.handleMessage(ev, true);
 				}
 				if (view != null) {
 					vmm.setVisualStyle(currentStyle, view.getView());
@@ -142,8 +178,8 @@ public class CnSStyleManager implements CnSEventListener {
 				break;
 				
 			case REMOVE_CNS_STYLES :
-				ev = new CnSEvent(CyActivator.GET_VIZMAP_MANAGER, CnSEventManager.CY_ACTIVATOR);
-				vmm = (VisualMappingManager)CnSEventManager.handleMessage(ev);
+				ev = new CnSEvent(CyActivator.GET_VIZMAP_MANAGER, CnSEventManager.CY_ACTIVATOR, this.getClass());
+				vmm = (VisualMappingManager)CnSEventManager.handleMessage(ev, true);
 				for (Integer vs : style.keySet()) vmm.removeVisualStyle(style.get(vs));
 				currentStyle = null;
 				

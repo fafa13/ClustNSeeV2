@@ -66,30 +66,29 @@ public class CnSAnnotateGraphTask extends AbstractTask {
 		taskMonitor.setProgress(-1.0);
 		
 		taskMonitor.setTitle("Annotating network " + network.toString() + " ...");
-		CnSEvent ev = new CnSEvent(CnSNodeAnnotationManager.ANNOTATE_NETWORK, CnSEventManager.ANNOTATION_MANAGER);
+		CnSEvent ev = new CnSEvent(CnSNodeAnnotationManager.ANNOTATE_NETWORK, CnSEventManager.ANNOTATION_MANAGER, this.getClass());
 		ev.addParameter(CnSNodeAnnotationManager.ANNOTATION_FILE, af);
 		ev.addParameter(CnSNodeAnnotationManager.NETWORK, network);
 		ev.addParameter(CnSNodeAnnotationManager.TASK, taskMonitor);
-		CnSEventManager.handleMessage(ev);
+		CnSEventManager.handleMessage(ev, true);
 		
-		ev = new CnSEvent(CnSPartitionManager.GET_PARTITIONS, CnSEventManager.PARTITION_MANAGER);
-		Vector<CnSPartition> parts = (Vector<CnSPartition>)CnSEventManager.handleMessage(ev);
-		
+		ev = new CnSEvent(CnSPartitionManager.GET_PARTITIONS, CnSEventManager.PARTITION_MANAGER, this.getClass());
+		Vector<CnSPartition> parts = (Vector<CnSPartition>)CnSEventManager.handleMessage(ev, true);
 		
 		for (CnSPartition p : parts) {
 			taskMonitor.setTitle("Computing enrichment for partition " + p.getName() + " ...");
-			ev = new CnSEvent(CnSNodeAnnotationManager.COMPUTE_ENRICHMENT, CnSEventManager.ANNOTATION_MANAGER);
+			ev = new CnSEvent(CnSNodeAnnotationManager.COMPUTE_ENRICHMENT, CnSEventManager.ANNOTATION_MANAGER, this.getClass());
 			ev.addParameter(CnSNodeAnnotationManager.PARTITION, p);
 			ev.addParameter(CnSNodeAnnotationManager.TASK, taskMonitor);
-			CnSEventManager.handleMessage(ev);
+			CnSEventManager.handleMessage(ev, true);
 		}
-		ev = new CnSEvent(CnSResultsPanel.GET_SELECTED_PARTITION, CnSEventManager.RESULTS_PANEL);
-		CnSPartition selectedPartition = (CnSPartition)CnSEventManager.handleMessage(ev);
-		ev = new CnSEvent(CnSPartitionPanel.INIT, CnSEventManager.PARTITION_PANEL);
+		ev = new CnSEvent(CnSResultsPanel.GET_SELECTED_PARTITION, CnSEventManager.RESULTS_PANEL, this.getClass());
+		CnSPartition selectedPartition = (CnSPartition)CnSEventManager.handleMessage(ev, true);
+		ev = new CnSEvent(CnSPartitionPanel.INIT, CnSEventManager.PARTITION_PANEL, this.getClass());
 		if (selectedPartition != null) ev.addParameter(CnSPartitionPanel.PARTITION, selectedPartition);
-		CnSEventManager.handleMessage(ev);
+		CnSEventManager.handleMessage(ev, true);
 		
-		ev = new CnSEvent(CnSControlPanel.ADD_MAPPED_NETWORK, CnSEventManager.CONTROL_PANEL);
+		ev = new CnSEvent(CnSControlPanel.ADD_MAPPED_NETWORK, CnSEventManager.CONTROL_PANEL, this.getClass());
 		ev.addParameter(CnSControlPanel.TREE_FILE_NODE, treeFileNode);
 		ev.addParameter(CnSControlPanel.NETWORK, network);
 		ev.addParameter(CnSControlPanel.MAPPED_NODES, mappedNodes);
@@ -97,11 +96,11 @@ public class CnSAnnotateGraphTask extends AbstractTask {
 		ev.addParameter(CnSControlPanel.NETWORK_NODES, networkNodes);
 		ev.addParameter(CnSControlPanel.FILE_ANNOTATIONS, fileAnnotations);
 		ev.addParameter(CnSControlPanel.ANNOTATION_FILE, af);
-		CnSEventManager.handleMessage(ev);
+		CnSEventManager.handleMessage(ev, true);
 		
 		((CnSAFTreeDetailsNodePanel)treeFileNode.getChildAt(0).getPanel()).getNetworksTree().expandRow(0);
-		ev = new CnSEvent(CnSControlPanel.REFRESH, CnSEventManager.CONTROL_PANEL);
-		CnSEventManager.handleMessage(ev);
+		ev = new CnSEvent(CnSControlPanel.REFRESH, CnSEventManager.CONTROL_PANEL, this.getClass());
+		CnSEventManager.handleMessage(ev, true);
 	}
 	
 	public void setAnnotationIndex(int index) {

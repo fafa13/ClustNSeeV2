@@ -305,10 +305,14 @@ public class CnSCluster implements Comparable<CnSCluster> {
 	}
 	
 	public void addAnnotation(CnSClusterAnnotation annotation) {
-		annotations.add(annotation);
+		if (!annotations.contains(annotation)) annotations.add(annotation);
 	}
 	public void addAnnotation(CnSClusterAnnotation annotation, int index) {
-		annotations.add(index, annotation);
+		if (!annotations.contains(annotation)) annotations.add(index, annotation);
+	}
+	public void removeAnnotation(CnSClusterAnnotation annotation) {
+		int index = annotations.indexOf(annotation);
+		if (index != -1) annotations.remove(index);
 	}
 	public void removeAnnotation(int index) {
 		if (annotations.size() > index)
@@ -324,14 +328,16 @@ public class CnSCluster implements Comparable<CnSCluster> {
 	public HashMap<String, Object> getAttributes() {
 		return attributes;
 	}
-	public String toString() {
+	/*public String toString() {
 		CnSEvent ev = new CnSEvent(CnSPartitionManager.GET_PARTITION, CnSEventManager.PARTITION_MANAGER);
 		ev.addParameter(CnSPartitionManager.CLUSTER, this);
 		CnSPartition part = (CnSPartition)CnSEventManager.handleMessage(ev);
 		
 		return part.getName() + ":" + part.getAlgorithmName() + ":" + getName();
+	}*/
+	public String toString() {
+		return getName();
 	}
-	
 	public double getDensity() {
 		return 2.0 * getEdges().size() / (getNbNodes() * (getNbNodes() - 1));
 	}

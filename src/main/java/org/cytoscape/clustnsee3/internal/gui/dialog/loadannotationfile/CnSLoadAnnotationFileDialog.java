@@ -11,18 +11,14 @@
 /* Philippe Gambette (LIGM, Marne-la-Vallée)
  */
 
-package org.cytoscape.clustnsee3.internal.gui.dialog;
+package org.cytoscape.clustnsee3.internal.gui.dialog.loadannotationfile;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Vector;
 
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
@@ -40,8 +36,6 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 
 import org.cytoscape.clustnsee3.internal.gui.util.CnSButton;
@@ -56,129 +50,6 @@ public class CnSLoadAnnotationFileDialog extends JDialog implements ActionListen
 	public static final int OK_OPTION = 0;
 	public static final int CANCEL_OPTION = 1;
 	
-	class DataTableCellRenderer extends DefaultTableCellRenderer {
-	    private static final long serialVersionUID = 6794360191485492806L;
-	    private DefaultTableCellRenderer renderer;
-
-	    public DataTableCellRenderer(JTable table) {
-	    	super();
-	    	renderer = (DefaultTableCellRenderer)table.getDefaultRenderer(String.class);
-	    }
-	    
-		@Override
-	    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-	        Component c = renderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-	        if (!isSelected)
-	        	if ((row + 1) < getFromLine()) 
-	        		c.setForeground(Color.LIGHT_GRAY);
-	        	else
-	        		c.setForeground(Color.BLACK);
-	        return c;
-	    }
-	}
-
-	class DataTableHeaderRenderer extends DefaultTableCellRenderer {
-		private static final long serialVersionUID = -5481419485529001820L;
-		private DefaultTableCellRenderer renderer;
-
-		public DataTableHeaderRenderer(JTable table) {
-			super();
-			renderer = (DefaultTableCellRenderer)table.getTableHeader().getDefaultRenderer();
-		}
-		
-		@Override
-	    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-	        Component c = renderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-	        if ((column == ((Integer)nodeColSpinner.getValue()).intValue()) || (column == ((Integer)annColSpinner.getValue()).intValue())) {
-	        	c.setForeground(Color.BLUE);
-	        	c.setFont(c.getFont().deriveFont(Font.BOLD));
-	        }
-	        return c;
-	    }
-	}
-	
-	class TM extends AbstractTableModel {
-		private static final long serialVersionUID = 7914092055267256875L;
-		private int nb_col;
-		private Vector<String> data;
-		
-		public TM() {
-			super();
-			data = new Vector<String>();
-			nb_col = 0;
-		}
-		public void setNbCol(int nc) {
-			nb_col = nc;
-		}
-		public void addData(String s) {
-			data.addElement(s);
-		}
-		public void clear() {
-			data.clear();
-		}
-		public String getData(int i) {
-			return data.elementAt(i);
-		}
-		public int getNbCol() {
-			return nb_col;
-		}
-		
-		/* (non-Javadoc)
-		 * @see javax.swing.table.TableModel#getColumnClass(int)
-		 */
-		@Override
-		public Class<?> getColumnClass(int col) {
-			return String.class;
-		}
-
-		/* (non-Javadoc)
-		 * @see javax.swing.table.TableModel#getColumnCount()
-		 */
-		@Override
-		public int getColumnCount() {
-			return nb_col + 1;
-		}
-
-		/* (non-Javadoc)
-		 * @see javax.swing.table.TableModel#getColumnName(int)
-		 */
-		@Override
-		public String getColumnName(int col) {
-			if (col > 0)
-				return "Col #" + String.valueOf(col);
-			return "";
-		}
-
-		/* (non-Javadoc)
-		 * @see javax.swing.table.TableModel#getRowCount()
-		 */
-		@Override
-		public int getRowCount() {
-			return data.size();
-		}
-
-		/* (non-Javadoc)
-		 * @see javax.swing.table.TableModel#getValueAt(int, int)
-		 */
-		@Override
-		public Object getValueAt(int row, int column) {
-			if (column > 0) {
-				String[] word = data.elementAt(row).split(colTabRadioButton.isSelected()?"\t":(colComRadioButton.isSelected()?",":(colSemRadioButton.isSelected()?";":" ")));
-				if (word.length > column - 1) return word[column - 1];
-				return "";
-			}
-			return String.valueOf(row + 1);
-		}
-
-		/* (non-Javadoc)
-		 * @see javax.swing.table.TableModel#isCellEditable(int, int)
-		 */
-		@Override
-		public boolean isCellEditable(int row, int column) {
-			return false;
-		}
-	}
-	
 	private JTextField fileTextField;
 	private CnSButton fileButton, okButton, cancelButton, clearButton;
 	private File currentDirectory;
@@ -186,15 +57,16 @@ public class CnSLoadAnnotationFileDialog extends JDialog implements ActionListen
 	private JSpinner lineSpinner, nodeColSpinner, annColSpinner;
 	
 	private JTable dataTable;
-	private TM tm;
+	private CnSLoadAnnotationFileTableModel tm;
 	
 	private int exit_option;
 	private File file = null;
-	private DataTableCellRenderer cellRenderer;
-	private DataTableHeaderRenderer headerRenderer;
+	private CnSLoadAnnotationFileTableCellRenderer cellRenderer;
+	private CnSLoadAnnotationFileTableHeaderRenderer headerRenderer;
 	
 	private static CnSLoadAnnotationFileDialog instance = null;
 	private int NB_LINE_READ = 1000;
+	private int MAX_COL_COUNT = 20;
 	
 	public static CnSLoadAnnotationFileDialog getInstance() {
 		if (instance == null) 
@@ -208,7 +80,7 @@ public class CnSLoadAnnotationFileDialog extends JDialog implements ActionListen
 		super();
 		setModal(true);
 		currentDirectory = null;
-		tm = new TM();
+		tm = new CnSLoadAnnotationFileTableModel(this);
 		exit_option = CANCEL_OPTION;
 		initGraphics();
 		initListeners();
@@ -264,21 +136,22 @@ public class CnSLoadAnnotationFileDialog extends JDialog implements ActionListen
 		
 		CnSPanel impPanel = new CnSPanel();
 		impPanel.addComponent(new JLabel("Start line :"), 0, 0, 1, 1, 0.0, 0.0, CnSPanel.WEST, CnSPanel.NONE, 5, 5, 5, 0, 0, 0);
-		lineSpinner = new JSpinner(new SpinnerNumberModel(1, 1, 10000, 1));
+		lineSpinner = new JSpinner(new SpinnerNumberModel(1, 1, 10000000, 1));
 		impPanel.addComponent(lineSpinner, 1, 0, 1, 1, 0.0, 0.0, CnSPanel.WEST, CnSPanel.NONE, 5, 5, 5, 0, 0, 0);
 		impPanel.addComponent(new JLabel("Node name column :"), 2, 0, 1, 1, 0.0, 0.0, CnSPanel.WEST, CnSPanel.NONE, 5, 15, 5, 0, 0, 0);
-		nodeColSpinner = new JSpinner(new SpinnerNumberModel(1, 1, 10, 1));
+		nodeColSpinner = new JSpinner(new SpinnerNumberModel(1, 1, 1000, 1));
 		impPanel.addComponent(nodeColSpinner, 3, 0, 1, 1, 0.0, 0.0, CnSPanel.WEST, CnSPanel.NONE, 5, 5, 5, 0, 0, 0);
 		impPanel.addComponent(new JLabel("Annotation column :"), 4, 0, 1, 1, 0.0, 0.0, CnSPanel.WEST, CnSPanel.NONE, 5, 15, 5, 0, 0, 0);
-		annColSpinner = new JSpinner(new SpinnerNumberModel(2, 1, 10, 1));
+		annColSpinner = new JSpinner(new SpinnerNumberModel(2, 1, 1000, 1));
 		impPanel.addComponent(annColSpinner, 5, 0, 1, 1, 0.0, 0.0, CnSPanel.WEST, CnSPanel.NONE, 5, 5, 5, 0, 0, 0);
 		clearButton = new CnSButton("Clear");
 		impPanel.addComponent(clearButton, 6, 0, 1, 1, 0.0, 0.0, CnSPanel.EAST, CnSPanel.NONE, 5, 5, 5, 5, 0, 0);
 		
 		dataTable = new JTable(tm);
-		cellRenderer = new DataTableCellRenderer(dataTable);
+		
+		cellRenderer = new CnSLoadAnnotationFileTableCellRenderer(this, dataTable);
 		dataTable.setDefaultRenderer(String.class, cellRenderer);
-		headerRenderer = new DataTableHeaderRenderer(dataTable);
+		headerRenderer = new CnSLoadAnnotationFileTableHeaderRenderer(this, dataTable);
 		dataTable.getTableHeader().setDefaultRenderer(headerRenderer);
 		impPanel.addComponent(new JScrollPane(dataTable), 0, 1, 7, 1, 1.0, 1.0, CnSPanel.CENTER, CnSPanel.BOTH, 5, 5, 5, 5, 0, 0);
 		impPanel.setBorder(BorderFactory.createEtchedBorder());
@@ -332,6 +205,8 @@ public class CnSLoadAnnotationFileDialog extends JDialog implements ActionListen
 						}
 						br.close();
 						tm.fireTableStructureChanged();
+						tm.fireTableDataChanged();
+						dataTable.repaint();
 						setColumnsWidth();
 					}
 					else {
@@ -424,6 +299,10 @@ public class CnSLoadAnnotationFileDialog extends JDialog implements ActionListen
 				tm.fireTableStructureChanged();
 			}
 		});
+		annTabRadioButton.addActionListener(this);
+		annComRadioButton.addActionListener(this);
+		annSemRadioButton.addActionListener(this);
+		annSpaRadioButton.addActionListener(this);
 	}
 	
 	public int getExitOption() {
@@ -468,7 +347,57 @@ public class CnSLoadAnnotationFileDialog extends JDialog implements ActionListen
 			word = tm.getData(i).split(colTabRadioButton.isSelected()?"\t":(colComRadioButton.isSelected()?",":(colSemRadioButton.isSelected()?";":" ")));
 			tm.setNbCol(Math.max(tm.getNbCol(), word.length));
 		}
+		tm.setNbCol(Math.min(tm.getNbCol(), MAX_COL_COUNT));
 		tm.fireTableStructureChanged();
 		setColumnsWidth();
+	}
+
+	public boolean isColTabRadioButtonSelected() {
+		return colTabRadioButton.isSelected();
+	}
+	public boolean isColComRadioButtonSelected() {
+		return colComRadioButton.isSelected();
+	}
+	public boolean isColSemRadioButtonSelected() {
+		return colSemRadioButton.isSelected();
+	}
+	public boolean isColSpaRadioButtonSelected() {
+		return colSpaRadioButton.isSelected();
+	}
+	public boolean isAnnTabRadioButtonSelected() {
+		return annTabRadioButton.isSelected();
+	}
+	public boolean isAnnComRadioButtonSelected() {
+		return annComRadioButton.isSelected();
+	}
+	public boolean isAnnSemRadioButtonSelected() {
+		return annSemRadioButton.isSelected();
+	}
+	public boolean isAnnSpaRadioButtonSelected() {
+		return annSpaRadioButton.isSelected();
+	}
+	public int getNodeColSpinnerValue() {
+		return (Integer)nodeColSpinner.getValue();
+	}
+	public int getAnnColSpinnerValue() {
+		return (Integer)annColSpinner.getValue();
+	}
+
+	/**
+	 * 
+	 * @param
+	 * @return
+	 */
+	public char getSelectedColumnSeparator() {
+		return colTabRadioButton.isSelected()?'\t':colComRadioButton.isSelected()?',':colSemRadioButton.isSelected()?';':' ';
+	}
+
+	/**
+	 * 
+	 * @param
+	 * @return
+	 */
+	public char getSelectedAnnotationSeparator() {
+		return annTabRadioButton.isSelected()?'\t':annComRadioButton.isSelected()?',':annSemRadioButton.isSelected()?';':' ';
 	}
 }

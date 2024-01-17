@@ -49,9 +49,9 @@ public class CnSControlAlgorithmPanel extends CnSPanel implements ChangeListener
 			public void stateChanged(ChangeEvent e) {
 				// TODO Auto-generated method stub
 				if (((JRadioButton)e.getSource()).isSelected()) {
-					CnSEvent ev = new CnSEvent(CnSAlgorithmManager.SET_SELECTED_ALGORITHM, CnSEventManager.ALGORITHM_MANAGER);
+					CnSEvent ev = new CnSEvent(CnSAlgorithmManager.SET_SELECTED_ALGORITHM, CnSEventManager.ALGORITHM_MANAGER, this.getClass());
 					ev.addParameter(CnSAlgorithmManager.ALGO_NAME, "FT");
-					CnSEventManager.handleMessage(ev);
+					CnSEventManager.handleMessage(ev, true);
 				}
 			}
 			
@@ -61,9 +61,9 @@ public class CnSControlAlgorithmPanel extends CnSPanel implements ChangeListener
 			public void stateChanged(ChangeEvent e) {
 				if (((JRadioButton)e.getSource()).isSelected()) {
 					addComponent(tfitOptionsPanel, 0, 2, 1, 1, 1.0, 1.0, NORTHWEST, HORIZONTAL, 0, 20, 10, 5, 0, 0);
-					CnSEvent ev = new CnSEvent(CnSAlgorithmManager.SET_SELECTED_ALGORITHM, CnSEventManager.ALGORITHM_MANAGER);
+					CnSEvent ev = new CnSEvent(CnSAlgorithmManager.SET_SELECTED_ALGORITHM, CnSEventManager.ALGORITHM_MANAGER, this.getClass());
 					ev.addParameter(CnSAlgorithmManager.ALGO_NAME, "TFit");
-					CnSEventManager.handleMessage(ev);
+					CnSEventManager.handleMessage(ev, true);
 				}
 				else {
 					remove(tfitOptionsPanel);
@@ -76,9 +76,9 @@ public class CnSControlAlgorithmPanel extends CnSPanel implements ChangeListener
 			public void stateChanged(ChangeEvent e) {
 				if (((JRadioButton)e.getSource()).isSelected()) {
 					addComponent(ocgOptionsPanel, 0, 4, 1, 1, 1.0, 1.0, NORTHWEST, HORIZONTAL, 0, 20, 10, 5, 0, 0);
-					CnSEvent ev = new CnSEvent(CnSAlgorithmManager.SET_SELECTED_ALGORITHM, CnSEventManager.ALGORITHM_MANAGER);
+					CnSEvent ev = new CnSEvent(CnSAlgorithmManager.SET_SELECTED_ALGORITHM, CnSEventManager.ALGORITHM_MANAGER, this.getClass());
 					ev.addParameter(CnSAlgorithmManager.ALGO_NAME, "OCG");
-					CnSEventManager.handleMessage(ev);
+					CnSEventManager.handleMessage(ev, true);
 				}
 				else {
 					remove(ocgOptionsPanel);

@@ -33,12 +33,12 @@ public class CnSControlScopePanel extends CnSPanel {
 		networkButton.addChangeListener(new ChangeListener() {
 			@Override
 			public void stateChanged(ChangeEvent e) {
-				CnSEvent ev = new CnSEvent(CnSAlgorithmEngine.SET_SCOPE, CnSEventManager.ALGORITHM_ENGINE);
+				CnSEvent ev = new CnSEvent(CnSAlgorithmEngine.SET_SCOPE, CnSEventManager.ALGORITHM_ENGINE, this.getClass());
 				if (networkButton.isSelected())
 					ev.addParameter(CnSAlgorithmEngine.SCOPE, "Network");
 				else
 					ev.addParameter(CnSAlgorithmEngine.SCOPE, "Selection");
-				CnSEventManager.handleMessage(ev);
+				CnSEventManager.handleMessage(ev, true);
 			}
 		});
 	}

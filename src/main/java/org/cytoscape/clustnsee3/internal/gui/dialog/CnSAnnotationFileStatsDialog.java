@@ -33,14 +33,15 @@ public class CnSAnnotationFileStatsDialog extends JDialog {
 	public static final int CANCEL_OPTION = 1;
 	
 	private CnSButton cancelButton, importButton;
-	private int nodesInFile, annotationsInFile, foundNodes, exit_option;
+	private int nodesInFile, annotationsInFile, foundNodes, exit_option, nodesInGraph;
 	
-	public CnSAnnotationFileStatsDialog(int nodesInFile, int annotationsInFile, int foundNodes) {
+	public CnSAnnotationFileStatsDialog(int nodesInFile, int annotationsInFile, int foundNodes, int nodesInGraph) {
 		super();
 		setModal(true);
 		this.nodesInFile = nodesInFile;
 		this.annotationsInFile = annotationsInFile;
 		this.foundNodes = foundNodes;
+		this.nodesInGraph = nodesInGraph;
 		exit_option = CANCEL_OPTION;
 		initGraphics();
 		initListeners();
@@ -68,7 +69,7 @@ public class CnSAnnotationFileStatsDialog extends JDialog {
 		foundNodesLabel.setFont(foundNodesLabel.getFont().deriveFont(Font.BOLD));
 		p2.addComponent(foundNodesLabel, 0, 0, 1, 1, 0.0, 0.0, CnSPanel.WEST, CnSPanel.NONE, 5, 5, 0, 0, 0, 0);
 		p2.addComponent(new JLabel("nodes ("), 1, 0, 1, 1, 0.0, 0.0, CnSPanel.WEST, CnSPanel.NONE, 5, 5, 0, 0, 0, 0);
-		double foundNodesPercent = (double)((int)((double)foundNodes / (double)nodesInFile * 10000.0D)) / 100.0D;
+		double foundNodesPercent = (double)((int)((double)foundNodes / (double)nodesInGraph * 10000.0D)) / 100.0D;
 		JLabel foundNodesPercentLabel = new JLabel(String.valueOf(foundNodesPercent) + "%");
 		foundNodesPercentLabel.setFont(foundNodesPercentLabel.getFont().deriveFont(Font.BOLD));
 		p2.addComponent(foundNodesPercentLabel, 2, 0, 1, 1, 0.0, 0.0, CnSPanel.WEST, CnSPanel.NONE, 5, 0, 0, 0, 0, 0);

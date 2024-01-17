@@ -20,10 +20,10 @@ import org.cytoscape.clustnsee3.internal.nodeannotation.stats.CnSAnnotationClust
 /**
  * 
  */
-public class CnSPredicate implements Predicate<CnSAnnotationClusterPValue> {
+public class CnSBHPredicate implements Predicate<CnSAnnotationClusterPValue> {
 	private double threshold;
 	
-	public CnSPredicate(double threshold) {
+	public CnSBHPredicate(double threshold) {
 		super();
 		this.threshold = threshold;
 	}

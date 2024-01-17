@@ -16,9 +16,6 @@ package org.cytoscape.clustnsee3.internal;
 import org.cytoscape.clustnsee3.internal.algorithm.CnSAlgorithmManager;
 
 import java.util.Hashtable;
-import java.util.Locale;
-import java.util.Properties;
-import java.util.ResourceBundle;
 import java.util.Vector;
 
 import org.cytoscape.application.events.SetCurrentNetworkViewListener;
@@ -32,9 +29,11 @@ import org.cytoscape.clustnsee3.internal.gui.infopanel.CnSInfoPanel;
 import org.cytoscape.clustnsee3.internal.gui.menu.contextual.action.CnSMenuManager;
 import org.cytoscape.clustnsee3.internal.gui.partitionpanel.CnSPartitionPanel;
 import org.cytoscape.clustnsee3.internal.gui.resultspanel.CnSResultsPanel;
+import org.cytoscape.clustnsee3.internal.gui.util.CnSSynchronizeClusterSelection;
 import org.cytoscape.clustnsee3.internal.network.CnSNetworkManager;
 import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeAnnotationManager;
 import org.cytoscape.clustnsee3.internal.partition.CnSPartitionManager;
+import org.cytoscape.clustnsee3.internal.utils.CnSLogger;
 import org.cytoscape.clustnsee3.internal.view.CnSViewManager;
 import org.cytoscape.clustnsee3.internal.view.style.CnSStyleManager;
 import org.cytoscape.model.events.AboutToRemoveNodesListener;
@@ -44,6 +43,7 @@ import org.cytoscape.model.events.NetworkAboutToBeDestroyedListener;
 import org.cytoscape.model.events.RemovedEdgesListener;
 import org.cytoscape.model.events.SelectedNodesAndEdgesListener;
 import org.cytoscape.model.events.UnsetNetworkPointerListener;
+import org.cytoscape.session.events.SessionLoadedListener;
 import org.cytoscape.view.model.events.NetworkViewAboutToBeDestroyedListener;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
@@ -73,6 +73,7 @@ public class CnSClustnseePlugin implements CnSEventListener {
 	private CnSNodeAnnotationManager nodeAnnotationManager;
 	private static CnSClustnseePlugin instance;
 	private BundleContext bc;
+	private CnSSynchronizeClusterSelection synchonizeClusterSelection;
 	
 	private CnSClustnseePlugin(BundleContext context, CyActivator ca) {
 		super();
@@ -89,17 +90,34 @@ public class CnSClustnseePlugin implements CnSEventListener {
 		partitionManager = CnSPartitionManager.getInstance();
 		styleManager = CnSStyleManager.getInstance();
 		nodeAnnotationManager = CnSNodeAnnotationManager.getInstance();
+		synchonizeClusterSelection = new CnSSynchronizeClusterSelection();
 		CnSEventManager.getCnsEventManager(this, analysisManager, menuManager, dataPanel, resultsPanel, algorithmManager, 
-				algorithmEngine, viewManager, networkManager, partitionManager, styleManager, partitionPanel, nodeAnnotationManager, ca);
-		CnSEvent ev = new CnSEvent(CnSAlgorithmManager.INIT, CnSEventManager.ALGORITHM_MANAGER);
-		CnSEventManager.handleMessage(ev);
-		ev = new CnSEvent(CnSStyleManager.INIT, CnSEventManager.STYLE_MANAGER);
-		CnSEventManager.handleMessage(ev);
+				algorithmEngine, viewManager, networkManager, partitionManager, styleManager, partitionPanel, 
+				nodeAnnotationManager, synchonizeClusterSelection, ca);
+		CnSEvent ev = new CnSEvent(CnSAlgorithmManager.INIT, CnSEventManager.ALGORITHM_MANAGER, this.getClass());
+		CnSEventManager.handleMessage(ev, true);
+		ev = new CnSEvent(CnSStyleManager.INIT, CnSEventManager.STYLE_MANAGER, this.getClass());
+		CnSEventManager.handleMessage(ev, true);
 	}
 	
+	public String getActionName(int k) {
+		switch(k) {
+			case GET_PANEL : return "GET_PANEL";
+			case ENABLE_ANALYZIS : return "ENABLE_ANALYZIS";
+			default : return "UNDEFINED_ACTION";
+		}
+	}
+
+	public String getParameterName(int k) {
+		switch(k) {
+			case ENABLE : return "ENABLE";
+			default : return "UNDEFINED_PARAMETER";
+		}
+	}
+
 	public void registerServices() {
-		CnSEvent ev = new CnSEvent(CnSClustnseePlugin.GET_PANEL, CnSEventManager.CLUSTNSEE_PLUGIN);
-		controlPanel = (CnSControlPanel)CnSEventManager.handleMessage(ev);
+		CnSEvent ev = new CnSEvent(CnSClustnseePlugin.GET_PANEL, CnSEventManager.CLUSTNSEE_PLUGIN, this.getClass());
+		controlPanel = (CnSControlPanel)CnSEventManager.handleMessage(ev, true);
 		CnSEventManager.addControlPanel(controlPanel);
 		
 		ref = new Vector<ServiceRegistration>();
@@ -117,6 +135,8 @@ public class CnSClustnseePlugin implements CnSEventListener {
 		ref.addElement(bc.registerService(UnsetNetworkPointerListener.class.getName(), viewManager, dict));
 		ref.addElement(bc.registerService(SetCurrentNetworkViewListener.class.getName(), viewManager, dict));
 		ref.addElement(bc.registerService(SelectedNodesAndEdgesListener.class.getName(), viewManager, dict));
+		ref.addElement(bc.registerService(SessionLoadedListener.class.getName(), partitionManager, dict));
+		ref.addElement(bc.registerService(SessionLoadedListener.class.getName(), controlPanel, dict));
 	}
 	
 	public static CnSClustnseePlugin getInstance(BundleContext context, CyActivator ca) {
@@ -128,8 +148,10 @@ public class CnSClustnseePlugin implements CnSEventListener {
 	 * @see org.cytoscape.clustnsee3.internal.event.CnSEventListener#cnsEventOccured(org.cytoscape.clustnsee3.internal.event.CnSEvent)
 	 */
 	@Override
-	public Object cnsEventOccured(CnSEvent event) {
+	public Object cnsEventOccured(CnSEvent event, boolean log) {
 		Object ret = null;
+		
+		if (log) CnSLogger.LogCnSEvent(event, this);
 		
 		switch (event.getAction()) {
 			case (GET_PANEL) :

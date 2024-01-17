@@ -19,15 +19,12 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import javax.swing.BorderFactory;
-import javax.swing.DefaultListSelectionModel;
-import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JViewport;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
@@ -41,10 +38,13 @@ public class CnSPartitionTable implements ChangeListener, PropertyChangeListener
 	private JTable table;
 	private JTable fixed;
 	private JScrollPane scrollPane;
+	private CnSPartitionTableModel model;
 	
 	public CnSPartitionTable() {
 		super();
 		table = new JTable(new CnSPartitionTableModel(null)) {
+			private static final long serialVersionUID = 1529937539415317297L;
+
 			public String getToolTipText(MouseEvent me) {
 				int c = columnAtPoint(me.getPoint());
 				int r = rowAtPoint(me.getPoint());
@@ -70,6 +70,7 @@ public class CnSPartitionTable implements ChangeListener, PropertyChangeListener
     	scrollPane.setCorner(JScrollPane.UPPER_LEFT_CORNER, fixed.getTableHeader());
     	scrollPane.getRowHeader().addChangeListener(this);
     	table.setDefaultRenderer(Object.class, new CnSPartitionTableCellRenderer());
+    	table.setDefaultRenderer(Integer.class, new CnSPartitionTableCellRenderer());
     	table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     	fixed.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     }
@@ -92,6 +93,7 @@ public class CnSPartitionTable implements ChangeListener, PropertyChangeListener
 	public void setModel(CnSPartitionTableModel model) {
 		table.setModel(model); 
 		fixed.setModel(model);
+		this.model = model;
 		
 		TableColumnModel columnModel = table.getColumnModel();
 	    TableColumn column = columnModel.getColumn(0);
@@ -102,7 +104,7 @@ public class CnSPartitionTable implements ChangeListener, PropertyChangeListener
    	}
 	
 	public TableModel getModel() {
-		return table.getModel();
+		return model;
 	}
 
 	/* (non-Javadoc)
@@ -110,7 +112,6 @@ public class CnSPartitionTable implements ChangeListener, PropertyChangeListener
 	 */
 	@Override
 	public void propertyChange(PropertyChangeEvent e) {
-		System.err.println("propertyChange : " + e.getPropertyName());
 		if (e.getPropertyName().equals("selectionModel"))
 			fixed.setSelectionModel(table.getSelectionModel());
 		else if (e.getPropertyName().equals("model"))

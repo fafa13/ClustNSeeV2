@@ -103,12 +103,8 @@ public class CnSTFitAlgorithm extends CnSAlgorithm {
         /*
          * calcule une partition qui optimise un critere de modularité
          */
-        String callerID = "Algorithm.TFit";
-        System.err.println( "In " + callerID);
-        //currentNetwork = inputNetwork;
-        CnSEvent ev = new CnSEvent(CnSAlgorithmEngine.GET_SCOPE, CnSEventManager.ALGORITHM_ENGINE);
-        String scope = (String)CnSEventManager.handleMessage(ev);
-        System.err.println( "Clustering Scope : " + scope);
+        CnSEvent ev = new CnSEvent(CnSAlgorithmEngine.GET_SCOPE, CnSEventManager.ALGORITHM_ENGINE, this.getClass());
+        String scope = (String)CnSEventManager.handleMessage(ev, true);
         List<CyNode> selectedNodes = CyTableUtil.getNodesInState(inputNetwork, "selected", true);
         List<CyEdge> selectedEdges = CyTableUtil.getEdgesInState(inputNetwork, "selected", true);
         
@@ -151,8 +147,8 @@ public class CnSTFitAlgorithm extends CnSAlgorithm {
        else {
            ni = inputNetwork.getNodeList().iterator();
        }
-       ev = new CnSEvent(CnSAlgorithmEngine.IS_CANCELLED, CnSEventManager.ALGORITHM_ENGINE);
-       boolean cancelled = (Boolean)CnSEventManager.handleMessage(ev);
+       ev = new CnSEvent(CnSAlgorithmEngine.IS_CANCELLED, CnSEventManager.ALGORITHM_ENGINE, this.getClass());
+       boolean cancelled = (Boolean)CnSEventManager.handleMessage(ev, true);
        
         // Retrieve the list of node names
         HashMap<String, CyNode> name_to_node = new HashMap<String, CyNode>();
@@ -167,13 +163,7 @@ public class CnSTFitAlgorithm extends CnSAlgorithm {
         List<String> node_names = Arrays.asList( nodeName);
         Collections.sort( node_names);
         HashMap<Integer, Long> modClust_to_cyto = new HashMap<Integer, Long>();
-		/*for( int i_node_name = 0; i_node_name < node_names.size(); i_node_name++) {
-            String node_name = node_names.get( i_node_name);
-            long cyto_index = name_to_node.get( node_name).getSUID();
-            cyto2ModClust.put( cyto_index, i_node_name);
-            modClust_to_cyto.put(i_node_name, cyto_index);
-        }*/
-        if (scope.equals("Selection")) {
+		if (scope.equals("Selection")) {
             ni = selectedNodes.iterator();
         }
         else {

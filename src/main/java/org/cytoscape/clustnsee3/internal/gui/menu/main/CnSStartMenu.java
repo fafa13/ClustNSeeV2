@@ -25,10 +25,10 @@ public class CnSStartMenu extends AbstractCyAction {
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		CnSEvent ev = new CnSEvent(CyActivator.START, CnSEventManager.CY_ACTIVATOR);
-		CnSEventManager.handleMessage(ev);
-		ev = new CnSEvent(CnSStyleManager.INIT, CnSEventManager.STYLE_MANAGER);
-		CnSEventManager.handleMessage(ev);
+		CnSEvent ev = new CnSEvent(CyActivator.START, CnSEventManager.CY_ACTIVATOR, this.getClass());
+		CnSEventManager.handleMessage(ev, true);
+		ev = new CnSEvent(CnSStyleManager.INIT, CnSEventManager.STYLE_MANAGER, this.getClass());
+		CnSEventManager.handleMessage(ev, true);
 		
 	}
 	

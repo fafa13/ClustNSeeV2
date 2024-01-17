@@ -36,29 +36,30 @@ public class CnSDiscardPartitionTask extends AbstractTask {
 		taskMonitor.setProgress(0.0);
 		
 		// get the selected partition
-		CnSEvent ev = new CnSEvent(CnSResultsPanel.GET_SELECTED_PARTITION, CnSEventManager.RESULTS_PANEL);
-		CnSPartition partition = (CnSPartition)CnSEventManager.handleMessage(ev);
+		CnSEvent ev = new CnSEvent(CnSResultsPanel.GET_SELECTED_PARTITION, CnSEventManager.RESULTS_PANEL, this.getClass());
+		CnSPartition partition = (CnSPartition)CnSEventManager.handleMessage(ev, true);
 		
-        taskMonitor.setStatusMessage("Removing cluster networks from Cytoscape.");
+		if (partition != null) {
+			taskMonitor.setStatusMessage("Removing cluster networks from Cytoscape.");
 		
-		// remove it from the results panel
-		ev = new CnSEvent(CnSResultsPanel.DISCARD_PARTITION, CnSEventManager.RESULTS_PANEL);
-		ev.addParameter(CnSResultsPanel.PARTITION, partition);
-		ev.addParameter(CnSResultsPanel.TASK_MONITOR, taskMonitor);
-		CnSEventManager.handleMessage(ev);
+			// remove it from the results panel
+			ev = new CnSEvent(CnSResultsPanel.DISCARD_PARTITION, CnSEventManager.RESULTS_PANEL, this.getClass());
+			ev.addParameter(CnSResultsPanel.PARTITION, partition);
+			ev.addParameter(CnSResultsPanel.TASK_MONITOR, taskMonitor);
+			CnSEventManager.handleMessage(ev, true);
 		
-		// remove it from the partition controller
-		ev = new CnSEvent(CnSPartitionManager.REMOVE_PARTITION, CnSEventManager.PARTITION_MANAGER);
-		ev.addParameter(CnSPartitionManager.PARTITION, partition);
-		CnSEventManager.handleMessage(ev);
+			// remove it from the partition controller
+			ev = new CnSEvent(CnSPartitionManager.REMOVE_PARTITION, CnSEventManager.PARTITION_MANAGER, this.getClass());
+			ev.addParameter(CnSPartitionManager.PARTITION, partition);
+			CnSEventManager.handleMessage(ev, true);
 		
-		taskMonitor.setStatusMessage("Removing annotation enrichment.");
+			taskMonitor.setStatusMessage("Removing annotation enrichment.");
 		
-		// remove annotation enrichment of the partition
-		ev = new CnSEvent(CnSNodeAnnotationManager.REMOVE_ENRICHMENT, CnSEventManager.ANNOTATION_MANAGER);
-		ev.addParameter(CnSPartitionManager.PARTITION, partition);
-        CnSEventManager.handleMessage(ev);
-		
+			// remove annotation enrichment of the partition
+			ev = new CnSEvent(CnSNodeAnnotationManager.REMOVE_ENRICHMENT, CnSEventManager.ANNOTATION_MANAGER, this.getClass());
+			ev.addParameter(CnSPartitionManager.PARTITION, partition);
+			CnSEventManager.handleMessage(ev, true);
+		}
 		taskMonitor.setProgress(1.0);
 	}
 }

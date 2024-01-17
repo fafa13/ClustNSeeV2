@@ -23,6 +23,7 @@ import org.cytoscape.clustnsee3.internal.analysis.CnSCluster;
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventListener;
 import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
+import org.cytoscape.clustnsee3.internal.utils.CnSLogger;
 import org.cytoscape.model.CyNetwork;
 import org.cytoscape.model.CyNode;
 import org.cytoscape.model.CyRow;
@@ -65,6 +66,30 @@ public class CnSNetworkManager implements CnSEventListener, NetworkAboutToBeDest
 		cluster2networkMap = new HashMap<CnSCluster, CnSNetwork>();
 	}
 	
+	public String getActionName(int k) {
+		switch(k) {
+			case ADD_NETWORK : return "ADD_NETWORK";
+			case RENAME_NETWORK : return "RENAME_NETWORK";
+			case REMOVE_NETWORK : return "REMOVE_NETWORK";
+			case GET_NETWORK : return "GET_NETWORK";
+			case SET_NETWORK_CLUSTER : return "SET_NETWORK_CLUSTER";
+			case GET_NODES_WITH_VALUE : return "GET_NODES_WITH_VALUE";
+			case SELECT_CLUSTER : return "SELECT_CLUSTER";
+			default : return "UNDEFINED_ACTION";
+		}
+	}
+
+	public String getParameterName(int k) {
+		switch(k) {
+			case NETWORK : return "NETWORK";
+			case NETWORK_NAME : return "NETWORK_NAME";
+			case CLUSTER : return "CLUSTER";
+			case COLNAME : return "COLNAME";
+			case VALUE : return "VALUE";
+			default : return "UNDEFINED_PARAMETER";
+		}
+	}
+
 	public static CnSNetworkManager getInstance() {
 		if (instance == null) {
 			instance = new CnSNetworkManager();
@@ -76,12 +101,14 @@ public class CnSNetworkManager implements CnSEventListener, NetworkAboutToBeDest
 	 * @see org.cytoscape.clustnsee3.internal.event.CnSEventListener#cnsEventOccured(org.cytoscape.clustnsee3.internal.event.CnSEvent)
 	 */
 	@Override
-	public Object cnsEventOccured(CnSEvent event) {
+	public Object cnsEventOccured(CnSEvent event, boolean log) {
 		Object ret = null, value;
 		CnSNetwork network = null;
 		CnSCluster cluster;
 		CyNetwork cyNetwork;
 		String colName;
+		
+		if (log) CnSLogger.LogCnSEvent(event, this);
 		
 		switch (event.getAction()) {
 			case ADD_NETWORK :
@@ -152,9 +179,9 @@ public class CnSNetworkManager implements CnSEventListener, NetworkAboutToBeDest
 	public void handleEvent(NetworkAboutToBeDestroyedEvent e) {
 		if (e.getNetwork() != null)
 			if (getNetwork(e.getNetwork()) != null) {
-				CnSEvent ev= new CnSEvent(CnSNetworkManager.REMOVE_NETWORK, CnSEventManager.NETWORK_MANAGER);
+				CnSEvent ev= new CnSEvent(CnSNetworkManager.REMOVE_NETWORK, CnSEventManager.NETWORK_MANAGER, this.getClass());
 				ev.addParameter(NETWORK, getNetwork(e.getNetwork()));
-				cnsEventOccured(ev);
+				cnsEventOccured(ev, true);
 			}
 	}
 	

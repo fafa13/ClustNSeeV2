@@ -24,7 +24,6 @@ import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
 import org.cytoscape.clustnsee3.internal.gui.controlpanel.CnSControlPanel;
 import org.cytoscape.clustnsee3.internal.gui.util.paneltree.CnSPanelTreeNode;
 import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeAnnotationManager;
-import org.cytoscape.clustnsee3.internal.nodeannotation.stats.CnSAnnotationClusterPValue;
 
 public class CnSAFTreeNetworkNetnameNode extends CnSPanelTreeNode implements ActionListener {
 	public final static int NETWORK_NAME = 1;
@@ -35,20 +34,10 @@ public class CnSAFTreeNetworkNetnameNode extends CnSPanelTreeNode implements Act
 		super(parent, v);
 		panel = new CnSAFTreeNetworkNetnameNodePanel(getData(NETWORK).toString(), this);
 		panel.initListeners(this);
-		//((CnSAFTreeNetworkNetnameNodePanel)panel).getDeleteButton().addActionListener(this);
-		//((CnSAFTreeNetworkNetnameNodePanel)panel).getBHButton().addActionListener(this);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.cytoscape.clustnsee3.internal.gui.util.paneltree.CnSPanelTreeNodSystem.err.println("ACTIONPERFORMED - getData(ANNOTATION_FILE) = " + getData(ANNOTATION_FILE));
-				CnSEvent ev = new CnSEvent(CnSNodeAnnotationManager.DEANNOTATE_NETWORK, CnSEventManager.ANNOTATION_MANAGER);
-				ev.addParameter(CnSNodeAnnotationManager.ANNOTATION_FILE, getData(ANNOTATION_FILE));
-				ev.addParameter(CnSNodeAnnotationManager.NETWORK, getData(NETWORK));
-				CnSEventManager.handleMessage(ev);
-				
-				ev = new CnSEvent(CnSControlPanel.REMOVE_MAPPED_NETWORK, CnSEventManager.CONTROL_PANEL);
-				ev.addParameter(CnSControlPanel.TREE_FILE_NODE, this);
-				CnSEventManager.handleMessage(ev);e#getValue()
 	 */
 	@Override
 	public Object getValue() {
@@ -69,14 +58,14 @@ public class CnSAFTreeNetworkNetnameNode extends CnSPanelTreeNode implements Act
 	public void actionPerformed(ActionEvent e) {
 		if (e.getActionCommand().equals("remove_network")) {
 			System.err.println("ACTIONPERFORMED - getData(ANNOTATION_FILE) = " + getData(ANNOTATION_FILE));
-			CnSEvent ev = new CnSEvent(CnSNodeAnnotationManager.DEANNOTATE_NETWORK, CnSEventManager.ANNOTATION_MANAGER);
+			CnSEvent ev = new CnSEvent(CnSNodeAnnotationManager.DEANNOTATE_NETWORK, CnSEventManager.ANNOTATION_MANAGER, this.getClass());
 			ev.addParameter(CnSNodeAnnotationManager.ANNOTATION_FILE, getData(ANNOTATION_FILE));
 			ev.addParameter(CnSNodeAnnotationManager.NETWORK, getData(NETWORK));
-			CnSEventManager.handleMessage(ev);
+			CnSEventManager.handleMessage(ev, true);
 			
-			ev = new CnSEvent(CnSControlPanel.REMOVE_MAPPED_NETWORK, CnSEventManager.CONTROL_PANEL);
+			ev = new CnSEvent(CnSControlPanel.REMOVE_MAPPED_NETWORK, CnSEventManager.CONTROL_PANEL, this.getClass());
 			ev.addParameter(CnSControlPanel.TREE_FILE_NODE, this);
-			CnSEventManager.handleMessage(ev);
+			CnSEventManager.handleMessage(ev, true);
 		}
 		else if (e.getActionCommand().equals("bh")) {
 		

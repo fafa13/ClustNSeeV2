@@ -50,24 +50,24 @@ public class CnSAnalyzeTask extends AbstractTask {
 		/**
 		 * Get the name of the selected algorithm
 		 */
-		CnSEvent ev = new CnSEvent(CnSAlgorithmManager.GET_SELECTED_ALGORITHM, CnSEventManager.ALGORITHM_MANAGER);
-		String algoName = (String)CnSEventManager.handleMessage(ev);
+		CnSEvent ev = new CnSEvent(CnSAlgorithmManager.GET_SELECTED_ALGORITHM, CnSEventManager.ALGORITHM_MANAGER, this.getClass());
+		String algoName = (String)CnSEventManager.handleMessage(ev, true);
 		
 		/**
 		 * Get the selected algorithm
 		 */
-		ev = new CnSEvent(CnSAlgorithmManager.GET_ALGORITHM, CnSEventManager.ALGORITHM_MANAGER);
+		ev = new CnSEvent(CnSAlgorithmManager.GET_ALGORITHM, CnSEventManager.ALGORITHM_MANAGER, this.getClass());
 		ev.addParameter(CnSAlgorithmManager.ALGO_NAME, algoName);
-		CnSAlgorithm algo = (CnSAlgorithm)CnSEventManager.handleMessage(ev);
+		CnSAlgorithm algo = (CnSAlgorithm)CnSEventManager.handleMessage(ev, true);
 		
 		taskMonitor.setStatusMessage("Cluster computation");
 		/**
 		 * Run the algorithm
 		 */
-		ev = new CnSEvent(CnSAlgorithmEngine.START, CnSEventManager.ALGORITHM_ENGINE);
+		ev = new CnSEvent(CnSAlgorithmEngine.START, CnSEventManager.ALGORITHM_ENGINE, this.getClass());
 		ev.addParameter(CnSAlgorithmEngine.ALGORITHM, algo);
 		ev.addParameter(CnSAlgorithmEngine.NETWORK, inputNetwork);
-		CnSAlgorithmResult result = (CnSAlgorithmResult)CnSEventManager.handleMessage(ev);
+		CnSAlgorithmResult result = (CnSAlgorithmResult)CnSEventManager.handleMessage(ev, true);
 		
 		taskMonitor.setProgress(0.0);
 		
@@ -77,16 +77,16 @@ public class CnSAnalyzeTask extends AbstractTask {
 		 * initialize result panel
 		 */
 		if (result != null) {
-			ev = new CnSEvent(CyActivator.GET_APPLICATION_MANAGER, CnSEventManager.CY_ACTIVATOR);
-			CyApplicationManager cam = (CyApplicationManager)CnSEventManager.handleMessage(ev);
+			ev = new CnSEvent(CyActivator.GET_APPLICATION_MANAGER, CnSEventManager.CY_ACTIVATOR, this.getClass());
+			CyApplicationManager cam = (CyApplicationManager)CnSEventManager.handleMessage(ev, true);
 			CyNetwork network = cam.getCurrentNetwork();
 		
-			ev = new CnSEvent(CnSResultsPanel.ADD_PARTITION, CnSEventManager.RESULTS_PANEL);
+			ev = new CnSEvent(CnSResultsPanel.ADD_PARTITION, CnSEventManager.RESULTS_PANEL, this.getClass());
 			ev.addParameter(CnSResultsPanel.RESULT, result);
 			ev.addParameter(CnSResultsPanel.ALGO, algo);
 			ev.addParameter(CnSResultsPanel.NETWORK, network);
 			ev.addParameter(CnSResultsPanel.TASK_MONITOR, taskMonitor);
-			CnSEventManager.handleMessage(ev);
+			CnSEventManager.handleMessage(ev, true);
 		}
 		
 		taskMonitor.setProgress(1.0);

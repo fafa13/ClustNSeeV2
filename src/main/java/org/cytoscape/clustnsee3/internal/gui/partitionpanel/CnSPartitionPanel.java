@@ -14,43 +14,32 @@
 package org.cytoscape.clustnsee3.internal.gui.partitionpanel;
 
 import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.ResourceBundle;
 
-import javax.swing.BorderFactory;
 import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JComboBox;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JTabbedPane;
-import javax.swing.SwingUtilities;
-import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.cytoscape.application.swing.CytoPanelComponent;
 import org.cytoscape.application.swing.CytoPanelName;
+import org.cytoscape.clustnsee3.internal.CyActivator;
 import org.cytoscape.clustnsee3.internal.analysis.CnSCluster;
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventListener;
 import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
-import org.cytoscape.clustnsee3.internal.gui.partitionpanel.annotationtable.CnSAnnotationTablePanel;
+import org.cytoscape.clustnsee3.internal.gui.partitionpanel.annotationanalysis.CnSAnnotationAnalysisPanel;
+import org.cytoscape.clustnsee3.internal.gui.partitionpanel.clusteranalysis.CnSClusterAnalysisPanel;
+import org.cytoscape.clustnsee3.internal.gui.partitionpanel.multiclassednodes.CnSMulticlassedNodesPanel;
 import org.cytoscape.clustnsee3.internal.gui.partitionpanel.partitiontable.CnSPartitionTablePanel;
 import org.cytoscape.clustnsee3.internal.gui.resultspanel.CnSResultsPanel;
-import org.cytoscape.clustnsee3.internal.gui.util.CnSButton;
 import org.cytoscape.clustnsee3.internal.gui.util.CnSPanel;
-import org.cytoscape.clustnsee3.internal.gui.util.search.CnSSearchAnnotationComponent;
 import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeAnnotation;
 import org.cytoscape.clustnsee3.internal.partition.CnSPartition;
-import org.cytoscape.clustnsee3.internal.partition.CnSPartitionManager;
+import org.cytoscape.clustnsee3.internal.utils.CnSLogger;
 import org.cytoscape.model.CyNetwork;
 
 /**
@@ -58,16 +47,6 @@ import org.cytoscape.model.CyNetwork;
  */
 public class CnSPartitionPanel extends CnSPanel implements CytoPanelComponent, CnSEventListener {
 	private static final long serialVersionUID = -3877080938361953871L;
-	private static CnSPartitionPanel instance;
-	private CnSPartitionTablePanel partitionPanel;
-	private CnSAnnotationTablePanel annotationPanel;
-	//private static JSplitPane splitPane;
-	private static JTabbedPane tabbedPane;
-	private CnSSearchAnnotationComponent annotationSearchComponent;
-	private CnSButton clearButton;
-	private ImageIcon icon_delete;
-	private CnSButton exportDataButton;
-	private JComboBox<String> clusterList;
 	
 	public static final int INIT = 1;
 	public static final int CLEAR = 2;
@@ -77,25 +56,30 @@ public class CnSPartitionPanel extends CnSPanel implements CytoPanelComponent, C
 	public static final int REFRESH = 6;
 	public static final int SET_SEARCH_ANNOTATION = 7;
 	public static final int GET_SELECTED_ANNOTATION = 8;
-	public static final int GET_SEARCHED_ANNOTATION = 9;
 	public static final int SEARCH_ANNOTATION = 10;
-	public static final int GET_SELECTED_CLUSTER = 11;
-	public static final int SET_SELECTED_CLUSTER = 12;
+	public static final int EXPORT_CLUSTER_LIST_DATA = 13;
+	public static final int EXPORT_CLUSTER_ANALYSIS_DATA = 14;
+	public static final int EXPORT_ANNOTATION_TERM_ANALYSIS_DATA = 15;
+	public static final int GET_SELECTED_STAT = 26;
+	public static final int GET_CURRENT_BH_THRESHOLD = 27;
+	public static final int GET_CURRENT_MAJORITY_THRESHOLD = 28;
+	public static final int GET_HIDE_SMALL_CLUSTERS = 29;
+	public static final int FIRE_TABLE_DATA_CHANGED = 30;
 	
 	public static final int PARTITION = 1001;
 	public static final int CLUSTER = 1002;
 	public static final int ANNOTATION = 1003;
+	public static final int OUTPUT_FILE = 1004;
+	
+	private static CnSPartitionPanel instance;
+	private CnSPartitionTablePanel partitionTablePanel;
+	private CnSClusterAnalysisPanel clusterAnalysisPanel;
+	private CnSAnnotationAnalysisPanel annotationAnalysisPanel;
+	private CnSMulticlassedNodesPanel multiclassedNodesPanel;
+	private static JTabbedPane tabbedPane;
 	
 	public static CnSPartitionPanel getInstance() {
-		if (instance == null) {
-			instance = new CnSPartitionPanel("C&S Partition");
-			SwingUtilities.invokeLater(new Runnable() {
-				@Override
-				public void run() {
-					//splitPane.setDividerLocation(0.95D);
-				}
-			});
-		}
+		if (instance == null) instance = new CnSPartitionPanel("C&S Partition");
 		return instance;
 	}
 	
@@ -105,239 +89,314 @@ public class CnSPartitionPanel extends CnSPanel implements CytoPanelComponent, C
 		initListeners();
 	}
 	
+	public String getActionName(int k) {
+		switch(k) {
+			case INIT : return "INIT";
+			case CLEAR : return "CLEAR";
+			case SELECT_CLUSTER : return "SELECT_CLUSTER";
+			case SEARCH : return "SEARCH";
+			case INIT_ANNOTATION_PANEL : return "INIT_ANNOTATION_PANEL";
+			case REFRESH : return "REFRESH";
+			case SET_SEARCH_ANNOTATION : return "SET_SEARCH_ANNOTATION";
+			case GET_SELECTED_ANNOTATION : return "GET_SELECTED_ANNOTATION";
+			case SEARCH_ANNOTATION : return "SEARCH_ANNOTATION";
+			case EXPORT_CLUSTER_LIST_DATA : return "EXPORT_CLUSTER_LIST_DATA";
+			case EXPORT_CLUSTER_ANALYSIS_DATA : return "EXPORT_CLUSTER_ANALYSIS_DATA";
+			case EXPORT_ANNOTATION_TERM_ANALYSIS_DATA : return "EXPORT_ANNOTATION_TERM_ANALYSIS_DATA";
+			case GET_SELECTED_STAT : return "GET_SELECTED_STAT";
+			case GET_CURRENT_BH_THRESHOLD : return "GET_CURRENT_BH_THRESHOLD";
+			case GET_CURRENT_MAJORITY_THRESHOLD : return "GET_CURRENT_MAJORITY_THRESHOLD";
+			case GET_HIDE_SMALL_CLUSTERS : return "GET_HIDE_SMALL_CLUSTERS";
+			case FIRE_TABLE_DATA_CHANGED : return "FIRE_TABLE_DATA_CHANGED";
+			default : return "UNDEFINED_ACTION";
+		}
+	}
+
+	public String getParameterName(int k) {
+		switch(k) {
+			case PARTITION : return "PARTITION";
+			case CLUSTER : return "CLUSTER";
+			case ANNOTATION : return "ANNOTATION";
+			case OUTPUT_FILE : return "OUTPUT_FILE";
+			default : return "UNDEFINED_PARAMETER";
+		}
+	}
+
 	public void initGraphics() {
-		CnSPanel annotationsPanel = new CnSPanel();
-		annotationsPanel.setBorder(BorderFactory.createEtchedBorder());
-		annotationSearchComponent = new CnSSearchAnnotationComponent(CnSPartitionPanel.SEARCH, CnSEventManager.PARTITION_PANEL, CnSPartitionPanel.ANNOTATION);
-		annotationsPanel.addComponent(new JLabel("Focus on annotation :"), 0, 0, 1, 1, 0.0, 0.0, WEST, NONE, 0, 5, 0, 5, 0, 0);
-		annotationsPanel.addComponent(annotationSearchComponent.getTextField(), 1, 0, 1, 1, 1.0, 0.0, WEST, HORIZONTAL, 5, 5, 5, 5, 0, 0);
-		icon_delete = new ImageIcon(getClass().getResource("/org/cytoscape/clustnsee3/internal/resources/delete_annotation.gif"));
-		clearButton = new CnSButton(icon_delete);
-		clearButton.setPreferredSize(new Dimension(icon_delete.getIconWidth() + 6, icon_delete.getIconHeight()));
-		clearButton.setFocusable(false);
-		annotationsPanel.addComponent(clearButton, 2, 0, 1, 1, 0.0, 1.0, WEST, BOTH, 5, 5, 5, 5, 0, 0);
-		addComponent(annotationsPanel, 0, 0, 1, 1, 1.0, 0.0, WEST, HORIZONTAL, 0, 5, 5, 5, 0, 0);
+		CnSEvent ev = new CnSEvent(CyActivator.GET_RESOURCES_BUNDLE, CnSEventManager.CY_ACTIVATOR, this.getClass());
+		ResourceBundle rBundle = (ResourceBundle)CnSEventManager.handleMessage(ev, true);
+		rBundle = CyActivator.getResourcesBundle();
 		
-		CnSPanel showAnnotationsPanel = new CnSPanel();
-		showAnnotationsPanel.setBorder(BorderFactory.createEtchedBorder());
-		showAnnotationsPanel.addComponent(new JLabel("Show"), 0, 0, 1, 1, 0.0, 0.0, WEST, NONE, 5, 5, 5, 5, 0, 0);
-		clusterList = new JComboBox<String>();
-		CnSEvent ev = new CnSEvent(CnSResultsPanel.GET_SELECTED_PARTITION, CnSEventManager.RESULTS_PANEL);
-		CnSPartition partition = (CnSPartition)CnSEventManager.handleMessage(ev);
+		partitionTablePanel = new CnSPartitionTablePanel();
+		clusterAnalysisPanel = new CnSClusterAnalysisPanel();
+		annotationAnalysisPanel = new CnSAnnotationAnalysisPanel();
+		multiclassedNodesPanel = new CnSMulticlassedNodesPanel();
+		
+		ev = new CnSEvent(CnSResultsPanel.GET_SELECTED_PARTITION, CnSEventManager.RESULTS_PANEL, this.getClass());
+		CnSPartition partition = (CnSPartition)CnSEventManager.handleMessage(ev, true);
 		init(partition);
-		showAnnotationsPanel.addComponent(clusterList, 1, 0, 1, 1, 0.0, 0.0, WEST, NONE, 5, 5, 5, 5, 0, 0);
-		showAnnotationsPanel.addComponent(new JLabel("annotations"), 2, 0, 1, 1, 0.0, 0.0, WEST, NONE, 5, 5, 5, 5, 0, 0);
-		addComponent(showAnnotationsPanel, 1, 0, 1, 1, 0.0, 0.0, WEST, HORIZONTAL, 0, 5, 5, 5, 0, 0);
 		
-		CnSPanel exportPanel = new CnSPanel();
-		exportPanel.setBorder(BorderFactory.createEtchedBorder());
-		exportDataButton = new CnSButton("Export data");
-		exportPanel.addComponent(exportDataButton, 0, 0, 1, 1, 0.0, 1.0, CnSPanel.CENTER, CnSPanel.NONE, 5, 5, 5, 5, 0, 0);
-		addComponent(exportPanel, 2, 0, 1, 1, 0.0, 0.0, WEST, HORIZONTAL, 0, 5, 5, 5, 0, 0);
-		
-		partitionPanel = new CnSPartitionTablePanel();
-		annotationPanel = new CnSAnnotationTablePanel();
 		tabbedPane = new JTabbedPane();
-		tabbedPane.add("Cluster analysis", partitionPanel);
-		tabbedPane.add("Annotation term analysis", annotationPanel);
-		//splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, partitionPanel, annotationPanel);
-		//splitPane.setOneTouchExpandable(true);
-		addComponent(tabbedPane, 0, 1, 3, 1, 1.0, 1.0, CENTER, BOTH, 0, 0, 0, 0, 0, 0);
+		tabbedPane.add(rBundle.getString("CnSPartitionPanel.ClusterTableTab"), partitionTablePanel);
+		tabbedPane.add(rBundle.getString("CnSPartitionPanel.ClusterAnalysisTab"), clusterAnalysisPanel); 
+		tabbedPane.add(rBundle.getString("CnSPartitionPanel.AnnotationTermAnalysisTab"), annotationAnalysisPanel);
+		tabbedPane.add(rBundle.getString("CnSPartitionPanel.MulticlassedNodesTab"), multiclassedNodesPanel);
+		
+		addComponent(tabbedPane, 0, 0, 3, 1, 1.0, 1.0, CENTER, BOTH, 0, 0, 0, 0, 0, 0);
 	}
 	
 	public void init(CnSPartition partition) {
-		clusterList.removeAllItems();
-		clusterList.addItem("all");
 		if (partition != null) {
-			for (int i = 1; i <= partition.getClusters().size(); i++) clusterList.addItem("cluster " + i);
+			annotationAnalysisPanel.init(partition);
+			multiclassedNodesPanel.init(partition);
 		}
 	}
 	
 	private void initListeners() {
-		clearButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				annotationSearchComponent.getTextField().setText("");
-				annotationSearchComponent.searchForAnnotation();
-			}
-		});
-		exportDataButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				JFileChooser jfc = new JFileChooser();
-				jfc.addChoosableFileFilter(new FileNameExtensionFilter("CSV file (separator: tabulation)", "csv"));
-				int ret = jfc.showSaveDialog(null);
-				boolean tosave =false;
-				File file = null;
-				if (ret == JFileChooser.APPROVE_OPTION) {
-					tosave =true;
-					file = jfc.getSelectedFile();
-					if (file.exists()) {
-						ret = JOptionPane.showConfirmDialog(null, "The file " + file.getName() + " already exists. Are you sure you want to owerwrite it ?");
-						tosave =  (ret == JOptionPane.YES_OPTION);
-					}	
-				}
-				if (tosave) {
-					try {
-						BufferedWriter br= new BufferedWriter(new FileWriter(file));
-						if (tabbedPane.getSelectedIndex() == 0) {
-							CnSEvent ev = new CnSEvent(CnSResultsPanel.GET_SELECTED_PARTITION, CnSEventManager.RESULTS_PANEL);
-							CnSPartition partition = (CnSPartition)CnSEventManager.handleMessage(ev);
-							br.write("#ClustnSee cluster list");
-							br.newLine();
-							br.write("#Algorithm: " + partition.getAlgorithmName());
-							br.newLine();
-							br.write("#Network: " + partition.getInputNetwork().getRow(partition.getInputNetwork()).get(CyNetwork.NAME, String.class));
-							br.newLine();
-							br.write("#Scope: " + partition.getScope());
-							br.newLine();
-							Iterator<Integer> k = partition.getAlgorithmParameters().iterator();
-							while (k.hasNext()) {
-								int key = k.next();
-								br.write("#Parameter: " + partition.getAlgorithmParameters().getParameter(key).getName() + "=" + partition.getAlgorithmParameters().getParameter(key).getValue());
-								br.newLine();
-							}
-							if (partitionPanel.getSelectedAnnotation() != null) {
-								br.write("#Annotation: " + partitionPanel.getSelectedAnnotation());
-								br.newLine();
-							}
-							partitionPanel.write(br);
-						}
-						else if (tabbedPane.getSelectedIndex() == 1) {
-							br.write("#ClustnSee annotation list");
-							br.newLine();
-							if (partitionPanel.getSelectedAnnotation() != null) {
-								br.write("#Annotation: " + partitionPanel.getSelectedAnnotation());
-								br.newLine();
-							}
-							br.write("#Cluster: " + clusterList.getSelectedItem());
-							br.newLine();
-							annotationPanel.write(br);
-						}
-						
-						br.close();
-					}
-					catch (IOException e1) {
-						e1.printStackTrace();
-					}
-				}
-			}
-		});
-		clusterList.addItemListener(new ItemListener() {
-			@Override
-			public void itemStateChanged(ItemEvent event) {
-				if (event.getStateChange() == ItemEvent.SELECTED) {
-					CnSEvent ev = new CnSEvent(CnSResultsPanel.SELECT_CLUSTER, CnSEventManager.RESULTS_PANEL);
-					ev.addParameter(CnSResultsPanel.CLUSTER_NAME, clusterList.getSelectedIndex());
-					CnSEventManager.handleMessage(ev);
-				}
-			}
-		});
+		
 	}
 	
 	/* (non-Javadoc)
 	 * @see org.cytoscape.clustnsee3.internal.event.CnSEventListener#cnsEventOccured(org.cytoscape.clustnsee3.internal.event.CnSEvent)
 	 */
 	@Override
-	public Object cnsEventOccured(CnSEvent event) {
+	public Object cnsEventOccured(CnSEvent event, boolean log) {
 		Object ret = null;
 		final CnSCluster cluster;
 		final CnSPartition partition;
 		
+		if (log) CnSLogger.LogCnSEvent(event, this);
+		
 		switch (event.getAction()) {
 			case INIT :
-				System.err.println("INIT");
-				//cluster = (CnSCluster)event.getParameter(CLUSTER);
 				partition = (CnSPartition)event.getParameter(PARTITION);
 				init(partition);
-				//if (cluster != null)
-				//	annotationPanel.init(cluster);
-				/*else */if (partition != null) {
-					partitionPanel.init(partition);
-					annotationPanel.init(partition);
+				if (partition != null) {
+					partitionTablePanel.init(partition);
+					clusterAnalysisPanel.init(partition);
+					annotationAnalysisPanel.init(partition);
+					multiclassedNodesPanel.init(partition);
 				}
-				else
-					annotationPanel.init();
+				else {
+					clusterAnalysisPanel.init();
+				}
 				break;
 			
 			case CLEAR :
-				partitionPanel.clear();
-				annotationPanel.clear();
+				partitionTablePanel.clear();
+				annotationAnalysisPanel.clear();
+				clusterAnalysisPanel.clear();
 				break;
 				
 			case SELECT_CLUSTER :
 				cluster = (CnSCluster)event.getParameter(CLUSTER);
-				partitionPanel.selectCluster(cluster);
-				if (cluster != null)
-					clusterList.setSelectedIndex(cluster.getID());
-				else
-					clusterList.setSelectedIndex(0);
+				partitionTablePanel.selectCluster(cluster);
+				if (cluster != null) {
+					annotationAnalysisPanel.selectCluster(cluster);
+					clusterAnalysisPanel.selectCluster(cluster.getID());
+				}
+				else {
+					annotationAnalysisPanel.selectCluster(null);
+					clusterAnalysisPanel.selectCluster(0);
+				}
 				break;
 				
 			case SEARCH :
-				System.err.println("SEARCH");
 				CnSNodeAnnotation annotation = (CnSNodeAnnotation)event.getParameter(ANNOTATION);
-				cluster = partitionPanel.getSelectedCluster();
-				partitionPanel.setSelectedAnnotation(annotation);
-				annotationPanel.refresh();
-				partitionPanel.selectCluster(cluster);
-				//CnSEvent ev = new CnSEvent(CnSPartitionPanel.SET_SEARCH_ANNOTATION, CnSEventManager.PARTITION_PANEL);
-				//ev.addParameter(CnSPartitionPanel.ANNOTATION, annotation);
-				//CnSEventManager.handleMessage(ev);
-				annotationPanel.selectAnnotation(annotation);
+				cluster = partitionTablePanel.getSelectedCluster();
+				partitionTablePanel.setSelectedAnnotation(annotation);
+				annotationAnalysisPanel.setSelectedAnnotation(annotation);
+				clusterAnalysisPanel.refresh();
+				partitionTablePanel.selectCluster(cluster);
+				annotationAnalysisPanel.selectCluster(cluster);
+				clusterAnalysisPanel.selectAnnotation(annotation);
 				break;
 				
 			case SEARCH_ANNOTATION :
-				System.err.println("SEARCH_ANNOTATION");
 				annotation = (CnSNodeAnnotation)event.getParameter(ANNOTATION);
-				CnSEvent ev = new CnSEvent(CnSPartitionPanel.SET_SEARCH_ANNOTATION, CnSEventManager.PARTITION_PANEL);
+				CnSEvent ev = new CnSEvent(CnSPartitionPanel.SET_SEARCH_ANNOTATION, CnSEventManager.PARTITION_PANEL, this.getClass());
 				ev.addParameter(CnSPartitionPanel.ANNOTATION, annotation);
-				CnSEventManager.handleMessage(ev);
-				annotationPanel.selectAnnotation(annotation);
+				CnSEventManager.handleMessage(ev, true);
+				clusterAnalysisPanel.selectAnnotation(annotation);
 				break;
 				
 			case INIT_ANNOTATION_PANEL :
 				cluster = (CnSCluster)event.getParameter(CLUSTER);
 				partition = (CnSPartition)event.getParameter(PARTITION);
 				if (cluster != null)
-					annotationPanel.init(cluster);
+					clusterAnalysisPanel.init(cluster);
 				else if (partition != null)
-					annotationPanel.init(partition);
+					clusterAnalysisPanel.refresh(partition);
 				else
-					annotationPanel.clear();
+					clusterAnalysisPanel.clear();
 				break;
 				
 			case REFRESH :
-				partitionPanel.refresh();
-				annotationPanel.refresh();
+				partition = (CnSPartition)event.getParameter(PARTITION);
+				partitionTablePanel.refresh();
+				if (partition != null) 
+					clusterAnalysisPanel.refresh(partition);
+				else
+					clusterAnalysisPanel.refresh();
 				break;
 				
 			case SET_SEARCH_ANNOTATION :
-				System.err.println("SET_SEARCH_ANNOTATION");
 				annotation = (CnSNodeAnnotation)event.getParameter(ANNOTATION);
-				cluster = partitionPanel.getSelectedCluster();
-				System.err.println("CnSPartitionTablePanel.setAnnotation : " + annotation.getValue());
-				annotationSearchComponent.setAnnotation(annotation);
-				//partitionPanel.setAnnotation(annotation);
-				partitionPanel.selectCluster(cluster);
+				cluster = partitionTablePanel.getSelectedCluster();
+				partitionTablePanel.selectCluster(cluster);
+				annotationAnalysisPanel.getSearchComponent().setAnnotation(annotation);
 				break;
 				
 			case GET_SELECTED_ANNOTATION :
-				ret = annotationPanel.getSelectedAnnotation();
+				ret = annotationAnalysisPanel.getSelectedAnnotation();
 				break;
 				
-			case GET_SEARCHED_ANNOTATION :
-				//ret = partitionPanel.getSearchedAnnotation();
-				ret = annotationSearchComponent.getText();
+			case EXPORT_CLUSTER_LIST_DATA :
+				File file = (File)event.getParameter(OUTPUT_FILE);
+				try {
+					BufferedWriter br= new BufferedWriter(new FileWriter(file));
+					ev = new CnSEvent(CnSResultsPanel.GET_SELECTED_PARTITION, CnSEventManager.RESULTS_PANEL, this.getClass());
+					partition = (CnSPartition)CnSEventManager.handleMessage(ev, true);
+					br.write("#ClustnSee cluster list");
+					br.newLine();
+					br.write("#Algorithm: ");
+					if (partition != null) br.write(partition.getAlgorithmName());
+					br.newLine();
+					br.write("#Network: ");
+					if (partition != null) br.write(partition.getInputNetwork().getRow(partition.getInputNetwork()).get(CyNetwork.NAME, String.class));
+					br.newLine();
+					br.write("#Scope: ");
+					if (partition != null) br.write(partition.getScope());
+					br.newLine();
+					if (partition != null) {
+						Iterator<Integer> k = partition.getAlgorithmParameters().iterator();
+						while (k.hasNext()) {
+							int key = k.next();
+							br.write("#Parameter: " + partition.getAlgorithmParameters().getParameter(key).getName() + "=" + partition.getAlgorithmParameters().getParameter(key).getValue());
+							br.newLine();
+						}
+					}
+					br.write("#Statistics: " + partitionTablePanel.getSelectedStatName());
+					br.newLine();
+					br.write("#Threshold: " + partitionTablePanel.getCurrentThreshold() + "%");
+					br.newLine();
+					partitionTablePanel.write(br);
+					br.close();
+				}
+				catch (IOException e1) {
+					e1.printStackTrace();
+				}
 				break;
 				
-			case GET_SELECTED_CLUSTER :
-				ret = clusterList.getSelectedIndex();
+			case EXPORT_CLUSTER_ANALYSIS_DATA :
+				file = (File)event.getParameter(OUTPUT_FILE);
+				try {
+					BufferedWriter br= new BufferedWriter(new FileWriter(file));
+					ev = new CnSEvent(CnSResultsPanel.GET_SELECTED_PARTITION, CnSEventManager.RESULTS_PANEL, this.getClass());
+					partition = (CnSPartition)CnSEventManager.handleMessage(ev, true);
+					ev = new CnSEvent(CnSPartitionPanel.GET_HIDE_SMALL_CLUSTERS, CnSEventManager.PARTITION_PANEL, this.getClass());
+					boolean hsc = (Boolean)CnSEventManager.handleMessage(ev, true);
+					br.write("#ClustnSee cluster analysis");
+					br.newLine();
+					br.write("#Algorithm: ");
+					if (partition != null) br.write(partition.getAlgorithmName());
+					br.newLine();
+					br.write("#Network: ");
+					if (partition != null) br.write(partition.getInputNetwork().getRow(partition.getInputNetwork()).get(CyNetwork.NAME, String.class));
+					br.newLine();
+					br.write("#Scope: ");
+					if (partition != null) br.write(partition.getScope());
+					br.newLine();
+					if (partition != null) {// TODO Auto-generated method stub
+						
+						Iterator<Integer> k = partition.getAlgorithmParameters().iterator();
+						while (k.hasNext()) {
+							int key = k.next();
+							br.write("#Parameter: " + partition.getAlgorithmParameters().getParameter(key).getName() + "=" + partition.getAlgorithmParameters().getParameter(key).getValue());
+							br.newLine();
+						}
+					}
+					br.write("#Hide small clusters: " + hsc);
+					br.newLine();
+					if (clusterAnalysisPanel.getSelectedCluster() != null)
+						br.write("#Cluster: " + clusterAnalysisPanel.getSelectedCluster().getID());
+					else
+						br.write("#Cluster: all");
+					br.newLine();
+					clusterAnalysisPanel.write(br);
+					br.close();
+				}
+				catch (IOException e1) {
+					e1.printStackTrace();
+				}
 				break;
 				
-			case SET_SELECTED_CLUSTER :
-				int i = (int)event.getParameter(CLUSTER);
-				clusterList.setSelectedIndex(i);
+			case EXPORT_ANNOTATION_TERM_ANALYSIS_DATA :
+				file = (File)event.getParameter(OUTPUT_FILE);
+				try {
+					BufferedWriter br= new BufferedWriter(new FileWriter(file));
+					ev = new CnSEvent(CnSResultsPanel.GET_SELECTED_PARTITION, CnSEventManager.RESULTS_PANEL, this.getClass());
+					ev = new CnSEvent(CnSPartitionPanel.GET_HIDE_SMALL_CLUSTERS, CnSEventManager.PARTITION_PANEL, this.getClass());
+					boolean hsc = (Boolean)CnSEventManager.handleMessage(ev, true);
+					partition = (CnSPartition)CnSEventManager.handleMessage(ev, true);
+					br.write("#ClustnSee cluster analysis");
+					br.newLine();
+					br.write("#Algorithm: ");
+					if (partition != null) br.write(partition.getAlgorithmName());
+					br.newLine();
+					br.write("#Network: ");
+					if (partition != null) br.write(partition.getInputNetwork().getRow(partition.getInputNetwork()).get(CyNetwork.NAME, String.class));
+					br.newLine();
+					br.write("#Scope: ");
+					if (partition != null) br.write(partition.getScope());
+					br.newLine();
+					if (partition != null) {
+						Iterator<Integer> k = partition.getAlgorithmParameters().iterator();
+						while (k.hasNext()) {
+							int key = k.next();
+							br.write("#Parameter: " + partition.getAlgorithmParameters().getParameter(key).getName() + "=" + partition.getAlgorithmParameters().getParameter(key).getValue());
+							br.newLine();
+						}
+					}
+					br.write("#Hide small clusters: " + hsc);
+					br.newLine();
+					if (clusterAnalysisPanel.getSelectedAnnotation() != null)
+						br.write("#Annotation: " + clusterAnalysisPanel.getSelectedAnnotation());
+					else
+						br.write("#Annotation: none");
+					br.newLine();
+					annotationAnalysisPanel.write(br);
+					br.close();
+				}
+				catch (IOException e1) {
+					e1.printStackTrace();
+				}
+				break;
+				
+			case GET_SELECTED_STAT :
+				ret = partitionTablePanel.getSelectedStat();
+				break;
+				
+			case GET_CURRENT_BH_THRESHOLD :
+				ret = partitionTablePanel.getCurrentThreshold();
+				break;
+				
+			case GET_CURRENT_MAJORITY_THRESHOLD :
+				ret = partitionTablePanel.getCurrentThreshold();
+				break;
+				
+			case GET_HIDE_SMALL_CLUSTERS :
+				ret = partitionTablePanel.hideSmallClusters();
+				break;
+				
+			case FIRE_TABLE_DATA_CHANGED :
+				partitionTablePanel.fireTableDatachanged();
+				annotationAnalysisPanel.fireTableDataChanged();
+				
+				/*cluster = partitionTablePanel.getSelectedCluster();
+				clusterAnalysisPanel.refresh();
+				partitionTablePanel.selectCluster(cluster);
+				annotationAnalysisPanel.selectCluster(cluster);*/
 				break;
 		}
 		return ret;

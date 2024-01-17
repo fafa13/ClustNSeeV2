@@ -28,6 +28,7 @@ import org.cytoscape.model.CyNetwork;
  * 
  */
 public class CnSNetworksTreeModel extends CnSPanelTreeModel {
+	private static final long serialVersionUID = 3498551477771510355L;
 	public CnSNetworksTreeModel(CnSPanelTreeNode treeNode) {
 		super(treeNode);
 	}

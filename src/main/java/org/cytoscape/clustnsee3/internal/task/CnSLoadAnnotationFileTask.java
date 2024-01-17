@@ -31,20 +31,25 @@ import org.cytoscape.work.TaskMonitor;
  */
 public class CnSLoadAnnotationFileTask extends AbstractTask {
 	private File selectedFile;
-	private int fromLine;
+	private int fromLine, annotationsColumn, targetColumn;
 	private CnSPartition partition;
 	private CnSAFTreeRootNode treeRootNode;
+	private char columnSeparator, annotationSeparator;
 	
 	/**
 	 * @param treeRootNode 
 	 * @param
 	 * @return
 	 */
-	public CnSLoadAnnotationFileTask(File selectedFile, int fromLine, CnSPartition partition, CnSAFTreeRootNode treeRootNode) {
+	public CnSLoadAnnotationFileTask(File selectedFile, int fromLine, int annotationsColumn, int targetColumn, char columnSeparator, char annotationSeparator, CnSPartition partition, CnSAFTreeRootNode treeRootNode) {
 		this.selectedFile = selectedFile;
 		this.fromLine = fromLine;
 		this.partition = partition;
 		this.treeRootNode = treeRootNode;
+		this.annotationsColumn = annotationsColumn;
+		this.targetColumn = targetColumn;
+		this.columnSeparator = columnSeparator;
+		this.annotationSeparator = annotationSeparator;
 	}
 
 	/* (non-Javadoc)
@@ -55,21 +60,25 @@ public class CnSLoadAnnotationFileTask extends AbstractTask {
 		taskMonitor.setTitle("Loading annotation file " + selectedFile.getName() + " ...");
 		taskMonitor.setProgress(0.0);
 		
-		CnSEvent ev = new CnSEvent(CnSNodeAnnotationManager.LOAD_ANNOTATIONS, CnSEventManager.ANNOTATION_MANAGER);
+		CnSEvent ev = new CnSEvent(CnSNodeAnnotationManager.LOAD_ANNOTATIONS, CnSEventManager.ANNOTATION_MANAGER, this.getClass());
 		ev.addParameter(CnSNodeAnnotationManager.FILE, selectedFile);
 		ev.addParameter(CnSNodeAnnotationManager.FROM_LINE, fromLine);
 		ev.addParameter(CnSNodeAnnotationManager.TASK, taskMonitor);
-		CnSNodeAnnotationFile annotationFile = (CnSNodeAnnotationFile)CnSEventManager.handleMessage(ev);
+		ev.addParameter(CnSNodeAnnotationManager.ANNOTATIONS_COLUMN, annotationsColumn);
+		ev.addParameter(CnSNodeAnnotationManager.TARGET_COLUMN, targetColumn);
+		ev.addParameter(CnSNodeAnnotationManager.COLUMN_SEPARATOR, columnSeparator);
+		ev.addParameter(CnSNodeAnnotationManager.ANNOTATION_SEPARATOR, annotationSeparator);
+		CnSNodeAnnotationFile annotationFile = (CnSNodeAnnotationFile)CnSEventManager.handleMessage(ev, true);
 		
-		ev = new CnSEvent(CnSPartitionPanel.INIT, CnSEventManager.PARTITION_PANEL);
+		ev = new CnSEvent(CnSPartitionPanel.INIT, CnSEventManager.PARTITION_PANEL, this.getClass());
 		if (partition != null) ev.addParameter(CnSPartitionPanel.PARTITION, partition);
-		CnSEventManager.handleMessage(ev);
+		CnSEventManager.handleMessage(ev, true);
 		treeRootNode.getTreeModel().addAnnotationFile(treeRootNode, annotationFile, annotationFile.getAllAnnotations().size(), annotationFile.getAllTargets().size());
 		
-		ev = new CnSEvent(CnSControlPanel.REFRESH, CnSEventManager.CONTROL_PANEL);
-		CnSEventManager.handleMessage(ev);
+		ev = new CnSEvent(CnSControlPanel.REFRESH, CnSEventManager.CONTROL_PANEL, this.getClass());
+		CnSEventManager.handleMessage(ev, true);
 		
-		ev = new CnSEvent(CnSPartitionPanel.REFRESH, CnSEventManager.PARTITION_PANEL);
-		CnSEventManager.handleMessage(ev);
+		ev = new CnSEvent(CnSPartitionPanel.REFRESH, CnSEventManager.PARTITION_PANEL, this.getClass());
+		CnSEventManager.handleMessage(ev, true);
 	}
 }

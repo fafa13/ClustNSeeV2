@@ -16,7 +16,6 @@ package org.cytoscape.clustnsee3.internal.gui.menu.main;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Hashtable;
-import java.util.Properties;
 
 import javax.swing.JMenuItem;
 

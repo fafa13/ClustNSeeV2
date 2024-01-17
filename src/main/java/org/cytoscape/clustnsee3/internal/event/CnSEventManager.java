@@ -15,6 +15,7 @@ package org.cytoscape.clustnsee3.internal.event;
 
 import org.cytoscape.clustnsee3.internal.CyActivator;
 import org.cytoscape.clustnsee3.internal.gui.partitionpanel.CnSPartitionPanel;
+import org.cytoscape.clustnsee3.internal.gui.util.CnSSynchronizeClusterSelection;
 import org.cytoscape.clustnsee3.internal.network.CnSNetworkManager;
 import org.cytoscape.clustnsee3.internal.partition.CnSPartitionManager;
 import org.cytoscape.clustnsee3.internal.view.style.CnSStyleManager;
@@ -39,6 +40,7 @@ public class CnSEventManager {
 	public static final int PARTITION_PANEL = 13;
 	public static final int CONTROL_PANEL = 14;
 	public static final int ANNOTATION_MANAGER = 15;
+	public static final int SYNCHRONIZE_CLUSTER_SELECTION = 16;
 	
 	private static CnSEventListener plugin;
 	private static CnSEventListener analysisManager;
@@ -55,7 +57,7 @@ public class CnSEventManager {
 	private static CnSEventListener partitionPanel;
 	private static CnSEventListener controlPanel;
 	private static CnSEventListener nodeAnnotationManager;
-	
+	private static CnSSynchronizeClusterSelection synchronizeClusterSelection;
 	private static CnSEventManager instance;
 
 	private CnSEventManager() {
@@ -67,7 +69,7 @@ public class CnSEventManager {
 			CnSEventListener _dataPanel, CnSEventListener _resultsPanel, CnSEventListener _algorithmManager, 
 			CnSEventListener _algorithmEngine, CnSEventListener _viewManager, CnSNetworkManager _networkManager, 
 			CnSPartitionManager _partitionManager, CnSStyleManager _styleManager, CnSPartitionPanel _partitionPanel, 
-			CnSEventListener _nodeAnnotationManager, CyActivator ca) {
+			CnSEventListener _nodeAnnotationManager, CnSSynchronizeClusterSelection _synchronizeClusterSelection, CyActivator ca) {
 		if (instance == null) {
 			instance = new CnSEventManager();
 			plugin = _plugin;
@@ -83,6 +85,7 @@ public class CnSEventManager {
 			styleManager = _styleManager;
 			partitionPanel = _partitionPanel;
 			nodeAnnotationManager = _nodeAnnotationManager;
+			synchronizeClusterSelection = _synchronizeClusterSelection;
 			cyActivator = ca;
 		}
 		return instance;
@@ -90,71 +93,76 @@ public class CnSEventManager {
 	public static void addControlPanel(CnSEventListener _controlPanel) {
 		controlPanel = _controlPanel;
 	}
-	public static Object handleMessage(CnSEvent event) {
+	public static Object handleMessage(CnSEvent event, boolean log) {
 	//public static CnSEventResult<? extends Object> handleMessage(CnSEvent event) {
 	    int target = event.getTarget();
 	    //CnSEventResult<? extends Object> ret = null;
 	    Object ret = null;
+	    
 	    switch (target) {
 	      	case CLUSTNSEE_PLUGIN:
-	      		if (plugin != null) ret = plugin.cnsEventOccured(event);
+	      		if (plugin != null) ret = plugin.cnsEventOccured(event, log);
 	      		break;
 	      		
 	      	case ANALYSIS_MANAGER:
-	      		if (analysisManager != null) ret = analysisManager.cnsEventOccured(event);
+	      		if (analysisManager != null) ret = analysisManager.cnsEventOccured(event, log);
 	      		break;
 	      		
 	      	case CLUSTNSEE_MENU_MANAGER:
-	      		if (clustnseeMenuManager != null) ret = clustnseeMenuManager.cnsEventOccured(event);
+	      		if (clustnseeMenuManager != null) ret = clustnseeMenuManager.cnsEventOccured(event, log);
 	      		break;
 	      		
 	      	case INFO_PANEL:
-	      		if (dataPanel != null) ret = dataPanel.cnsEventOccured(event);
+	      		if (dataPanel != null) ret = dataPanel.cnsEventOccured(event, log);
 	      		break;
 	      		
 	      	case ALGORITHM_MANAGER:
-	      		if (algorithmManager != null) ret = algorithmManager.cnsEventOccured(event);
+	      		if (algorithmManager != null) ret = algorithmManager.cnsEventOccured(event, log);
 	      		break;
 	      		
 	      	case ALGORITHM_ENGINE:
-	      		if (algorithmEngine != null) ret = algorithmEngine.cnsEventOccured(event);
+	      		if (algorithmEngine != null) ret = algorithmEngine.cnsEventOccured(event, log);
 	      		break;
 	      		
 	      	case RESULTS_PANEL:
-	      		if (resultsPanel != null) ret = resultsPanel.cnsEventOccured(event);
+	      		if (resultsPanel != null) ret = resultsPanel.cnsEventOccured(event, log);
 	      		break;
 	      		
 	      	case VIEW_MANAGER:
-	    	  	if (viewManager != null) ret = viewManager.cnsEventOccured(event);
+	    	  	if (viewManager != null) ret = viewManager.cnsEventOccured(event, log);
 	    	  	break;
 	    	  	
-	      	case NETWORK_MANAGER :
-	      		if (networkManager != null) ret = networkManager.cnsEventOccured(event);
+	      	case NETWORK_MANAGER:
+	      		if (networkManager != null) ret = networkManager.cnsEventOccured(event, log);
 	    	  	break;
 	    	  
-	      	case PARTITION_MANAGER :
-	      		if (partitionManager != null) ret = partitionManager.cnsEventOccured(event);
+	      	case PARTITION_MANAGER:
+	      		if (partitionManager != null) ret = partitionManager.cnsEventOccured(event, log);
 	      		break;
 	      		
-	      	case STYLE_MANAGER :
-	      		if (styleManager != null) ret = styleManager.cnsEventOccured(event);
+	      	case STYLE_MANAGER:
+	      		if (styleManager != null) ret = styleManager.cnsEventOccured(event, log);
 	      		break;
 	      		
-	      	case PARTITION_PANEL :
-	      		if (partitionPanel != null) ret = partitionPanel.cnsEventOccured(event);
+	      	case PARTITION_PANEL:
+	      		if (partitionPanel != null) ret = partitionPanel.cnsEventOccured(event, log);
 	      		break;
 	      		
-	      	case ANNOTATION_MANAGER :
-	      		if (nodeAnnotationManager != null) ret = nodeAnnotationManager.cnsEventOccured(event);
+	      	case ANNOTATION_MANAGER:
+	      		if (nodeAnnotationManager != null) ret = nodeAnnotationManager.cnsEventOccured(event, log);
 	      		break;
 	      		
 	      	case CY_ACTIVATOR:
-	    	  if (cyActivator != null) ret = cyActivator.cnsEventOccured(event);
-	    	  break;
+	      		if (cyActivator != null) ret = cyActivator.cnsEventOccured(event, log);
+	      		break;
 	    	
 	      	case CONTROL_PANEL:
-	      	  if (controlPanel != null) ret = controlPanel.cnsEventOccured(event);
-	      	  break;
+	      		if (controlPanel != null) ret = controlPanel.cnsEventOccured(event, log);
+	      		break;
+	      	  
+	      	case SYNCHRONIZE_CLUSTER_SELECTION:
+	      		if (synchronizeClusterSelection != null) ret = synchronizeClusterSelection.cnsEventOccured(event, log);
+	      		break;
 	    }
 	    return ret;
 	}

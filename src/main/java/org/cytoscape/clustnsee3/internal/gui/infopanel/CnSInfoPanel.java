@@ -27,6 +27,7 @@ import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventListener;
 import org.cytoscape.clustnsee3.internal.gui.util.CnSPanel;
 import org.cytoscape.clustnsee3.internal.partition.CnSPartition;
+import org.cytoscape.clustnsee3.internal.utils.CnSLogger;
 import org.cytoscape.clustnsee3.internal.view.CnSView;
 import org.cytoscape.model.CyEdge;
 
@@ -35,10 +36,10 @@ import org.cytoscape.model.CyEdge;
  */
 public class CnSInfoPanel extends CnSPanel implements CytoPanelComponent, CnSEventListener {
 	private static final long serialVersionUID = -271614706912742588L;
-	private static CnSInfoPanel instance;
-	public static final String CLUSTER_DETAILS = "Cluster details";
-	public static final String EDGE_DETAILS = "Edge details";
-	public static final String NODE_DETAILS = "Node details";
+	
+	public static final int INIT = 1;
+	public static final int SELECT_PANEL = 2;
+	public static final int CLEAR = 3;
 	
 	public static final int CLUSTER = 1001;
 	public static final int PANEL = 1002;
@@ -49,19 +50,20 @@ public class CnSInfoPanel extends CnSPanel implements CytoPanelComponent, CnSEve
 	public static final int NODE = 1007;
 	public static final int PARTITION = 1008;
 	
-	public static final int INIT = 1;
-	public static final int SELECT_PANEL = 2;
-	public static final int CLEAR = 3;
+	private static CnSInfoPanel instance;
+	public static final String CLUSTER_DETAILS = "Cluster details";
+	public static final String EDGE_DETAILS = "Edge details";
+	public static final String NODE_DETAILS = "Node details";
 	
-	private CardLayout cardLayout;
 	private CnSClusterDetailsPanel clusterDetailsPanel;
 	private CnSEdgeDetailsPanel edgeDetailsPanel;
 	private CnSNodeDetailsPanel nodeDetailsPanel;
+	private String title;
 	
 	private CnSInfoPanel(String title) {
-		super(title);
-		cardLayout = new CardLayout();
-		setLayout(cardLayout);
+		super();
+		this.title = title;
+		this.setLayout(new CardLayout());
 		clusterDetailsPanel = new CnSClusterDetailsPanel();
 		add(clusterDetailsPanel, CLUSTER_DETAILS);
 		edgeDetailsPanel = new CnSEdgeDetailsPanel();
@@ -69,6 +71,30 @@ public class CnSInfoPanel extends CnSPanel implements CytoPanelComponent, CnSEve
 		nodeDetailsPanel = new CnSNodeDetailsPanel();
 		add(nodeDetailsPanel, NODE_DETAILS);
 	}
+	
+	public String getActionName(int k) {
+		switch(k) {
+			case INIT : return "INIT";
+			case SELECT_PANEL : return "SELECT_PANEL";
+			case CLEAR : return "CLEAR";
+			default : return "UNDEFINED_ACTION"; 
+		}
+	}
+	
+	public String getParameterName(int k) {
+		switch(k) {
+			case CLUSTER : return "CLUSTER";
+			case PANEL : return "PANEL";
+			case EDGE : return "EDGE";
+			case CLUSTER_LINK : return "CLUSTER_LINK";
+			case NETWORK : return "NETWORK";
+			case VIEW : return "VIEW";
+			case NODE : return "NODE";
+			case PARTITION : return "PARTITION";
+			default : return "UNDEFINED_PARAMETER"; 
+		}
+	}
+			 
 	public static CnSInfoPanel getInstance() {
 		if (instance == null)
 			instance = new CnSInfoPanel("C&S Details");
@@ -76,7 +102,10 @@ public class CnSInfoPanel extends CnSPanel implements CytoPanelComponent, CnSEve
 	}
 	
 	@Override
-	public Object cnsEventOccured(CnSEvent event) {
+	public Object cnsEventOccured(CnSEvent event, boolean log) {
+		
+		if (log) CnSLogger.LogCnSEvent(event, this);
+		
 		switch (event.getAction()) {
 			case INIT :
 				if (((String)event.getParameter(PANEL)).equals(CLUSTER_DETAILS)) {
@@ -99,7 +128,8 @@ public class CnSInfoPanel extends CnSPanel implements CytoPanelComponent, CnSEve
 				break;
 			
 			case SELECT_PANEL :
-				cardLayout.show(this, (String)event.getParameter(PANEL));
+				((CardLayout)getLayout()).show(this, (String)event.getParameter(PANEL));
+				doLayout();
 				break;
 				
 			case CLEAR :
@@ -138,5 +168,12 @@ public class CnSInfoPanel extends CnSPanel implements CytoPanelComponent, CnSEve
 		// TODO Auto-generated method stub
 		return null;
 	}
-
+	/* (non-Javadoc)
+	 * @see org.cytoscape.application.swing.CytoPanelComponent#getTitle()
+	 */
+	@Override
+	public String getTitle() {
+		// TODO Auto-generated method stub
+		return title;
+	}
 }

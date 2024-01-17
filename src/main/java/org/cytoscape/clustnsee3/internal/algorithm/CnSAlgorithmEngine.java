@@ -15,6 +15,7 @@ package org.cytoscape.clustnsee3.internal.algorithm;
 
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventListener;
+import org.cytoscape.clustnsee3.internal.utils.CnSLogger;
 import org.cytoscape.model.CyNetwork;
 
 /**
@@ -43,6 +44,28 @@ public class CnSAlgorithmEngine implements CnSEventListener {
 		cancelled = false;
 	}
 	
+	public String getActionName(int k) {
+		switch(k) {
+			case START : return "START";
+			case SET_SCOPE : return "SET_SCOPE";
+			case GET_SCOPE : return "GET_SCOPE";
+			case IS_CANCELLED : return "IS_CANCELLED";
+			case SET_CANCELLED : return "SET_CANCELLED";
+			default : return "UNDEFINED_ACTION";
+		}
+	}
+
+	public String getParameterName(int k) {
+		switch(k) {
+			case ALGORITHM : return "ALGORITHM";
+			case PARAMETERS : return "PARAMETERS";
+			case SCOPE : return "SCOPE";
+			case CANCELLED : return "CANCELLED";
+			case NETWORK : return "NETWORK";
+			default : return "UNDEFINED_PARAMETER";
+		}
+	}
+
 	public static CnSAlgorithmEngine getInstance() {
 		if (instance == null)
 			instance = new CnSAlgorithmEngine();
@@ -58,8 +81,11 @@ public class CnSAlgorithmEngine implements CnSEventListener {
 	 * @see org.cytoscape.clustnsee3.internal.event.CnSEventListener#cnsEventOccured(org.cytoscape.clustnsee3.internal.event.CnSEvent)
 	 */
 	@Override
-	public Object cnsEventOccured(CnSEvent event) {
+	public Object cnsEventOccured(CnSEvent event, boolean log) {
 		Object ret = null;
+		
+		if (log) CnSLogger.LogCnSEvent(event, this);
+		
 		switch(event.getAction()) {
 			case START :
 				ret = start((CnSAlgorithm)event.getParameter(ALGORITHM), (CyNetwork)event.getParameter(NETWORK));

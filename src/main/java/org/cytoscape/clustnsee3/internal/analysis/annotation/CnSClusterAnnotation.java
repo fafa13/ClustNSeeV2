@@ -27,4 +27,9 @@ public class CnSClusterAnnotation {
 	public String getAnnotation() {
 		return annotation;
 	}
+	
+	public boolean equals(Object o) {
+		CnSClusterAnnotation cca = (CnSClusterAnnotation)o;
+		return cca.getAnnotation().equals(annotation);
+	}
 }

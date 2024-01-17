@@ -16,8 +16,6 @@ package org.cytoscape.clustnsee3.internal.nodeannotation.trie;
 import java.util.Vector;
 
 import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeAnnotation;
-//import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeAnnotationFile;
-import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeAnnotationFile;
 
 /**
  * 

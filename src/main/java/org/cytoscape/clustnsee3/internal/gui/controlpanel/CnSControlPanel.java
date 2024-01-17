@@ -6,6 +6,7 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Hashtable;
+import java.util.Vector;
 
 import javax.swing.Icon;
 import javax.swing.JOptionPane;
@@ -36,8 +37,12 @@ import org.cytoscape.clustnsee3.internal.gui.util.paneltree.CnSPanelTreeCellRend
 import org.cytoscape.clustnsee3.internal.gui.util.paneltree.CnSPanelTreeNode;
 import org.cytoscape.clustnsee3.internal.gui.controlpanel.annotationfiletree.CnSAFTreeModel;
 import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeAnnotationFile;
+import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeAnnotationManager;
 import org.cytoscape.clustnsee3.internal.task.CnSAnalyzeTask;
+import org.cytoscape.clustnsee3.internal.utils.CnSLogger;
 import org.cytoscape.model.CyNetwork;
+import org.cytoscape.session.events.SessionLoadedEvent;
+import org.cytoscape.session.events.SessionLoadedListener;
 import org.cytoscape.work.TaskIterator;
 import org.cytoscape.work.swing.DialogTaskManager;
 
@@ -58,13 +63,14 @@ class RefreshTree extends SwingWorker<String, Object> {
 		
 	}
 }
-public class CnSControlPanel extends CnSPanel implements CytoPanelComponent, CnSEventListener  {
+public class CnSControlPanel extends CnSPanel implements CytoPanelComponent, CnSEventListener, SessionLoadedListener {
 	private static final long serialVersionUID = -5798886682673421450L;
 	
 	public static final int ADD_MAPPED_NETWORK = 1;
 	public static final int REMOVE_MAPPED_NETWORK = 2;
 	public static final int REFRESH = 3;
 	public static final int REMOVE_ANNOTATION_FILE = 4;
+	public static final int DEANNOTATE_ALL_NETWORKS = 5;
 
 	public static final int ANNOTATION_FILE = 1001;
 	public static final int NETWORK = 1002;
@@ -95,6 +101,31 @@ public class CnSControlPanel extends CnSPanel implements CytoPanelComponent, CnS
 		initListeners();
 	}
 	
+	public String getActionName(int k) {
+		switch(k) {
+			case ADD_MAPPED_NETWORK : return "ADD_MAPPED_NETWORK";
+			case REMOVE_MAPPED_NETWORK : return "REMOVE_MAPPED_NETWORK";
+			case REFRESH : return "REFRESH";
+			case REMOVE_ANNOTATION_FILE : return "REMOVE_ANNOTATION_FILE";
+			case DEANNOTATE_ALL_NETWORKS : return "DEANNOTATE_ALL_NETWORKS";
+			default : return "UNDEFINED_ACTION";
+		}
+	}
+
+	public String getParameterName(int k) {
+		switch(k) {
+			case ANNOTATION_FILE : return "ANNOTATION_FILE";
+			case NETWORK : return "NETWORK";
+			case TREE_FILE_NODE : return "TREE_FILE_NODE";
+			case MAPPED_NODES : return "MAPPED_NODES";
+			case MAPPED_ANNOTATIONS : return "MAPPED_ANNOTATIONS";
+			case NETWORK_NODES : return "NETWORK_NODES";
+			case FILE_ANNOTATIONS : return "FILE_ANNOTATIONS";
+			case FILE_NODE : return "FILE_NODE";
+			default : return "UNDEFINED_PARAMETER";
+		}
+	}
+
 	public void initGraphics() {
 		mainPanel = new CnSPanel(); 
 		analyzePanel = new CnSPanel("Analyze", TitledBorder.CENTER, TitledBorder.ABOVE_TOP);
@@ -136,14 +167,14 @@ public class CnSControlPanel extends CnSPanel implements CytoPanelComponent, CnS
 		analyzeButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				CnSEvent ev = new CnSEvent(CyActivator.GET_APPLICATION_MANAGER, CnSEventManager.CY_ACTIVATOR);
-				CyApplicationManager cam = (CyApplicationManager)CnSEventManager.handleMessage(ev);
+				CnSEvent ev = new CnSEvent(CyActivator.GET_APPLICATION_MANAGER, CnSEventManager.CY_ACTIVATOR, this.getClass());
+				CyApplicationManager cam = (CyApplicationManager)CnSEventManager.handleMessage(ev, true);
 				CyNetwork network = cam.getCurrentNetwork();
 				if (network == null)
 					JOptionPane.showMessageDialog(null, "You must select a network first !");
 				else {
-					ev = new CnSEvent(CyActivator.GET_TASK_MANAGER, CnSEventManager.CY_ACTIVATOR);
-					DialogTaskManager dialogTaskManager = (DialogTaskManager)CnSEventManager.handleMessage(ev);
+					ev = new CnSEvent(CyActivator.GET_TASK_MANAGER, CnSEventManager.CY_ACTIVATOR, this.getClass());
+					DialogTaskManager dialogTaskManager = (DialogTaskManager)CnSEventManager.handleMessage(ev, true);
 					TaskIterator ti = new TaskIterator();
 					CnSAnalyzeTask task = new CnSAnalyzeTask(network);
 					ti.append(task);
@@ -158,11 +189,14 @@ public class CnSControlPanel extends CnSPanel implements CytoPanelComponent, CnS
 	 * @see org.cytoscape.clustnsee3.internal.event.CnSEventListener#cnsEventOccured(org.cytoscape.clustnsee3.internal.event.CnSEvent)
 	 */
 	@Override
-	public Object cnsEventOccured(CnSEvent event) {
+	public Object cnsEventOccured(CnSEvent event, boolean log) {
+		if (log) CnSLogger.LogCnSEvent(event, this);
+		
 		CyNetwork network = (CyNetwork)event.getParameter(NETWORK);
 		CnSNodeAnnotationFile af = (CnSNodeAnnotationFile)event.getParameter(ANNOTATION_FILE);
 		CnSPanelTreeNode fileNode = (CnSPanelTreeNode)event.getParameter(TREE_FILE_NODE);
 		CnSNetworksTreeModel networksTreeModel;
+		
 		switch(event.getAction()) {
 			case ADD_MAPPED_NETWORK:
 				CnSAFTreeFileNode tfn = (CnSAFTreeFileNode)event.getParameter(TREE_FILE_NODE);
@@ -197,6 +231,10 @@ public class CnSControlPanel extends CnSPanel implements CytoPanelComponent, CnS
 			case REMOVE_ANNOTATION_FILE :
 				if (rootNode != null) rootNode.removeChild(fileNode);
 				break;
+				
+			case DEANNOTATE_ALL_NETWORKS :
+				deannotateAllNetworks();
+				break;
 		}
 		return null;
 	}
@@ -204,6 +242,25 @@ public class CnSControlPanel extends CnSPanel implements CytoPanelComponent, CnS
 	@Override
 	public Component getComponent() {
 		return this;
+	}
+	
+	public void deannotateAllNetworks() {
+		Vector<CnSNodeAnnotationFile> afs = treeModel.getAnnotationFiles();
+		
+		for (CnSNodeAnnotationFile af : afs) {
+			CnSEvent ev;
+			Vector<CnSAFTreeNetworkNetnameNode> vtnnn = treeModel.getAnnotatedNetworks(af);
+			for (CnSAFTreeNetworkNetnameNode tnnn : vtnnn) {
+				ev = new CnSEvent(CnSNodeAnnotationManager.DEANNOTATE_NETWORK, CnSEventManager.ANNOTATION_MANAGER, this.getClass());
+				ev.addParameter(CnSNodeAnnotationManager.ANNOTATION_FILE, af);
+				ev.addParameter(CnSNodeAnnotationManager.NETWORK, tnnn.getData(CnSAFTreeNetworkNetnameNode.NETWORK));
+				CnSEventManager.handleMessage(ev, true);
+						
+				ev = new CnSEvent(CnSControlPanel.REMOVE_MAPPED_NETWORK, CnSEventManager.CONTROL_PANEL, this.getClass());
+				ev.addParameter(CnSControlPanel.TREE_FILE_NODE, tnnn);
+				CnSEventManager.handleMessage(ev, true);
+			}
+		}
 	}
 
 	@Override
@@ -223,5 +280,13 @@ public class CnSControlPanel extends CnSPanel implements CytoPanelComponent, CnS
 	 */
 	public void setAnalysisEnabled(Boolean enable) {
 		analyzeButton.setEnabled(enable);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.cytoscape.session.events.SessionLoadedListener#handleEvent(org.cytoscape.session.events.SessionLoadedEvent)
+	 */
+	@Override
+	public void handleEvent(SessionLoadedEvent e) {
+		deannotateAllNetworks();
 	}
 }

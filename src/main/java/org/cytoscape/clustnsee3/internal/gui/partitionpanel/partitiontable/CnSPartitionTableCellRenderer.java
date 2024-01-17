@@ -16,8 +16,6 @@ package org.cytoscape.clustnsee3.internal.gui.partitionpanel.partitiontable;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -25,49 +23,34 @@ import javax.swing.JTable;
 import javax.swing.border.Border;
 import javax.swing.table.DefaultTableCellRenderer;
 
-import org.cytoscape.clustnsee3.internal.event.CnSEvent;
-import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
-import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeAnnotationManager;
-
 /**
  * 
  */
 public class CnSPartitionTableCellRenderer extends DefaultTableCellRenderer {
 	private static final long serialVersionUID = 9173113458642486427L;
 	private Font font = new Font("serif", Font.PLAIN, 12);
-	private Border paddingBorder = BorderFactory.createEmptyBorder(0, 10, 0, 10);
-
+	private static Border paddingBorder = BorderFactory.createEmptyBorder(0, 10, 0, 10);
+	private static JLabel label;
+	
+	static {
+		label = new JLabel();
+		label.setOpaque(true);
+		label.setBorder(paddingBorder);
+	}
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-		JLabel label = new JLabel();
-		try {
+		if (column == 4)
+			//label.setText(String.valueOf(((Vector)value).size()));
+			label.setText(String.valueOf(value));
+		else
 			label.setText(value.toString());
-		    label.setFont(font);
-		    label.setOpaque(true);
-		    label.setBorder(paddingBorder);
-		    double alpha;
-		    CnSEvent ev = new CnSEvent(CnSNodeAnnotationManager.GET_ALPHA, CnSEventManager.ANNOTATION_MANAGER);
-		    alpha = (Double)CnSEventManager.handleMessage(ev);
-	    
-		    if (isSelected) {
-		    	label.setFont(label.getFont().deriveFont(Font.BOLD));
-		    	label.setBackground(Color.yellow.darker());
-		    }
-		    else
-		    	label.setBackground(Color.white);
-		    if (column == 5) {
-		    	if (value instanceof CnSEnrichmentStatValue) {
-		    		CnSEnrichmentStatValue v = (CnSEnrichmentStatValue)value;
-		    		NumberFormat format = new DecimalFormat("##.00%");
-		    		label.setText(v.toString());
-		    		if (!isSelected && v.getBhValue() <= alpha) {
-		    			label.setBackground(Color.lightGray);
-		    		}
-		    	}
-		    }
+		if (isSelected) {
+			label.setFont(font.deriveFont(Font.BOLD));
+			label.setBackground(Color.yellow);
 		}
-		catch (Exception e) {
-			e.printStackTrace();
+		else {
+			label.setFont(font);
+			label.setBackground(Color.white);
 		}
-	    return label;
+		return label;
 	}
 }

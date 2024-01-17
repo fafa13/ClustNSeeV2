@@ -150,18 +150,18 @@ public class CnSBuildNeighborhoodNetworkDialog extends JDialog implements Action
 		if (event.getSource() == closeButton)
 			dispose();
 		else if (event.getSource() == addNodeButton || event.getSource() == nodeNameTextField) {
-			CnSEvent ev = new CnSEvent(CyActivator.GET_APPLICATION_MANAGER, CnSEventManager.CY_ACTIVATOR);
-			CyApplicationManager cam = (CyApplicationManager)CnSEventManager.handleMessage(ev);
+			CnSEvent ev = new CnSEvent(CyActivator.GET_APPLICATION_MANAGER, CnSEventManager.CY_ACTIVATOR, this.getClass());
+			CyApplicationManager cam = (CyApplicationManager)CnSEventManager.handleMessage(ev, true);
 			network = cam.getCurrentNetwork();
 			if (network == null)
 				JOptionPane.showMessageDialog(null, "You must select a network first !");
 			else {
 				if (!nodeNameTextField.getText().equals("")) {
-					ev = new CnSEvent(CnSNetworkManager.GET_NODES_WITH_VALUE, CnSEventManager.NETWORK_MANAGER);
+					ev = new CnSEvent(CnSNetworkManager.GET_NODES_WITH_VALUE, CnSEventManager.NETWORK_MANAGER, this.getClass());
 					ev.addParameter(CnSNetworkManager.NETWORK, network);
 					ev.addParameter(CnSNetworkManager.COLNAME, "name");
 					ev.addParameter(CnSNetworkManager.VALUE, nodeNameTextField.getText());
-					Set<CyNode> n = (Set<CyNode>)CnSEventManager.handleMessage(ev);
+					Set<CyNode> n = (Set<CyNode>)CnSEventManager.handleMessage(ev, true);
 					if (!n.isEmpty()) {
 						Vector<CnSNodeToName> v  = new Vector<CnSNodeToName>();
 						v.addElement(new CnSNodeToName(n.iterator().next(), nodeNameTextField.getText()));
@@ -236,21 +236,21 @@ public class CnSBuildNeighborhoodNetworkDialog extends JDialog implements Action
 							edges_to_keep.addElement(edge);
 					
 					// get useful cytoscape managers
-					CnSEvent ev = new CnSEvent(CyActivator.GET_ROOT_NETWORK_MANAGER, CnSEventManager.CY_ACTIVATOR);
-					CyRootNetworkManager crnm = (CyRootNetworkManager)CnSEventManager.handleMessage(ev);
+					CnSEvent ev = new CnSEvent(CyActivator.GET_ROOT_NETWORK_MANAGER, CnSEventManager.CY_ACTIVATOR, this.getClass());
+					CyRootNetworkManager crnm = (CyRootNetworkManager)CnSEventManager.handleMessage(ev, true);
 					CyRootNetwork crn = crnm.getRootNetwork(network);
-					ev = new CnSEvent(CyActivator.GET_NETWORK_MANAGER, CnSEventManager.CY_ACTIVATOR);
-					CyNetworkManager networkManager = (CyNetworkManager)CnSEventManager.handleMessage(ev);
-					ev = new CnSEvent(CyActivator.GET_NETWORK_VIEW_FACTORY, CnSEventManager.CY_ACTIVATOR);
-					CyNetworkViewFactory cnvf = (CyNetworkViewFactory)CnSEventManager.handleMessage(ev);
-					ev = new CnSEvent(CyActivator.GET_NETWORK_VIEW_MANAGER, CnSEventManager.CY_ACTIVATOR);
-					CyNetworkViewManager networkViewManager = (CyNetworkViewManager)CnSEventManager.handleMessage(ev);
-					ev = new CnSEvent(CyActivator.GET_LAYOUT_ALGORITHM_MANAGER, CnSEventManager.CY_ACTIVATOR);
-					CyLayoutAlgorithmManager clam = (CyLayoutAlgorithmManager)CnSEventManager.handleMessage(ev);
-					ev = new CnSEvent(CyActivator.GET_SYNCHRONOUS_TASK_MANAGER, CnSEventManager.CY_ACTIVATOR);
-					TaskManager<?, ?> tm = (TaskManager<?, ?>)CnSEventManager.handleMessage(ev);
-					ev = new CnSEvent(CyActivator.GET_CY_EVENT_HELPER, CnSEventManager.CY_ACTIVATOR);
-					CyEventHelper eh = (CyEventHelper)CnSEventManager.handleMessage(ev);
+					ev = new CnSEvent(CyActivator.GET_NETWORK_MANAGER, CnSEventManager.CY_ACTIVATOR, this.getClass());
+					CyNetworkManager networkManager = (CyNetworkManager)CnSEventManager.handleMessage(ev, true);
+					ev = new CnSEvent(CyActivator.GET_NETWORK_VIEW_FACTORY, CnSEventManager.CY_ACTIVATOR, this.getClass());
+					CyNetworkViewFactory cnvf = (CyNetworkViewFactory)CnSEventManager.handleMessage(ev, true);
+					ev = new CnSEvent(CyActivator.GET_NETWORK_VIEW_MANAGER, CnSEventManager.CY_ACTIVATOR, this.getClass());
+					CyNetworkViewManager networkViewManager = (CyNetworkViewManager)CnSEventManager.handleMessage(ev, true);
+					ev = new CnSEvent(CyActivator.GET_LAYOUT_ALGORITHM_MANAGER, CnSEventManager.CY_ACTIVATOR, this.getClass());
+					CyLayoutAlgorithmManager clam = (CyLayoutAlgorithmManager)CnSEventManager.handleMessage(ev, true);
+					ev = new CnSEvent(CyActivator.GET_SYNCHRONOUS_TASK_MANAGER, CnSEventManager.CY_ACTIVATOR, this.getClass());
+					TaskManager<?, ?> tm = (TaskManager<?, ?>)CnSEventManager.handleMessage(ev, true);
+					ev = new CnSEvent(CyActivator.GET_CY_EVENT_HELPER, CnSEventManager.CY_ACTIVATOR, this.getClass());
+					CyEventHelper eh = (CyEventHelper)CnSEventManager.handleMessage(ev, true);
 				
 					// Create a new network
 					neighborhoodNetwork = crn.addSubNetwork();

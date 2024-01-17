@@ -23,6 +23,7 @@ import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventListener;
 import org.cytoscape.clustnsee3.internal.gui.controlpanel.CnSControlAlgorithmPanel;
 import org.cytoscape.clustnsee3.internal.gui.util.CnSPanel;
+import org.cytoscape.clustnsee3.internal.utils.CnSLogger;
 
 /**
  * 
@@ -44,7 +45,6 @@ public class CnSAlgorithmManager implements CnSEventListener  {
 	public static final int PARAMETER_VALUE = 1004;
 	public static final int PARAMETER_KEY = 1005;
 
-	
 	/**
 	 * The list of available algorithms
 	 */
@@ -68,6 +68,32 @@ public class CnSAlgorithmManager implements CnSEventListener  {
 		CnSAlgorithmEngine.getInstance();
 	}
 
+	public String getActionName(int k) {
+		switch(k) {
+			case INIT : return "INIT";
+			case GET_PANEL : return "GET_PANEL";
+			case GET_ALGORITHM : return "GET_ALGORITHM";
+			case GET_ALGORITHM_LIST : return "GET_ALGORITHM_LIST";
+			case GET_ALGORITHM_PARAMETERS : return "GET_ALGORITHM_PARAMETERS";
+			case SET_ALGORITHM_PARAMETER : return "SET_ALGORITHM_PARAMETER";
+			case GET_SELECTED_ALGORITHM : return "GET_SELECTED_ALGORITHM";
+			case SET_SELECTED_ALGORITHM : return "SET_SELECTED_ALGORITHM";
+			default : return "UNDEFINED_ACTION";
+		}
+	}
+
+	public String getParameterName(int k) {
+		switch(k) {
+			case ALGO_NAME : return "ALGO_NAME";
+			case ALGO_PARAMETERS : return "ALGO_PARAMETERS";
+			case SELECTION : return "SELECTION";
+			case PARAMETER_NAME : return "PARAMETER_NAME";
+			case PARAMETER_VALUE : return "PARAMETER_VALUE";
+			case PARAMETER_KEY : return "PARAMETER_KEY";
+			default : return "UNDEFINED_PARAMETER";
+		}
+	}
+
 	public static CnSAlgorithmManager getInstance() {
 		if (instance == null)
 			instance = new CnSAlgorithmManager();
@@ -86,10 +112,12 @@ public class CnSAlgorithmManager implements CnSEventListener  {
 	}
 
 	@Override
-	public Object cnsEventOccured(CnSEvent event) {
+	public Object cnsEventOccured(CnSEvent event, boolean log) {
 		int action = event.getAction();
 	    Object ret = null;
 	    
+	    if (log) CnSLogger.LogCnSEvent(event, this);
+		
 	    switch (action) {
 	    	case INIT:
 	    		try {

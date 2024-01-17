@@ -22,14 +22,19 @@ import org.cytoscape.clustnsee3.internal.nodeannotation.trie.CnSTrieNode;
 
 public class CnSNodeAnnotationFile {
 	private File file;
-	private int fromLine;
+	private int fromLine, annotationsColumn, targetColumn;
+	private char columnSeparator, annotationSeparator;
 	private HashMap<String, Vector<CnSTrieNode>> rawAnnotations;
 	private HashMap<CnSTrieNode, Vector<String>> rawTargets;
 	
-	public CnSNodeAnnotationFile(File file, int fromLine) {
+	public CnSNodeAnnotationFile(File file, int fromLine, int annotationsColumn, int targetColumn, char columnSeparator, char annotationSeparator) {
 		super();
 		this.file = file;
 		this.fromLine = fromLine;
+		this.annotationsColumn = annotationsColumn;
+		this.targetColumn = targetColumn;
+		this.columnSeparator = columnSeparator;
+		this.annotationSeparator = annotationSeparator;
 		rawAnnotations = new HashMap<String, Vector<CnSTrieNode>>();
 		rawTargets = new HashMap<CnSTrieNode, Vector<String>>();
 	}
@@ -70,5 +75,41 @@ public class CnSNodeAnnotationFile {
 			rawAnnotations.put(target, v2);
 		}
 		else if (!v2.contains(annotation)) v2.addElement(annotation);
+	}
+
+	/**
+	 * 
+	 * @param
+	 * @return
+	 */
+	public int getAnnotationsColumn() {
+		return annotationsColumn;
+	}
+
+	/**
+	 * 
+	 * @param
+	 * @return
+	 */
+	public int getTargetColumn() {
+		return targetColumn;
+	}
+
+	/**
+	 * 
+	 * @param
+	 * @return
+	 */
+	public char getColumnSeparator() {
+		return columnSeparator;
+	}
+
+	/**
+	 * 
+	 * @param
+	 * @return
+	 */
+	public char getAnnotationSeparator() {
+		return annotationSeparator;
 	}
 }

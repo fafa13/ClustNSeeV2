@@ -49,24 +49,24 @@ public class CnSExpandClusterNodeAction {
 		boolean expanded = false;
 		
 		// get the current view (on which the expanded action occurred) 
-		CnSEvent ev = new CnSEvent(CnSViewManager.GET_SELECTED_VIEW, CnSEventManager.VIEW_MANAGER);
-		CnSView view = (CnSView)CnSEventManager.handleMessage(ev);
+		CnSEvent ev = new CnSEvent(CnSViewManager.GET_SELECTED_VIEW, CnSEventManager.VIEW_MANAGER, this.getClass());
+		CnSView view = (CnSView)CnSEventManager.handleMessage(ev, true);
 		
 		// get the current view's network
-		ev = new CnSEvent(CnSViewManager.GET_NETWORK, CnSEventManager.VIEW_MANAGER);
+		ev = new CnSEvent(CnSViewManager.GET_NETWORK, CnSEventManager.VIEW_MANAGER, this.getClass());
 		ev.addParameter(CnSViewManager.VIEW, view);
-		CnSNetwork network = (CnSNetwork)CnSEventManager.handleMessage(ev);
+		CnSNetwork network = (CnSNetwork)CnSEventManager.handleMessage(ev, true);
 		
 		// get the current network related partition, if any
-		ev = new CnSEvent(CnSPartitionManager.GET_PARTITION, CnSEventManager.PARTITION_MANAGER);
+		ev = new CnSEvent(CnSPartitionManager.GET_PARTITION, CnSEventManager.PARTITION_MANAGER, this.getClass());
 		ev.addParameter(CnSPartitionManager.NETWORK, network);
-		CnSPartition partition = (CnSPartition)CnSEventManager.handleMessage(ev);
+		CnSPartition partition = (CnSPartition)CnSEventManager.handleMessage(ev, true);
 		
 		// if the current network is not a partition network, get the current view's related partition
 		if (partition == null) {
-			ev = new CnSEvent(CnSViewManager.GET_VIEW_PARTITION, CnSEventManager.VIEW_MANAGER);
+			ev = new CnSEvent(CnSViewManager.GET_VIEW_PARTITION, CnSEventManager.VIEW_MANAGER, this.getClass());
 			ev.addParameter(CnSViewManager.VIEW, view);
-			partition = (CnSPartition)CnSEventManager.handleMessage(ev);
+			partition = (CnSPartition)CnSEventManager.handleMessage(ev, true);
 		}
 		
 		// get the cluster node to be expanded
@@ -83,9 +83,9 @@ public class CnSExpandClusterNodeAction {
 		
 		if (cluster != null) {
 			// get the cluster view
-			ev = new CnSEvent(CnSViewManager.GET_VIEW, CnSEventManager.VIEW_MANAGER);
+			ev = new CnSEvent(CnSViewManager.GET_VIEW, CnSEventManager.VIEW_MANAGER, this.getClass());
 			ev.addParameter(CnSViewManager.REFERENCE, cluster);
-			CnSView clusterView = (CnSView)CnSEventManager.handleMessage(ev);
+			CnSView clusterView = (CnSView)CnSEventManager.handleMessage(ev, true);
 			
 			// some variables used to compute the position and the size of the cluster network in the view
 			double x0, y0, x, y, x_min = 1000000, y_min = 1000000, x_max = 0, y_max = 0;
@@ -113,8 +113,8 @@ public class CnSExpandClusterNodeAction {
 			view.setModifCluster(true);
 			
 			// get the cytoscape event handler
-			ev = new CnSEvent(CyActivator.GET_CY_EVENT_HELPER, CnSEventManager.CY_ACTIVATOR);
-			CyEventHelper eh = (CyEventHelper)CnSEventManager.handleMessage(ev);
+			ev = new CnSEvent(CyActivator.GET_CY_EVENT_HELPER, CnSEventManager.CY_ACTIVATOR, this.getClass());
+			CyEventHelper eh = (CyEventHelper)CnSEventManager.handleMessage(ev, true);
 			
 			// fire all cytoscape events
 			eh.flushPayloadEvents();
@@ -154,11 +154,11 @@ public class CnSExpandClusterNodeAction {
 			network.getNetwork().getRow(cluster.getCyNode()).set("selected", false);
 			
 			// register the initial cluster location in the view manager in order to restore it later if the cluster is recompressed 
-			ev = new CnSEvent(CnSViewManager.SET_CLUSTER_LOCATION, CnSEventManager.VIEW_MANAGER);
+			ev = new CnSEvent(CnSViewManager.SET_CLUSTER_LOCATION, CnSEventManager.VIEW_MANAGER, this.getClass());
 			ev.addParameter(CnSViewManager.VIEW, view);
 			ev.addParameter(CnSViewManager.CLUSTER, cluster);
 			ev.addParameter(CnSViewManager.CLUSTER_LOCATION, new Point2D.Double(x0, y0));
-			CnSEventManager.handleMessage(ev);
+			CnSEventManager.handleMessage(ev, true);
 			
 			// remove the cluster node from the current network
 			Vector<CyNode> toRemove = new Vector<CyNode>();
@@ -181,10 +181,10 @@ public class CnSExpandClusterNodeAction {
 				
 				if (linkedCluster != null && view.getClusters().contains(linkedCluster)) {
 					// get the expanded state of the linked cluster 
-					ev = new CnSEvent(CnSViewManager.IS_EXPANDED, CnSEventManager.VIEW_MANAGER);
+					ev = new CnSEvent(CnSViewManager.IS_EXPANDED, CnSEventManager.VIEW_MANAGER, this.getClass());
 					ev.addParameter(CnSViewManager.VIEW, view);
 					ev.addParameter(CnSViewManager.CLUSTER, linkedCluster);
-					expanded = (Boolean)CnSEventManager.handleMessage(ev);
+					expanded = (Boolean)CnSEventManager.handleMessage(ev, true);
 					
 					// a hashmap to store the widths of the edges between the expanded nodes and the current network
 					HashMap<CyEdge, Double> edgeWidth = new HashMap<CyEdge, Double>();
@@ -285,19 +285,19 @@ public class CnSExpandClusterNodeAction {
 			eh.flushPayloadEvents();
 			
 			// apply the CnS style to the current view
-			ev = new CnSEvent(CnSStyleManager.SET_CURRENT_STYLE, CnSEventManager.STYLE_MANAGER);
+			ev = new CnSEvent(CnSStyleManager.SET_CURRENT_STYLE, CnSEventManager.STYLE_MANAGER, this.getClass());
 	        ev.addParameter(CnSStyleManager.STYLE, CnSStyleManager.CNS_STYLE);
-	        CnSEventManager.handleMessage(ev);
-			ev = new CnSEvent(CnSStyleManager.APPLY_CURRENT_STYLE, CnSEventManager.STYLE_MANAGER);
-			CnSEventManager.handleMessage(ev);
+	        CnSEventManager.handleMessage(ev, true);
+			ev = new CnSEvent(CnSStyleManager.APPLY_CURRENT_STYLE, CnSEventManager.STYLE_MANAGER, this.getClass());
+			CnSEventManager.handleMessage(ev, true);
 			view.getView().updateView();
 			
 			// register in the view manager that the cluster is now expanded
-			ev = new CnSEvent(CnSViewManager.SET_EXPANDED, CnSEventManager.VIEW_MANAGER);
+			ev = new CnSEvent(CnSViewManager.SET_EXPANDED, CnSEventManager.VIEW_MANAGER, this.getClass());
 			ev.addParameter(CnSViewManager.CLUSTER, cluster);
 			ev.addParameter(CnSViewManager.VIEW, view);
 			ev.addParameter(CnSViewManager.EXPANDED, true);
-			CnSEventManager.handleMessage(ev);
+			CnSEventManager.handleMessage(ev, true);
 			
 			eh.flushPayloadEvents();
 			

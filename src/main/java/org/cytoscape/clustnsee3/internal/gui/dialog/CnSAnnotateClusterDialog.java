@@ -202,15 +202,15 @@ public class CnSAnnotateClusterDialog extends JDialog implements ActionListener 
 	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		CnSEvent ev = new CnSEvent(CnSPartitionPanel.REFRESH, CnSEventManager.PARTITION_PANEL);
-		CnSEventManager.handleMessage(ev);
-		ev = new CnSEvent(CnSPartitionPanel.SELECT_CLUSTER, CnSEventManager.PARTITION_PANEL);
+		CnSEvent ev = new CnSEvent(CnSPartitionPanel.REFRESH, CnSEventManager.PARTITION_PANEL, this.getClass());
+		CnSEventManager.handleMessage(ev, true);
+		ev = new CnSEvent(CnSPartitionPanel.SELECT_CLUSTER, CnSEventManager.PARTITION_PANEL, this.getClass());
 		ev.addParameter(CnSPartitionPanel.CLUSTER, cluster);
-		CnSEventManager.handleMessage(ev);
-		ev = new CnSEvent(CnSInfoPanel.INIT, CnSEventManager.INFO_PANEL);
+		CnSEventManager.handleMessage(ev, true);
+		ev = new CnSEvent(CnSInfoPanel.INIT, CnSEventManager.INFO_PANEL, this.getClass());
 		ev.addParameter(CnSInfoPanel.CLUSTER, cluster);
 		ev.addParameter(CnSInfoPanel.PANEL, CnSInfoPanel.CLUSTER_DETAILS);
-		CnSEventManager.handleMessage(ev);
+		CnSEventManager.handleMessage(ev, true);
 		dispose();
 	}
 }

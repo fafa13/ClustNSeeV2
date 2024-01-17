@@ -32,6 +32,8 @@ import org.cytoscape.clustnsee3.internal.event.CnSEventListener;
 import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
 import org.cytoscape.clustnsee3.internal.network.CnSNetwork;
 import org.cytoscape.clustnsee3.internal.network.CnSNetworkManager;
+import org.cytoscape.clustnsee3.internal.task.CnSDiscardAllPartitionsTask;
+import org.cytoscape.clustnsee3.internal.utils.CnSLogger;
 import org.cytoscape.clustnsee3.internal.view.CnSView;
 import org.cytoscape.clustnsee3.internal.view.CnSViewManager;
 import org.cytoscape.clustnsee3.internal.view.state.CnSClusterViewState;
@@ -43,6 +45,8 @@ import org.cytoscape.model.CyNode;
 import org.cytoscape.model.subnetwork.CyRootNetwork;
 import org.cytoscape.model.subnetwork.CyRootNetworkManager;
 import org.cytoscape.model.subnetwork.CySubNetwork;
+import org.cytoscape.session.events.SessionLoadedEvent;
+import org.cytoscape.session.events.SessionLoadedListener;
 import org.cytoscape.task.visualize.ApplyPreferredLayoutTaskFactory;
 import org.cytoscape.view.model.CyNetworkView;
 import org.cytoscape.view.model.CyNetworkViewFactory;
@@ -50,11 +54,12 @@ import org.cytoscape.view.model.CyNetworkViewManager;
 import org.cytoscape.work.TaskIterator;
 import org.cytoscape.work.TaskManager;
 import org.cytoscape.work.TaskMonitor;
+import org.cytoscape.work.swing.DialogTaskManager;
 
 /**
  * 
  */
-public class CnSPartitionManager implements CnSEventListener {
+public class CnSPartitionManager implements CnSEventListener, SessionLoadedListener {
 	public static final int ADD_PARTITON = 1;
 	public static final int GET_PARTITION = 2;
 	public static final int SET_PARTITION_NETWORK = 3;
@@ -90,6 +95,7 @@ public class CnSPartitionManager implements CnSEventListener {
 	public static final int ANNOTATION_IMPORT = 1012;
 	public static final int NODE_NAME = 1013;
 	public static final int TASK_MONITOR = 1014;
+	public static final int CLUSTER_ID = 1015;
 	
 	private static CnSPartitionManager instance;
 	private Vector<CnSPartition> partitions;
@@ -110,13 +116,60 @@ public class CnSPartitionManager implements CnSEventListener {
 		partition2networkMap = new HashMap<CnSPartition, CnSNetwork>();
 		network2partitionMap = new HashMap<CnSNetwork, CnSPartition>();
 	}
+	
+	public String getActionName(int k) {
+		switch(k) {
+			case ADD_PARTITON : return "ADD_PARTITON";
+			case GET_PARTITION : return "GET_PARTITION";
+			case SET_PARTITION_NETWORK : return "SET_PARTITION_NETWORK";
+			case GET_CLUSTER_NODE : return "GET_CLUSTER_NODE";
+			case GET_NODE : return "GET_NODE";
+			case SET_PARTITION_VIEW : return "SET_PARTITION_VIEW";
+			case GET_VIEW : return "GET_VIEW";
+			case REMOVE_PARTITION : return "REMOVE_PARTITION";
+			case GET_CLUSTERS : return "GET_CLUSTERS";
+			case CREATE_PARTITION : return "CREATE_PARTITION";
+			case GET_PARTITION_NETWORK : return "GET_PARTITION_NETWORK";
+			case GET_CLUSTER_LINK : return "GET_CLUSTER_LINK";
+			case GET_NB_MULTICLASS_NODES : return "GET_NB_MULTICLASS_NODES";
+			case GET_CLUSTER : return "GET_CLUSTER";
+			case IMPORT_PARTITION : return "IMPORT_PARTITION";
+			case GET_NODE_CLUSTERS : return "GET_NODE_CLUSTERS";
+			case GET_PARTITIONS : return "GET_PARTITIONS";
+			case GET_CLUSTER_NODES : return "GET_CLUSTER_NODES";
+			case GET_ALL_CLUSTERS : return "GET_ALL_CLUSTERS";
+			default : return "UNDEFINED_ACTION";
+		}
+	}
+
+	public String getParameterName(int k) {	
+		switch(k) {
+			case PARTITION : return "PARTITION";
+			case INDEX : return "INDEX";
+			case NETWORK : return "NETWORK";
+			case NODE_SUID : return "NODE_SUID";
+			case VIEW : return "VIEW";
+			case CLUSTER : return "CLUSTER";
+			case CY_NODE : return "CY_NODE";
+			case ALGORITHM_RESULTS : return "ALGORITHM_RESULTS";
+			case ALGORITHM : return "ALGORITHM";
+			case CY_EDGE : return "CY_EDGE";
+			case SCOPE : return "SCOPE";
+			case PARTITION_IMPORT : return "PARTITION_IMPORT";
+			case ANNOTATION_IMPORT : return "ANNOTATION_IMPORT";
+			case NODE_NAME : return "NODE_NAME";
+			case TASK_MONITOR : return "TASK_MONITOR";
+			case CLUSTER_ID : return "CLUSTER_ID";
+			default : return "UNDEFINED_PARAMETER";
+		}
+	}
 
 	/* (non-Javadoc)
 	 * @see org.cytoscape.clustnsee3.internal.event.CnSEventListener#cnsEventOccured(org.cytoscape.clustnsee3.internal.event.CnSEvent)
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public Object cnsEventOccured(CnSEvent event) {
+	public Object cnsEventOccured(CnSEvent event, boolean log) {
 		Object ret = null;
 		CnSPartition p;
 		CnSNetwork n;
@@ -136,6 +189,9 @@ public class CnSPartitionManager implements CnSEventListener {
 		TaskMonitor taskMonitor;
 		Vector<CyNode> nodes;
 		Vector<CnSCluster> clusters;
+		Integer clusterID;
+		
+		if (log) CnSLogger.LogCnSEvent(event, this);
 		
 		switch (event.getAction()) {
 			case ADD_PARTITON :
@@ -310,10 +366,23 @@ public class CnSPartitionManager implements CnSEventListener {
 				
 			case GET_CLUSTER :
 				cyNode = (CyNode)event.getParameter(CY_NODE);
-				for (CnSPartition part : partitions) {
-					CnSCluster cc = part.getCluster(cyNode);
-					if (cc != null) {
-						ret = cc;
+				clusterID = (Integer)event.getParameter(CLUSTER_ID);
+				c = null;
+				p = (CnSPartition)event.getParameter(PARTITION);
+				if (p != null) {
+					if (cyNode != null)
+						c = p.getCluster(cyNode);
+					else if (clusterID != null)
+						c = p.getCluster(clusterID);
+					if (c != null) ret = c;
+				}
+				else for (CnSPartition part : partitions) {
+					if (cyNode != null)
+						c = part.getCluster(cyNode);
+					else if (clusterID != null)
+						c = part.getCluster(clusterID);
+					if (c != null) {
+						ret = c;
 						break;
 					}
 				}
@@ -366,19 +435,19 @@ public class CnSPartitionManager implements CnSEventListener {
 	
 	private CnSPartition importPartition(CyNetwork inputNetwork, Vector<Vector<Long>> imported_partition, Vector<Vector<String>> imported_annotation, CnSAlgorithm algorithm, String scope, TaskMonitor taskMonitor) {
 		// get services needed for network and view creation in cytoscape
-		CnSEvent ev = new CnSEvent(CyActivator.GET_ROOT_NETWORK_MANAGER, CnSEventManager.CY_ACTIVATOR);
-		CyRootNetworkManager crnm = (CyRootNetworkManager)CnSEventManager.handleMessage(ev);
+		CnSEvent ev = new CnSEvent(CyActivator.GET_ROOT_NETWORK_MANAGER, CnSEventManager.CY_ACTIVATOR, this.getClass());
+		CyRootNetworkManager crnm = (CyRootNetworkManager)CnSEventManager.handleMessage(ev, true);
 		CyRootNetwork crn = crnm.getRootNetwork(inputNetwork);
-		ev = new CnSEvent(CyActivator.GET_NETWORK_MANAGER, CnSEventManager.CY_ACTIVATOR);
-		CyNetworkManager networkManager = (CyNetworkManager)CnSEventManager.handleMessage(ev);
-		ev = new CnSEvent(CyActivator.GET_NETWORK_VIEW_FACTORY, CnSEventManager.CY_ACTIVATOR);
-		CyNetworkViewFactory cnvf = (CyNetworkViewFactory)CnSEventManager.handleMessage(ev);
-		ev = new CnSEvent(CyActivator.GET_APPLY_PREFERRED_LAYOUT_TASK_FACTORY, CnSEventManager.CY_ACTIVATOR);
-		ApplyPreferredLayoutTaskFactory apltf =  (ApplyPreferredLayoutTaskFactory)CnSEventManager.handleMessage(ev);
-		ev = new CnSEvent(CyActivator.GET_NETWORK_VIEW_MANAGER, CnSEventManager.CY_ACTIVATOR);
-		CyNetworkViewManager networkViewManager = (CyNetworkViewManager)CnSEventManager.handleMessage(ev);
-		ev = new CnSEvent(CyActivator.GET_SYNCHRONOUS_TASK_MANAGER, CnSEventManager.CY_ACTIVATOR);
-		TaskManager<?, ?> tm = (TaskManager<?, ?>)CnSEventManager.handleMessage(ev);
+		ev = new CnSEvent(CyActivator.GET_NETWORK_MANAGER, CnSEventManager.CY_ACTIVATOR, this.getClass());
+		CyNetworkManager networkManager = (CyNetworkManager)CnSEventManager.handleMessage(ev, true);
+		ev = new CnSEvent(CyActivator.GET_NETWORK_VIEW_FACTORY, CnSEventManager.CY_ACTIVATOR, this.getClass());
+		CyNetworkViewFactory cnvf = (CyNetworkViewFactory)CnSEventManager.handleMessage(ev, true);
+		ev = new CnSEvent(CyActivator.GET_APPLY_PREFERRED_LAYOUT_TASK_FACTORY, CnSEventManager.CY_ACTIVATOR, this.getClass());
+		ApplyPreferredLayoutTaskFactory apltf =  (ApplyPreferredLayoutTaskFactory)CnSEventManager.handleMessage(ev, true);
+		ev = new CnSEvent(CyActivator.GET_NETWORK_VIEW_MANAGER, CnSEventManager.CY_ACTIVATOR, this.getClass());
+		CyNetworkViewManager networkViewManager = (CyNetworkViewManager)CnSEventManager.handleMessage(ev, true);
+		ev = new CnSEvent(CyActivator.GET_SYNCHRONOUS_TASK_MANAGER, CnSEventManager.CY_ACTIVATOR, this.getClass());
+		TaskManager<?, ?> tm = (TaskManager<?, ?>)CnSEventManager.handleMessage(ev, true);
 		// network for each cluster
         CySubNetwork clusterNet = null;
         Vector<CyNode> cynodes_to_keep = new Vector<CyNode>();
@@ -386,9 +455,9 @@ public class CnSPartitionManager implements CnSEventListener {
         CnSPartition partition = new CnSPartition(algorithm.getName(), algorithm.getParameters(), inputNetwork, scope);
 		
         // use the snapshot style
-        ev = new CnSEvent(CnSStyleManager.SET_CURRENT_STYLE, CnSEventManager.STYLE_MANAGER);
+        ev = new CnSEvent(CnSStyleManager.SET_CURRENT_STYLE, CnSEventManager.STYLE_MANAGER, this.getClass());
         ev.addParameter(CnSStyleManager.STYLE, CnSStyleManager.SNAPSHOT_STYLE);
-        CnSEventManager.handleMessage(ev);
+        CnSEventManager.handleMessage(ev, true);
         
         for( int k = 0; k < imported_partition.size(); k++)
         	for (int index_in_class = 0; index_in_class < imported_partition.get(k).size(); index_in_class++)
@@ -509,9 +578,9 @@ public class CnSPartitionManager implements CnSEventListener {
 			
             // create the CnSView and apply the snapshot style
             CnSView view = new CnSView(myView, new CnSClusterViewState(cluster));
-            ev = new CnSEvent(CnSStyleManager.APPLY_CURRENT_STYLE, CnSEventManager.STYLE_MANAGER);
+            ev = new CnSEvent(CnSStyleManager.APPLY_CURRENT_STYLE, CnSEventManager.STYLE_MANAGER, this.getClass());
             ev.addParameter(CnSStyleManager.VIEW, view);
-            CnSEventManager.handleMessage(ev);
+            CnSEventManager.handleMessage(ev, true);
             //System.err.print("--- ");
              
             // make the snapshot
@@ -522,22 +591,22 @@ public class CnSPartitionManager implements CnSEventListener {
             
             // create the network and register it
             CnSNetwork network = new CnSNetwork(clusterNet, inputNetwork);
-            ev = new CnSEvent(CnSNetworkManager.ADD_NETWORK, CnSEventManager.NETWORK_MANAGER);
+            ev = new CnSEvent(CnSNetworkManager.ADD_NETWORK, CnSEventManager.NETWORK_MANAGER, this.getClass());
             ev.addParameter(CnSNetworkManager.NETWORK, network);
-            CnSEventManager.handleMessage(ev);
+            CnSEventManager.handleMessage(ev, true);
             
             // associates the network with the cluster
-            ev = new CnSEvent(CnSNetworkManager.SET_NETWORK_CLUSTER, CnSEventManager.NETWORK_MANAGER);
+            ev = new CnSEvent(CnSNetworkManager.SET_NETWORK_CLUSTER, CnSEventManager.NETWORK_MANAGER, this.getClass());
             ev.addParameter(CnSNetworkManager.NETWORK, network);
             ev.addParameter(CnSNetworkManager.CLUSTER, cluster);
-            CnSEventManager.handleMessage(ev);
+            CnSEventManager.handleMessage(ev, true);
             
             // register the cluster view
-            ev = new CnSEvent(CnSViewManager.ADD_VIEW, CnSEventManager.VIEW_MANAGER);
+            ev = new CnSEvent(CnSViewManager.ADD_VIEW, CnSEventManager.VIEW_MANAGER, this.getClass());
             ev.addParameter(CnSViewManager.VIEW, view);
             ev.addParameter(CnSViewManager.NETWORK, network);
             ev.addParameter(CnSViewManager.CLUSTER, cluster);
-            CnSEventManager.handleMessage(ev);
+            CnSEventManager.handleMessage(ev, true);
             
             // fill CnS attributes
             for (String key : network.getNodeColumns().keySet())
@@ -560,9 +629,9 @@ public class CnSPartitionManager implements CnSEventListener {
         }
         
         // go back to the CnS default style
-        ev = new CnSEvent(CnSStyleManager.SET_CURRENT_STYLE, CnSEventManager.STYLE_MANAGER);
+        ev = new CnSEvent(CnSStyleManager.SET_CURRENT_STYLE, CnSEventManager.STYLE_MANAGER, this.getClass());
         ev.addParameter(CnSStyleManager.STYLE, CnSStyleManager.CNS_STYLE);
-        CnSEventManager.handleMessage(ev);
+        CnSEventManager.handleMessage(ev, true);
         
         return partition;
 	}
@@ -573,40 +642,21 @@ public class CnSPartitionManager implements CnSEventListener {
 	 * @return
 	 */
 	private CnSPartition createPartition(CyNetwork inputNetwork, CnSAlgorithmResult algoResults, CnSAlgorithm algorithm, TaskMonitor taskMonitor) {
-		/*Vector<Vector<Long>> imported_partition = new Vector<Vector<Long>>();
-		int NbClas = algoResults.getNbClass();
-		int[] Kard = algoResults.getCard();
-        HashMap<Integer, Long> algo_to_cyto = algoResults.getAlgoToCyto();
-        int[][] Cl = algoResults.getClasses();
-        Vector<Vector<String>> ann = new Vector<Vector<String>>();
-        for( int k = 0; k < NbClas; k++) {
-			Vector<Long> vl = new Vector<Long>();
-			ann.addElement(new Vector<String>());
-			imported_partition.addElement(vl);
-			for (int index_in_class = 0; index_in_class < Kard[k]; index_in_class++) {
-				int mod_clust_index = Cl[k][ index_in_class];
-            	Long cyto_index = algo_to_cyto.get(mod_clust_index);
-            	vl.addElement(cyto_index);
-			}
-		}
-        
-        return importPartition(inputNetwork, imported_partition, ann, algorithm, algoResults.getScope());*/
-        
 		// get services needed for network and view creation in cytoscape
-		CnSEvent ev = new CnSEvent(CyActivator.GET_ROOT_NETWORK_MANAGER, CnSEventManager.CY_ACTIVATOR);
-        CyRootNetworkManager crnm = (CyRootNetworkManager)CnSEventManager.handleMessage(ev);
+		CnSEvent ev = new CnSEvent(CyActivator.GET_ROOT_NETWORK_MANAGER, CnSEventManager.CY_ACTIVATOR, this.getClass());
+        CyRootNetworkManager crnm = (CyRootNetworkManager)CnSEventManager.handleMessage(ev, true);
         CyRootNetwork crn = crnm.getRootNetwork(inputNetwork);
         System.err.println("CRN = " + crn);
-        ev = new CnSEvent(CyActivator.GET_NETWORK_MANAGER, CnSEventManager.CY_ACTIVATOR);
-        CyNetworkManager networkManager = (CyNetworkManager)CnSEventManager.handleMessage(ev);
-        ev = new CnSEvent(CyActivator.GET_NETWORK_VIEW_FACTORY, CnSEventManager.CY_ACTIVATOR);
-        CyNetworkViewFactory cnvf = (CyNetworkViewFactory)CnSEventManager.handleMessage(ev);
-        ev = new CnSEvent(CyActivator.GET_APPLY_PREFERRED_LAYOUT_TASK_FACTORY, CnSEventManager.CY_ACTIVATOR);
-        ApplyPreferredLayoutTaskFactory apltf =  (ApplyPreferredLayoutTaskFactory)CnSEventManager.handleMessage(ev);
-        ev = new CnSEvent(CyActivator.GET_NETWORK_VIEW_MANAGER, CnSEventManager.CY_ACTIVATOR);
-        CyNetworkViewManager networkViewManager = (CyNetworkViewManager)CnSEventManager.handleMessage(ev);
-        ev = new CnSEvent(CyActivator.GET_SYNCHRONOUS_TASK_MANAGER, CnSEventManager.CY_ACTIVATOR);
-        TaskManager<?, ?> tm = (TaskManager<?, ?>)CnSEventManager.handleMessage(ev);
+        ev = new CnSEvent(CyActivator.GET_NETWORK_MANAGER, CnSEventManager.CY_ACTIVATOR, this.getClass());
+        CyNetworkManager networkManager = (CyNetworkManager)CnSEventManager.handleMessage(ev, true);
+        ev = new CnSEvent(CyActivator.GET_NETWORK_VIEW_FACTORY, CnSEventManager.CY_ACTIVATOR, this.getClass());
+        CyNetworkViewFactory cnvf = (CyNetworkViewFactory)CnSEventManager.handleMessage(ev, true);
+        ev = new CnSEvent(CyActivator.GET_APPLY_PREFERRED_LAYOUT_TASK_FACTORY, CnSEventManager.CY_ACTIVATOR, this.getClass());
+        ApplyPreferredLayoutTaskFactory apltf =  (ApplyPreferredLayoutTaskFactory)CnSEventManager.handleMessage(ev, true);
+        ev = new CnSEvent(CyActivator.GET_NETWORK_VIEW_MANAGER, CnSEventManager.CY_ACTIVATOR, this.getClass());
+        CyNetworkViewManager networkViewManager = (CyNetworkViewManager)CnSEventManager.handleMessage(ev, true);
+        ev = new CnSEvent(CyActivator.GET_SYNCHRONOUS_TASK_MANAGER, CnSEventManager.CY_ACTIVATOR, this.getClass());
+        TaskManager<?, ?> tm = (TaskManager<?, ?>)CnSEventManager.handleMessage(ev, true);
         
         // network for each cluster
         CySubNetwork clusterNet = null;
@@ -633,9 +683,9 @@ public class CnSPartitionManager implements CnSEventListener {
         //System.err.println("----------------------------");
         
         // use the snapshot style
-        ev = new CnSEvent(CnSStyleManager.SET_CURRENT_STYLE, CnSEventManager.STYLE_MANAGER);
+        ev = new CnSEvent(CnSStyleManager.SET_CURRENT_STYLE, CnSEventManager.STYLE_MANAGER, this.getClass());
         ev.addParameter(CnSStyleManager.STYLE, CnSStyleManager.SNAPSHOT_STYLE);
-        CnSEventManager.handleMessage(ev);
+        CnSEventManager.handleMessage(ev, true);
         
         // the main loop on clusters
         for( int k = 0; k < NbClas; k++) {
@@ -735,16 +785,16 @@ public class CnSPartitionManager implements CnSEventListener {
 			// create a new view for my network
             CyNetworkView myView = cnvf.createNetworkView(clusterNet);
             
-            // myView.updateView();
+            //myView.updateView();
             networkViewManager.addNetworkView(myView, false);
             
             cluster.calModularity(clusterNet);
             
             // create the CnSView and apply the snapshot style
             CnSView view = new CnSView(myView, new CnSClusterViewState(cluster));
-            ev = new CnSEvent(CnSStyleManager.APPLY_CURRENT_STYLE, CnSEventManager.STYLE_MANAGER);
+            ev = new CnSEvent(CnSStyleManager.APPLY_CURRENT_STYLE, CnSEventManager.STYLE_MANAGER, this.getClass());
             ev.addParameter(CnSStyleManager.VIEW, view);
-            CnSEventManager.handleMessage(ev);
+            CnSEventManager.handleMessage(ev, true);
             
             // make the snapshot
         	TaskIterator tit = apltf.createTaskIterator(networkViewManager.getNetworkViews(clusterNet));
@@ -753,22 +803,22 @@ public class CnSPartitionManager implements CnSEventListener {
             
             // create the network and register it
             CnSNetwork network = new CnSNetwork(clusterNet, inputNetwork);
-            ev = new CnSEvent(CnSNetworkManager.ADD_NETWORK, CnSEventManager.NETWORK_MANAGER);
+            ev = new CnSEvent(CnSNetworkManager.ADD_NETWORK, CnSEventManager.NETWORK_MANAGER, this.getClass());
             ev.addParameter(CnSNetworkManager.NETWORK, network);
-            CnSEventManager.handleMessage(ev);
+            CnSEventManager.handleMessage(ev, true);
             
             // associates the network with the cluster
-            ev = new CnSEvent(CnSNetworkManager.SET_NETWORK_CLUSTER, CnSEventManager.NETWORK_MANAGER);
+            ev = new CnSEvent(CnSNetworkManager.SET_NETWORK_CLUSTER, CnSEventManager.NETWORK_MANAGER, this.getClass());
             ev.addParameter(CnSNetworkManager.NETWORK, network);
             ev.addParameter(CnSNetworkManager.CLUSTER, cluster);
-            CnSEventManager.handleMessage(ev);
+            CnSEventManager.handleMessage(ev, true);
             
             // register the cluster view
-            ev = new CnSEvent(CnSViewManager.ADD_VIEW, CnSEventManager.VIEW_MANAGER);
+            ev = new CnSEvent(CnSViewManager.ADD_VIEW, CnSEventManager.VIEW_MANAGER, this.getClass());
             ev.addParameter(CnSViewManager.VIEW, view);
             ev.addParameter(CnSViewManager.NETWORK, network);
             ev.addParameter(CnSViewManager.CLUSTER, cluster);
-            CnSEventManager.handleMessage(ev);
+            CnSEventManager.handleMessage(ev, true);
             
             // fill CnS attributes
 			for (String key : network.getNodeColumns().keySet())
@@ -788,9 +838,9 @@ public class CnSPartitionManager implements CnSEventListener {
         }
         
         // go back to the CnS default style
-        ev = new CnSEvent(CnSStyleManager.SET_CURRENT_STYLE, CnSEventManager.STYLE_MANAGER);
+        ev = new CnSEvent(CnSStyleManager.SET_CURRENT_STYLE, CnSEventManager.STYLE_MANAGER, this.getClass());
         ev.addParameter(CnSStyleManager.STYLE, CnSStyleManager.CNS_STYLE);
-        CnSEventManager.handleMessage(ev);
+        CnSEventManager.handleMessage(ev, true);
         
         //partition.sortClusters();
 		
@@ -852,6 +902,18 @@ public class CnSPartitionManager implements CnSEventListener {
 					}
 				}
 			}
+	}
+	public void handleEvent(SessionLoadedEvent e) {
+		System.err.println("Session loaded : " + e.getLoadedFileName());
+		//while (partitions.size() > 0)  {
+			CnSEvent ev = new CnSEvent(CyActivator.GET_TASK_MANAGER, CnSEventManager.CY_ACTIVATOR, this.getClass());
+			DialogTaskManager dialogTaskManager = (DialogTaskManager)CnSEventManager.handleMessage(ev, true);
+			TaskIterator ti = new TaskIterator();
+			CnSDiscardAllPartitionsTask task = new CnSDiscardAllPartitionsTask();
+			ti.append(task);
+			dialogTaskManager.execute(ti);
+		//}
+			System.err.println("Partitions : " + partitions.size());
 	}
 }
 

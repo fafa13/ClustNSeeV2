@@ -65,13 +65,13 @@ public class CnSControlAlgorithmTfitOptionsPanel extends CnSPanel {
 			@Override
 			public void keyReleased(KeyEvent e) {
 				if (!e.isActionKey()) {
-					CnSEvent ev = new CnSEvent(CnSAlgorithmManager.SET_ALGORITHM_PARAMETER, CnSEventManager.ALGORITHM_MANAGER);
+					CnSEvent ev = new CnSEvent(CnSAlgorithmManager.SET_ALGORITHM_PARAMETER, CnSEventManager.ALGORITHM_MANAGER, this.getClass());
 					try {
 						ev.addParameter(CnSAlgorithmManager.ALGO_NAME, "TFit");
 						ev.addParameter(CnSAlgorithmManager.PARAMETER_NAME, "Alpha");
 						ev.addParameter(CnSAlgorithmManager.PARAMETER_KEY, CnSTFitAlgorithm.ALPHA);
 						ev.addParameter(CnSAlgorithmManager.PARAMETER_VALUE, Float.valueOf(alphaTextField.getText()));
-						CnSEventManager.handleMessage(ev);
+						CnSEventManager.handleMessage(ev, true);
 					}
 					catch (Exception ex) {
 						

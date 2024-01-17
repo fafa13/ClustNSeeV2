@@ -11,7 +11,7 @@
 /* Philippe Gambette (LIGM, Marne-la-Vallée)
  */
 
-package org.cytoscape.clustnsee3.internal.gui.partitionpanel.annotationtable;
+package org.cytoscape.clustnsee3.internal.gui.partitionpanel.clusteranalysis;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -28,29 +28,40 @@ import javax.swing.table.DefaultTableCellRenderer;
 /**
  * 
  */
-public class CnSAnnotationTableCellRenderer extends DefaultTableCellRenderer {
+public class CnSClusterTableCellRenderer extends DefaultTableCellRenderer {
 	private static final long serialVersionUID = 1L;
 	private Font font = new Font("serif", Font.PLAIN, 12);
-	private Border paddingBorder = BorderFactory.createEmptyBorder(0, 10, 0, 10);
-
-	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-		JLabel label = new JLabel();
-		if (value != null) label.setText(value.toString());
-		label.setFont(font);
+	private static Border paddingBorder = BorderFactory.createEmptyBorder(0, 10, 0, 10);
+	private static JLabel label;
+	
+	static {
+		label = new JLabel();
 		label.setOpaque(true);
 		label.setBorder(paddingBorder);
-	    if (isSelected) {
-	    	label.setFont(label.getFont().deriveFont(Font.BOLD));
+	}
+	
+	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+		if (isSelected) {
+	    	label.setFont(font.deriveFont(Font.BOLD));
 			label.setBackground(Color.yellow);
 		}
-		else
+		else {
+			label.setFont(font);
 			label.setBackground(Color.white);
-	    if (value != null) {
-	    	if (value instanceof Double) {
-	    		NumberFormat format = new DecimalFormat("#0.00%");
-	    		label.setText(format.format(value));
-	    	}
 		}
-	    return label;
+		if (value != null)
+	    	if (value instanceof Double) {
+	    		if (column == 2 || column == 4) {
+	    			NumberFormat format = new DecimalFormat("#0.00%");
+	    			label.setText(format.format(value));
+	    		}
+	    		else 
+	    			label.setText(value.toString());
+	    	}
+	    	else
+	    		label.setText(value.toString());
+		else
+			label.setText("N/A");
+		return label;
 	}
 }

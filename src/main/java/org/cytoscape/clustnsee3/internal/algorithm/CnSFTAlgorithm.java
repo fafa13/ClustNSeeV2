@@ -91,11 +91,8 @@ public class CnSFTAlgorithm extends CnSAlgorithm {
     	/*
          * calcule une partition qui optimise un critere de modularité
          */
-        String callerID = "Algorithm.FT";
-        System.err.println( "In " + callerID);
-        CnSEvent ev = new CnSEvent(CnSAlgorithmEngine.GET_SCOPE, CnSEventManager.ALGORITHM_ENGINE);
-        String scope = (String)CnSEventManager.handleMessage(ev);
-        System.err.println( "Clustering Scope : " + scope);
+        CnSEvent ev = new CnSEvent(CnSAlgorithmEngine.GET_SCOPE, CnSEventManager.ALGORITHM_ENGINE, this.getClass());
+        String scope = (String)CnSEventManager.handleMessage(ev, true);
         List<CyNode> selectedNodes = CyTableUtil.getNodesInState(inputNetwork, "selected", true);
         List<CyEdge> selectedEdges = CyTableUtil.getEdgesInState(inputNetwork, "selected", true);
         if (scope.equals("Selection")) {
@@ -107,9 +104,6 @@ public class CnSFTAlgorithm extends CnSAlgorithm {
             Na = inputNetwork.getEdgeCount();
         }
 
-        System.err.println("Nb. de sommets " + N + ", d'aretes " + Na);
-        System.err.println("Taux d'aretes du graphe " + 2. * Na / N / (N - 1));
-        
         CardMax = N;				// cardinal maximum d'une classe
 
         A = new float[N][N];		// Graphe pondéré
@@ -137,8 +131,8 @@ public class CnSFTAlgorithm extends CnSAlgorithm {
         else {
             ni = inputNetwork.getNodeList().iterator();
         }
-        ev = new CnSEvent(CnSAlgorithmEngine.IS_CANCELLED, CnSEventManager.ALGORITHM_ENGINE);
-        boolean cancelled = (Boolean)CnSEventManager.handleMessage(ev);
+        ev = new CnSEvent(CnSAlgorithmEngine.IS_CANCELLED, CnSEventManager.ALGORITHM_ENGINE, this.getClass());
+        boolean cancelled = (Boolean)CnSEventManager.handleMessage(ev, true);
         
         HashMap<Integer, Long> algo_to_cyto = new HashMap<Integer, Long>();
 		for (int i = 0; ni.hasNext() && !cancelled; i++) {

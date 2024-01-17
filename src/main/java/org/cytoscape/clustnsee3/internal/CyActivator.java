@@ -12,13 +12,13 @@ import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventListener;
 import org.cytoscape.clustnsee3.internal.gui.menu.contextual.factory.CnSAnnotateClusterMenuFactory;
 import org.cytoscape.clustnsee3.internal.gui.menu.contextual.factory.CnSExpandCompressClusterNodeMenuFactory;
-//import org.cytoscape.clustnsee3.internal.gui.menu.contextual.factory.CnSShowClusterlinksMenuFactory;
 import org.cytoscape.clustnsee3.internal.gui.menu.main.CnSBuildNeighborhoodNetworkMenu;
 import org.cytoscape.clustnsee3.internal.gui.menu.main.CnSComparePartitionsMenu;
 import org.cytoscape.clustnsee3.internal.gui.menu.main.CnSImportPartitionMenu;
 import org.cytoscape.clustnsee3.internal.gui.menu.main.CnSSearchNodeClustersMenu;
 import org.cytoscape.clustnsee3.internal.gui.menu.main.CnSStartMenu;
 import org.cytoscape.clustnsee3.internal.gui.menu.main.CnSStopMenu;
+import org.cytoscape.clustnsee3.internal.utils.CnSLogger;
 import org.cytoscape.event.CyEventHelper;
 import org.cytoscape.model.CyNetworkFactory;
 import org.cytoscape.model.CyNetworkManager;
@@ -70,7 +70,6 @@ public class CyActivator extends AbstractCyActivator implements CnSEventListener
 	public static final int START = 27;
 	public static final int GET_RESOURCES_BUNDLE = 28;
 	
-	
 	public static final int NAME = 1000;
 
 	private BundleContext bc = null;
@@ -82,7 +81,48 @@ public class CyActivator extends AbstractCyActivator implements CnSEventListener
 	private CnSBuildNeighborhoodNetworkMenu clustnseeBuildNeighborhoodNetwork;
 	private ServiceRegistration plugin;
 	private static ResourceBundle resourceBundle;
-		
+	
+	public String getActionName(int k) {
+		switch(k) {
+			case GET_NETWORK_FACTORY : return "GET_NETWORK_FACTORY";
+			case GET_NETWORK_MANAGER : return "GET_NETWORK_MANAGER";
+			case GET_NETWORK_VIEW_MANAGER : return "GET_NETWORK_VIEW_MANAGER";
+			case GET_NETWORK_VIEW_FACTORY : return "GET_NETWORK_VIEW_FACTORY";
+			case GET_ROOT_NETWORK_MANAGER : return "GET_ROOT_NETWORK_MANAGER";
+			case GET_EVENT_HELPER : return "GET_EVENT_HELPER";
+			case GET_APPLY_PREFERRED_LAYOUT_TASK_FACTORY : return "GET_APPLY_PREFERRED_LAYOUT_TASK_FACTORY";
+			case GET_SYNCHRONOUS_TASK_MANAGER : return "GET_SYNCHRONOUS_TASK_MANAGER";
+			case GET_TASK_OBSERVER : return "GET_TASK_OBSERVER";
+			case GET_APPLICATION_MANAGER : return "GET_APPLICATION_MANAGER";
+			case GET_LAYOUT_ALGORITHM_MANAGER : return "GET_LAYOUT_ALGORITHM_MANAGER";
+			case GET_RENDERING_ENGINE_MANAGER : return "GET_RENDERING_ENGINE_MANAGER";
+			case GET_CY_EVENT_HELPER : return "GET_CY_EVENT_HELPER";
+			case GET_EXPORT_STYLE_FACTORY : return "GET_EXPORT_STYLE_FACTORY";
+			case GET_VISUAL_MAPPING_MANAGER : return "GET_VISUAL_MAPPING_MANAGER";
+			case GET_VISUAL_STYLE_FACTORY : return "GET_VISUAL_STYLE_FACTORY";
+			case GET_CONTINUOUS_VISUAL_MAPPING_FUNCTION_FACTORY : return "GET_CONTINUOUS_VISUAL_MAPPING_FUNCTION_FACTORY";
+			case GET_DISCRETE_VISUAL_MAPPING_FUNCTION_FACTORY : return "GET_DISCRETE_VISUAL_MAPPING_FUNCTION_FACTORY";
+			case GET_PASSTHROUGH_VISUAL_MAPPING_FUNCTION_FACTORY : return "GET_PASSTHROUGH_VISUAL_MAPPING_FUNCTION_FACTORY";
+			case GET_LOAD_VIZMAP_FILE_TASK_FACTORY : return "GET_LOAD_VIZMAP_FILE_TASK_FACTORY";
+			case GET_VIZMAP_MANAGER : return "GET_VIZMAP_MANAGER";
+			case STOP : return "STOP";
+			case GET_CYTO_PANEL : return "GET_CYTO_PANEL";
+			case REGISTER_CLUSTNSEE : return "REGISTER_CLUSTNSEE";
+			case GET_SWING_APPLICATION : return "GET_SWING_APPLICATION";
+			case GET_TASK_MANAGER : return "GET_TASK_MANAGER";
+			case START : return "START";
+			case GET_RESOURCES_BUNDLE : return "GET_RESOURCES_BUNDLE";
+			default : return "UNDEFINED_ACTION";
+		}
+	}
+
+	public String getParameterName(int k) {
+		switch(k) {
+			case NAME : return "NAME";
+			default : return "UNDEFINED_PARAMETER";
+		}
+	}
+
 	@Override
 	public void start(BundleContext context) throws Exception {
 		bc = context;
@@ -95,7 +135,6 @@ public class CyActivator extends AbstractCyActivator implements CnSEventListener
 		clustnseeStart = CnSStartMenu.getInstance(context, this);
 		clustnseeStart.setMenuGravity(0.0f);
 		registerAllServices(context, clustnseeStart, new Properties());
-		//clustnseeService = CnSStartMenu.getInstance(context, this).getRef();
 		
 		clustnseeStop = CnSStopMenu.getInstance();
 		clustnseeStop.setEnabled_(false);
@@ -127,11 +166,6 @@ public class CyActivator extends AbstractCyActivator implements CnSEventListener
 		expandCompressClusterNodeMenuFactoryProps.put("preferredMenu", "ClustnSee");
 		registerAllServices(context, expandCompressClusterNodeMenuFactory, expandCompressClusterNodeMenuFactoryProps);
 		
-		//CnSShowClusterlinksMenuFactory showClusterlinksMenuFactory = new CnSShowClusterlinksMenuFactory();
-		//Properties showClusterlinksMenuFactoryProps = new Properties();
-		//showClusterlinksMenuFactoryProps.put("preferredMenu", "ClustnSee");
-		//registerAllServices(context, showClusterlinksMenuFactory, showClusterlinksMenuFactoryProps);
-		
 		CnSAnnotateClusterMenuFactory annotateClusterMenuFactory = new CnSAnnotateClusterMenuFactory();
 		Properties annotateClusterMenuFactoryProps = new Properties();
 		annotateClusterMenuFactoryProps.put("preferredMenu", "ClustnSee");
@@ -142,8 +176,10 @@ public class CyActivator extends AbstractCyActivator implements CnSEventListener
 	 * @see org.cytoscape.clustnsee3.internal.event.CnSEventListener#cnsEventOccured(org.cytoscape.clustnsee3.internal.event.CnSEvent)
 	 */
 	@Override
-	public Object cnsEventOccured(CnSEvent event) {
+	public Object cnsEventOccured(CnSEvent event, boolean log) {
 		Object ret = null;
+		
+		if (log) CnSLogger.LogCnSEvent(event, this);
 		
 		switch(event.getAction()) {
 			case GET_NETWORK_FACTORY :

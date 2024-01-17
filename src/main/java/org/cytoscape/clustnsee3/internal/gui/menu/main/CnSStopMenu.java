@@ -40,10 +40,10 @@ public class CnSStopMenu extends AbstractCyAction {
 	 */
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
-		CnSEvent ev = new CnSEvent(CnSStyleManager.REMOVE_CNS_STYLES, CnSEventManager.STYLE_MANAGER);
-		CnSEventManager.handleMessage(ev);
-		ev = new CnSEvent(CyActivator.STOP, CnSEventManager.CY_ACTIVATOR);
-		CnSEventManager.handleMessage(ev);
+		CnSEvent ev = new CnSEvent(CnSStyleManager.REMOVE_CNS_STYLES, CnSEventManager.STYLE_MANAGER, this.getClass());
+		CnSEventManager.handleMessage(ev, true);
+		ev = new CnSEvent(CyActivator.STOP, CnSEventManager.CY_ACTIVATOR, this.getClass());
+		CnSEventManager.handleMessage(ev, true);
 	}
 	public static CnSStopMenu getInstance() {
 		if (instance == null) instance = new CnSStopMenu();

@@ -31,10 +31,10 @@ public class CnSControlActionPanel extends CnSPanel {
 		closeButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				CnSEvent ev = new CnSEvent(CnSStyleManager.REMOVE_CNS_STYLES, CnSEventManager.STYLE_MANAGER);
-				CnSEventManager.handleMessage(ev);
-				ev = new CnSEvent(CyActivator.STOP, CnSEventManager.CY_ACTIVATOR);
-				CnSEventManager.handleMessage(ev);
+				CnSEvent ev = new CnSEvent(CnSStyleManager.REMOVE_CNS_STYLES, CnSEventManager.STYLE_MANAGER, this.getClass());
+				CnSEventManager.handleMessage(ev, true);
+				ev = new CnSEvent(CyActivator.STOP, CnSEventManager.CY_ACTIVATOR, this.getClass());
+				CnSEventManager.handleMessage(ev, true);
 				
 			}
 		});

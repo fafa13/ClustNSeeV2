@@ -109,8 +109,8 @@ public class CnSAFTreeDetailsNodePanel extends CnSPanelTreePanel implements Tree
 	 */
 	@Override
 	public void treeExpanded(TreeExpansionEvent event) {
-		CnSEvent ev = new CnSEvent(CnSControlPanel.REFRESH, CnSEventManager.CONTROL_PANEL);
-		CnSEventManager.handleMessage(ev);
+		CnSEvent ev = new CnSEvent(CnSControlPanel.REFRESH, CnSEventManager.CONTROL_PANEL, this.getClass());
+		CnSEventManager.handleMessage(ev, true);
 	}
 
 	/* (non-Javadoc)
@@ -118,7 +118,7 @@ public class CnSAFTreeDetailsNodePanel extends CnSPanelTreePanel implements Tree
 	 */
 	@Override
 	public void treeCollapsed(TreeExpansionEvent event) {
-		CnSEvent ev = new CnSEvent(CnSControlPanel.REFRESH, CnSEventManager.CONTROL_PANEL);
-		CnSEventManager.handleMessage(ev);
+		CnSEvent ev = new CnSEvent(CnSControlPanel.REFRESH, CnSEventManager.CONTROL_PANEL, this.getClass());
+		CnSEventManager.handleMessage(ev, true);
 	}
 }

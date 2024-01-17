@@ -13,7 +13,6 @@
 
 package org.cytoscape.clustnsee3.internal.task;
 
-import java.io.File;
 import java.util.Vector;
 
 import org.cytoscape.clustnsee3.internal.algorithm.CnSAlgorithm;
@@ -50,7 +49,7 @@ public class CnSImportPartitionTask extends AbstractTask {
 		taskMonitor.setTitle("Importing partition ...");
 		taskMonitor.setProgress(-1.0);
 		
-		CnSEvent ev = new CnSEvent(CnSResultsPanel.IMPORT_PARTITION, CnSEventManager.RESULTS_PANEL);
+		CnSEvent ev = new CnSEvent(CnSResultsPanel.IMPORT_PARTITION, CnSEventManager.RESULTS_PANEL, this.getClass());
 		ev.addParameter(CnSResultsPanel.RESULT, imported_partition);
 		ev.addParameter(CnSResultsPanel.ANNOTATION, imported_annotation);
 		ev.addParameter(CnSResultsPanel.ALGO, algo);
@@ -58,7 +57,6 @@ public class CnSImportPartitionTask extends AbstractTask {
 		ev.addParameter(CnSResultsPanel.SCOPE, scope);
 		ev.addParameter(CnSResultsPanel.TASK_MONITOR, taskMonitor);
 		
-		CnSEventManager.handleMessage(ev);
+		CnSEventManager.handleMessage(ev, true);
 	}
-
 }

@@ -76,49 +76,49 @@ public class CnSClusterListPanel extends CnSPanel {
 						
 						cluster = (CnSCluster)model.getValueAt(table.getSelectedRow(), 1);
 						
-						CnSEvent ev = new CnSEvent(CnSInfoPanel.INIT, CnSEventManager.INFO_PANEL);
+						CnSEvent ev = new CnSEvent(CnSInfoPanel.INIT, CnSEventManager.INFO_PANEL, this.getClass());
 						ev.addParameter(CnSInfoPanel.CLUSTER, cluster);
 						ev.addParameter(CnSInfoPanel.PANEL, CnSInfoPanel.CLUSTER_DETAILS);
-						CnSEventManager.handleMessage(ev);
+						CnSEventManager.handleMessage(ev, true);
 						
-						ev = new CnSEvent(CnSInfoPanel.SELECT_PANEL, CnSEventManager.INFO_PANEL);
+						ev = new CnSEvent(CnSInfoPanel.SELECT_PANEL, CnSEventManager.INFO_PANEL, this.getClass());
 						ev.addParameter(CnSInfoPanel.PANEL, CnSInfoPanel.CLUSTER_DETAILS);
-						CnSEventManager.handleMessage(ev);
+						CnSEventManager.handleMessage(ev, true);
 						
-						ev = new CnSEvent(CnSViewManager.SELECT_CLUSTER, CnSEventManager.VIEW_MANAGER);
+						ev = new CnSEvent(CnSViewManager.SELECT_CLUSTER, CnSEventManager.VIEW_MANAGER, this.getClass());
 						ev.addParameter(CnSViewManager.CLUSTER, cluster);
-						CnSEventManager.handleMessage(ev);
+						CnSEventManager.handleMessage(ev, true);
 						
 						System.err.println("CnSClusterListPanel.valueChanged : " + cluster.getName());
 						System.err.println("MinSelectedInex = " + table.getSelectionModel().getMinSelectionIndex());
 						System.err.println("MaxSelectedInex = " + table.getSelectionModel().getMaxSelectionIndex());
 						System.err.println("selectedRow = " + table.getSelectedRow());
 						
-						ev = new CnSEvent(CnSPartitionPanel.SELECT_CLUSTER, CnSEventManager.PARTITION_PANEL);
+						ev = new CnSEvent(CnSPartitionPanel.SELECT_CLUSTER, CnSEventManager.PARTITION_PANEL, this.getClass());
 						ev.addParameter(CnSPartitionPanel.CLUSTER, cluster);
-						CnSEventManager.handleMessage(ev);
+						CnSEventManager.handleMessage(ev, true);
 						
-						ev = new CnSEvent(CnSPartitionManager.GET_PARTITION, CnSEventManager.PARTITION_MANAGER);
+						ev = new CnSEvent(CnSPartitionManager.GET_PARTITION, CnSEventManager.PARTITION_MANAGER, this.getClass());
 						ev.addParameter(CnSPartitionManager.CLUSTER, cluster);
-						CnSPartition p = (CnSPartition)CnSEventManager.handleMessage(ev);
+						CnSPartition p = (CnSPartition)CnSEventManager.handleMessage(ev, true);
 						
-						ev = new CnSEvent(CnSPartitionManager.GET_PARTITION_NETWORK, CnSEventManager.PARTITION_MANAGER);
+						ev = new CnSEvent(CnSPartitionManager.GET_PARTITION_NETWORK, CnSEventManager.PARTITION_MANAGER, this.getClass());
 						ev.addParameter(CnSPartitionManager.PARTITION, p);
-						CnSNetwork nw = (CnSNetwork)CnSEventManager.handleMessage(ev);
+						CnSNetwork nw = (CnSNetwork)CnSEventManager.handleMessage(ev, true);
 						
 						if (nw != null) {
-							ev = new CnSEvent(CnSNetworkManager.SELECT_CLUSTER, CnSEventManager.NETWORK_MANAGER);
+							ev = new CnSEvent(CnSNetworkManager.SELECT_CLUSTER, CnSEventManager.NETWORK_MANAGER, this.getClass());
 							ev.addParameter(CnSNetworkManager.CLUSTER, cluster);
 							ev.addParameter(CnSNetworkManager.NETWORK, nw);
-							CnSEventManager.handleMessage(ev);
+							CnSEventManager.handleMessage(ev, true);
 						}
 					}
 					else {
-						CnSEvent ev = new CnSEvent(CnSInfoPanel.CLEAR, CnSEventManager.INFO_PANEL);
+						CnSEvent ev = new CnSEvent(CnSInfoPanel.CLEAR, CnSEventManager.INFO_PANEL, this.getClass());
 						ev.addParameter(CnSInfoPanel.PANEL, CnSInfoPanel.CLUSTER_DETAILS);
-						CnSEventManager.handleMessage(ev);
-						ev = new CnSEvent(CnSViewManager.SELECT_CLUSTER, CnSEventManager.VIEW_MANAGER);
-						CnSEventManager.handleMessage(ev);
+						CnSEventManager.handleMessage(ev, true);
+						ev = new CnSEvent(CnSViewManager.SELECT_CLUSTER, CnSEventManager.VIEW_MANAGER, this.getClass());
+						CnSEventManager.handleMessage(ev, true);
 					}
 			}
 		});

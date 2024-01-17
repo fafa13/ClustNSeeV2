@@ -43,9 +43,9 @@ public class CnSComparePartitionsMenu extends AbstractCyAction {
 	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		CnSEvent ev = new CnSEvent(CnSPartitionManager.GET_PARTITIONS, CnSEventManager.PARTITION_MANAGER);
+		CnSEvent ev = new CnSEvent(CnSPartitionManager.GET_PARTITIONS, CnSEventManager.PARTITION_MANAGER, this.getClass());
 		@SuppressWarnings("unchecked")
-		Vector<CnSPartition> allData = (Vector<CnSPartition>)CnSEventManager.handleMessage(ev);
+		Vector<CnSPartition> allData = (Vector<CnSPartition>)CnSEventManager.handleMessage(ev, true);
 		if (allData != null) 
 			if (allData.size() >= 2) {
 				CnSComparePartitionsDialog dialog = new CnSComparePartitionsDialog(allData);

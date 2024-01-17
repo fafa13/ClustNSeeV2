@@ -31,14 +31,13 @@ import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeAnnotation;
 import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeAnnotationManager;
 import org.cytoscape.clustnsee3.internal.nodeannotation.stats.CnSAnnotationClusterPValue;
 import org.cytoscape.clustnsee3.internal.partition.CnSPartition;
-import org.cytoscape.model.CyNode;
 
 /**
  * 
  */
 public class CnSPartitionTableModel extends AbstractTableModel {
 	private static final long serialVersionUID = 3984889084020756303L;
-	private static final String[] columnNames = new String[7]; // = {"Cluster ID", "Nodes", "Links", "Annotations", "Enrichment nb.", "Enrichment stat."}; 
+	private static final String[] columnNames = new String[6];
 	private CnSPartition partition;
 	private CnSNodeAnnotation selectedAnnotation;
 	
@@ -47,11 +46,9 @@ public class CnSPartitionTableModel extends AbstractTableModel {
 		this.partition = partition;
 		selectedAnnotation = null;
 		
-		CnSEvent ev = new CnSEvent(CyActivator.GET_RESOURCES_BUNDLE, CnSEventManager.CY_ACTIVATOR);
-		ResourceBundle rBundle = (ResourceBundle)CnSEventManager.handleMessage(ev);
+		CnSEvent ev = new CnSEvent(CyActivator.GET_RESOURCES_BUNDLE, CnSEventManager.CY_ACTIVATOR, this.getClass());
+		ResourceBundle rBundle = (ResourceBundle)CnSEventManager.handleMessage(ev, true);
 		rBundle = CyActivator.getResourcesBundle();
-		System.err.println("BUNDLE = " + rBundle);
-		
 		
 		columnNames[0] = rBundle.getString("CnSPartitionTableModel.clusterID");
 		columnNames[1] = rBundle.getString("CnSPartitionTableModel.userAnnotations");
@@ -59,7 +56,6 @@ public class CnSPartitionTableModel extends AbstractTableModel {
 		columnNames[3] = rBundle.getString("CnSPartitionTableModel.edges");
 		columnNames[4] = rBundle.getString("CnSPartitionTableModel.annotationTerms");
 		columnNames[5] = rBundle.getString("CnSPartitionTableModel.enrichmentTerms");
-		columnNames[6] = rBundle.getString("CnSPartitionTableModel.enrichmentStat");
 	}
 	
 	public void clear() {
@@ -103,7 +99,6 @@ public class CnSPartitionTableModel extends AbstractTableModel {
 		Integer nb;
 		CnSCluster cluster = null;
 		if (partition != null) cluster = partition.getClusters().elementAt(row);
-		CnSNodeAnnotation annot;
 		String o;
 		
 		if (cluster == null) return null;
@@ -117,43 +112,31 @@ public class CnSPartitionTableModel extends AbstractTableModel {
 						 while (it.hasNext()) o += " ; " + it.next().getAnnotation();
 					 }
 					 return o;
-			case 2 : ev = new CnSEvent(CnSNodeAnnotationManager.GET_ANNOTATED_NODES, CnSEventManager.ANNOTATION_MANAGER);
+			case 2 : ev = new CnSEvent(CnSNodeAnnotationManager.GET_ANNOTATED_NODES, CnSEventManager.ANNOTATION_MANAGER, this.getClass());
 			 		 ev.addParameter(CnSNodeAnnotationManager.CLUSTER, cluster);
-			 		 Integer n = (Integer)CnSEventManager.handleMessage(ev);
+			 		 Integer n = (Integer)CnSEventManager.handleMessage(ev, false);
 			 		 return new CnSTwoIntegers(cluster.getNbNodes(), n);
 			case 3 : return cluster.getEdges().size();
-			/*case 3 : ev = new CnSEvent(CnSPartitionManager.GET_NB_MULTICLASS_NODES, CnSEventManager.PARTITION_MANAGER);
-					 ev.addParameter(CnSPartitionManager.PARTITION, partition);
-					 ev.addParameter(CnSPartitionManager.CLUSTER, cluster);
-					 nb = (Integer)CnSEventManager.handleMessage(ev);
-					 return nb;
-			case 4 : return ((int)(cluster.getDensity() * 1000)) / 1000D;*/
-			case 4 : ev = new CnSEvent(CnSNodeAnnotationManager.GET_CLUSTER_ANNOTATIONS, CnSEventManager.ANNOTATION_MANAGER);
+			case 4 : ev = new CnSEvent(CnSNodeAnnotationManager.GET_CLUSTER_ANNOTATIONS, CnSEventManager.ANNOTATION_MANAGER, this.getClass());
 			 		 ev.addParameter(CnSNodeAnnotationManager.CLUSTER, cluster);
-			 		 nb = ((Vector<?>)CnSEventManager.handleMessage(ev)).size();
+			 		 nb = ((Vector<?>)CnSEventManager.handleMessage(ev, false)).size();
 			 		 return nb;
-			case 5 : ev = new CnSEvent(CnSNodeAnnotationManager.GET_BH_FILTERED_ANNOTATIONS, CnSEventManager.ANNOTATION_MANAGER);
+			case 5 : ev = new CnSEvent(CnSPartitionPanel.GET_SELECTED_STAT, CnSEventManager.PARTITION_PANEL, this.getClass());
+					 int selectedStat = (Integer)CnSEventManager.handleMessage(ev, false);
+					 if (selectedStat == 0)
+						 ev = new CnSEvent(CnSNodeAnnotationManager.GET_BH_FILTERED_ANNOTATIONS, CnSEventManager.ANNOTATION_MANAGER, this.getClass());
+					 else
+						 ev = new CnSEvent(CnSNodeAnnotationManager.GET_MAJORITY_FILTERED_ANNOTATIONS, CnSEventManager.ANNOTATION_MANAGER, this.getClass());
 					 ev.addParameter(CnSNodeAnnotationManager.CLUSTER, cluster);
-					 return ((Vector<CnSAnnotationClusterPValue>)CnSEventManager.handleMessage(ev)).size();
-			case 6 : ev = new CnSEvent(CnSPartitionPanel.GET_SEARCHED_ANNOTATION, CnSEventManager.PARTITION_PANEL);
-					 o = (String)CnSEventManager.handleMessage(ev);
-					 ev = new CnSEvent(CnSNodeAnnotationManager.GET_ANNOTATION, CnSEventManager.ANNOTATION_MANAGER);
-					 ev.addParameter(CnSNodeAnnotationManager.ANNOTATION, o);
-					 annot = (CnSNodeAnnotation)CnSEventManager.handleMessage(ev);
-					 
-					 if (annot != null) {
-						 ev = new CnSEvent(CnSNodeAnnotationManager.GET_ANNOTATED_NODES, CnSEventManager.ANNOTATION_MANAGER);
-						 ev.addParameter(CnSNodeAnnotationManager.CLUSTER, cluster);
-						 ev.addParameter(CnSNodeAnnotationManager.ANNOTATION, annot);
-						 Vector<CyNode> vcn = (Vector<CyNode>)CnSEventManager.handleMessage(ev);
-						 ev = new CnSEvent(CnSNodeAnnotationManager.GET_BH_HYPERGEOMETRIC, CnSEventManager.ANNOTATION_MANAGER);
-						 ev.addParameter(CnSNodeAnnotationManager.CLUSTER, cluster);
-						 ev.addParameter(CnSNodeAnnotationManager.ANNOTATION, annot);
-						 CnSAnnotationClusterPValue pv = (CnSAnnotationClusterPValue)CnSEventManager.handleMessage(ev);
-						 CnSEnrichmentStatValue v = new CnSEnrichmentStatValue(vcn.size(), pv.getBHValue(), (double)vcn.size() / (double)cluster.getNbNodes());
-						 //System.err.println(v.toString());
-						 return v;
-					 }
+					 return ((Vector<CnSAnnotationClusterPValue>)CnSEventManager.handleMessage(ev, false)).size();
+			case -5 : ev = new CnSEvent(CnSPartitionPanel.GET_SELECTED_STAT, CnSEventManager.PARTITION_PANEL, this.getClass());
+			 		  selectedStat = (Integer)CnSEventManager.handleMessage(ev, false);
+			 		  if (selectedStat == 0)
+			 			  ev = new CnSEvent(CnSNodeAnnotationManager.GET_BH_FILTERED_ANNOTATIONS, CnSEventManager.ANNOTATION_MANAGER, this.getClass());
+			 		  else
+			 			  ev = new CnSEvent(CnSNodeAnnotationManager.GET_MAJORITY_FILTERED_ANNOTATIONS, CnSEventManager.ANNOTATION_MANAGER, this.getClass());
+			 		  ev.addParameter(CnSNodeAnnotationManager.CLUSTER, cluster);
+			 		  return (Vector<CnSAnnotationClusterPValue>)CnSEventManager.handleMessage(ev, false);
 			default : return "NA";
 		}
 	}
@@ -172,8 +155,7 @@ public class CnSPartitionTableModel extends AbstractTableModel {
 	@Override
 	public Class<?> getColumnClass(int columnIndex) {
 		if (getRowCount() == 0) return Object.class;
-		//if (columnIndex == 5) return CnSEnrichmentStatValue.class;
-	    return getValueAt(0, columnIndex).getClass();
+		return getValueAt(0, columnIndex).getClass();
 	}
 
 	/* (non-Javadoc)
@@ -202,14 +184,6 @@ public class CnSPartitionTableModel extends AbstractTableModel {
 		super.removeTableModelListener(l);
 	}
 
-	/* (non-Javadoc)
-	 * @see javax.swing.table.TableModel#setValueAt(java.lang.Object, int, int)
-	 */
-	@Override
-	public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-		// TODO Auto-generated method stub
-		
-	}
 	public void fireTableDataChanged() {
 		super.fireTableDataChanged();
 	}

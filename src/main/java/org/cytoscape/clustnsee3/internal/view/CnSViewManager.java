@@ -16,6 +16,7 @@ package org.cytoscape.clustnsee3.internal.view;
 import java.awt.geom.Point2D;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Vector;
 
 import org.cytoscape.application.events.SetCurrentNetworkViewEvent;
@@ -37,6 +38,7 @@ import org.cytoscape.clustnsee3.internal.network.CnSNetwork;
 import org.cytoscape.clustnsee3.internal.network.CnSNetworkManager;
 import org.cytoscape.clustnsee3.internal.partition.CnSPartition;
 import org.cytoscape.clustnsee3.internal.partition.CnSPartitionManager;
+import org.cytoscape.clustnsee3.internal.utils.CnSLogger;
 import org.cytoscape.clustnsee3.internal.view.state.CnSUserViewState;
 import org.cytoscape.clustnsee3.internal.view.state.CnSViewState;
 import org.cytoscape.event.AbstractCyEvent;
@@ -62,7 +64,6 @@ import org.cytoscape.view.model.View;
 import org.cytoscape.view.model.events.NetworkViewAboutToBeDestroyedEvent;
 import org.cytoscape.view.model.events.NetworkViewAboutToBeDestroyedListener;
 import org.cytoscape.view.presentation.property.BasicVisualLexicon;
-
 import org.cytoscape.clustnsee3.internal.CnSClustnseePlugin;
 
 /**
@@ -91,7 +92,6 @@ UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, SelectedNodesAndEd
 	public static final int REMOVE_VIEW = 18;
 	public static final int REMOVE_VIEWS = 19;
 	public static final int GET_PARTITION_VIEW = 20;
-	public static final int SET_USER_ENABLED = 21;
 	
 	public static final int VIEW = 1000;
 	public static final int STATE = 1001;
@@ -116,8 +116,6 @@ UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, SelectedNodesAndEd
 	
 	private static CnSViewManager instance = null;
 	
-	private boolean USER_ENABLED = true;
-	
 	private CnSViewManager() {
 		super();
 		views = new Vector<CnSView>();
@@ -128,6 +126,49 @@ UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, SelectedNodesAndEd
 		cluster2viewMap = new HashMap<CnSCluster, CnSView>();
 		view2partitionMap = new HashMap<CnSView, CnSPartition>();
 		partition2viewMap = new HashMap<CnSPartition, CnSView>();
+	}
+	
+	public String getActionName(int k) {
+		switch(k) {
+			case ADD_VIEW : return "ADD_VIEW";
+			case DELETE_VIEW : return "DELETE_VIEW";
+			case SET_SELECTED_VIEW : return "SET_SELECTED_VIEW";
+			case GET_SELECTED_VIEW : return "GET_SELECTED_VIEW";
+			case SET_STATE : return "SET_STATE";
+			case GET_VIEW : return "GET_VIEW";
+			case SELECT_CLUSTER : return "SELECT_CLUSTER";
+			case GET_NETWORK : return "GET_NETWORK";
+			case IS_EXPANDED : return "IS_EXPANDED";
+			case SET_EXPANDED : return "SET_EXPANDED";
+			case GET_CLUSTER_LOCATION : return "GET_CLUSTER_LOCATION";
+			case SET_CLUSTER_LOCATION : return "SET_CLUSTER_LOCATION";
+			case RECORD_CLUSTERS_LOCATION : return "RECORD_CLUSTERS_LOCATION";
+			case SET_VIEW_PARTITION : return "SET_VIEW_PARTITION";
+			case GET_VIEW_PARTITION : return "GET_VIEW_PARTITION";
+			case EXPAND_CLUSTER : return "EXPAND_CLUSTER";
+			case GET_CLUSTER_FROM_CY_NODE : return "GET_CLUSTER_FROM_CY_NODE";
+			case REMOVE_VIEW : return "REMOVE_VIEW";
+			case REMOVE_VIEWS : return "REMOVE_VIEWS";
+			case GET_PARTITION_VIEW : return "GET_PARTITION_VIEW";
+			default : return "UNDEFINED_ACTION : " + k;
+		}
+	}
+
+	public String getParameterName(int k) {
+		switch(k) {
+			case VIEW : return "VIEW";
+			case STATE : return "STATE";
+			case REFERENCE : return "REFERENCE";
+			case CLUSTER : return "CLUSTER";
+			case NETWORK : return "NETWORK";
+			case EXPANDED : return "EXPANDED";
+			case CLUSTER_LOCATION : return "CLUSTER_LOCATION";
+			case PARTITION : return "PARTITION";
+			case SUID : return "SUID";
+			case CY_NODE : return "CY_NODE";
+			case ENABLED : return "ENABLED";
+			default : return "UNDEFINED_ACTION : " + k;
+		}
 	}
 	
 	public static CnSViewManager getInstance() {
@@ -152,7 +193,7 @@ UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, SelectedNodesAndEd
 	 * @see org.cytoscape.clustnsee3.internal.event.CnSEventListener#cnsEventOccured(org.cytoscape.clustnsee3.internal.event.CnSEvent)
 	 */
 	@Override
-	public Object cnsEventOccured(CnSEvent event) {
+	public Object cnsEventOccured(CnSEvent event, boolean log) {
 		Object ret = null;
 		CnSView view;
 		CnSNetwork network;
@@ -166,6 +207,8 @@ UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, SelectedNodesAndEd
 		View<CyNode> cnv;
 		CyNode cyNode;
 		Object reference;
+		
+		if (log) CnSLogger.LogCnSEvent(event, this);
 		
 		switch(event.getAction()) {
 			case ADD_VIEW :
@@ -272,13 +315,13 @@ UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, SelectedNodesAndEd
 				
 			case RECORD_CLUSTERS_LOCATION :
 				view = (CnSView)event.getParameter(VIEW);
-				ev = new CnSEvent(CnSPartitionManager.GET_PARTITION, CnSEventManager.PARTITION_MANAGER);
+				ev = new CnSEvent(CnSPartitionManager.GET_PARTITION, CnSEventManager.PARTITION_MANAGER, this.getClass());
 				ev.addParameter(CnSPartitionManager.VIEW, view);
-				partition = (CnSPartition)CnSEventManager.handleMessage(ev);
+				partition = (CnSPartition)CnSEventManager.handleMessage(ev, true);
 				if (partition == null) {
-					ev = new CnSEvent(CnSViewManager.GET_VIEW_PARTITION, CnSEventManager.VIEW_MANAGER);
+					ev = new CnSEvent(CnSViewManager.GET_VIEW_PARTITION, CnSEventManager.VIEW_MANAGER, this.getClass());
 					ev.addParameter(CnSViewManager.VIEW, view);
-					partition = (CnSPartition)CnSEventManager.handleMessage(ev);
+					partition = (CnSPartition)CnSEventManager.handleMessage(ev, true);
 				}
 				for (CnSCluster cl : partition.getClusters()) {
 					if (cl.getCyNode() != null) { 
@@ -374,18 +417,13 @@ UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, SelectedNodesAndEd
 							ret = v;
 							break;
 						}
-				
-			case SET_USER_ENABLED :
-				Boolean enabled = (Boolean)event.getParameter(ENABLED);
-				if (enabled != null) USER_ENABLED = enabled;
-				break;
 		}
 		return ret;
 	}
 	
 	private void eventOccured(AbstractCyEvent<CyNetwork> e) {
-		CnSEvent ev = new CnSEvent(CyActivator.GET_NETWORK_VIEW_MANAGER, CnSEventManager.CY_ACTIVATOR);
-        CyNetworkViewManager networkViewManager = (CyNetworkViewManager)CnSEventManager.handleMessage(ev);
+		CnSEvent ev = new CnSEvent(CyActivator.GET_NETWORK_VIEW_MANAGER, CnSEventManager.CY_ACTIVATOR, this.getClass());
+        CyNetworkViewManager networkViewManager = (CyNetworkViewManager)CnSEventManager.handleMessage(ev, true);
         Collection<CyNetworkView> views = networkViewManager.getNetworkViews(e.getSource());
         CnSView cnsv = null;
         for (CyNetworkView v : views) {
@@ -398,10 +436,10 @@ UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, SelectedNodesAndEd
         		Vector<CnSCluster> cls = cnsv.getState().getClusters();
         		cnsv.setViewState(new CnSUserViewState(cnsv.getReference()));
         		cnsv.getState().getClusters().addAll(cls);
-        		ev = new CnSEvent(CnSNetworkManager.RENAME_NETWORK, CnSEventManager.NETWORK_MANAGER);
+        		ev = new CnSEvent(CnSNetworkManager.RENAME_NETWORK, CnSEventManager.NETWORK_MANAGER, this.getClass());
         		ev.addParameter(CnSNetworkManager.NETWORK, view2networkMap.get(cnsv));
         		ev.addParameter(CnSNetworkManager.NETWORK_NAME, "Copy of " + view2networkMap.get(cnsv).getName());
-        		CnSEventManager.handleMessage(ev);
+        		CnSEventManager.handleMessage(ev, true);
         		
         	}	
         }
@@ -437,9 +475,9 @@ UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, SelectedNodesAndEd
 	@Override
 	public void handleEvent(NetworkViewAboutToBeDestroyedEvent e) {
 		if (getView(e.getNetworkView()) != null) {
-			CnSEvent ev= new CnSEvent(CnSViewManager.DELETE_VIEW, CnSEventManager.VIEW_MANAGER);
+			CnSEvent ev= new CnSEvent(CnSViewManager.DELETE_VIEW, CnSEventManager.VIEW_MANAGER, this.getClass());
 			ev.addParameter(VIEW, getView(e.getNetworkView()));
-			cnsEventOccured(ev);
+			cnsEventOccured(ev, true);
 		}
     }
 
@@ -448,7 +486,7 @@ UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, SelectedNodesAndEd
 	 */
 	@Override
 	public void handleEvent(UnsetNetworkPointerEvent e) {
-		CnSEvent ev = new CnSEvent(CnSNetworkManager.RENAME_NETWORK, CnSEventManager.NETWORK_MANAGER);
+		CnSEvent ev = new CnSEvent(CnSNetworkManager.RENAME_NETWORK, CnSEventManager.NETWORK_MANAGER, this.getClass());
 		for (CnSView v : views) {
 			if (v.getView().getNodeView(e.getNode()) != null) {
 				if (!v.isUserView() && !v.getModifCluster()) {
@@ -457,7 +495,7 @@ UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, SelectedNodesAndEd
 	        		v.getState().getClusters().addAll(cls);
 					ev.addParameter(CnSNetworkManager.NETWORK, view2networkMap.get(v));
 					ev.addParameter(CnSNetworkManager.NETWORK_NAME, "Copy of " + view2networkMap.get(v).getName());
-					CnSEventManager.handleMessage(ev);
+					CnSEventManager.handleMessage(ev, true);
 				}
 			}
 		}
@@ -480,7 +518,7 @@ UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, SelectedNodesAndEd
 		CnSEvent ev;
 		//System.err.println("coucou");
 		if (e.getNetworkView() != null) {
-			ev = new CnSEvent(CnSClustnseePlugin.ENABLE_ANALYZIS, CnSEventManager.CLUSTNSEE_PLUGIN);
+			ev = new CnSEvent(CnSClustnseePlugin.ENABLE_ANALYZIS, CnSEventManager.CLUSTNSEE_PLUGIN, this.getClass());
 			ev.addParameter(CnSClustnseePlugin.ENABLE, true);
 			selectedView = getView(e.getNetworkView());
 			if (selectedView != null) {
@@ -488,13 +526,13 @@ UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, SelectedNodesAndEd
 				if (selectedView.getClusters().size() > 0)
 					ev.addParameter(CnSClustnseePlugin.ENABLE, false);
 			}
-			CnSEventManager.handleMessage(ev);
+			CnSEventManager.handleMessage(ev, true);
 		}
 		else {
 			selectedView = null;
-			ev = new CnSEvent(CnSClustnseePlugin.ENABLE_ANALYZIS, CnSEventManager.CLUSTNSEE_PLUGIN);
+			ev = new CnSEvent(CnSClustnseePlugin.ENABLE_ANALYZIS, CnSEventManager.CLUSTNSEE_PLUGIN, this.getClass());
 			ev.addParameter(CnSClustnseePlugin.ENABLE, false);
-			CnSEventManager.handleMessage(ev);
+			CnSEventManager.handleMessage(ev, true);
 		}
 		
 	}
@@ -526,8 +564,8 @@ UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, SelectedNodesAndEd
 	 */
 	@Override
 	public void handleEvent(AboutToRemoveNodesEvent e) {
-		CnSEvent ev = new CnSEvent(CyActivator.GET_NETWORK_VIEW_MANAGER, CnSEventManager.CY_ACTIVATOR);
-        CyNetworkViewManager networkViewManager = (CyNetworkViewManager)CnSEventManager.handleMessage(ev);
+		CnSEvent ev = new CnSEvent(CyActivator.GET_NETWORK_VIEW_MANAGER, CnSEventManager.CY_ACTIVATOR, this.getClass());
+        CyNetworkViewManager networkViewManager = (CyNetworkViewManager)CnSEventManager.handleMessage(ev, true);
         Collection<CyNetworkView> views = networkViewManager.getNetworkViews(e.getSource());
         CnSView cnsv = null;
         for (CyNetworkView v : views) {
@@ -548,10 +586,10 @@ UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, SelectedNodesAndEd
         		Vector<CnSCluster> cls = cnsv.getState().getClusters();
         		cnsv.setViewState(new CnSUserViewState(cnsv.getReference()));
         		cnsv.getState().getClusters().addAll(cls);
-        		ev = new CnSEvent(CnSNetworkManager.RENAME_NETWORK, CnSEventManager.NETWORK_MANAGER);
+        		ev = new CnSEvent(CnSNetworkManager.RENAME_NETWORK, CnSEventManager.NETWORK_MANAGER, this.getClass());
         		ev.addParameter(CnSNetworkManager.NETWORK, view2networkMap.get(cnsv));
         		ev.addParameter(CnSNetworkManager.NETWORK_NAME, "Copy of " + view2networkMap.get(cnsv).getName());
-        		CnSEventManager.handleMessage(ev);
+        		CnSEventManager.handleMessage(ev, true);
         	}	
         }
 	}
@@ -562,27 +600,45 @@ UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, SelectedNodesAndEd
 	@Override
 	public void handleEvent(SelectedNodesAndEdgesEvent e) {
 		CnSEvent ev;
-		if (selectedView != null && USER_ENABLED) {
+		if (selectedView != null) {
 			Collection<CyNode> cn = e.getSelectedNodes();
 			CnSPartition p = view2partitionMap.get(selectedView);
 			if (p == null) {
-				ev = new CnSEvent(CnSPartitionManager.GET_PARTITION, CnSEventManager.PARTITION_MANAGER);
+				ev = new CnSEvent(CnSPartitionManager.GET_PARTITION, CnSEventManager.PARTITION_MANAGER, this.getClass());
 				ev.addParameter(CnSPartitionManager.VIEW, selectedView);
-				p = (CnSPartition)CnSEventManager.handleMessage(ev);
+				p = (CnSPartition)CnSEventManager.handleMessage(ev, true);
 			}
 			if (cn.size() == 1) {
 				if (p != null) {
 					CyNode node = cn.iterator().next();
-					ev = new CnSEvent(CnSPartitionManager.GET_CLUSTER_NODE, CnSEventManager.PARTITION_MANAGER);
+					ev = new CnSEvent(CnSPartitionManager.GET_CLUSTER_NODE, CnSEventManager.PARTITION_MANAGER, this.getClass());
 					ev.addParameter(CnSPartitionManager.PARTITION, p);
 					ev.addParameter(CnSPartitionManager.CY_NODE, node);
-					CnSNode cnsn = (CnSNode)CnSEventManager.handleMessage(ev);
+					CnSNode cnsn = (CnSNode)CnSEventManager.handleMessage(ev, true);
 				
+					/*if (cnsn != null) {
+						System.err.println("CnSViewManager.handleEvent : " + node.getSUID());
+						CnSNode cnsnode = p.getClusterNode(node.getSUID());
+						CnSCluster cluster = null;
+						for (CnSCluster c : p.getClusters()) {
+							if (c.getCyNode() == cnsnode.getCyNode()) {
+								cluster = c;
+								break;
+							}
+						}
+						if (cluster != null) {
+							System.err.println("CnSViewManager.handleEvent : " + cluster.getName());
+							ev = new CnSEvent(CnSSynchronizeClusterSelection.SYNCHRONIZE, CnSEventManager.SYNCHRONIZE_CLUSTER_SELECTION);
+							ev.addParameter(CnSSynchronizeClusterSelection.PARTITION, p);
+							ev.addParameter(CnSSynchronizeClusterSelection.CLUSTER, cluster);
+							CnSEventManager.handleMessage(ev);
+						}
+					}*/
 					if (cnsn != null) {
 						System.err.println("CnSViewManager.handleEvent : " + node.getSUID());
-						ev = new CnSEvent(CnSResultsPanel.SELECT_CLUSTER, CnSEventManager.RESULTS_PANEL);
+						ev = new CnSEvent(CnSResultsPanel.SELECT_CLUSTER, CnSEventManager.RESULTS_PANEL, this.getClass());
 						ev.addParameter(CnSResultsPanel.CLUSTER, node.getSUID());
-						CnSEventManager.handleMessage(ev);
+						CnSEventManager.handleMessage(ev, true);
 							
 						CnSNode cnsnode = p.getClusterNode(node.getSUID());
 						CnSCluster cluster = null;
@@ -594,52 +650,52 @@ UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, SelectedNodesAndEd
 						}
 						if (cluster != null) {
 							System.err.println("CnSViewManager.handleEvent : " + cluster.getName());
-							ev = new CnSEvent(CnSPartitionPanel.SELECT_CLUSTER, CnSEventManager.PARTITION_PANEL);
+							ev = new CnSEvent(CnSPartitionPanel.SELECT_CLUSTER, CnSEventManager.PARTITION_PANEL, this.getClass());
 							ev.addParameter(CnSPartitionPanel.CLUSTER, cluster);
-							CnSEventManager.handleMessage(ev);
+							CnSEventManager.handleMessage(ev, true);
 						}
 					}
 					else {
-						ev = new CnSEvent(CnSPartitionManager.GET_NODE, CnSEventManager.PARTITION_MANAGER);
+						ev = new CnSEvent(CnSPartitionManager.GET_NODE, CnSEventManager.PARTITION_MANAGER, this.getClass());
 						ev.addParameter(CnSPartitionManager.CY_NODE, node);
 						ev.addParameter(CnSPartitionManager.PARTITION, p);
-						cnsn = (CnSNode)CnSEventManager.handleMessage(ev);
+						cnsn = (CnSNode)CnSEventManager.handleMessage(ev, true);
 						if (cnsn != null) {
-							ev = new CnSEvent(CnSInfoPanel.INIT, CnSEventManager.INFO_PANEL);
+							ev = new CnSEvent(CnSInfoPanel.INIT, CnSEventManager.INFO_PANEL, this.getClass());
 							ev.addParameter(CnSInfoPanel.NODE, cnsn);
 							
 							ev.addParameter(CnSInfoPanel.PANEL, CnSInfoPanel.NODE_DETAILS);
-							CnSEventManager.handleMessage(ev);
+							CnSEventManager.handleMessage(ev, true);
 						
-							ev = new CnSEvent(CnSInfoPanel.SELECT_PANEL, CnSEventManager.INFO_PANEL);
+							ev = new CnSEvent(CnSInfoPanel.SELECT_PANEL, CnSEventManager.INFO_PANEL, this.getClass());
 							ev.addParameter(CnSInfoPanel.PANEL, CnSInfoPanel.NODE_DETAILS);
-							CnSEventManager.handleMessage(ev);
+							CnSEventManager.handleMessage(ev, true);
 						}
 					}
 				}
 			}
 			else if (cn.size() >= 2 || cn.size() == 0) {
-				ev = new CnSEvent(CnSResultsPanel.SELECT_CLUSTER, CnSEventManager.RESULTS_PANEL);
-				CnSEventManager.handleMessage(ev);
+				ev = new CnSEvent(CnSResultsPanel.SELECT_CLUSTER, CnSEventManager.RESULTS_PANEL, this.getClass());
+				CnSEventManager.handleMessage(ev, true);
 				
 				System.err.println("CnSViewManager.handleEvent without cluster");
-				ev = new CnSEvent(CnSPartitionPanel.SELECT_CLUSTER, CnSEventManager.PARTITION_PANEL);
-				CnSEventManager.handleMessage(ev);
+				ev = new CnSEvent(CnSPartitionPanel.SELECT_CLUSTER, CnSEventManager.PARTITION_PANEL, this.getClass());
+				CnSEventManager.handleMessage(ev, true);
 				
-				ev = new CnSEvent(CnSInfoPanel.CLEAR, CnSEventManager.INFO_PANEL);
+				ev = new CnSEvent(CnSInfoPanel.CLEAR, CnSEventManager.INFO_PANEL, this.getClass());
 				ev.addParameter(CnSInfoPanel.PANEL, CnSInfoPanel.NODE_DETAILS);
-				CnSEventManager.handleMessage(ev);
+				CnSEventManager.handleMessage(ev, true);
 			}
 			
 			Collection<CyEdge> ce = e.getSelectedEdges();
 			if (ce.size() == 1) {
 				CyEdge edge = ce.iterator().next();
-				ev = new CnSEvent(CnSPartitionManager.GET_CLUSTER_LINK, CnSEventManager.PARTITION_MANAGER);
+				ev = new CnSEvent(CnSPartitionManager.GET_CLUSTER_LINK, CnSEventManager.PARTITION_MANAGER, this.getClass());
 				ev.addParameter(CnSPartitionManager.CY_EDGE, edge);
 				ev.addParameter(CnSPartitionManager.PARTITION, p);
-				CnSClusterLink clusterLink = (CnSClusterLink)CnSEventManager.handleMessage(ev);
+				CnSClusterLink clusterLink = (CnSClusterLink)CnSEventManager.handleMessage(ev, true);
 					
-				ev = new CnSEvent(CnSInfoPanel.INIT, CnSEventManager.INFO_PANEL);
+				ev = new CnSEvent(CnSInfoPanel.INIT, CnSEventManager.INFO_PANEL, this.getClass());
 				ev.addParameter(CnSInfoPanel.EDGE, edge);
 				
 				if (clusterLink != null) ev.addParameter(CnSInfoPanel.CLUSTER_LINK, clusterLink);
@@ -647,16 +703,16 @@ UnsetNetworkPointerListener, SetSelectedNetworkViewsListener, SelectedNodesAndEd
 				ev.addParameter(CnSInfoPanel.VIEW, selectedView);
 				ev.addParameter(CnSInfoPanel.NETWORK, view2networkMap.get(selectedView));
 				ev.addParameter(CnSInfoPanel.PARTITION, p);
-				CnSEventManager.handleMessage(ev);
+				CnSEventManager.handleMessage(ev, true);
 								
-				ev = new CnSEvent(CnSInfoPanel.SELECT_PANEL, CnSEventManager.INFO_PANEL);
+				ev = new CnSEvent(CnSInfoPanel.SELECT_PANEL, CnSEventManager.INFO_PANEL, this.getClass());
 				ev.addParameter(CnSInfoPanel.PANEL, CnSInfoPanel.EDGE_DETAILS);
-				CnSEventManager.handleMessage(ev);
+				CnSEventManager.handleMessage(ev, true);
 			}
 			else if (ce.size() >= 2 || ce.size() == 0) {
-				ev = new CnSEvent(CnSInfoPanel.CLEAR, CnSEventManager.INFO_PANEL);
+				ev = new CnSEvent(CnSInfoPanel.CLEAR, CnSEventManager.INFO_PANEL, this.getClass());
 				ev.addParameter(CnSInfoPanel.PANEL, CnSInfoPanel.EDGE_DETAILS);
-				CnSEventManager.handleMessage(ev);
+				CnSEventManager.handleMessage(ev, true);
 			}
 		}
 	}

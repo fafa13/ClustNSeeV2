@@ -20,6 +20,7 @@ import java.awt.Font;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JTable;
+import javax.swing.border.Border;
 import javax.swing.table.TableCellRenderer;
 
 /**
@@ -27,14 +28,16 @@ import javax.swing.table.TableCellRenderer;
  */
 public class CnSPartitionTableFixedColumnRenderer implements TableCellRenderer {
 	private Font font = new Font("serif", Font.PLAIN, 12);
+	private static JLabel label;
+	private static Border paddingBorder = BorderFactory.createEmptyBorder(0, 5, 0, 5);
 	
-	/* (non-Javadoc)
-	 * @see javax.swing.table.TableCellRenderer#getTableCellRendererComponent(javax.swing.JTable, java.lang.Object, boolean, boolean, int, int)
-	 */
-	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-		JLabel label = new JLabel(value.toString());
-		label.setBorder(BorderFactory.createEmptyBorder(0,  5,  0,  5));
+	static {
+		label = new JLabel();
 		label.setOpaque(true);
+		label.setBorder(paddingBorder);
+	}
+	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+		label.setText(value.toString());
 		if (isSelected) {
 			label.setFont(font.deriveFont(Font.BOLD));
 			label.setBackground(Color.yellow);

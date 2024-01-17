@@ -54,36 +54,31 @@ public class CnSDeleteAnnotationFileTask extends AbstractTask {
 		
 		for (int k = 0;  k < networkRootNode.getChildCount(); k++) {
 			CyNetwork nw = (CyNetwork)networkRootNode.getChildAt(k).getData(CnSAFTreeNetworkNetnameNode.NETWORK);
-			CnSEvent ev = new CnSEvent(CnSNodeAnnotationManager.DEANNOTATE_NETWORK, CnSEventManager.ANNOTATION_MANAGER);
+			CnSEvent ev = new CnSEvent(CnSNodeAnnotationManager.DEANNOTATE_NETWORK, CnSEventManager.ANNOTATION_MANAGER, this.getClass());
 			ev.addParameter(CnSNodeAnnotationManager.ANNOTATION_FILE, annotationFile);
 			ev.addParameter(CnSNodeAnnotationManager.NETWORK, nw);
-			CnSEventManager.handleMessage(ev);
+			CnSEventManager.handleMessage(ev, true);
 				
 			System.err.println("------ " + nw);
 		}
-		System.err.println("OK1");
 		
-		CnSEvent ev = new CnSEvent(CnSNodeAnnotationManager.UNLOAD_ANNOTATIONS, CnSEventManager.ANNOTATION_MANAGER);
+		CnSEvent ev = new CnSEvent(CnSNodeAnnotationManager.UNLOAD_ANNOTATIONS, CnSEventManager.ANNOTATION_MANAGER, this.getClass());
 		ev.addParameter(CnSNodeAnnotationManager.ANNOTATION_FILE, annotationFile);
-		CnSEventManager.handleMessage(ev);
-		System.err.println("OK2");
+		CnSEventManager.handleMessage(ev, true);
 		
-		ev = new CnSEvent(CnSNodeAnnotationManager.REFRESH_CLUSTER_HASMAP, CnSEventManager.ANNOTATION_MANAGER);
-		CnSEventManager.handleMessage(ev);
-		System.err.println("OK3");
+		ev = new CnSEvent(CnSNodeAnnotationManager.REFRESH_CLUSTER_HASMAP, CnSEventManager.ANNOTATION_MANAGER, this.getClass());
+		CnSEventManager.handleMessage(ev, true);
 		
-		ev = new CnSEvent(CnSPartitionPanel.REFRESH, CnSEventManager.PARTITION_PANEL);
-		CnSEventManager.handleMessage(ev);
-		System.err.println("OK4");
-		
-		ev = new CnSEvent(CnSControlPanel.REMOVE_ANNOTATION_FILE, CnSEventManager.CONTROL_PANEL);
+		ev = new CnSEvent(CnSPartitionPanel.REFRESH, CnSEventManager.PARTITION_PANEL, this.getClass());
+		CnSEventManager.handleMessage(ev, true);
+	
+		ev = new CnSEvent(CnSControlPanel.REMOVE_ANNOTATION_FILE, CnSEventManager.CONTROL_PANEL, this.getClass());
 		ev.addParameter(CnSControlPanel.TREE_FILE_NODE, treeFileNode);
-		CnSEventManager.handleMessage(ev);
-		System.err.println("OK5");
+		CnSEventManager.handleMessage(ev, true);
 		
-		ev = new CnSEvent(CnSControlPanel.REFRESH, CnSEventManager.CONTROL_PANEL);
-		CnSEventManager.handleMessage(ev);
-		System.err.println("OK6");
+		ev = new CnSEvent(CnSControlPanel.REFRESH, CnSEventManager.CONTROL_PANEL, this.getClass());
+		CnSEventManager.handleMessage(ev, true);
+		System.err.println("OK");
 	}
 
 }

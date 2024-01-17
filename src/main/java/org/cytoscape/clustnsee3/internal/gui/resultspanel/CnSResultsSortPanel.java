@@ -85,8 +85,8 @@ public class CnSResultsSortPanel extends CnSPanel {
 				if (event.getStateChange() == ItemEvent.SELECTED) {
 					String choice = (String)event.getItem();
 					CnSCluster.setCompareType(choice);
-					CnSEvent ev = new CnSEvent(CnSResultsPanel.SORT_RESULTS, CnSEventManager.RESULTS_PANEL);
-					CnSEventManager.handleMessage(ev);
+					CnSEvent ev = new CnSEvent(CnSResultsPanel.SORT_RESULTS, CnSEventManager.RESULTS_PANEL, this.getClass());
+					CnSEventManager.handleMessage(ev, true);
 				}
 			}
 		});
@@ -94,9 +94,9 @@ public class CnSResultsSortPanel extends CnSPanel {
 			@Override
 			public void itemStateChanged(ItemEvent event) {
 				if (event.getStateChange() == ItemEvent.SELECTED) {
-					CnSEvent ev = new CnSEvent(CnSResultsPanel.SELECT_CLUSTER, CnSEventManager.RESULTS_PANEL);
+					CnSEvent ev = new CnSEvent(CnSResultsPanel.SELECT_CLUSTER, CnSEventManager.RESULTS_PANEL, this.getClass());
 					ev.addParameter(CnSResultsPanel.CLUSTER_NAME, clusterList.getSelectedItem());
-					CnSEventManager.handleMessage(ev);
+					CnSEventManager.handleMessage(ev, true);
 				}
 			}
 		});
@@ -114,9 +114,9 @@ public class CnSResultsSortPanel extends CnSPanel {
 		clusterList.setSelectedItem(Integer.valueOf(i));
 	}
 	public void setSelectedCluster(long l) {
-		CnSEvent ev = new CnSEvent(CnSResultsPanel.GET_CLUSTER_NAME, CnSEventManager.RESULTS_PANEL);
+		CnSEvent ev = new CnSEvent(CnSResultsPanel.GET_CLUSTER_NAME, CnSEventManager.RESULTS_PANEL, this.getClass());
 		ev.addParameter(CnSResultsPanel.CLUSTER, l);
-		Integer index = (Integer)CnSEventManager.handleMessage(ev);
+		Integer index = (Integer)CnSEventManager.handleMessage(ev, true);
 		if (index != null)
 			if (index != clusterList.getSelectedIndex())
 				clusterList.setSelectedIndex(index);

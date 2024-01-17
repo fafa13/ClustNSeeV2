@@ -42,7 +42,7 @@ public class CnSControlAlgorithmOCGPanel extends CnSPanel implements ChangeListe
 		expertButton.addChangeListener(new ChangeListener() {
 			@Override
 			public void stateChanged(ChangeEvent e) {
-				CnSEvent ev = new CnSEvent(CnSAlgorithmManager.SET_ALGORITHM_PARAMETER, CnSEventManager.ALGORITHM_MANAGER);
+				CnSEvent ev = new CnSEvent(CnSAlgorithmManager.SET_ALGORITHM_PARAMETER, CnSEventManager.ALGORITHM_MANAGER, this.getClass());
 				ev.addParameter(CnSAlgorithmManager.ALGO_NAME, "OCG");
 				ev.addParameter(CnSAlgorithmManager.PARAMETER_NAME, "Options");
 				ev.addParameter(CnSAlgorithmManager.PARAMETER_KEY, CnSOCGAlgorithm.OPTIONS);
@@ -54,7 +54,7 @@ public class CnSControlAlgorithmOCGPanel extends CnSPanel implements ChangeListe
 					remove(expertOptionsPanel);
 					ev.addParameter(CnSAlgorithmManager.PARAMETER_VALUE, "Default options");
 				}
-				CnSEventManager.handleMessage(ev);
+				CnSEventManager.handleMessage(ev, true);
 			}
 		});
 		expertButton.addChangeListener(this);

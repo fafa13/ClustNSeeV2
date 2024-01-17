@@ -80,8 +80,8 @@ public class CnSImportPartitionMenu extends AbstractCyAction {
 		}
 		if (toload) {
 			System.err.println("Importing partition from " + file.getName());
-			CnSEvent ev = new CnSEvent(CyActivator.GET_APPLICATION_MANAGER, CnSEventManager.CY_ACTIVATOR);
-			CyApplicationManager cam = (CyApplicationManager)CnSEventManager.handleMessage(ev);
+			CnSEvent ev = new CnSEvent(CyActivator.GET_APPLICATION_MANAGER, CnSEventManager.CY_ACTIVATOR, this.getClass());
+			CyApplicationManager cam = (CyApplicationManager)CnSEventManager.handleMessage(ev, true);
 			CyNetwork currentNetwork = cam.getCurrentNetwork();
 			
 			if (currentNetwork == null) {
@@ -101,9 +101,9 @@ public class CnSImportPartitionMenu extends AbstractCyAction {
 							if (s.startsWith("#")) {
 								if (s.startsWith("#Algorithm:")) {
 									algoName = s.substring(11);
-									ev = new CnSEvent(CnSAlgorithmManager.GET_ALGORITHM, CnSEventManager.ALGORITHM_MANAGER);
+									ev = new CnSEvent(CnSAlgorithmManager.GET_ALGORITHM, CnSEventManager.ALGORITHM_MANAGER, this.getClass());
 									ev.addParameter(CnSAlgorithmManager.ALGO_NAME, algoName);
-									algo = (CnSAlgorithm)CnSEventManager.handleMessage(ev);
+									algo = (CnSAlgorithm)CnSEventManager.handleMessage(ev, true);
 									if (algo == null) {
 										JOptionPane.showMessageDialog(null, "Unknown algorithm : " + s, "Unknown algorithm", JOptionPane.ERROR_MESSAGE, null);
 										break;
@@ -134,12 +134,12 @@ public class CnSImportPartitionMenu extends AbstractCyAction {
 								else if (s.startsWith("#Parameter:")) {
 									String[] item = s.substring(11).split("=");
 									if (item.length == 2) {
-										ev = new CnSEvent(CnSAlgorithmManager.SET_ALGORITHM_PARAMETER, CnSEventManager.ALGORITHM_MANAGER);
+										ev = new CnSEvent(CnSAlgorithmManager.SET_ALGORITHM_PARAMETER, CnSEventManager.ALGORITHM_MANAGER, this.getClass());
 										ev.addParameter(CnSAlgorithmManager.ALGO_NAME, algo.getName());
 										ev.addParameter(CnSAlgorithmManager.PARAMETER_NAME, item[0]);
 										ev.addParameter(CnSAlgorithmManager.PARAMETER_VALUE, item[1]);
 										ev.addParameter(CnSAlgorithmManager.PARAMETER_KEY, algo.getParameters().getParameterKey(item[0]));
-										CnSEventManager.handleMessage(ev);
+										CnSEventManager.handleMessage(ev, true);
 									}
 									else {
 										JOptionPane.showMessageDialog(null, "Unknown parameter : " + s, "Unknown parameter", JOptionPane.ERROR_MESSAGE, null);
@@ -156,13 +156,12 @@ public class CnSImportPartitionMenu extends AbstractCyAction {
 								System.err.println("  " + s);
 							}
 							else if (!s.equals("")) {
-								ev = new CnSEvent(CnSNetworkManager.GET_NODES_WITH_VALUE, CnSEventManager.NETWORK_MANAGER);
+								ev = new CnSEvent(CnSNetworkManager.GET_NODES_WITH_VALUE, CnSEventManager.NETWORK_MANAGER, this.getClass());
 								ev.addParameter(CnSNetworkManager.NETWORK, network);
 								ev.addParameter(CnSNetworkManager.COLNAME, "shared name");
 								ev.addParameter(CnSNetworkManager.VALUE, s);
-								n = (Set<CyNode>)CnSEventManager.handleMessage(ev);
+								n = (Set<CyNode>)CnSEventManager.handleMessage(ev, true);
 								
-								//n = getNodesWithValue(network, network.getDefaultNodeTable(), "name", s);
 								if (n.size() == 1) {
 									System.err.println("  " + n.iterator().next().getSUID() + " => " + s);
 									imported_partition.lastElement().addElement(n.iterator().next().getSUID());
@@ -187,8 +186,8 @@ public class CnSImportPartitionMenu extends AbstractCyAction {
 					JOptionPane.showMessageDialog(null, "The file you have selected is not a Clustnsee export file", "Unknown file", JOptionPane.ERROR_MESSAGE, null);
 				
 				CnSImportPartitionTask task = new CnSImportPartitionTask(imported_partition, imported_annotation, algo, network, scope);
-				ev = new CnSEvent(CyActivator.GET_TASK_MANAGER, CnSEventManager.CY_ACTIVATOR);
-				DialogTaskManager dialogTaskManager = (DialogTaskManager)CnSEventManager.handleMessage(ev);
+				ev = new CnSEvent(CyActivator.GET_TASK_MANAGER, CnSEventManager.CY_ACTIVATOR, this.getClass());
+				DialogTaskManager dialogTaskManager = (DialogTaskManager)CnSEventManager.handleMessage(ev, true);
 				TaskIterator ti = new TaskIterator();
 				ti.append(task);
 				dialogTaskManager.execute(ti);

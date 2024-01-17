@@ -57,13 +57,13 @@ public class CnSControlAlgorithmOCGExpertOptionsPanel extends CnSPanel {
 			@Override
 			public void itemStateChanged(ItemEvent e) {
 				if (e.getStateChange() == ItemEvent.SELECTED) {
-					CnSEvent ev = new CnSEvent(CnSAlgorithmManager.SET_ALGORITHM_PARAMETER, CnSEventManager.ALGORITHM_MANAGER);
+					CnSEvent ev = new CnSEvent(CnSAlgorithmManager.SET_ALGORITHM_PARAMETER, CnSEventManager.ALGORITHM_MANAGER, this.getClass());
 				
 					ev.addParameter(CnSAlgorithmManager.ALGO_NAME, "OCG");
 					ev.addParameter(CnSAlgorithmManager.PARAMETER_NAME, "Initial clusters");
 					ev.addParameter(CnSAlgorithmManager.PARAMETER_KEY, CnSOCGAlgorithm.INITIAL_CLUSTERS);
 					ev.addParameter(CnSAlgorithmManager.PARAMETER_VALUE, initialClustersComboBox.getSelectedItem());
-					CnSEventManager.handleMessage(ev);
+					CnSEventManager.handleMessage(ev, true);
 				}
 			}
 		});

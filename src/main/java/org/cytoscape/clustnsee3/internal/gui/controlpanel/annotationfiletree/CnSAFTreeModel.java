@@ -16,15 +16,22 @@ package org.cytoscape.clustnsee3.internal.gui.controlpanel.annotationfiletree;
 import java.io.File;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Vector;
 
 import org.cytoscape.clustnsee3.internal.gui.controlpanel.annotationfiletree.nodes.details.CnSAFTreeDetailsNode;
+import org.cytoscape.clustnsee3.internal.gui.controlpanel.annotationfiletree.nodes.details.CnSAFTreeDetailsNodePanel;
 import org.cytoscape.clustnsee3.internal.gui.controlpanel.annotationfiletree.nodes.file.CnSAFTreeFileNode;
 import org.cytoscape.clustnsee3.internal.gui.controlpanel.annotationfiletree.nodes.root.CnSAFTreeRootNode;
+import org.cytoscape.clustnsee3.internal.gui.controlpanel.networkfiletree.nodes.netname.CnSAFTreeNetworkNetnameNodePanel;
+import org.cytoscape.clustnsee3.internal.gui.controlpanel.networkfiletree.CnSNetworksTreeModel;
+import org.cytoscape.clustnsee3.internal.gui.controlpanel.networkfiletree.nodes.netname.CnSAFTreeNetworkNetnameNode;
 import org.cytoscape.clustnsee3.internal.gui.util.paneltree.CnSPanelTreeModel;
 import org.cytoscape.clustnsee3.internal.gui.util.paneltree.CnSPanelTreeNode;
 import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeAnnotationFile;
+import org.cytoscape.model.CyNetwork;
 
 public class CnSAFTreeModel extends CnSPanelTreeModel {
+	private static final long serialVersionUID = -6953596223506537360L;
 	public CnSAFTreeModel(CnSPanelTreeNode treeNode) {
 		super(treeNode);
 	}
@@ -46,10 +53,6 @@ public class CnSAFTreeModel extends CnSPanelTreeModel {
 			CnSAFTreeDetailsNode detailsNode = new CnSAFTreeDetailsNode(node, v);
 			detailsNode.setEditable(true);
 			detailsNode.getPanel().deriveFont(11);
-			//detailsNode.getPanel().initGraphics();
-			
-			//node.addChild(detailsNode);
-			//insertNodeInto(detailsNode, node, node.getChildCount());
 		}
 	}
 	
@@ -62,7 +65,43 @@ public class CnSAFTreeModel extends CnSPanelTreeModel {
 		}
 		return false;
 	}
-
+	
+	public Vector<CnSNodeAnnotationFile> getAnnotationFiles() {
+		Vector<CnSNodeAnnotationFile> ret = new Vector<CnSNodeAnnotationFile>();
+		Enumeration<CnSPanelTreeNode> nodes = (Enumeration<CnSPanelTreeNode>)(((CnSPanelTreeNode)getRoot()).children());
+		while (nodes.hasMoreElements()) {
+			CnSAFTreeFileNode node = (CnSAFTreeFileNode)nodes.nextElement();
+			
+			CnSNodeAnnotationFile af = (CnSNodeAnnotationFile)node.getData(CnSAFTreeFileNode.ANNOTATION_FILE);
+			ret.addElement(af);
+		}
+		return ret;
+	}
+	
+	public Vector<CnSAFTreeNetworkNetnameNode> getAnnotatedNetworks(CnSNodeAnnotationFile annotationfile) {
+		Vector<CnSAFTreeNetworkNetnameNode> ret = new Vector<CnSAFTreeNetworkNetnameNode>();
+		Enumeration<CnSPanelTreeNode> nodes = (Enumeration<CnSPanelTreeNode>)(((CnSPanelTreeNode)getRoot()).children());
+		while (nodes.hasMoreElements()) {
+			CnSAFTreeFileNode node = (CnSAFTreeFileNode)nodes.nextElement();
+			
+			CnSNodeAnnotationFile af = (CnSNodeAnnotationFile)node.getData(CnSAFTreeFileNode.ANNOTATION_FILE);
+			if (af.equals(annotationfile)) {
+				
+				Enumeration<CnSPanelTreeNode> networknodes = node.children();
+				while (networknodes.hasMoreElements()) {
+					CnSAFTreeDetailsNode nnode = (CnSAFTreeDetailsNode)networknodes.nextElement();
+					Enumeration<CnSPanelTreeNode> etm = ((CnSAFTreeDetailsNodePanel)nnode.getPanel()).getNetworksRootNode().children();					
+					while (etm.hasMoreElements()) {
+						CnSPanelTreeNode tm = etm.nextElement();
+						CyNetwork cn = (CyNetwork)tm.getData(CnSAFTreeNetworkNetnameNode.NETWORK);
+						System.err.println(af.getFile().getAbsolutePath() + " -> " + cn.getSUID());
+						ret.addElement((CnSAFTreeNetworkNetnameNode)tm);
+					}
+				}
+			}
+		}
+		return ret;
+	}
 	public void printStructure(CnSPanelTreeNode node, int level) {
 		printNode(node, level);
 		for (int i = 0; i < node.getChildCount(); i++) printStructure(node.getChildAt(i), level + 1);

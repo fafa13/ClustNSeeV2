@@ -213,6 +213,16 @@ public class CnSPartition {
 		return ret;
 	}
 	
+	public CnSCluster getCluster(Integer clusterID) {
+		CnSCluster ret = null;
+		for (CnSCluster cl : clusters)
+			if (cl.getID() == clusterID.intValue()) {
+				ret = cl;
+				break;
+			}
+		return ret;
+	}
+	
 	public String toString() {
 		return getName() + ":" + algorithmName;
 	}

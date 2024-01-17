@@ -49,23 +49,23 @@ public class CnSShowClusterlinksMenuFactory implements CyNodeViewContextMenuFact
 	public CyMenuItem createMenuItem(final CyNetworkView netView, final View<CyNode> nodeView) {
 		CyMenuItem cyMenuItem = null;
 		JMenuItem menuItem = new JMenuItem("Show cluster links");
-		CnSEvent ev = new CnSEvent(CnSNetworkManager.GET_NETWORK, CnSEventManager.NETWORK_MANAGER);
+		CnSEvent ev = new CnSEvent(CnSNetworkManager.GET_NETWORK, CnSEventManager.NETWORK_MANAGER, this.getClass());
 		ev.addParameter(CnSNetworkManager.NETWORK, netView.getModel());
-		CnSNetwork cnsNetwork = (CnSNetwork)CnSEventManager.handleMessage(ev);
+		CnSNetwork cnsNetwork = (CnSNetwork)CnSEventManager.handleMessage(ev, true);
 		
 		menuItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				CnSEvent ev = new CnSEvent(CnSViewManager.GET_SELECTED_VIEW, CnSEventManager.VIEW_MANAGER);
-				CnSView view = (CnSView)CnSEventManager.handleMessage(ev);
+				CnSEvent ev = new CnSEvent(CnSViewManager.GET_SELECTED_VIEW, CnSEventManager.VIEW_MANAGER, this.getClass());
+				CnSView view = (CnSView)CnSEventManager.handleMessage(ev, true);
 				
-				ev = new CnSEvent(CnSPartitionManager.GET_PARTITION, CnSEventManager.PARTITION_MANAGER);
+				ev = new CnSEvent(CnSPartitionManager.GET_PARTITION, CnSEventManager.PARTITION_MANAGER, this.getClass());
 				ev.addParameter(CnSPartitionManager.VIEW, view);
-				CnSPartition partition = (CnSPartition)CnSEventManager.handleMessage(ev);
+				CnSPartition partition = (CnSPartition)CnSEventManager.handleMessage(ev, true);
 				if (partition == null) {
-					ev = new CnSEvent(CnSViewManager.GET_VIEW_PARTITION, CnSEventManager.VIEW_MANAGER);
+					ev = new CnSEvent(CnSViewManager.GET_VIEW_PARTITION, CnSEventManager.VIEW_MANAGER, this.getClass());
 					ev.addParameter(CnSViewManager.VIEW, view);
-					partition = (CnSPartition)CnSEventManager.handleMessage(ev);
+					partition = (CnSPartition)CnSEventManager.handleMessage(ev, true);
 				}
 				CnSNode node = partition.getClusterNode(nodeView.getModel().getSUID());
 				

@@ -35,10 +35,10 @@ public class CnSComputeEnrichmentTask extends AbstractTask {
 	 */
 	@Override
 	public void run(TaskMonitor taskMonitor) throws Exception {
-		CnSEvent ev = new CnSEvent(CnSNodeAnnotationManager.COMPUTE_ENRICHMENT, CnSEventManager.ANNOTATION_MANAGER);
+		CnSEvent ev = new CnSEvent(CnSNodeAnnotationManager.COMPUTE_ENRICHMENT, CnSEventManager.ANNOTATION_MANAGER, this.getClass());
 		ev.addParameter(CnSNodeAnnotationManager.PARTITION, partition);
 		ev.addParameter(CnSNodeAnnotationManager.TASK, taskMonitor);
-		CnSEventManager.handleMessage(ev);
+		CnSEventManager.handleMessage(ev, true);
 	}
 
 }

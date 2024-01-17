@@ -66,9 +66,9 @@ public class CnSClusterMulticlassPanel extends CnSPanel {
 		nbNodesLabel.setText(String.valueOf(clusterLink.getNodes().size()));
 		
 		data.clear();
-		CnSEvent ev = new CnSEvent(CnSPartitionManager.GET_PARTITION, CnSEventManager.PARTITION_MANAGER);
+		CnSEvent ev = new CnSEvent(CnSPartitionManager.GET_PARTITION, CnSEventManager.PARTITION_MANAGER, this.getClass());
 		ev.addParameter(CnSPartitionManager.CLUSTER, clusterLink.getSource());
-		CnSPartition partition = (CnSPartition)CnSEventManager.handleMessage(ev);
+		CnSPartition partition = (CnSPartition)CnSEventManager.handleMessage(ev, true);
 		
 		for (CnSNode n : clusterLink.getNodes()) {
 			Vector<String> rv = new Vector<String>();
