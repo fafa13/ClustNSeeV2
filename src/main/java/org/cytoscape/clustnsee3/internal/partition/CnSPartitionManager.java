@@ -30,6 +30,7 @@ import org.cytoscape.clustnsee3.internal.analysis.node.CnSNode;
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventListener;
 import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
+import org.cytoscape.clustnsee3.internal.event.CnSEventResult;
 import org.cytoscape.clustnsee3.internal.network.CnSNetwork;
 import org.cytoscape.clustnsee3.internal.network.CnSNetworkManager;
 import org.cytoscape.clustnsee3.internal.task.CnSDiscardAllPartitionsTask;
@@ -169,8 +170,8 @@ public class CnSPartitionManager implements CnSEventListener, SessionLoadedListe
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public Object cnsEventOccured(CnSEvent event, boolean log) {
-		Object ret = null;
+	public CnSEventResult<?> cnsEventOccured(CnSEvent event, boolean log) {
+		CnSEventResult<?> ret = new CnSEventResult<Object>(null);
 		CnSPartition p;
 		CnSNetwork n;
 		CnSView v;
@@ -206,29 +207,29 @@ public class CnSPartitionManager implements CnSEventListener, SessionLoadedListe
 				taskMonitor = (TaskMonitor)event.getParameter(TASK_MONITOR);
 				p = createPartition(inputNetwork, algoResults, algorithm, taskMonitor);
 				if (!partitions.contains(p)) partitions.addElement(p);
-				ret = p;
+				ret = new CnSEventResult<CnSPartition>(p);
 				break;
 				
 			case GET_PARTITION :
 				index = (Integer)event.getParameter(INDEX);
 				if (index != null) {
 					if (partitions.size() > index.intValue())
-						ret = partitions.elementAt(index.intValue());
+						ret = new CnSEventResult<CnSPartition>(partitions.elementAt(index.intValue()));
 				}
 				else {
 					v = (CnSView)event.getParameter(VIEW);
 					if (v != null) 
-						ret = view2partitionMap.get(v);
+						ret = new CnSEventResult<CnSPartition>(view2partitionMap.get(v));
 					else {
 						n = (CnSNetwork)event.getParameter(NETWORK);
 						if (n != null)
-							ret = network2partitionMap.get(n);
+							ret = new CnSEventResult<CnSPartition>(network2partitionMap.get(n));
 						else {
 							c = (CnSCluster)event.getParameter(CLUSTER);
 							if (c != null)
 								for (CnSPartition part : partitions)
 									if (part.containsCluster(c)) {
-										ret = part;
+										ret = new CnSEventResult<CnSPartition>(part);
 										break;
 									}
 						}
@@ -241,9 +242,9 @@ public class CnSPartitionManager implements CnSEventListener, SessionLoadedListe
 				suid = (Long)event.getParameter(NODE_SUID);
 				cyNode = (CyNode)event.getParameter(CY_NODE);
 				if (suid != null)
-					ret = p.getClusterNode(suid);
+					ret = new CnSEventResult<CnSNode>(p.getClusterNode(suid));
 				else if (cyNode != null)
-					ret = p.getClusterNode(cyNode);
+					ret = new CnSEventResult<CnSNode>(p.getClusterNode(cyNode));
 				break;
 				
 			case GET_NODE :
@@ -252,12 +253,12 @@ public class CnSPartitionManager implements CnSEventListener, SessionLoadedListe
 				suid = (Long)event.getParameter(NODE_SUID);
 				if (p != null) {
 					if (suid != null) 
-						ret = p.getNode(suid);
+						ret = new CnSEventResult<CnSNode>(p.getNode(suid));
 					else {
 						cnsNode = p.getClusterNode(cyNode);
 						if (cnsNode == null) cnsNode = p.getNode(cyNode);
 							if (cnsNode != null) {
-								ret = cnsNode;
+								ret = new CnSEventResult<CnSNode>(cnsNode);
 						}
 					}
 				}
@@ -268,7 +269,7 @@ public class CnSPartitionManager implements CnSEventListener, SessionLoadedListe
 						cnsNode = part.getClusterNode(cyNode);
 						if (cnsNode == null) cnsNode = part.getNode(cyNode);
 						if (cnsNode != null) {
-							ret = cnsNode;
+							ret = new CnSEventResult<CnSNode>(cnsNode);
 							break;
 						}
 					}
@@ -291,7 +292,7 @@ public class CnSPartitionManager implements CnSEventListener, SessionLoadedListe
 				
 			case GET_VIEW :
 				p = (CnSPartition)event.getParameter(PARTITION);
-				ret = partition2viewMap.get(p);
+				ret = new CnSEventResult<CnSView>(partition2viewMap.get(p));
 				break;
 				
 			case REMOVE_PARTITION :
@@ -309,12 +310,12 @@ public class CnSPartitionManager implements CnSEventListener, SessionLoadedListe
 				p = (CnSPartition)event.getParameter(PARTITION);
 				cyNode = (CyNode)event.getParameter(CY_NODE);
 				cnsNode = p.getNode(cyNode);
-				ret = cnsNode.getClusters();
+				ret = new CnSEventResult<Vector<CnSCluster>>(cnsNode.getClusters());
 				break;
 				
 			case GET_PARTITION_NETWORK :
 				p = (CnSPartition)event.getParameter(PARTITION);
-				ret = partition2networkMap.get(p);
+				ret = new CnSEventResult<CnSNetwork>(partition2networkMap.get(p));
 				break;
 				
 			case GET_CLUSTER_LINK :
@@ -324,12 +325,12 @@ public class CnSPartitionManager implements CnSEventListener, SessionLoadedListe
 					for (CnSClusterLink cl : p.getClusterLinks()) {
 						if (cl.getInteractionEdge() != null)
 							if (cyEdge == cl.getInteractionEdge().getCyEdge()) {
-								ret = cl;
+								ret = new CnSEventResult<CnSClusterLink>(cl);
 								break;
 							}
 						if (cl.getMulticlassEdge() != null)
 							if (cyEdge == cl.getMulticlassEdge().getCyEdge()) {
-								ret = cl;
+								ret = new CnSEventResult<CnSClusterLink>(cl);
 								break;
 							}
 					}
@@ -339,12 +340,12 @@ public class CnSPartitionManager implements CnSEventListener, SessionLoadedListe
 						for (CnSClusterLink cl : part.getClusterLinks()) {
 							if (cl.getInteractionEdge() != null)
 								if (cyEdge == cl.getInteractionEdge().getCyEdge()) {
-									ret = cl;
+									ret = new CnSEventResult<CnSClusterLink>(cl);
 									break;
 								}
 							if (cl.getMulticlassEdge() != null)
 								if (cyEdge == cl.getMulticlassEdge().getCyEdge()) {
-									ret = cl;
+									ret = new CnSEventResult<CnSClusterLink>(cl);
 									break;
 								}
 						}
@@ -361,7 +362,7 @@ public class CnSPartitionManager implements CnSEventListener, SessionLoadedListe
 						for (CnSNode node : cl.getNodes())
 							if (!multiclassNodes.contains(node))
 								multiclassNodes.addElement(node);
-				ret = Integer.valueOf(multiclassNodes.size());
+				ret = new CnSEventResult<Integer>(Integer.valueOf(multiclassNodes.size()));
 				break;
 				
 			case GET_CLUSTER :
@@ -374,7 +375,7 @@ public class CnSPartitionManager implements CnSEventListener, SessionLoadedListe
 						c = p.getCluster(cyNode);
 					else if (clusterID != null)
 						c = p.getCluster(clusterID);
-					if (c != null) ret = c;
+					if (c != null) ret = new CnSEventResult<CnSCluster>(c);
 				}
 				else for (CnSPartition part : partitions) {
 					if (cyNode != null)
@@ -382,7 +383,7 @@ public class CnSPartitionManager implements CnSEventListener, SessionLoadedListe
 					else if (clusterID != null)
 						c = part.getCluster(clusterID);
 					if (c != null) {
-						ret = c;
+						ret = new CnSEventResult<CnSCluster>(c);
 						break;
 					}
 				}
@@ -397,7 +398,7 @@ public class CnSPartitionManager implements CnSEventListener, SessionLoadedListe
 				taskMonitor = (TaskMonitor)event.getParameter(TASK_MONITOR);
 				p = importPartition(inputNetwork, partition_import, annotation_import, algorithm, scope, taskMonitor);
 				if (!partitions.contains(p)) partitions.addElement(p);
-				ret = p;
+				ret = new CnSEventResult<CnSPartition>(p);
 				break;
 				
 			case GET_NODE_CLUSTERS :
@@ -410,24 +411,24 @@ public class CnSPartitionManager implements CnSEventListener, SessionLoadedListe
 						}
 					}
 				}
-				ret = clusters;
+				ret = new CnSEventResult<Vector<CnSCluster>>(clusters);
 				break;
 				
 			case GET_PARTITIONS :
-				ret = partitions;
+				ret = new CnSEventResult<Vector<CnSPartition>>(partitions);
 				break;
 				
 			case GET_CLUSTER_NODES :
 				nodes = new Vector<CyNode>();
 				c = (CnSCluster)event.getParameter(CLUSTER);
 				for (CnSNode node : c.getNodes()) nodes.addElement(node.getCyNode());
-				ret = nodes;
+				ret = new CnSEventResult<Vector<CyNode>>(nodes);
 				break;
 				
 			case GET_ALL_CLUSTERS :
 				clusters = new Vector<CnSCluster>();
 				for (CnSPartition part : partitions) clusters.addAll(part.getClusters());
-				ret = clusters;
+				ret = new CnSEventResult<Vector<CnSCluster>>(clusters);
 				break;
 		}
 		return ret;
@@ -436,18 +437,18 @@ public class CnSPartitionManager implements CnSEventListener, SessionLoadedListe
 	private CnSPartition importPartition(CyNetwork inputNetwork, Vector<Vector<Long>> imported_partition, Vector<Vector<String>> imported_annotation, CnSAlgorithm algorithm, String scope, TaskMonitor taskMonitor) {
 		// get services needed for network and view creation in cytoscape
 		CnSEvent ev = new CnSEvent(CyActivator.GET_ROOT_NETWORK_MANAGER, CnSEventManager.CY_ACTIVATOR, this.getClass());
-		CyRootNetworkManager crnm = (CyRootNetworkManager)CnSEventManager.handleMessage(ev, true);
+		CyRootNetworkManager crnm = (CyRootNetworkManager)CnSEventManager.handleMessage(ev, true).getValue();
 		CyRootNetwork crn = crnm.getRootNetwork(inputNetwork);
 		ev = new CnSEvent(CyActivator.GET_NETWORK_MANAGER, CnSEventManager.CY_ACTIVATOR, this.getClass());
-		CyNetworkManager networkManager = (CyNetworkManager)CnSEventManager.handleMessage(ev, true);
+		CyNetworkManager networkManager = (CyNetworkManager)CnSEventManager.handleMessage(ev, true).getValue();
 		ev = new CnSEvent(CyActivator.GET_NETWORK_VIEW_FACTORY, CnSEventManager.CY_ACTIVATOR, this.getClass());
-		CyNetworkViewFactory cnvf = (CyNetworkViewFactory)CnSEventManager.handleMessage(ev, true);
+		CyNetworkViewFactory cnvf = (CyNetworkViewFactory)CnSEventManager.handleMessage(ev, true).getValue();
 		ev = new CnSEvent(CyActivator.GET_APPLY_PREFERRED_LAYOUT_TASK_FACTORY, CnSEventManager.CY_ACTIVATOR, this.getClass());
-		ApplyPreferredLayoutTaskFactory apltf =  (ApplyPreferredLayoutTaskFactory)CnSEventManager.handleMessage(ev, true);
+		ApplyPreferredLayoutTaskFactory apltf =  (ApplyPreferredLayoutTaskFactory)CnSEventManager.handleMessage(ev, true).getValue();
 		ev = new CnSEvent(CyActivator.GET_NETWORK_VIEW_MANAGER, CnSEventManager.CY_ACTIVATOR, this.getClass());
-		CyNetworkViewManager networkViewManager = (CyNetworkViewManager)CnSEventManager.handleMessage(ev, true);
+		CyNetworkViewManager networkViewManager = (CyNetworkViewManager)CnSEventManager.handleMessage(ev, true).getValue();
 		ev = new CnSEvent(CyActivator.GET_SYNCHRONOUS_TASK_MANAGER, CnSEventManager.CY_ACTIVATOR, this.getClass());
-		TaskManager<?, ?> tm = (TaskManager<?, ?>)CnSEventManager.handleMessage(ev, true);
+		TaskManager<?, ?> tm = (TaskManager<?, ?>)CnSEventManager.handleMessage(ev, true).getValue();
 		// network for each cluster
         CySubNetwork clusterNet = null;
         Vector<CyNode> cynodes_to_keep = new Vector<CyNode>();
@@ -644,19 +645,19 @@ public class CnSPartitionManager implements CnSEventListener, SessionLoadedListe
 	private CnSPartition createPartition(CyNetwork inputNetwork, CnSAlgorithmResult algoResults, CnSAlgorithm algorithm, TaskMonitor taskMonitor) {
 		// get services needed for network and view creation in cytoscape
 		CnSEvent ev = new CnSEvent(CyActivator.GET_ROOT_NETWORK_MANAGER, CnSEventManager.CY_ACTIVATOR, this.getClass());
-        CyRootNetworkManager crnm = (CyRootNetworkManager)CnSEventManager.handleMessage(ev, true);
+        CyRootNetworkManager crnm = (CyRootNetworkManager)CnSEventManager.handleMessage(ev, true).getValue();
         CyRootNetwork crn = crnm.getRootNetwork(inputNetwork);
         System.err.println("CRN = " + crn);
         ev = new CnSEvent(CyActivator.GET_NETWORK_MANAGER, CnSEventManager.CY_ACTIVATOR, this.getClass());
-        CyNetworkManager networkManager = (CyNetworkManager)CnSEventManager.handleMessage(ev, true);
+        CyNetworkManager networkManager = (CyNetworkManager)CnSEventManager.handleMessage(ev, true).getValue();
         ev = new CnSEvent(CyActivator.GET_NETWORK_VIEW_FACTORY, CnSEventManager.CY_ACTIVATOR, this.getClass());
-        CyNetworkViewFactory cnvf = (CyNetworkViewFactory)CnSEventManager.handleMessage(ev, true);
+        CyNetworkViewFactory cnvf = (CyNetworkViewFactory)CnSEventManager.handleMessage(ev, true).getValue();
         ev = new CnSEvent(CyActivator.GET_APPLY_PREFERRED_LAYOUT_TASK_FACTORY, CnSEventManager.CY_ACTIVATOR, this.getClass());
-        ApplyPreferredLayoutTaskFactory apltf =  (ApplyPreferredLayoutTaskFactory)CnSEventManager.handleMessage(ev, true);
+        ApplyPreferredLayoutTaskFactory apltf =  (ApplyPreferredLayoutTaskFactory)CnSEventManager.handleMessage(ev, true).getValue();
         ev = new CnSEvent(CyActivator.GET_NETWORK_VIEW_MANAGER, CnSEventManager.CY_ACTIVATOR, this.getClass());
-        CyNetworkViewManager networkViewManager = (CyNetworkViewManager)CnSEventManager.handleMessage(ev, true);
+        CyNetworkViewManager networkViewManager = (CyNetworkViewManager)CnSEventManager.handleMessage(ev, true).getValue();
         ev = new CnSEvent(CyActivator.GET_SYNCHRONOUS_TASK_MANAGER, CnSEventManager.CY_ACTIVATOR, this.getClass());
-        TaskManager<?, ?> tm = (TaskManager<?, ?>)CnSEventManager.handleMessage(ev, true);
+        TaskManager<?, ?> tm = (TaskManager<?, ?>)CnSEventManager.handleMessage(ev, true).getValue();
         
         // network for each cluster
         CySubNetwork clusterNet = null;
@@ -907,7 +908,7 @@ public class CnSPartitionManager implements CnSEventListener, SessionLoadedListe
 		System.err.println("Session loaded : " + e.getLoadedFileName());
 		//while (partitions.size() > 0)  {
 			CnSEvent ev = new CnSEvent(CyActivator.GET_TASK_MANAGER, CnSEventManager.CY_ACTIVATOR, this.getClass());
-			DialogTaskManager dialogTaskManager = (DialogTaskManager)CnSEventManager.handleMessage(ev, true);
+			DialogTaskManager dialogTaskManager = (DialogTaskManager)CnSEventManager.handleMessage(ev, true).getValue();
 			TaskIterator ti = new TaskIterator();
 			CnSDiscardAllPartitionsTask task = new CnSDiscardAllPartitionsTask();
 			ti.append(task);

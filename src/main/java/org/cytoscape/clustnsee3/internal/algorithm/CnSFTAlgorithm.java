@@ -92,7 +92,7 @@ public class CnSFTAlgorithm extends CnSAlgorithm {
          * calcule une partition qui optimise un critere de modularité
          */
         CnSEvent ev = new CnSEvent(CnSAlgorithmEngine.GET_SCOPE, CnSEventManager.ALGORITHM_ENGINE, this.getClass());
-        String scope = (String)CnSEventManager.handleMessage(ev, true);
+        String scope = (String)CnSEventManager.handleMessage(ev, true).getValue();
         List<CyNode> selectedNodes = CyTableUtil.getNodesInState(inputNetwork, "selected", true);
         List<CyEdge> selectedEdges = CyTableUtil.getEdgesInState(inputNetwork, "selected", true);
         if (scope.equals("Selection")) {
@@ -132,7 +132,7 @@ public class CnSFTAlgorithm extends CnSAlgorithm {
             ni = inputNetwork.getNodeList().iterator();
         }
         ev = new CnSEvent(CnSAlgorithmEngine.IS_CANCELLED, CnSEventManager.ALGORITHM_ENGINE, this.getClass());
-        boolean cancelled = (Boolean)CnSEventManager.handleMessage(ev, true);
+        boolean cancelled = (Boolean)CnSEventManager.handleMessage(ev, true).getValue();
         
         HashMap<Integer, Long> algo_to_cyto = new HashMap<Integer, Long>();
 		for (int i = 0; ni.hasNext() && !cancelled; i++) {

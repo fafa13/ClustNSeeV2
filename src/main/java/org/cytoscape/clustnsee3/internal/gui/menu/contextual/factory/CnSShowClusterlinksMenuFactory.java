@@ -51,21 +51,21 @@ public class CnSShowClusterlinksMenuFactory implements CyNodeViewContextMenuFact
 		JMenuItem menuItem = new JMenuItem("Show cluster links");
 		CnSEvent ev = new CnSEvent(CnSNetworkManager.GET_NETWORK, CnSEventManager.NETWORK_MANAGER, this.getClass());
 		ev.addParameter(CnSNetworkManager.NETWORK, netView.getModel());
-		CnSNetwork cnsNetwork = (CnSNetwork)CnSEventManager.handleMessage(ev, true);
+		CnSNetwork cnsNetwork = (CnSNetwork)CnSEventManager.handleMessage(ev, true).getValue();
 		
 		menuItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				CnSEvent ev = new CnSEvent(CnSViewManager.GET_SELECTED_VIEW, CnSEventManager.VIEW_MANAGER, this.getClass());
-				CnSView view = (CnSView)CnSEventManager.handleMessage(ev, true);
+				CnSView view = (CnSView)CnSEventManager.handleMessage(ev, true).getValue();
 				
 				ev = new CnSEvent(CnSPartitionManager.GET_PARTITION, CnSEventManager.PARTITION_MANAGER, this.getClass());
 				ev.addParameter(CnSPartitionManager.VIEW, view);
-				CnSPartition partition = (CnSPartition)CnSEventManager.handleMessage(ev, true);
+				CnSPartition partition = (CnSPartition)CnSEventManager.handleMessage(ev, true).getValue();
 				if (partition == null) {
 					ev = new CnSEvent(CnSViewManager.GET_VIEW_PARTITION, CnSEventManager.VIEW_MANAGER, this.getClass());
 					ev.addParameter(CnSViewManager.VIEW, view);
-					partition = (CnSPartition)CnSEventManager.handleMessage(ev, true);
+					partition = (CnSPartition)CnSEventManager.handleMessage(ev, true).getValue();
 				}
 				CnSNode node = partition.getClusterNode(nodeView.getModel().getSUID());
 				

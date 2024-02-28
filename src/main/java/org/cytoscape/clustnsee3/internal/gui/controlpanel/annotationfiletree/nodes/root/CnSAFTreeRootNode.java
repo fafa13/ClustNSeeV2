@@ -61,7 +61,7 @@ public class CnSAFTreeRootNode extends CnSPanelTreeNode {
 			if (((CnSButton)e.getSource()).getActionCommand().equals("add_file")) {
 				System.out.println("Pressed: add annotation file");
 				CnSEvent ev = new CnSEvent(CnSResultsPanel.GET_SELECTED_PARTITION, CnSEventManager.RESULTS_PANEL, this.getClass());
-				CnSPartition partition = (CnSPartition)CnSEventManager.handleMessage(ev, true);
+				CnSPartition partition = (CnSPartition)CnSEventManager.handleMessage(ev, true).getValue();
 				CnSLoadAnnotationFileDialog dialog = CnSLoadAnnotationFileDialog.getInstance();
 				Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 				dialog.setLocation((screenSize.width - dialog.getWidth()) / 2, (screenSize.height - dialog.getHeight()) / 2);
@@ -71,7 +71,7 @@ public class CnSAFTreeRootNode extends CnSPanelTreeNode {
 				if (dialog.getExitOption() == CnSLoadAnnotationFileDialog.OK_OPTION) {
 					if (! treeModel.contains(dialog.getSelectedFile())) {
 						ev = new CnSEvent(CyActivator.GET_TASK_MANAGER, CnSEventManager.CY_ACTIVATOR, this.getClass());
-						DialogTaskManager dialogTaskManager = (DialogTaskManager)CnSEventManager.handleMessage(ev, true);
+						DialogTaskManager dialogTaskManager = (DialogTaskManager)CnSEventManager.handleMessage(ev, true).getValue();
 						TaskIterator ti = new TaskIterator();
 						CnSLoadAnnotationFileTask task = new CnSLoadAnnotationFileTask(dialog.getSelectedFile(), 
 								dialog.getFromLine(), dialog.getAnnColSpinnerValue(), dialog.getNodeColSpinnerValue(), 

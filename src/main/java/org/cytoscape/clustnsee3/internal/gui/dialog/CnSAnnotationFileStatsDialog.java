@@ -61,22 +61,22 @@ public class CnSAnnotationFileStatsDialog extends JDialog {
 		JLabel annotationsInFileLabel = new JLabel(String.valueOf(annotationsInFile));
 		annotationsInFileLabel.setFont(annotationsInFileLabel.getFont().deriveFont(Font.BOLD));
 		p1.addComponent(annotationsInFileLabel, 3, 0, 1, 1, 0.0, 0.0, CnSPanel.WEST, CnSPanel.NONE, 5, 5, 0, 0, 0, 0);
-		p1.addComponent(new JLabel("annotations."), 4, 0, 1, 1, 0.0, 0.0, CnSPanel.WEST, CnSPanel.NONE, 5, 5, 0, 5, 0, 0);
+		p1.addComponent(new JLabel("annotations"), 4, 0, 1, 1, 0.0, 0.0, CnSPanel.WEST, CnSPanel.NONE, 5, 5, 0, 5, 0, 0);
 		mainPanel.addComponent(p1, 0, 0, 1, 1, 1.0, 1.0, CnSPanel.CENTER, CnSPanel.HORIZONTAL, 5, 5, 0, 5, 0, 0);
 		
 		CnSPanel p2 = new CnSPanel();
 		JLabel foundNodesLabel = new JLabel(String.valueOf(foundNodes));
 		foundNodesLabel.setFont(foundNodesLabel.getFont().deriveFont(Font.BOLD));
 		p2.addComponent(foundNodesLabel, 0, 0, 1, 1, 0.0, 0.0, CnSPanel.WEST, CnSPanel.NONE, 5, 5, 0, 0, 0, 0);
-		p2.addComponent(new JLabel("nodes ("), 1, 0, 1, 1, 0.0, 0.0, CnSPanel.WEST, CnSPanel.NONE, 5, 5, 0, 0, 0, 0);
+		p2.addComponent(new JLabel("nodes of the graph ("), 1, 0, 1, 1, 0.0, 0.0, CnSPanel.WEST, CnSPanel.NONE, 5, 5, 0, 0, 0, 0);
 		double foundNodesPercent = (double)((int)((double)foundNodes / (double)nodesInGraph * 10000.0D)) / 100.0D;
 		JLabel foundNodesPercentLabel = new JLabel(String.valueOf(foundNodesPercent) + "%");
 		foundNodesPercentLabel.setFont(foundNodesPercentLabel.getFont().deriveFont(Font.BOLD));
 		p2.addComponent(foundNodesPercentLabel, 2, 0, 1, 1, 0.0, 0.0, CnSPanel.WEST, CnSPanel.NONE, 5, 0, 0, 0, 0, 0);
-		p2.addComponent(new JLabel(") were found in graph"), 3, 0, 1, 1, 0.0, 0.0, CnSPanel.WEST, CnSPanel.NONE, 5, 0, 0, 5, 0, 0);
+		p2.addComponent(new JLabel(") are annotated"), 3, 0, 1, 1, 0.0, 0.0, CnSPanel.WEST, CnSPanel.NONE, 5, 0, 0, 5, 0, 0);
 		mainPanel.addComponent(p2, 0, 1, 1, 1, 1.0, 1.0, CnSPanel.CENTER, CnSPanel.HORIZONTAL, 5, 5, 0, 5, 0, 0);
 		
-		CnSPanel p3 = new CnSPanel();
+		/*CnSPanel p3 = new CnSPanel();
 		JLabel notFoundNodesLabel = new JLabel(String.valueOf(nodesInFile - foundNodes));
 		notFoundNodesLabel.setFont(notFoundNodesLabel.getFont().deriveFont(Font.BOLD));
 		p3.addComponent(notFoundNodesLabel, 0, 0, 1, 1, 0.0, 0.0, CnSPanel.WEST, CnSPanel.NONE, 5, 5, 0, 0, 0, 0);
@@ -86,7 +86,7 @@ public class CnSAnnotationFileStatsDialog extends JDialog {
 		notFoundNodesPercentLabel.setFont(notFoundNodesPercentLabel.getFont().deriveFont(Font.BOLD));
 		p3.addComponent(notFoundNodesPercentLabel, 2, 0, 1, 1, 0.0, 0.0, CnSPanel.WEST, CnSPanel.NONE, 5, 0, 0, 0, 0, 0);
 		p3.addComponent(new JLabel(") were not found in graph"), 3, 0, 1, 1, 0.0, 0.0, CnSPanel.WEST, CnSPanel.NONE, 5, 0, 0, 5, 0, 0);
-		mainPanel.addComponent(p3, 0, 2, 1, 1, 1.0, 1.0, CnSPanel.CENTER, CnSPanel.HORIZONTAL, 0, 5, 0, 5, 0, 0);
+		mainPanel.addComponent(p3, 0, 2, 1, 1, 1.0, 1.0, CnSPanel.CENTER, CnSPanel.HORIZONTAL, 0, 5, 0, 5, 0, 0);*/
 		
 		CnSPanel commandPanel = new CnSPanel();
 		importButton = new CnSButton("Annotate");

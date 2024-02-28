@@ -65,7 +65,9 @@
             </visualProperty>
             <visualProperty default="#99FF99" name="NODE_FILL_COLOR">
                 <discreteMapping attributeName="CnS:isCluster" attributeType="boolean">
-                    <discreteMappingEntry attributeValue="true" value="#FFCCCC"/>
+                    <!-- <discreteMappingEntry attributeValue="true" value="#FFCCCC"/> -->
+                    <discreteMappingEntry attributeValue="true" value="#ABD9E9"/>
+                    <discreteMappingEntry attributeValue="false" value="#FDAE61"/>
                 </discreteMapping>
             </visualProperty>
             <visualProperty default="0.0" name="NODE_CUSTOMGRAPHICS_SIZE_1"/>
@@ -118,7 +120,13 @@
             <visualProperty default="" name="NODE_TOOLTIP"/>
             <visualProperty default="false" name="NODE_SELECTED"/>
             <visualProperty default="0.0" name="NODE_CUSTOMGRAPHICS_SIZE_7"/>
-            <visualProperty default="#000000" name="NODE_BORDER_PAINT"/>
+            <visualProperty default="#000000" name="NODE_BORDER_PAINT">
+            	<discreteMapping attributeName="CnS:isCluster" attributeType="boolean">
+                    <!-- <discreteMappingEntry attributeValue="true" value="#FFCCCC"/> -->
+                    <discreteMappingEntry attributeValue="true" value="#74ADD1"/>
+                    <discreteMappingEntry attributeValue="false" value="#F46D43"/>
+                </discreteMapping>
+            </visualProperty>
         </node>
         <edge>
             <dependency value="false" name="arrowColorMatchesEdge"/>

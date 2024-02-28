@@ -15,6 +15,7 @@ package org.cytoscape.clustnsee3.internal.algorithm;
 
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventListener;
+import org.cytoscape.clustnsee3.internal.event.CnSEventResult;
 import org.cytoscape.clustnsee3.internal.utils.CnSLogger;
 import org.cytoscape.model.CyNetwork;
 
@@ -81,23 +82,23 @@ public class CnSAlgorithmEngine implements CnSEventListener {
 	 * @see org.cytoscape.clustnsee3.internal.event.CnSEventListener#cnsEventOccured(org.cytoscape.clustnsee3.internal.event.CnSEvent)
 	 */
 	@Override
-	public Object cnsEventOccured(CnSEvent event, boolean log) {
-		Object ret = null;
+	public CnSEventResult<?> cnsEventOccured(CnSEvent event, boolean log) {
+		CnSEventResult<?> ret = new CnSEventResult<Object>(null);
 		
 		if (log) CnSLogger.LogCnSEvent(event, this);
 		
 		switch(event.getAction()) {
 			case START :
-				ret = start((CnSAlgorithm)event.getParameter(ALGORITHM), (CyNetwork)event.getParameter(NETWORK));
+				ret = new CnSEventResult<CnSAlgorithmResult>(start((CnSAlgorithm)event.getParameter(ALGORITHM), (CyNetwork)event.getParameter(NETWORK)));
 				break;
 			case SET_SCOPE :
 				scope = (String)event.getParameter(SCOPE);
 				break;
 			case GET_SCOPE :
-				ret = scope;
+				ret = new CnSEventResult<String>(scope);
 				break;
 			case IS_CANCELLED :
-				ret = Boolean.valueOf(cancelled);
+				ret = new CnSEventResult<Boolean>(Boolean.valueOf(cancelled));
 				break;
 			case SET_CANCELLED :
 				cancelled = (Boolean)event.getParameter(CANCELLED);

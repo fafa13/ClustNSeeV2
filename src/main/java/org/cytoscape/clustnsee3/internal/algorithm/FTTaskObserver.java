@@ -72,7 +72,7 @@ public class FTTaskObserver implements TaskObserver {
 	@Override
 	public void allFinished(FinishStatus arg0) {
 		CnSEvent ev = new CnSEvent(CyActivator.GET_RENDERING_ENGINE_MANAGER, CnSEventManager.CY_ACTIVATOR, this.getClass());
-		RenderingEngineManager rem = (RenderingEngineManager)CnSEventManager.handleMessage(ev, true);
+		RenderingEngineManager rem = (RenderingEngineManager)CnSEventManager.handleMessage(ev, true).getValue();
 	
 		System.err.println("--- Cluster : " + cluster.getID());
 			

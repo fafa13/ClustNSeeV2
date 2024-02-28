@@ -13,7 +13,6 @@
 
 package org.cytoscape.clustnsee3.internal.analysis;
 
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -24,10 +23,6 @@ import javax.swing.ImageIcon;
 import org.cytoscape.clustnsee3.internal.analysis.annotation.CnSClusterAnnotation;
 import org.cytoscape.clustnsee3.internal.analysis.edge.CnSEdge;
 import org.cytoscape.clustnsee3.internal.analysis.node.CnSNode;
-import org.cytoscape.clustnsee3.internal.event.CnSEvent;
-import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
-import org.cytoscape.clustnsee3.internal.partition.CnSPartition;
-import org.cytoscape.clustnsee3.internal.partition.CnSPartitionManager;
 import org.cytoscape.model.CyEdge;
 import org.cytoscape.model.CyNetwork;
 import org.cytoscape.model.CyNode;

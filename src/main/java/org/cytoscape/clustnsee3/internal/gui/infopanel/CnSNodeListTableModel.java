@@ -15,11 +15,10 @@ package org.cytoscape.clustnsee3.internal.gui.infopanel;
 
 import java.util.Vector;
 
-import javax.swing.table.AbstractTableModel;
-
 import org.cytoscape.clustnsee3.internal.analysis.CnSCluster;
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
+import org.cytoscape.clustnsee3.internal.gui.util.cnstable.CnSTableModel;
 import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeAnnotation;
 import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeAnnotationManager;
 import org.cytoscape.model.CyNode;
@@ -28,7 +27,7 @@ import org.cytoscape.model.CyRow;
 /**
  * 
  */
-public class CnSNodeListTableModel extends AbstractTableModel {
+public class CnSNodeListTableModel extends CnSTableModel {
 	/**
 	 * 
 	 */
@@ -80,8 +79,10 @@ public class CnSNodeListTableModel extends AbstractTableModel {
 				return cluster.getNodeDegree(cluster.getNodes().get(rowIndex));
 			else if (columnIndex == 3) {
 				ev.addParameter(CnSNodeAnnotationManager.NODE, cluster.getNodes().get(rowIndex).getCyNode());
-				clusterAnnotations = (Vector<CnSNodeAnnotation>)CnSEventManager.handleMessage(ev, false);
-				if (clusterAnnotations != null) {
+				clusterAnnotations = (Vector<CnSNodeAnnotation>)CnSEventManager.handleMessage(ev, false).getValue();
+				if (clusterAnnotations == null) clusterAnnotations = new Vector<CnSNodeAnnotation>();
+				return clusterAnnotations;
+				/*if (clusterAnnotations != null) {
 					StringBuilder sb = new StringBuilder();
 					for (CnSNodeAnnotation na : clusterAnnotations) {
 						sb.append(na.getValue());
@@ -91,7 +92,7 @@ public class CnSNodeListTableModel extends AbstractTableModel {
 					return sb.toString();
 				}
 				else
-					return "";
+					return "";*/
 			}
 		return null;
 	}

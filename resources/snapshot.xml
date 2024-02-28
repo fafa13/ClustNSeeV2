@@ -21,12 +21,12 @@
             <dependency value="true" name="nodeCustomGraphicsSizeSync"/>
             <dependency value="false" name="nodeSizeLocked"/>
             <visualProperty default="0.0" name="NODE_CUSTOMGRAPHICS_SIZE_2"/>
-            <visualProperty default="20.0" name="NODE_WIDTH">
+            <visualProperty default="30.0" name="NODE_WIDTH">
             </visualProperty>
             <visualProperty default="C,C,c,0.00,0.00" name="NODE_CUSTOMGRAPHICS_POSITION_6"/>
             <visualProperty default="C,C,c,0.00,0.00" name="NODE_LABEL_POSITION">
             </visualProperty>
-            <visualProperty default="20.0" name="NODE_SIZE">
+            <visualProperty default="30.0" name="NODE_SIZE">
             </visualProperty>
             <visualProperty default="C,C,c,0.00,0.00" name="NODE_CUSTOMGRAPHICS_POSITION_3"/>
             <visualProperty default="6" name="NODE_LABEL_FONT_SIZE">
@@ -79,7 +79,7 @@
             <visualProperty default="255" name="NODE_BORDER_TRANSPARENCY"/>
             <visualProperty default="#000000" name="NODE_LABEL_COLOR"/>
             <visualProperty default="org.cytoscape.ding.customgraphics.NullCustomGraphics,0,[ Remove Graphics ]," name="NODE_CUSTOMGRAPHICS_4"/>
-            <visualProperty default="20.0" name="NODE_HEIGHT">
+            <visualProperty default="30.0" name="NODE_HEIGHT">
             </visualProperty>
             <visualProperty default="" name="NODE_TOOLTIP"/>
             <visualProperty default="false" name="NODE_SELECTED"/>

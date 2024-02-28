@@ -17,6 +17,7 @@ import org.cytoscape.clustnsee3.internal.analysis.CnSCluster;
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventListener;
 import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
+import org.cytoscape.clustnsee3.internal.event.CnSEventResult;
 import org.cytoscape.clustnsee3.internal.gui.partitionpanel.CnSPartitionPanel;
 import org.cytoscape.clustnsee3.internal.gui.resultspanel.CnSResultsPanel;
 import org.cytoscape.clustnsee3.internal.partition.CnSPartition;
@@ -55,8 +56,8 @@ public class CnSSynchronizeClusterSelection implements CnSEventListener {
 	 * @see org.cytoscape.clustnsee3.internal.event.CnSEventListener#cnsEventOccured(org.cytoscape.clustnsee3.internal.event.CnSEvent)
 	 */
 	@Override
-	public Object cnsEventOccured(CnSEvent event, boolean log) {
-		Object ret = null;
+	public CnSEventResult<?> cnsEventOccured(CnSEvent event, boolean log) {
+		CnSEventResult<?> ret = new CnSEventResult<Object>(null);
 		final CnSCluster cluster;
 		final CnSPartition partition;
 		

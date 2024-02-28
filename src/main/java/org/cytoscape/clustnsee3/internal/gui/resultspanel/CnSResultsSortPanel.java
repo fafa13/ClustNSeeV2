@@ -116,7 +116,7 @@ public class CnSResultsSortPanel extends CnSPanel {
 	public void setSelectedCluster(long l) {
 		CnSEvent ev = new CnSEvent(CnSResultsPanel.GET_CLUSTER_NAME, CnSEventManager.RESULTS_PANEL, this.getClass());
 		ev.addParameter(CnSResultsPanel.CLUSTER, l);
-		Integer index = (Integer)CnSEventManager.handleMessage(ev, true);
+		Integer index = (Integer)CnSEventManager.handleMessage(ev, true).getValue();
 		if (index != null)
 			if (index != clusterList.getSelectedIndex())
 				clusterList.setSelectedIndex(index);

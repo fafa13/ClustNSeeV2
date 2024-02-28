@@ -15,6 +15,7 @@ package org.cytoscape.clustnsee3.internal.gui.menu.contextual.action;
 
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventListener;
+import org.cytoscape.clustnsee3.internal.event.CnSEventResult;
 import org.cytoscape.clustnsee3.internal.utils.CnSLogger;
 
 /**
@@ -45,9 +46,9 @@ public class CnSMenuManager implements CnSEventListener {
 		return instance;
 	}
 	@Override
-	public Object cnsEventOccured(CnSEvent event, boolean log) {
+	public CnSEventResult<?> cnsEventOccured(CnSEvent event, boolean log) {
 		if (log) CnSLogger.LogCnSEvent(event, this);
 		
-		return null;
+		return new CnSEventResult<Object>(null);
 	}
 }

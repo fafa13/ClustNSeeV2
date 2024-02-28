@@ -23,6 +23,7 @@ import org.cytoscape.clustnsee3.internal.analysis.CnSCluster;
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventListener;
 import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
+import org.cytoscape.clustnsee3.internal.event.CnSEventResult;
 import org.cytoscape.clustnsee3.internal.utils.CnSLogger;
 import org.cytoscape.model.CyNetwork;
 import org.cytoscape.model.CyNode;
@@ -101,8 +102,9 @@ public class CnSNetworkManager implements CnSEventListener, NetworkAboutToBeDest
 	 * @see org.cytoscape.clustnsee3.internal.event.CnSEventListener#cnsEventOccured(org.cytoscape.clustnsee3.internal.event.CnSEvent)
 	 */
 	@Override
-	public Object cnsEventOccured(CnSEvent event, boolean log) {
-		Object ret = null, value;
+	public CnSEventResult<?> cnsEventOccured(CnSEvent event, boolean log) {
+		CnSEventResult<?> ret = new CnSEventResult<Object>(null);
+		Object value;
 		CnSNetwork network = null;
 		CnSCluster cluster;
 		CyNetwork cyNetwork;
@@ -141,11 +143,11 @@ public class CnSNetworkManager implements CnSEventListener, NetworkAboutToBeDest
 			case GET_NETWORK :
 				cyNetwork = (CyNetwork)event.getParameter(NETWORK);
 				if (cyNetwork != null)
-					ret = getNetwork(cyNetwork);
+					ret = new CnSEventResult<CnSNetwork>(getNetwork(cyNetwork));
 				else {
 					cluster = (CnSCluster)event.getParameter(CLUSTER);
 					if (cluster != null)
-						ret = cluster2networkMap.get(cluster);
+						ret = new CnSEventResult<CnSNetwork>(cluster2networkMap.get(cluster));
 				}
 				break;
 				
@@ -160,7 +162,7 @@ public class CnSNetworkManager implements CnSEventListener, NetworkAboutToBeDest
 				cyNetwork = (CyNetwork)event.getParameter(NETWORK);
 				colName = (String)event.getParameter(COLNAME);
 				value = event.getParameter(VALUE);
-				ret = getNodesWithValue(cyNetwork, cyNetwork.getDefaultNodeTable(), colName, value);
+				ret = new CnSEventResult<Set<CyNode>>(getNodesWithValue(cyNetwork, cyNetwork.getDefaultNodeTable(), colName, value));
 				break;
 				
 			case SELECT_CLUSTER :

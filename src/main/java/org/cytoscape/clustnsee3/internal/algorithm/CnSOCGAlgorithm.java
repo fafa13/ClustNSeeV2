@@ -481,7 +481,7 @@ public class CnSOCGAlgorithm extends CnSAlgorithm {
         HashMap<Integer, Long> modClust_to_cyto = reverseMap( cyto2ModClust);
         
         CnSEvent ev = new CnSEvent(CnSAlgorithmEngine.GET_SCOPE, CnSEventManager.ALGORITHM_ENGINE, this.getClass());
-        String scope = (String)CnSEventManager.handleMessage(ev, true);
+        String scope = (String)CnSEventManager.handleMessage(ev, true).getValue();
 
         return new CnSAlgorithmResult(Cl, Kard, NbClas, modClust_to_cyto, inputNetwork, scope);
     }
@@ -495,7 +495,7 @@ public class CnSOCGAlgorithm extends CnSAlgorithm {
     private void readNetwork( CyNetwork inputNetwork) {
     	Logger LOGGER = LoggerFactory.getLogger(this.getClass());
         CnSEvent ev = new CnSEvent(CnSAlgorithmEngine.GET_SCOPE, CnSEventManager.ALGORITHM_ENGINE, this.getClass());
-        String scope = (String)CnSEventManager.handleMessage(ev, true);
+        String scope = (String)CnSEventManager.handleMessage(ev, true).getValue();
 
         optionsChoice = options.getValue().toString();
         if (initialClusters.getValue().toString().equals("Maximal cliques"))
@@ -586,7 +586,7 @@ public class CnSOCGAlgorithm extends CnSAlgorithm {
         // Retrieve the list of node names
         HashMap<String, CyNode> name_to_node = new HashMap<String, CyNode>();
         ev = new CnSEvent(CnSAlgorithmEngine.IS_CANCELLED, CnSEventManager.ALGORITHM_ENGINE, this.getClass());
-        boolean cancelled = (Boolean)CnSEventManager.handleMessage(ev, true);
+        boolean cancelled = (Boolean)CnSEventManager.handleMessage(ev, true).getValue();
 
         for( int i = 0; ni.hasNext() && !cancelled; i++) {
             CyNode node = ni.next();

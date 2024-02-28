@@ -104,7 +104,7 @@ public class CnSTFitAlgorithm extends CnSAlgorithm {
          * calcule une partition qui optimise un critere de modularité
          */
         CnSEvent ev = new CnSEvent(CnSAlgorithmEngine.GET_SCOPE, CnSEventManager.ALGORITHM_ENGINE, this.getClass());
-        String scope = (String)CnSEventManager.handleMessage(ev, true);
+        String scope = (String)CnSEventManager.handleMessage(ev, true).getValue();
         List<CyNode> selectedNodes = CyTableUtil.getNodesInState(inputNetwork, "selected", true);
         List<CyEdge> selectedEdges = CyTableUtil.getEdgesInState(inputNetwork, "selected", true);
         
@@ -148,7 +148,7 @@ public class CnSTFitAlgorithm extends CnSAlgorithm {
            ni = inputNetwork.getNodeList().iterator();
        }
        ev = new CnSEvent(CnSAlgorithmEngine.IS_CANCELLED, CnSEventManager.ALGORITHM_ENGINE, this.getClass());
-       boolean cancelled = (Boolean)CnSEventManager.handleMessage(ev, true);
+       boolean cancelled = (Boolean)CnSEventManager.handleMessage(ev, true).getValue();
        
         // Retrieve the list of node names
         HashMap<String, CyNode> name_to_node = new HashMap<String, CyNode>();

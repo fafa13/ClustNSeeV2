@@ -11,7 +11,7 @@
 /* Philippe Gambette (LIGM, Marne-la-Vallée)
  */
 
-package org.cytoscape.clustnsee3.internal.gui.partitionpanel.clusteranalysis;
+package org.cytoscape.clustnsee3.internal.gui.util.cnstable;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -23,16 +23,15 @@ import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.border.Border;
-import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellRenderer;
 
 /**
  * 
  */
-public class CnSClusterTableCellRenderer extends DefaultTableCellRenderer {
-	private static final long serialVersionUID = 1L;
+public class CnSTableCellRenderer implements TableCellRenderer {
 	private Font font = new Font("serif", Font.PLAIN, 12);
 	private static Border paddingBorder = BorderFactory.createEmptyBorder(0, 10, 0, 10);
-	private static JLabel label;
+	protected static JLabel label;
 	
 	static {
 		label = new JLabel();

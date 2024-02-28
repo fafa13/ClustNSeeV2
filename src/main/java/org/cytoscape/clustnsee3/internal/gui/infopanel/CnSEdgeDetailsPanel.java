@@ -126,9 +126,9 @@ public class CnSEdgeDetailsPanel extends CnSPanel {
 			CnSEvent ev = new CnSEvent(CnSPartitionManager.GET_NODE, CnSEventManager.PARTITION_MANAGER, this.getClass());
 			ev.addParameter(CnSPartitionManager.CY_NODE, edge.getSource());
 			ev.addParameter(CnSPartitionManager.PARTITION, part);
-			CnSNode node1 = (CnSNode)CnSEventManager.handleMessage(ev, true);
+			CnSNode node1 = (CnSNode)CnSEventManager.handleMessage(ev, true).getValue();
 			ev.addParameter(CnSPartitionManager.CY_NODE, edge.getTarget());
-			CnSNode node2 = (CnSNode)CnSEventManager.handleMessage(ev, true);
+			CnSNode node2 = (CnSNode)CnSEventManager.handleMessage(ev, true).getValue();
 			String name1 = view.getView().getModel().getRow(node1.getCyNode()).get("shared name", String.class);
 			String name2 = view.getView().getModel().getRow(node2.getCyNode()).get("shared name", String.class);
 			linkNameLabel.setText(name1 + " -- " + name2);
@@ -137,7 +137,7 @@ public class CnSEdgeDetailsPanel extends CnSPanel {
 				leftLayout.show(leftPanel, CLUSTER_DETAILS);
 				ev = new CnSEvent(CnSPartitionManager.GET_CLUSTER, CnSEventManager.PARTITION_MANAGER, this.getClass());
 				ev.addParameter(CnSPartitionManager.CY_NODE, node1.getCyNode());
-				cnsc1 = (CnSCluster)CnSEventManager.handleMessage(ev, true);
+				cnsc1 = (CnSCluster)CnSEventManager.handleMessage(ev, true).getValue();
 				leftClusterPanel.init(cnsc1);
 			}
 			else {
@@ -148,7 +148,7 @@ public class CnSEdgeDetailsPanel extends CnSPanel {
 				rightLayout.show(rightPanel, CLUSTER_DETAILS);
 				ev = new CnSEvent(CnSPartitionManager.GET_CLUSTER, CnSEventManager.PARTITION_MANAGER, this.getClass());
 				ev.addParameter(CnSPartitionManager.CY_NODE, node2.getCyNode());
-				cnsc2 = (CnSCluster)CnSEventManager.handleMessage(ev, true);
+				cnsc2 = (CnSCluster)CnSEventManager.handleMessage(ev, true).getValue();
 				rightClusterPanel.init(cnsc2);
 			}
 			else {

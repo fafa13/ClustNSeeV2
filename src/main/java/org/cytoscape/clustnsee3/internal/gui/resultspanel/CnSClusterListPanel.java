@@ -100,11 +100,11 @@ public class CnSClusterListPanel extends CnSPanel {
 						
 						ev = new CnSEvent(CnSPartitionManager.GET_PARTITION, CnSEventManager.PARTITION_MANAGER, this.getClass());
 						ev.addParameter(CnSPartitionManager.CLUSTER, cluster);
-						CnSPartition p = (CnSPartition)CnSEventManager.handleMessage(ev, true);
+						CnSPartition p = (CnSPartition)CnSEventManager.handleMessage(ev, true).getValue();
 						
 						ev = new CnSEvent(CnSPartitionManager.GET_PARTITION_NETWORK, CnSEventManager.PARTITION_MANAGER, this.getClass());
 						ev.addParameter(CnSPartitionManager.PARTITION, p);
-						CnSNetwork nw = (CnSNetwork)CnSEventManager.handleMessage(ev, true);
+						CnSNetwork nw = (CnSNetwork)CnSEventManager.handleMessage(ev, true).getValue();
 						
 						if (nw != null) {
 							ev = new CnSEvent(CnSNetworkManager.SELECT_CLUSTER, CnSEventManager.NETWORK_MANAGER, this.getClass());

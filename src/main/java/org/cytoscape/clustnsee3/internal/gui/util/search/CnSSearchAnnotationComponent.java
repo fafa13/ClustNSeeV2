@@ -138,7 +138,7 @@ public class CnSSearchAnnotationComponent extends MouseAdapter implements KeyLis
 				}
 				CnSEvent ev = new CnSEvent(CnSNodeAnnotationManager.LOOK_FOR_ANNOTATIONS, CnSEventManager.ANNOTATION_MANAGER, this.getClass());
 				ev.addParameter(CnSNodeAnnotationManager.PREFIX, prefix);
-				Vector<CnSNodeAnnotation> data = (Vector<CnSNodeAnnotation>)CnSEventManager.handleMessage(ev, true);
+				Vector<CnSNodeAnnotation> data = (Vector<CnSNodeAnnotation>)CnSEventManager.handleMessage(ev, true).getValue();
 				if (data.size() > 0) {
 					data.sort(null);
 					popupWindow.init(data);
@@ -191,7 +191,7 @@ public class CnSSearchAnnotationComponent extends MouseAdapter implements KeyLis
 		String word = textField.getText();
 		CnSEvent ev = new CnSEvent(CnSNodeAnnotationManager.GET_ANNOTATION, CnSEventManager.ANNOTATION_MANAGER, this.getClass());
 		ev.addParameter(CnSNodeAnnotationManager.ANNOTATION, word);
-		CnSNodeAnnotation ann = (CnSNodeAnnotation)CnSEventManager.handleMessage(ev, true);
+		CnSNodeAnnotation ann = (CnSNodeAnnotation)CnSEventManager.handleMessage(ev, true).getValue();
 		if (ann != null)
 			textField.setBackground(Color.GREEN);
 		else if (!word.equals(""))
@@ -216,7 +216,7 @@ public class CnSSearchAnnotationComponent extends MouseAdapter implements KeyLis
 				popupWindow.setVisible(false);
 				CnSEvent ev = new CnSEvent(CnSNodeAnnotationManager.GET_ANNOTATION, CnSEventManager.ANNOTATION_MANAGER, this.getClass());
 				ev.addParameter(CnSNodeAnnotationManager.ANNOTATION, word);
-				CnSNodeAnnotation ann = (CnSNodeAnnotation)CnSEventManager.handleMessage(ev, true);
+				CnSNodeAnnotation ann = (CnSNodeAnnotation)CnSEventManager.handleMessage(ev, true).getValue();
 				if (ann != null)
 					textField.setBackground(Color.GREEN);
 				else if (!word.equals(""))

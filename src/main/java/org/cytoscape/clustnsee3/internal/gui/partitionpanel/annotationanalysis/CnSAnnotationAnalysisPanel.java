@@ -162,7 +162,7 @@ public class CnSAnnotationAnalysisPanel extends CnSPanelSplitCommand {
 			public String getToolTipText(MouseEvent me) {
 				int c = columnAtPoint(me.getPoint());
 				CnSEvent ev = new CnSEvent(CyActivator.GET_RESOURCES_BUNDLE, CnSEventManager.CY_ACTIVATOR, this.getClass());
-				ResourceBundle rBundle = (ResourceBundle)CnSEventManager.handleMessage(ev, false);
+				ResourceBundle rBundle = (ResourceBundle)CnSEventManager.handleMessage(ev, false).getValue();
 				rBundle = CyActivator.getResourcesBundle();
 				switch(c) {
 					case 0 : return rBundle.getString("CnSAnnotationTableModel.annotatedNodes_MO");
@@ -194,12 +194,12 @@ public class CnSAnnotationAnalysisPanel extends CnSPanelSplitCommand {
 				CnSAnnotationTableModel model = entry.getModel();
 				CnSCluster cluster = model.getCluster(entry.getIdentifier());
 				CnSEvent ev = new CnSEvent(CnSPartitionPanel.GET_HIDE_SMALL_CLUSTERS, CnSEventManager.PARTITION_PANEL, this.getClass());
-				boolean b = (Boolean)CnSEventManager.handleMessage(ev, false);
+				boolean b = (Boolean)CnSEventManager.handleMessage(ev, false).getValue();
 				if (b && cluster.getNbNodes() < 5) return false;
 				if (model.getSelectedAnnotation() == null) return true;
 				ev = new CnSEvent(CnSNodeAnnotationManager.GET_CLUSTER_ANNOTATIONS, CnSEventManager.ANNOTATION_MANAGER, this.getClass());
 				ev.addParameter(CnSNodeAnnotationManager.CLUSTER, cluster);
-				Vector<?> clusterAnnotations = (Vector<?>)CnSEventManager.handleMessage(ev, false);
+				Vector<?> clusterAnnotations = (Vector<?>)CnSEventManager.handleMessage(ev, false).getValue();
 				return clusterAnnotations.contains(model.getSelectedAnnotation());
 			}
 		};

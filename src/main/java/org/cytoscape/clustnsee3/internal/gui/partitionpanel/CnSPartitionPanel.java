@@ -31,6 +31,8 @@ import org.cytoscape.clustnsee3.internal.analysis.CnSCluster;
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventListener;
 import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
+import org.cytoscape.clustnsee3.internal.event.CnSEventResult;
+import org.cytoscape.clustnsee3.internal.gui.infopanel.CnSInfoPanel;
 import org.cytoscape.clustnsee3.internal.gui.partitionpanel.annotationanalysis.CnSAnnotationAnalysisPanel;
 import org.cytoscape.clustnsee3.internal.gui.partitionpanel.clusteranalysis.CnSClusterAnalysisPanel;
 import org.cytoscape.clustnsee3.internal.gui.partitionpanel.multiclassednodes.CnSMulticlassedNodesPanel;
@@ -75,7 +77,7 @@ public class CnSPartitionPanel extends CnSPanel implements CytoPanelComponent, C
 	private CnSPartitionTablePanel partitionTablePanel;
 	private CnSClusterAnalysisPanel clusterAnalysisPanel;
 	private CnSAnnotationAnalysisPanel annotationAnalysisPanel;
-	private CnSMulticlassedNodesPanel multiclassedNodesPanel;
+	//private CnSMulticlassedNodesPanel multiclassedNodesPanel;
 	private static JTabbedPane tabbedPane;
 	
 	public static CnSPartitionPanel getInstance() {
@@ -124,23 +126,23 @@ public class CnSPartitionPanel extends CnSPanel implements CytoPanelComponent, C
 
 	public void initGraphics() {
 		CnSEvent ev = new CnSEvent(CyActivator.GET_RESOURCES_BUNDLE, CnSEventManager.CY_ACTIVATOR, this.getClass());
-		ResourceBundle rBundle = (ResourceBundle)CnSEventManager.handleMessage(ev, true);
+		ResourceBundle rBundle = (ResourceBundle)CnSEventManager.handleMessage(ev, true).getValue();
 		rBundle = CyActivator.getResourcesBundle();
 		
 		partitionTablePanel = new CnSPartitionTablePanel();
 		clusterAnalysisPanel = new CnSClusterAnalysisPanel();
 		annotationAnalysisPanel = new CnSAnnotationAnalysisPanel();
-		multiclassedNodesPanel = new CnSMulticlassedNodesPanel();
+		//multiclassedNodesPanel = new CnSMulticlassedNodesPanel();
 		
 		ev = new CnSEvent(CnSResultsPanel.GET_SELECTED_PARTITION, CnSEventManager.RESULTS_PANEL, this.getClass());
-		CnSPartition partition = (CnSPartition)CnSEventManager.handleMessage(ev, true);
+		CnSPartition partition = (CnSPartition)CnSEventManager.handleMessage(ev, true).getValue();
 		init(partition);
 		
 		tabbedPane = new JTabbedPane();
 		tabbedPane.add(rBundle.getString("CnSPartitionPanel.ClusterTableTab"), partitionTablePanel);
 		tabbedPane.add(rBundle.getString("CnSPartitionPanel.ClusterAnalysisTab"), clusterAnalysisPanel); 
 		tabbedPane.add(rBundle.getString("CnSPartitionPanel.AnnotationTermAnalysisTab"), annotationAnalysisPanel);
-		tabbedPane.add(rBundle.getString("CnSPartitionPanel.MulticlassedNodesTab"), multiclassedNodesPanel);
+		//tabbedPane.add(rBundle.getString("CnSPartitionPanel.MulticlassedNodesTab"), multiclassedNodesPanel);
 		
 		addComponent(tabbedPane, 0, 0, 3, 1, 1.0, 1.0, CENTER, BOTH, 0, 0, 0, 0, 0, 0);
 	}
@@ -148,7 +150,7 @@ public class CnSPartitionPanel extends CnSPanel implements CytoPanelComponent, C
 	public void init(CnSPartition partition) {
 		if (partition != null) {
 			annotationAnalysisPanel.init(partition);
-			multiclassedNodesPanel.init(partition);
+			//multiclassedNodesPanel.init(partition);
 		}
 	}
 	
@@ -160,10 +162,11 @@ public class CnSPartitionPanel extends CnSPanel implements CytoPanelComponent, C
 	 * @see org.cytoscape.clustnsee3.internal.event.CnSEventListener#cnsEventOccured(org.cytoscape.clustnsee3.internal.event.CnSEvent)
 	 */
 	@Override
-	public Object cnsEventOccured(CnSEvent event, boolean log) {
-		Object ret = null;
+	public CnSEventResult<?> cnsEventOccured(CnSEvent event, boolean log) {
+		CnSEventResult<?> ret = new CnSEventResult<Object>(null);
 		final CnSCluster cluster;
 		final CnSPartition partition;
+		CnSEvent ev;
 		
 		if (log) CnSLogger.LogCnSEvent(event, this);
 		
@@ -175,7 +178,7 @@ public class CnSPartitionPanel extends CnSPanel implements CytoPanelComponent, C
 					partitionTablePanel.init(partition);
 					clusterAnalysisPanel.init(partition);
 					annotationAnalysisPanel.init(partition);
-					multiclassedNodesPanel.init(partition);
+					//multiclassedNodesPanel.init(partition);
 				}
 				else {
 					clusterAnalysisPanel.init();
@@ -199,22 +202,28 @@ public class CnSPartitionPanel extends CnSPanel implements CytoPanelComponent, C
 					annotationAnalysisPanel.selectCluster(null);
 					clusterAnalysisPanel.selectCluster(0);
 				}
+				ev = new CnSEvent(CnSInfoPanel.TAG_NODES, CnSEventManager.INFO_PANEL, this.getClass());
+				CnSNodeAnnotation annotation = annotationAnalysisPanel.getSelectedAnnotation();
+				if (annotation != null) ev.addParameter(CnSInfoPanel.ANNOTATION, annotation);
+				CnSEventManager.handleMessage(ev, true);
 				break;
 				
 			case SEARCH :
-				CnSNodeAnnotation annotation = (CnSNodeAnnotation)event.getParameter(ANNOTATION);
+				annotation = (CnSNodeAnnotation)event.getParameter(ANNOTATION);
 				cluster = partitionTablePanel.getSelectedCluster();
-				partitionTablePanel.setSelectedAnnotation(annotation);
 				annotationAnalysisPanel.setSelectedAnnotation(annotation);
 				clusterAnalysisPanel.refresh();
 				partitionTablePanel.selectCluster(cluster);
 				annotationAnalysisPanel.selectCluster(cluster);
 				clusterAnalysisPanel.selectAnnotation(annotation);
+				ev = new CnSEvent(CnSInfoPanel.TAG_NODES, CnSEventManager.INFO_PANEL, this.getClass());
+				if (annotation != null) ev.addParameter(CnSInfoPanel.ANNOTATION, annotation);
+				CnSEventManager.handleMessage(ev, true);
 				break;
 				
 			case SEARCH_ANNOTATION :
 				annotation = (CnSNodeAnnotation)event.getParameter(ANNOTATION);
-				CnSEvent ev = new CnSEvent(CnSPartitionPanel.SET_SEARCH_ANNOTATION, CnSEventManager.PARTITION_PANEL, this.getClass());
+				ev = new CnSEvent(CnSPartitionPanel.SET_SEARCH_ANNOTATION, CnSEventManager.PARTITION_PANEL, this.getClass());
 				ev.addParameter(CnSPartitionPanel.ANNOTATION, annotation);
 				CnSEventManager.handleMessage(ev, true);
 				clusterAnalysisPanel.selectAnnotation(annotation);
@@ -248,7 +257,7 @@ public class CnSPartitionPanel extends CnSPanel implements CytoPanelComponent, C
 				break;
 				
 			case GET_SELECTED_ANNOTATION :
-				ret = annotationAnalysisPanel.getSelectedAnnotation();
+				ret = new CnSEventResult<CnSNodeAnnotation>(annotationAnalysisPanel.getSelectedAnnotation());
 				break;
 				
 			case EXPORT_CLUSTER_LIST_DATA :
@@ -256,7 +265,7 @@ public class CnSPartitionPanel extends CnSPanel implements CytoPanelComponent, C
 				try {
 					BufferedWriter br= new BufferedWriter(new FileWriter(file));
 					ev = new CnSEvent(CnSResultsPanel.GET_SELECTED_PARTITION, CnSEventManager.RESULTS_PANEL, this.getClass());
-					partition = (CnSPartition)CnSEventManager.handleMessage(ev, true);
+					partition = (CnSPartition)CnSEventManager.handleMessage(ev, true).getValue();
 					br.write("#ClustnSee cluster list");
 					br.newLine();
 					br.write("#Algorithm: ");
@@ -293,9 +302,9 @@ public class CnSPartitionPanel extends CnSPanel implements CytoPanelComponent, C
 				try {
 					BufferedWriter br= new BufferedWriter(new FileWriter(file));
 					ev = new CnSEvent(CnSResultsPanel.GET_SELECTED_PARTITION, CnSEventManager.RESULTS_PANEL, this.getClass());
-					partition = (CnSPartition)CnSEventManager.handleMessage(ev, true);
+					partition = (CnSPartition)CnSEventManager.handleMessage(ev, true).getValue();
 					ev = new CnSEvent(CnSPartitionPanel.GET_HIDE_SMALL_CLUSTERS, CnSEventManager.PARTITION_PANEL, this.getClass());
-					boolean hsc = (Boolean)CnSEventManager.handleMessage(ev, true);
+					boolean hsc = (Boolean)CnSEventManager.handleMessage(ev, true).getValue();
 					br.write("#ClustnSee cluster analysis");
 					br.newLine();
 					br.write("#Algorithm: ");
@@ -336,10 +345,11 @@ public class CnSPartitionPanel extends CnSPanel implements CytoPanelComponent, C
 				try {
 					BufferedWriter br= new BufferedWriter(new FileWriter(file));
 					ev = new CnSEvent(CnSResultsPanel.GET_SELECTED_PARTITION, CnSEventManager.RESULTS_PANEL, this.getClass());
+					partition = (CnSPartition)CnSEventManager.handleMessage(ev, true).getValue();
 					ev = new CnSEvent(CnSPartitionPanel.GET_HIDE_SMALL_CLUSTERS, CnSEventManager.PARTITION_PANEL, this.getClass());
-					boolean hsc = (Boolean)CnSEventManager.handleMessage(ev, true);
-					partition = (CnSPartition)CnSEventManager.handleMessage(ev, true);
-					br.write("#ClustnSee cluster analysis");
+					boolean hsc = (Boolean)CnSEventManager.handleMessage(ev, true).getValue();
+					
+					br.write("#ClustnSee annotation terms analysis");
 					br.newLine();
 					br.write("#Algorithm: ");
 					if (partition != null) br.write(partition.getAlgorithmName());
@@ -374,19 +384,19 @@ public class CnSPartitionPanel extends CnSPanel implements CytoPanelComponent, C
 				break;
 				
 			case GET_SELECTED_STAT :
-				ret = partitionTablePanel.getSelectedStat();
+				ret = new CnSEventResult<Integer>(partitionTablePanel.getSelectedStat());
 				break;
 				
 			case GET_CURRENT_BH_THRESHOLD :
-				ret = partitionTablePanel.getCurrentThreshold();
+				ret = new CnSEventResult<Integer>(partitionTablePanel.getCurrentThreshold());
 				break;
 				
 			case GET_CURRENT_MAJORITY_THRESHOLD :
-				ret = partitionTablePanel.getCurrentThreshold();
+				ret = new CnSEventResult<Integer>(partitionTablePanel.getCurrentThreshold());
 				break;
 				
 			case GET_HIDE_SMALL_CLUSTERS :
-				ret = partitionTablePanel.hideSmallClusters();
+				ret = new CnSEventResult<Boolean>(partitionTablePanel.hideSmallClusters());
 				break;
 				
 			case FIRE_TABLE_DATA_CHANGED :

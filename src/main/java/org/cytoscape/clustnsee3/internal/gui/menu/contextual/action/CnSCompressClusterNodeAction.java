@@ -44,23 +44,23 @@ public class CnSCompressClusterNodeAction {
 		
 		// get the clusters in witch suid node is (the clusters to compress)
 		CnSEvent ev = new CnSEvent(CnSViewManager.GET_SELECTED_VIEW, CnSEventManager.VIEW_MANAGER, this.getClass());
-		CnSView view = (CnSView)CnSEventManager.handleMessage(ev, true);
+		CnSView view = (CnSView)CnSEventManager.handleMessage(ev, true).getValue();
 		ev = new CnSEvent(CnSViewManager.GET_NETWORK, CnSEventManager.VIEW_MANAGER, this.getClass());
 		ev.addParameter(CnSViewManager.VIEW, view);
-		CnSNetwork network = (CnSNetwork)CnSEventManager.handleMessage(ev, true);
+		CnSNetwork network = (CnSNetwork)CnSEventManager.handleMessage(ev, true).getValue();
 		ev = new CnSEvent(CnSPartitionManager.GET_PARTITION, CnSEventManager.PARTITION_MANAGER, this.getClass());
 		ev.addParameter(CnSPartitionManager.NETWORK, network);
-		CnSPartition partition = (CnSPartition)CnSEventManager.handleMessage(ev, true);
+		CnSPartition partition = (CnSPartition)CnSEventManager.handleMessage(ev, true).getValue();
 		if (partition == null) {
 			ev = new CnSEvent(CnSViewManager.GET_VIEW_PARTITION, CnSEventManager.VIEW_MANAGER, this.getClass());
 			ev.addParameter(CnSViewManager.VIEW, view);
-			partition = (CnSPartition)CnSEventManager.handleMessage(ev, true);
+			partition = (CnSPartition)CnSEventManager.handleMessage(ev, true).getValue();
 		}
 		ev = new CnSEvent(CnSPartitionManager.GET_CLUSTERS, CnSEventManager.PARTITION_MANAGER, this.getClass());
 		ev.addParameter(CnSPartitionManager.PARTITION, partition);
 		ev.addParameter(CnSPartitionManager.CY_NODE, network.getNetwork().getNode(suid));
 		@SuppressWarnings("unchecked")
-		Vector<CnSCluster> clusters = (Vector<CnSCluster>)CnSEventManager.handleMessage(ev, true);
+		Vector<CnSCluster> clusters = (Vector<CnSCluster>)CnSEventManager.handleMessage(ev, true).getValue();
 		
 		// stop listening to network changes
 		view.setModifCluster(true);
@@ -74,7 +74,7 @@ public class CnSCompressClusterNodeAction {
 			ev = new CnSEvent(CnSViewManager.GET_CLUSTER_LOCATION, CnSEventManager.VIEW_MANAGER, this.getClass());
 			ev.addParameter(CnSViewManager.VIEW, view);
 			ev.addParameter(CnSViewManager.CLUSTER, c);
-			Point2D.Double pos = (Point2D.Double)CnSEventManager.handleMessage(ev, true);
+			Point2D.Double pos = (Point2D.Double)CnSEventManager.handleMessage(ev, true).getValue();
 			// initialize the list of nodes to remove after the cluster is compressed
 			toRemove = new Vector<CyNode>();
 			
@@ -83,7 +83,7 @@ public class CnSCompressClusterNodeAction {
 			ev = new CnSEvent(CnSViewManager.IS_EXPANDED, CnSEventManager.VIEW_MANAGER, this.getClass());
 			ev.addParameter(CnSViewManager.VIEW, view);
 			ev.addParameter(CnSViewManager.CLUSTER, c);
-			b = (Boolean)CnSEventManager.handleMessage(ev, true);
+			b = (Boolean)CnSEventManager.handleMessage(ev, true).getValue();
 			if (b) { // the cluster is expanded; it has to be compressed
 				
 				// make the list of nodes to remove = those that are in the cluster but not in another expanded cluster
@@ -95,7 +95,7 @@ public class CnSCompressClusterNodeAction {
 						for (CnSCluster cnsc : cnsnode.getClusters()) {
 							if (cnsc != c) {
 								ev.addParameter(CnSViewManager.CLUSTER, cnsc);
-								b = (Boolean)CnSEventManager.handleMessage(ev, true);
+								b = (Boolean)CnSEventManager.handleMessage(ev, true).getValue();
 								if (b) break;
 							}
 						}
@@ -130,7 +130,7 @@ public class CnSCompressClusterNodeAction {
 							ev = new CnSEvent(CnSViewManager.IS_EXPANDED, CnSEventManager.VIEW_MANAGER, this.getClass());
 							ev.addParameter(CnSViewManager.CLUSTER, partner);
 							ev.addParameter(CnSViewManager.VIEW, view);
-							b = (Boolean)CnSEventManager.handleMessage(ev, true);
+							b = (Boolean)CnSEventManager.handleMessage(ev, true).getValue();
 					
 							if (!b.booleanValue()) {
 								CnSEdge ie = cl.getInteractionEdge();

@@ -50,23 +50,23 @@ public class CnSExpandClusterNodeAction {
 		
 		// get the current view (on which the expanded action occurred) 
 		CnSEvent ev = new CnSEvent(CnSViewManager.GET_SELECTED_VIEW, CnSEventManager.VIEW_MANAGER, this.getClass());
-		CnSView view = (CnSView)CnSEventManager.handleMessage(ev, true);
+		CnSView view = (CnSView)CnSEventManager.handleMessage(ev, true).getValue();
 		
 		// get the current view's network
 		ev = new CnSEvent(CnSViewManager.GET_NETWORK, CnSEventManager.VIEW_MANAGER, this.getClass());
 		ev.addParameter(CnSViewManager.VIEW, view);
-		CnSNetwork network = (CnSNetwork)CnSEventManager.handleMessage(ev, true);
+		CnSNetwork network = (CnSNetwork)CnSEventManager.handleMessage(ev, true).getValue();
 		
 		// get the current network related partition, if any
 		ev = new CnSEvent(CnSPartitionManager.GET_PARTITION, CnSEventManager.PARTITION_MANAGER, this.getClass());
 		ev.addParameter(CnSPartitionManager.NETWORK, network);
-		CnSPartition partition = (CnSPartition)CnSEventManager.handleMessage(ev, true);
+		CnSPartition partition = (CnSPartition)CnSEventManager.handleMessage(ev, true).getValue();
 		
 		// if the current network is not a partition network, get the current view's related partition
 		if (partition == null) {
 			ev = new CnSEvent(CnSViewManager.GET_VIEW_PARTITION, CnSEventManager.VIEW_MANAGER, this.getClass());
 			ev.addParameter(CnSViewManager.VIEW, view);
-			partition = (CnSPartition)CnSEventManager.handleMessage(ev, true);
+			partition = (CnSPartition)CnSEventManager.handleMessage(ev, true).getValue();
 		}
 		
 		// get the cluster node to be expanded
@@ -85,7 +85,7 @@ public class CnSExpandClusterNodeAction {
 			// get the cluster view
 			ev = new CnSEvent(CnSViewManager.GET_VIEW, CnSEventManager.VIEW_MANAGER, this.getClass());
 			ev.addParameter(CnSViewManager.REFERENCE, cluster);
-			CnSView clusterView = (CnSView)CnSEventManager.handleMessage(ev, true);
+			CnSView clusterView = (CnSView)CnSEventManager.handleMessage(ev, true).getValue();
 			
 			// some variables used to compute the position and the size of the cluster network in the view
 			double x0, y0, x, y, x_min = 1000000, y_min = 1000000, x_max = 0, y_max = 0;
@@ -114,7 +114,7 @@ public class CnSExpandClusterNodeAction {
 			
 			// get the cytoscape event handler
 			ev = new CnSEvent(CyActivator.GET_CY_EVENT_HELPER, CnSEventManager.CY_ACTIVATOR, this.getClass());
-			CyEventHelper eh = (CyEventHelper)CnSEventManager.handleMessage(ev, true);
+			CyEventHelper eh = (CyEventHelper)CnSEventManager.handleMessage(ev, true).getValue();
 			
 			// fire all cytoscape events
 			eh.flushPayloadEvents();
@@ -184,7 +184,7 @@ public class CnSExpandClusterNodeAction {
 					ev = new CnSEvent(CnSViewManager.IS_EXPANDED, CnSEventManager.VIEW_MANAGER, this.getClass());
 					ev.addParameter(CnSViewManager.VIEW, view);
 					ev.addParameter(CnSViewManager.CLUSTER, linkedCluster);
-					expanded = (Boolean)CnSEventManager.handleMessage(ev, true);
+					expanded = (Boolean)CnSEventManager.handleMessage(ev, true).getValue();
 					
 					// a hashmap to store the widths of the edges between the expanded nodes and the current network
 					HashMap<CyEdge, Double> edgeWidth = new HashMap<CyEdge, Double>();

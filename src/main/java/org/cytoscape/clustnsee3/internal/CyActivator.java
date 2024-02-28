@@ -7,9 +7,11 @@ import java.util.ResourceBundle;
 
 import org.cytoscape.application.CyApplicationManager;
 import org.cytoscape.application.swing.CySwingApplication;
+import org.cytoscape.application.swing.CytoPanel;
 import org.cytoscape.application.swing.CytoPanelName;
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventListener;
+import org.cytoscape.clustnsee3.internal.event.CnSEventResult;
 import org.cytoscape.clustnsee3.internal.gui.menu.contextual.factory.CnSAnnotateClusterMenuFactory;
 import org.cytoscape.clustnsee3.internal.gui.menu.contextual.factory.CnSExpandCompressClusterNodeMenuFactory;
 import org.cytoscape.clustnsee3.internal.gui.menu.main.CnSBuildNeighborhoodNetworkMenu;
@@ -79,7 +81,7 @@ public class CyActivator extends AbstractCyActivator implements CnSEventListener
 	private CnSSearchNodeClustersMenu clustnseeSearchNodeClusters;
 	private CnSComparePartitionsMenu clustnseeComparePartitions;
 	private CnSBuildNeighborhoodNetworkMenu clustnseeBuildNeighborhoodNetwork;
-	private ServiceRegistration plugin;
+	private ServiceRegistration<?> plugin;
 	private static ResourceBundle resourceBundle;
 	
 	public String getActionName(int k) {
@@ -176,75 +178,75 @@ public class CyActivator extends AbstractCyActivator implements CnSEventListener
 	 * @see org.cytoscape.clustnsee3.internal.event.CnSEventListener#cnsEventOccured(org.cytoscape.clustnsee3.internal.event.CnSEvent)
 	 */
 	@Override
-	public Object cnsEventOccured(CnSEvent event, boolean log) {
-		Object ret = null;
+	public CnSEventResult<?> cnsEventOccured(CnSEvent event, boolean log) {
+		CnSEventResult<?> ret = new CnSEventResult<Object>(null);
 		
 		if (log) CnSLogger.LogCnSEvent(event, this);
 		
 		switch(event.getAction()) {
 			case GET_NETWORK_FACTORY :
-				ret = getService(bc, CyNetworkFactory.class);
+				ret = new CnSEventResult<CyNetworkFactory>(getService(bc, CyNetworkFactory.class));
 				break;
 			case GET_NETWORK_MANAGER :
-				ret = getService(bc, CyNetworkManager.class);
+				ret = new CnSEventResult<CyNetworkManager>(getService(bc, CyNetworkManager.class));
 				break;
 			case GET_NETWORK_VIEW_MANAGER :
-				ret = getService(bc, CyNetworkViewManager.class);
+				ret = new CnSEventResult<CyNetworkViewManager>(getService(bc, CyNetworkViewManager.class));
 				break;
 			case GET_NETWORK_VIEW_FACTORY :
-				ret = getService(bc, CyNetworkViewFactory.class);
+				ret = new CnSEventResult<CyNetworkViewFactory>(getService(bc, CyNetworkViewFactory.class));
 				break;
 			case GET_ROOT_NETWORK_MANAGER :
-				ret = getService(bc, CyRootNetworkManager.class);
+				ret = new CnSEventResult<CyRootNetworkManager>(getService(bc, CyRootNetworkManager.class));
 				break;
 			case GET_EVENT_HELPER :
-				ret = getService(bc, CyEventHelper.class);
+				ret = new CnSEventResult<CyEventHelper>(getService(bc, CyEventHelper.class));
 				break;
 			case GET_APPLY_PREFERRED_LAYOUT_TASK_FACTORY :
-				ret = getService(bc, ApplyPreferredLayoutTaskFactory.class);
+				ret = new CnSEventResult<ApplyPreferredLayoutTaskFactory>(getService(bc, ApplyPreferredLayoutTaskFactory.class));
 				break;
 			case GET_SYNCHRONOUS_TASK_MANAGER :
-				ret = getService(bc, SynchronousTaskManager.class);
+				ret = new CnSEventResult<SynchronousTaskManager<?>>(getService(bc, SynchronousTaskManager.class));
 				break;
 			case GET_TASK_OBSERVER :
-				ret = getService(bc, TaskObserver.class);
+				ret = new CnSEventResult<TaskObserver>(getService(bc, TaskObserver.class));
 				break;
 			case GET_APPLICATION_MANAGER :
-				ret = getService(bc, CyApplicationManager.class);
+				ret = new CnSEventResult<CyApplicationManager>(getService(bc, CyApplicationManager.class));
 				break;
 			case GET_LAYOUT_ALGORITHM_MANAGER :
-				ret = getService(bc, CyLayoutAlgorithmManager.class);
+				ret = new CnSEventResult<CyLayoutAlgorithmManager>(getService(bc, CyLayoutAlgorithmManager.class));
 				break;
 			case GET_RENDERING_ENGINE_MANAGER :
-				ret = getService(bc, RenderingEngineManager.class);
+				ret = new CnSEventResult<RenderingEngineManager>(getService(bc, RenderingEngineManager.class));
 				break;
 			case GET_CY_EVENT_HELPER :
-				ret = getService(bc, CyEventHelper.class);
+				ret = new CnSEventResult<CyEventHelper>(getService(bc, CyEventHelper.class));
 				break;
 			case GET_EXPORT_STYLE_FACTORY :
-				ret = getService(bc, ExportVizmapTaskFactory.class);
+				ret = new CnSEventResult<ExportVizmapTaskFactory>(getService(bc, ExportVizmapTaskFactory.class));
 				break;
 			
 			case GET_VISUAL_MAPPING_MANAGER :
-				ret = getService(bc, VisualMappingManager.class);
+				ret = new CnSEventResult<VisualMappingManager>(getService(bc, VisualMappingManager.class));
                 break;
 			case GET_VISUAL_STYLE_FACTORY :
-				ret = getService(bc, VisualStyleFactory.class);
+				ret = new CnSEventResult<VisualStyleFactory>(getService(bc, VisualStyleFactory.class));
 				break;
 			case GET_CONTINUOUS_VISUAL_MAPPING_FUNCTION_FACTORY :	
-				ret = getService(bc, VisualMappingFunctionFactory.class, "(mapping.type=continuous)");
+				ret = new CnSEventResult<VisualMappingFunctionFactory>(getService(bc, VisualMappingFunctionFactory.class, "(mapping.type=continuous)"));
 				break;
 			case GET_DISCRETE_VISUAL_MAPPING_FUNCTION_FACTORY :
-				ret = getService(bc, VisualMappingFunctionFactory.class, "(mapping.type=discrete)");
+				ret = new CnSEventResult<VisualMappingFunctionFactory>(getService(bc, VisualMappingFunctionFactory.class, "(mapping.type=discrete)"));
 				break;
 			case GET_PASSTHROUGH_VISUAL_MAPPING_FUNCTION_FACTORY :
-				ret = getService(bc, VisualMappingFunctionFactory.class, "(mapping.type=passthrough)");
+				ret = new CnSEventResult<VisualMappingFunctionFactory>(getService(bc, VisualMappingFunctionFactory.class, "(mapping.type=passthrough)"));
 				break;
 			case GET_LOAD_VIZMAP_FILE_TASK_FACTORY :
-				ret = getService(bc, LoadVizmapFileTaskFactory.class);
+				ret = new CnSEventResult<LoadVizmapFileTaskFactory>(getService(bc, LoadVizmapFileTaskFactory.class));
 				break;
 			case GET_VIZMAP_MANAGER :
-				ret = getService(bc, VisualMappingManager.class);
+				ret = new CnSEventResult<VisualMappingManager>(getService(bc, VisualMappingManager.class));
 				break;
 			case START :
 				CnSClustnseePlugin.getInstance(bc, this).registerServices();
@@ -271,18 +273,18 @@ public class CyActivator extends AbstractCyActivator implements CnSEventListener
 				break;
 			case GET_CYTO_PANEL :
 				CySwingApplication app = getService(bc, CySwingApplication.class);
-				ret = app.getCytoPanel((CytoPanelName)event.getParameter(NAME));
+				ret = new CnSEventResult<CytoPanel>(app.getCytoPanel((CytoPanelName)event.getParameter(NAME)));
 				break;
 			case REGISTER_CLUSTNSEE :
 				break;
 			case GET_SWING_APPLICATION :
-				ret = getService(bc, CySwingApplication.class);
+				ret = new CnSEventResult<CySwingApplication>(getService(bc, CySwingApplication.class));
 				break;
 			case GET_TASK_MANAGER :
-				ret = getService(bc, DialogTaskManager.class);
+				ret = new CnSEventResult<DialogTaskManager>(getService(bc, DialogTaskManager.class));
 				break;
 			case GET_RESOURCES_BUNDLE :
-				ret = resourceBundle;
+				ret = new CnSEventResult<ResourceBundle>(resourceBundle);
 				break;
 		}
 		return ret;

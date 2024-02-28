@@ -23,7 +23,6 @@ import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeAnnotation;
 import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeAnnotationManager;
 import org.cytoscape.clustnsee3.internal.nodeannotation.stats.CnSAnnotationClusterPValue;
 import org.cytoscape.clustnsee3.internal.partition.CnSPartition;
-import org.cytoscape.model.CyNode;
 import org.cytoscape.clustnsee3.internal.CyActivator;
 import org.cytoscape.clustnsee3.internal.analysis.CnSCluster;
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
@@ -43,7 +42,7 @@ public class CnSAnnotationTableModel extends AbstractTableModel {
 		selectedAnnotation = null;
 		
 		CnSEvent ev = new CnSEvent(CyActivator.GET_RESOURCES_BUNDLE, CnSEventManager.CY_ACTIVATOR, this.getClass());
-		ResourceBundle rBundle = (ResourceBundle)CnSEventManager.handleMessage(ev, true);
+		ResourceBundle rBundle = (ResourceBundle)CnSEventManager.handleMessage(ev, true).getValue();
 		rBundle = CyActivator.getResourcesBundle();
 		System.err.println("BUNDLE = " + rBundle);
 		
@@ -103,29 +102,37 @@ public class CnSAnnotationTableModel extends AbstractTableModel {
 		
 		switch (column) {
 			case 0 : return cluster.getID();
-			case 1 : ev = new CnSEvent(CnSNodeAnnotationManager.GET_ANNOTATED_NODES, CnSEventManager.ANNOTATION_MANAGER, this.getClass());
-			 		 ev.addParameter(CnSNodeAnnotationManager.CLUSTER, cluster);
-			 		 if (selectedAnnotation != null) {
-			 			 ev.addParameter(CnSNodeAnnotationManager.ANNOTATION, selectedAnnotation);
-			 			 n = ((Vector<CyNode>)CnSEventManager.handleMessage(ev, false)).size();
+			case 1 : if (selectedAnnotation != null) {
+			 			ev = new CnSEvent(CnSNodeAnnotationManager.GET_ANNOTATED_NODES, CnSEventManager.ANNOTATION_MANAGER, this.getClass());
+			 			ev.addParameter(CnSNodeAnnotationManager.ANNOTATION, selectedAnnotation);
+			 			ev.addParameter(CnSNodeAnnotationManager.CLUSTER, cluster);
+				 		n = ((Vector<?>)CnSEventManager.handleMessage(ev, false).getValue()).size();
 			 		 }
-			 		 else
-			 			 n = (Integer)CnSEventManager.handleMessage(ev, false);
+			 		 else {
+			 			ev = new CnSEvent(CnSNodeAnnotationManager.GET_NB_ANNOTATED_NODES, CnSEventManager.ANNOTATION_MANAGER, this.getClass());
+			 			ev.addParameter(CnSNodeAnnotationManager.CLUSTER, cluster);
+				 		n = (Integer)CnSEventManager.handleMessage(ev, false).getValue();
+			 		 }
 			 		 return n;
 			case 2 : ev = new CnSEvent(CnSNodeAnnotationManager.GET_ANNOTATED_NODES, CnSEventManager.ANNOTATION_MANAGER, this.getClass());
 	 		 		 ev.addParameter(CnSNodeAnnotationManager.CLUSTER, cluster);
 	 		 		 if (selectedAnnotation != null) {
-	 		 			 ev.addParameter(CnSNodeAnnotationManager.ANNOTATION, selectedAnnotation);
-	 		 			 n = ((Vector<CyNode>)CnSEventManager.handleMessage(ev, false)).size();
+	 		 			 ev = new CnSEvent(CnSNodeAnnotationManager.GET_ANNOTATED_NODES, CnSEventManager.ANNOTATION_MANAGER, this.getClass());
+		 		 		 ev.addParameter(CnSNodeAnnotationManager.CLUSTER, cluster);
+		 		 		 ev.addParameter(CnSNodeAnnotationManager.ANNOTATION, selectedAnnotation);
+	 		 			 n = ((Vector<?>)CnSEventManager.handleMessage(ev, false).getValue()).size();
 	 		 		 }
-	 		 		 else 
-	 		 			 n = (Integer)CnSEventManager.handleMessage(ev, false);
+	 		 		 else {
+	 		 			 ev = new CnSEvent(CnSNodeAnnotationManager.GET_NB_ANNOTATED_NODES, CnSEventManager.ANNOTATION_MANAGER, this.getClass());
+		 		 		 ev.addParameter(CnSNodeAnnotationManager.CLUSTER, cluster);
+		 		 		 n = (Integer)CnSEventManager.handleMessage(ev, false).getValue();
+	 		 		 }
 	 		 		 return n.doubleValue() / (double)cluster.getNbNodes();
 			case 3 : if (selectedAnnotation != null) {
 						 ev = new CnSEvent(CnSNodeAnnotationManager.GET_BH_HYPERGEOMETRIC, CnSEventManager.ANNOTATION_MANAGER, this.getClass());
 						 ev.addParameter(CnSNodeAnnotationManager.CLUSTER, cluster);
 						 ev.addParameter(CnSNodeAnnotationManager.ANNOTATION, selectedAnnotation);
-						 CnSAnnotationClusterPValue pv = (CnSAnnotationClusterPValue)CnSEventManager.handleMessage(ev, false);
+						 CnSAnnotationClusterPValue pv = (CnSAnnotationClusterPValue)CnSEventManager.handleMessage(ev, false).getValue();
 						 return pv.getBHValue();
 					 }
 					 return "N/A";
@@ -134,10 +141,10 @@ public class CnSAnnotationTableModel extends AbstractTableModel {
 	 					ev = new CnSEvent(CnSNodeAnnotationManager.GET_ANNOTATED_NODES, CnSEventManager.ANNOTATION_MANAGER, this.getClass());
 	 	 				ev.addParameter(CnSNodeAnnotationManager.CLUSTER, cluster);
 	 	 				ev.addParameter(CnSNodeAnnotationManager.ANNOTATION, selectedAnnotation);
-	 	 				int annotation_count = ((Vector<Object>)CnSEventManager.handleMessage(ev, false)).size();
-	 	 				ev = new CnSEvent(CnSNodeAnnotationManager.GET_ANNOTATED_NODES, CnSEventManager.ANNOTATION_MANAGER, this.getClass());
+	 	 				int annotation_count = ((Vector<?>)CnSEventManager.handleMessage(ev, false).getValue()).size();
+	 	 				ev = new CnSEvent(CnSNodeAnnotationManager.GET_NB_ANNOTATED_NODES, CnSEventManager.ANNOTATION_MANAGER, this.getClass());
 	 	 				ev.addParameter(CnSNodeAnnotationManager.CLUSTER, cluster);
-	 	 				int node_count = (Integer)CnSEventManager.handleMessage(ev, false);
+	 	 				int node_count = (Integer)CnSEventManager.handleMessage(ev, false).getValue();
 	 	 				return (double)annotation_count / (double)node_count;
 	 				 }
 			default : return "NA";

@@ -25,7 +25,9 @@ import org.cytoscape.clustnsee3.internal.analysis.CnSClusterLink;
 import org.cytoscape.clustnsee3.internal.analysis.node.CnSNode;
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventListener;
+import org.cytoscape.clustnsee3.internal.event.CnSEventResult;
 import org.cytoscape.clustnsee3.internal.gui.util.CnSPanel;
+import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeAnnotation;
 import org.cytoscape.clustnsee3.internal.partition.CnSPartition;
 import org.cytoscape.clustnsee3.internal.utils.CnSLogger;
 import org.cytoscape.clustnsee3.internal.view.CnSView;
@@ -40,6 +42,8 @@ public class CnSInfoPanel extends CnSPanel implements CytoPanelComponent, CnSEve
 	public static final int INIT = 1;
 	public static final int SELECT_PANEL = 2;
 	public static final int CLEAR = 3;
+	public final static int TAG_NODES = 4;
+	
 	
 	public static final int CLUSTER = 1001;
 	public static final int PANEL = 1002;
@@ -49,6 +53,7 @@ public class CnSInfoPanel extends CnSPanel implements CytoPanelComponent, CnSEve
 	public static final int VIEW = 1006;
 	public static final int NODE = 1007;
 	public static final int PARTITION = 1008;
+	public static final int ANNOTATION = 1009;
 	
 	private static CnSInfoPanel instance;
 	public static final String CLUSTER_DETAILS = "Cluster details";
@@ -77,6 +82,7 @@ public class CnSInfoPanel extends CnSPanel implements CytoPanelComponent, CnSEve
 			case INIT : return "INIT";
 			case SELECT_PANEL : return "SELECT_PANEL";
 			case CLEAR : return "CLEAR";
+			case TAG_NODES : return "TAG_NODES";
 			default : return "UNDEFINED_ACTION"; 
 		}
 	}
@@ -91,6 +97,7 @@ public class CnSInfoPanel extends CnSPanel implements CytoPanelComponent, CnSEve
 			case VIEW : return "VIEW";
 			case NODE : return "NODE";
 			case PARTITION : return "PARTITION";
+			case ANNOTATION : return "ANNOTATION";
 			default : return "UNDEFINED_PARAMETER"; 
 		}
 	}
@@ -102,7 +109,7 @@ public class CnSInfoPanel extends CnSPanel implements CytoPanelComponent, CnSEve
 	}
 	
 	@Override
-	public Object cnsEventOccured(CnSEvent event, boolean log) {
+	public CnSEventResult<?> cnsEventOccured(CnSEvent event, boolean log) {
 		
 		if (log) CnSLogger.LogCnSEvent(event, this);
 		
@@ -140,8 +147,13 @@ public class CnSInfoPanel extends CnSPanel implements CytoPanelComponent, CnSEve
 				else if (((String)event.getParameter(PANEL)).equals(NODE_DETAILS))
 					nodeDetailsPanel.clear();
 				break;
+				
+			case TAG_NODES :
+				CnSNodeAnnotation annotation = (CnSNodeAnnotation)event.getParameter(ANNOTATION);
+				clusterDetailsPanel.tagNodes(annotation);
+				break;
 		}
-		return null;
+		return new CnSEventResult<Object>(null);
 	}
 
 	/* (non-Javadoc)

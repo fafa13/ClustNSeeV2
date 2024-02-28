@@ -24,6 +24,7 @@ import org.cytoscape.clustnsee3.internal.algorithm.CnSAlgorithmEngine;
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventListener;
 import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
+import org.cytoscape.clustnsee3.internal.event.CnSEventResult;
 import org.cytoscape.clustnsee3.internal.gui.controlpanel.CnSControlPanel;
 import org.cytoscape.clustnsee3.internal.gui.infopanel.CnSInfoPanel;
 import org.cytoscape.clustnsee3.internal.gui.menu.contextual.action.CnSMenuManager;
@@ -68,7 +69,7 @@ public class CnSClustnseePlugin implements CnSEventListener {
 	private CnSNetworkManager networkManager;
 	private CnSPartitionManager partitionManager;
 	private CnSStyleManager styleManager;
-	private Vector<ServiceRegistration> ref;
+	private Vector<ServiceRegistration<?>> ref;
 	private CnSControlPanel controlPanel;
 	private CnSNodeAnnotationManager nodeAnnotationManager;
 	private static CnSClustnseePlugin instance;
@@ -117,10 +118,10 @@ public class CnSClustnseePlugin implements CnSEventListener {
 
 	public void registerServices() {
 		CnSEvent ev = new CnSEvent(CnSClustnseePlugin.GET_PANEL, CnSEventManager.CLUSTNSEE_PLUGIN, this.getClass());
-		controlPanel = (CnSControlPanel)CnSEventManager.handleMessage(ev, true);
+		controlPanel = (CnSControlPanel)CnSEventManager.handleMessage(ev, true).getValue();
 		CnSEventManager.addControlPanel(controlPanel);
 		
-		ref = new Vector<ServiceRegistration>();
+		ref = new Vector<ServiceRegistration<?>>();
 		Hashtable<String, ?> dict = new Hashtable<String, Object>();
 		ref.addElement(bc.registerService(CytoPanelComponent.class.getName(), controlPanel, dict));
 		ref.addElement(bc.registerService(CytoPanelComponent.class.getName(), resultsPanel, dict));
@@ -148,14 +149,14 @@ public class CnSClustnseePlugin implements CnSEventListener {
 	 * @see org.cytoscape.clustnsee3.internal.event.CnSEventListener#cnsEventOccured(org.cytoscape.clustnsee3.internal.event.CnSEvent)
 	 */
 	@Override
-	public Object cnsEventOccured(CnSEvent event, boolean log) {
-		Object ret = null;
+	public CnSEventResult<?> cnsEventOccured(CnSEvent event, boolean log) {
+		CnSEventResult<?> ret = new CnSEventResult<Object>(null);
 		
 		if (log) CnSLogger.LogCnSEvent(event, this);
 		
 		switch (event.getAction()) {
 			case (GET_PANEL) :
-				ret = new CnSControlPanel("Clust&see");
+				ret = new CnSEventResult<CnSControlPanel>(new CnSControlPanel("Clust&see"));
 				break;
 			case ENABLE_ANALYZIS :
 				controlPanel.setAnalysisEnabled((Boolean)event.getParameter(ENABLE));
@@ -164,7 +165,7 @@ public class CnSClustnseePlugin implements CnSEventListener {
 		return ret;
 	}
 	public void stop() {
-		for (ServiceRegistration sr : ref) sr.unregister();
+		for (ServiceRegistration<?> sr : ref) sr.unregister();
 		ref.clear();
 		instance = null;
 	}

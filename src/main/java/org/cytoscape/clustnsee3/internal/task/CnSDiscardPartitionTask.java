@@ -37,7 +37,7 @@ public class CnSDiscardPartitionTask extends AbstractTask {
 		
 		// get the selected partition
 		CnSEvent ev = new CnSEvent(CnSResultsPanel.GET_SELECTED_PARTITION, CnSEventManager.RESULTS_PANEL, this.getClass());
-		CnSPartition partition = (CnSPartition)CnSEventManager.handleMessage(ev, true);
+		CnSPartition partition = (CnSPartition)CnSEventManager.handleMessage(ev, true).getValue();
 		
 		if (partition != null) {
 			taskMonitor.setStatusMessage("Removing cluster networks from Cytoscape.");

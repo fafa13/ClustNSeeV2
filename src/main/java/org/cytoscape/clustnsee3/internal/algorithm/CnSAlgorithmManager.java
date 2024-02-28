@@ -15,12 +15,14 @@ package org.cytoscape.clustnsee3.internal.algorithm;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Enumeration;
 import java.util.Hashtable;
 
 import javax.swing.JOptionPane;
 
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventListener;
+import org.cytoscape.clustnsee3.internal.event.CnSEventResult;
 import org.cytoscape.clustnsee3.internal.gui.controlpanel.CnSControlAlgorithmPanel;
 import org.cytoscape.clustnsee3.internal.gui.util.CnSPanel;
 import org.cytoscape.clustnsee3.internal.utils.CnSLogger;
@@ -112,9 +114,9 @@ public class CnSAlgorithmManager implements CnSEventListener  {
 	}
 
 	@Override
-	public Object cnsEventOccured(CnSEvent event, boolean log) {
+	public CnSEventResult<?> cnsEventOccured(CnSEvent event, boolean log) {
 		int action = event.getAction();
-	    Object ret = null;
+		CnSEventResult<?> ret = new CnSEventResult<Object>(null);
 	    
 	    if (log) CnSLogger.LogCnSEvent(event, this);
 		
@@ -131,23 +133,23 @@ public class CnSAlgorithmManager implements CnSEventListener  {
 	    			JOptionPane.showMessageDialog(null, e.getMessage() + "\n" + s);
 	    			e.printStackTrace();
 	    		}    		
-	    		ret = Integer.valueOf(algorithm.size());
+	    		ret = new CnSEventResult<Integer>(Integer.valueOf(algorithm.size()));
 	    		break;
 	    		
 	    	case GET_PANEL:
-	    		ret = new CnSControlAlgorithmPanel("Algorithm");
+	    		ret = new CnSEventResult<CnSControlAlgorithmPanel>(new CnSControlAlgorithmPanel("Algorithm"));
 	    		break;
 	    		
 	    	case GET_ALGORITHM :
-	    		ret = algorithm.get((String)event.getParameter(ALGO_NAME));
+	    		ret = new CnSEventResult<CnSAlgorithm>(algorithm.get((String)event.getParameter(ALGO_NAME)));
 	    		break;
 	    		
 	    	case GET_ALGORITHM_LIST :
-	    		ret = algorithm.keys();
+	    		ret = new CnSEventResult<Enumeration<String>>(algorithm.keys());
 	    		break;
 	    		
 	    	case GET_ALGORITHM_PARAMETERS :
-	    		ret = algorithmParameters.get(event.getParameter(ALGO_NAME));
+	    		ret = new CnSEventResult<CnSAlgorithmParameters>(algorithmParameters.get(event.getParameter(ALGO_NAME)));
 	    		break;
 	    		
 	    	case SET_ALGORITHM_PARAMETER :
@@ -166,7 +168,7 @@ public class CnSAlgorithmManager implements CnSEventListener  {
 	    	case GET_SELECTED_ALGORITHM :
 	    		for (String s : algorithmSelection.keySet())
 	    			if (algorithmSelection.get(s)) {
-	    				ret = s;
+	    				ret = new CnSEventResult<String>(s);
 	    				break;
 	    			}
 	    		break;

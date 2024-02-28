@@ -73,7 +73,7 @@ public class CnSAnnotateGraphTask extends AbstractTask {
 		CnSEventManager.handleMessage(ev, true);
 		
 		ev = new CnSEvent(CnSPartitionManager.GET_PARTITIONS, CnSEventManager.PARTITION_MANAGER, this.getClass());
-		Vector<CnSPartition> parts = (Vector<CnSPartition>)CnSEventManager.handleMessage(ev, true);
+		Vector<CnSPartition> parts = (Vector<CnSPartition>)CnSEventManager.handleMessage(ev, true).getValue();
 		
 		for (CnSPartition p : parts) {
 			taskMonitor.setTitle("Computing enrichment for partition " + p.getName() + " ...");
@@ -83,7 +83,7 @@ public class CnSAnnotateGraphTask extends AbstractTask {
 			CnSEventManager.handleMessage(ev, true);
 		}
 		ev = new CnSEvent(CnSResultsPanel.GET_SELECTED_PARTITION, CnSEventManager.RESULTS_PANEL, this.getClass());
-		CnSPartition selectedPartition = (CnSPartition)CnSEventManager.handleMessage(ev, true);
+		CnSPartition selectedPartition = (CnSPartition)CnSEventManager.handleMessage(ev, true).getValue();
 		ev = new CnSEvent(CnSPartitionPanel.INIT, CnSEventManager.PARTITION_PANEL, this.getClass());
 		if (selectedPartition != null) ev.addParameter(CnSPartitionPanel.PARTITION, selectedPartition);
 		CnSEventManager.handleMessage(ev, true);

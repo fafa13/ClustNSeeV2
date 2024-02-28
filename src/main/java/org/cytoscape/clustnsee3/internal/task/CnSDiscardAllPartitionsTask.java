@@ -37,7 +37,7 @@ public class CnSDiscardAllPartitionsTask extends AbstractTask {
 		
 		// get the selected partition
 		CnSEvent ev = new CnSEvent(CnSPartitionManager.GET_PARTITIONS, CnSEventManager.PARTITION_MANAGER, this.getClass());
-		Vector<CnSPartition> partitions = (Vector<CnSPartition>)CnSEventManager.handleMessage(ev, true);
+		Vector<CnSPartition> partitions = (Vector<CnSPartition>)CnSEventManager.handleMessage(ev, true).getValue();
 		
 		if (partitions != null) {
 			int s = partitions.size();

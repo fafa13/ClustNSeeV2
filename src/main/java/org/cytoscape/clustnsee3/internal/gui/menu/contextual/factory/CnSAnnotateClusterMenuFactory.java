@@ -50,7 +50,7 @@ public class CnSAnnotateClusterMenuFactory implements CyNodeViewContextMenuFacto
 	public CyMenuItem createMenuItem(CyNetworkView arg0, View<CyNode> nodeView) {
 		CyMenuItem ret = null;
 		CnSEvent ev = new CnSEvent(CnSViewManager.GET_SELECTED_VIEW, CnSEventManager.VIEW_MANAGER, this.getClass());
-		CnSView view = (CnSView)CnSEventManager.handleMessage(ev, true);
+		CnSView view = (CnSView)CnSEventManager.handleMessage(ev, true).getValue();
 		
 		for (CnSCluster c : view.getClusters())
 			if (c.getCyNode() == nodeView.getModel()) {

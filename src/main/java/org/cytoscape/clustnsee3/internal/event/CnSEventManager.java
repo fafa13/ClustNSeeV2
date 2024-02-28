@@ -93,11 +93,11 @@ public class CnSEventManager {
 	public static void addControlPanel(CnSEventListener _controlPanel) {
 		controlPanel = _controlPanel;
 	}
-	public static Object handleMessage(CnSEvent event, boolean log) {
-	//public static CnSEventResult<? extends Object> handleMessage(CnSEvent event) {
+	//public static Object handleMessage(CnSEvent event, boolean log) {
+	public static CnSEventResult<?> handleMessage(CnSEvent event, boolean log) {
 	    int target = event.getTarget();
-	    //CnSEventResult<? extends Object> ret = null;
-	    Object ret = null;
+	    CnSEventResult<?> ret = new CnSEventResult<Object>(null);
+	    //Object ret = null;
 	    
 	    switch (target) {
 	      	case CLUSTNSEE_PLUGIN:

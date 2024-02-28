@@ -87,7 +87,7 @@ public class CnSSearchNodeClustersDialog extends JDialog implements ActionListen
 					CnSEvent ev = new CnSEvent(CnSPartitionManager.GET_NODE_CLUSTERS, CnSEventManager.PARTITION_MANAGER, this.getClass());
 					ev.addParameter(CnSPartitionManager.NODE_NAME, searchTextField.getText());
 					@SuppressWarnings("unchecked")
-					Vector<CnSCluster> v = (Vector<CnSCluster>)CnSEventManager.handleMessage(ev, true);
+					Vector<CnSCluster> v = (Vector<CnSCluster>)CnSEventManager.handleMessage(ev, true).getValue();
 					data.clear();
 					for (int i = 0; i < v.size(); i++) {
 						Vector<CnSCluster> r = new Vector<CnSCluster>();
@@ -108,7 +108,7 @@ public class CnSSearchNodeClustersDialog extends JDialog implements ActionListen
 					CnSEvent ev = new CnSEvent(CnSPartitionManager.GET_NODE_CLUSTERS, CnSEventManager.PARTITION_MANAGER, this.getClass());
 					ev.addParameter(CnSPartitionManager.NODE_NAME, searchTextField.getText());
 					@SuppressWarnings("unchecked")
-					Vector<CnSCluster> v = (Vector<CnSCluster>)CnSEventManager.handleMessage(ev, true);
+					Vector<CnSCluster> v = (Vector<CnSCluster>)CnSEventManager.handleMessage(ev, true).getValue();
 					data.clear();
 					for (int i = 0; i < v.size(); i++) {
 						Vector<CnSCluster> r = new Vector<CnSCluster>();

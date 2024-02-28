@@ -69,7 +69,7 @@ public class CnSClusterInteractionsPanel extends CnSPanel {
 		data.clear();
 		CnSEvent ev = new CnSEvent(CnSPartitionManager.GET_PARTITION, CnSEventManager.PARTITION_MANAGER, this.getClass());
 		ev.addParameter(CnSPartitionManager.CLUSTER, clusterLink.getSource());
-		CnSPartition partition = (CnSPartition)CnSEventManager.handleMessage(ev, true);
+		CnSPartition partition = (CnSPartition)CnSEventManager.handleMessage(ev, true).getValue();
 		
 		for (CnSEdge ed : clusterLink.getEdges()) {
 			Vector<String> rv = new Vector<String>();

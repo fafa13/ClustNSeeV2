@@ -54,7 +54,6 @@ import org.cytoscape.clustnsee3.internal.gui.util.CnSButton;
 import org.cytoscape.clustnsee3.internal.gui.util.CnSPanel;
 import org.cytoscape.clustnsee3.internal.gui.util.CnSPanelSplitCommand;
 import org.cytoscape.clustnsee3.internal.gui.util.CnSTableHeaderRenderer;
-import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeAnnotation;
 import org.cytoscape.clustnsee3.internal.nodeannotation.stats.CnSAnnotationClusterPValue;
 import org.cytoscape.clustnsee3.internal.partition.CnSPartition;
 import org.cytoscape.clustnsee3.internal.partition.CnSPartitionManager;
@@ -182,7 +181,7 @@ public class CnSPartitionTablePanel extends CnSPanelSplitCommand {
 		table.getTable().getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 		    public void valueChanged(ListSelectionEvent e) {
 		    	CnSEvent ev = new CnSEvent(CnSResultsPanel.GET_SELECTED_PARTITION, CnSEventManager.RESULTS_PANEL, this.getClass());
-		    	CnSPartition partition = (CnSPartition)CnSEventManager.handleMessage(ev, true);
+		    	CnSPartition partition = (CnSPartition)CnSEventManager.handleMessage(ev, true).getValue();
 		    	ev = new CnSEvent(CnSResultsPanel.SELECT_CLUSTER, CnSEventManager.RESULTS_PANEL, this.getClass());
 		    	CnSCluster cluster = null;
 		    	int selectedRow = -1;
@@ -254,13 +253,13 @@ public class CnSPartitionTablePanel extends CnSPanelSplitCommand {
 				CnSPartition part;
 				if (annotateButton.getActionCommand().equals("All")) {
 					ev = new CnSEvent(CnSResultsPanel.GET_SELECTED_PARTITION, CnSEventManager.RESULTS_PANEL, this.getClass());
-					part = (CnSPartition)CnSEventManager.handleMessage(ev, true);
+					part = (CnSPartition)CnSEventManager.handleMessage(ev, true).getValue();
 					if (part != null) {
 						ev = new CnSEvent(CnSPartitionManager.GET_CLUSTER, CnSEventManager.PARTITION_MANAGER, this.getClass());
 						ev.addParameter(CnSPartitionManager.PARTITION, part);
 						for (int row = 0; row < table.getTable().getRowSorter().getViewRowCount(); row++) {
 							ev.addParameter(CnSPartitionManager.CLUSTER_ID, table.getFixedTable().getValueAt(row, 0));
-							cluster = (CnSCluster)CnSEventManager.handleMessage(ev, true);
+							cluster = (CnSCluster)CnSEventManager.handleMessage(ev, true).getValue();
 							annots = (Vector<CnSAnnotationClusterPValue>)table.getModel().getValueAt(table.getTable().getRowSorter().convertRowIndexToModel(row), -5);
 							for (CnSAnnotationClusterPValue annot : annots) {
 								cca = new CnSClusterAnnotation(annot.getAnnotation().getValue());
@@ -271,12 +270,12 @@ public class CnSPartitionTablePanel extends CnSPanelSplitCommand {
 				}
 				else {
 					ev = new CnSEvent(CnSResultsPanel.GET_SELECTED_PARTITION, CnSEventManager.RESULTS_PANEL, this.getClass());
-					part = (CnSPartition)CnSEventManager.handleMessage(ev, true);
+					part = (CnSPartition)CnSEventManager.handleMessage(ev, true).getValue();
 					if (part != null) {
 						ev = new CnSEvent(CnSPartitionManager.GET_CLUSTER, CnSEventManager.PARTITION_MANAGER, this.getClass());
 						ev.addParameter(CnSPartitionManager.CLUSTER_ID, Integer.valueOf(annotateButton.getActionCommand()));
 						ev.addParameter(CnSPartitionManager.PARTITION, part);
-						cluster = (CnSCluster)CnSEventManager.handleMessage(ev, true);
+						cluster = (CnSCluster)CnSEventManager.handleMessage(ev, true).getValue();
 						annots = (Vector<CnSAnnotationClusterPValue>)table.getModel().getValueAt(table.getTable().getRowSorter().convertRowIndexToModel(table.getTable().getSelectedRow()), -5);
 						for (CnSAnnotationClusterPValue annot : annots) {
 							cca = new CnSClusterAnnotation(annot.getAnnotation().getValue());
@@ -284,7 +283,9 @@ public class CnSPartitionTablePanel extends CnSPanelSplitCommand {
 						}
 					}
 				}
+				int selectedRow = table.getTable().getSelectedRow();
 				table.fireTableDataChanged();
+				if (selectedRow != -1) table.getTable().setRowSelectionInterval(selectedRow, selectedRow);
 			}
 		});
 		deannotateButton.addActionListener(new ActionListener() {
@@ -297,13 +298,13 @@ public class CnSPartitionTablePanel extends CnSPanelSplitCommand {
 				CnSPartition part;
 				if (deannotateButton.getActionCommand().equals("All")) {
 					ev = new CnSEvent(CnSResultsPanel.GET_SELECTED_PARTITION, CnSEventManager.RESULTS_PANEL, this.getClass());
-					part = (CnSPartition)CnSEventManager.handleMessage(ev, true);
+					part = (CnSPartition)CnSEventManager.handleMessage(ev, true).getValue();
 					if (part != null)
 						for (int row = 0; row < table.getTable().getRowSorter().getViewRowCount(); row++) {
 							ev = new CnSEvent(CnSPartitionManager.GET_CLUSTER, CnSEventManager.PARTITION_MANAGER, this.getClass());
 							ev.addParameter(CnSPartitionManager.CLUSTER_ID, table.getFixedTable().getValueAt(row, 0));
 							ev.addParameter(CnSPartitionManager.PARTITION, part);
-							cluster = (CnSCluster)CnSEventManager.handleMessage(ev, true);
+							cluster = (CnSCluster)CnSEventManager.handleMessage(ev, true).getValue();
 							annots = (Vector<CnSAnnotationClusterPValue>)table.getModel().getValueAt(table.getTable().getRowSorter().convertRowIndexToModel(row), -5);
 							for (CnSAnnotationClusterPValue annot : annots) {
 								cca = new CnSClusterAnnotation(annot.getAnnotation().getValue());
@@ -313,12 +314,12 @@ public class CnSPartitionTablePanel extends CnSPanelSplitCommand {
 				}
 				else {
 					ev = new CnSEvent(CnSResultsPanel.GET_SELECTED_PARTITION, CnSEventManager.RESULTS_PANEL, this.getClass());
-					part = (CnSPartition)CnSEventManager.handleMessage(ev, true);
+					part = (CnSPartition)CnSEventManager.handleMessage(ev, true).getValue();
 					if (part != null) {
 						ev = new CnSEvent(CnSPartitionManager.GET_CLUSTER, CnSEventManager.PARTITION_MANAGER, this.getClass());
 						ev.addParameter(CnSPartitionManager.CLUSTER_ID, Integer.valueOf(annotateButton.getActionCommand()));
 						ev.addParameter(CnSPartitionManager.PARTITION, part);
-						cluster = (CnSCluster)CnSEventManager.handleMessage(ev, true);
+						cluster = (CnSCluster)CnSEventManager.handleMessage(ev, true).getValue();
 						annots = (Vector<CnSAnnotationClusterPValue>)table.getModel().getValueAt(table.getTable().getRowSorter().convertRowIndexToModel(table.getTable().getSelectedRow()), -5);
 						for (CnSAnnotationClusterPValue annot : annots) {
 							cca = new CnSClusterAnnotation(annot.getAnnotation().getValue());
@@ -326,7 +327,9 @@ public class CnSPartitionTablePanel extends CnSPanelSplitCommand {
 						}
 					}
 				}
+				int selectedRow = table.getTable().getSelectedRow();
 				table.fireTableDataChanged();
+				if (selectedRow != -1) table.getTable().setRowSelectionInterval(selectedRow, selectedRow);
 			}
 		});
 		hideSmallClustersCheckbox.addActionListener(new ActionListener() {
@@ -435,14 +438,14 @@ public class CnSPartitionTablePanel extends CnSPanelSplitCommand {
 		}
 	}
 	
-	public void setSelectedAnnotation(CnSNodeAnnotation annotation) {
+	/*public void setSelectedAnnotation(CnSNodeAnnotation annotation) {
 		table.setSelectedAnnotation(annotation);
 		table.fireTableDataChanged();
 		repaintTable();
 	}
 	public CnSNodeAnnotation getSelectedAnnoselectedAnnotationtation() {
 		return table.getSelectedAnnotation();
-	}
+	}*/
 	
 	public void clear() {
 		table.getTable().setModel(new DefaultTableModel());

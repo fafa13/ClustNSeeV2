@@ -65,7 +65,7 @@ public class CnSAFTreeFileNode extends CnSPanelTreeNode {
 				System.out.println("Child count = " + getChildCount());
 				
 				CnSEvent ev = new CnSEvent(CyActivator.GET_TASK_MANAGER, CnSEventManager.CY_ACTIVATOR, this.getClass());
-				DialogTaskManager dialogTaskManager = (DialogTaskManager)CnSEventManager.handleMessage(ev, true);
+				DialogTaskManager dialogTaskManager = (DialogTaskManager)CnSEventManager.handleMessage(ev, true).getValue();
 				TaskIterator ti = new TaskIterator();
 				CnSPanelTreeNode rootNode = (CnSPanelTreeNode)((CnSAFTreeDetailsNodePanel)getChildAt(0).getPanel()).getNetworksTree().getModel().getRoot();
 				
@@ -76,19 +76,19 @@ public class CnSAFTreeFileNode extends CnSPanelTreeNode {
 			else if (((CnSButton)e.getSource()).getActionCommand().equals("annotate")) {
 				System.out.println("Pressed: annotate " + af);
 				CnSEvent ev = new CnSEvent(CyActivator.GET_APPLICATION_MANAGER, CnSEventManager.CY_ACTIVATOR, this.getClass());
-				CyApplicationManager cam = (CyApplicationManager)CnSEventManager.handleMessage(ev, true);
+				CyApplicationManager cam = (CyApplicationManager)CnSEventManager.handleMessage(ev, true).getValue();
 				CyNetwork network = cam.getCurrentNetwork();
 				
 				if (network != null) {
 					ev = new CnSEvent(CnSNetworkManager.GET_NETWORK, CnSEventManager.NETWORK_MANAGER, this.getClass());
 					ev.addParameter(CnSNetworkManager.NETWORK, network);
-					CnSNetwork cn = (CnSNetwork)CnSEventManager.handleMessage(ev, true);
+					CnSNetwork cn = (CnSNetwork)CnSEventManager.handleMessage(ev, true).getValue();
 					if (cn != null) network = cn.getBaseNetwork();
 					
 					ev = new CnSEvent(CnSNodeAnnotationManager.IS_NETWORK_ANNOTATED, CnSEventManager.ANNOTATION_MANAGER, this.getClass());
 					ev.addParameter(CnSNodeAnnotationManager.ANNOTATION_FILE, getData(ANNOTATION_FILE));
 					ev.addParameter(CnSNodeAnnotationManager.NETWORK, network);
-					if (!(Boolean)CnSEventManager.handleMessage(ev, true)) {
+					if (!(Boolean)CnSEventManager.handleMessage(ev, true).getValue()) {
 						ev = new CnSEvent(CnSNodeAnnotationManager.PARSE_ANNOTATIONS, CnSEventManager.ANNOTATION_MANAGER, this.getClass());
 						ev.addParameter(CnSNodeAnnotationManager.FILE, af.getFile());
 						ev.addParameter(CnSNodeAnnotationManager.FROM_LINE, af.getFromLine());
@@ -97,7 +97,7 @@ public class CnSAFTreeFileNode extends CnSPanelTreeNode {
 						ev.addParameter(CnSNodeAnnotationManager.COLUMN_SEPARATOR, af.getColumnSeparator());
 						ev.addParameter(CnSNodeAnnotationManager.ANNOTATION_SEPARATOR, af.getAnnotationSeparator());
 						ev.addParameter(CnSNodeAnnotationManager.NETWORK, network);
-						int[] results = (int[])CnSEventManager.handleMessage(ev, true);
+						int[] results = (int[])CnSEventManager.handleMessage(ev, true).getValue();
 						
 						Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 				
@@ -106,7 +106,7 @@ public class CnSAFTreeFileNode extends CnSPanelTreeNode {
 						statsDialog.setVisible(true);
 						if (statsDialog.getExitOption() == CnSAnnotationFileStatsDialog.OK_OPTION) {
 							ev = new CnSEvent(CyActivator.GET_TASK_MANAGER, CnSEventManager.CY_ACTIVATOR, this.getClass());
-							DialogTaskManager dialogTaskManager = (DialogTaskManager)CnSEventManager.handleMessage(ev, true);
+							DialogTaskManager dialogTaskManager = (DialogTaskManager)CnSEventManager.handleMessage(ev, true).getValue();
 							TaskIterator ti = new TaskIterator();
 							CnSAnnotateGraphTask task = new CnSAnnotateGraphTask(af, network, results, this);
 							ti.append(task);

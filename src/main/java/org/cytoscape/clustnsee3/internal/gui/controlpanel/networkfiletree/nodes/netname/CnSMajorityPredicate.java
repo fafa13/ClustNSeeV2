@@ -36,9 +36,9 @@ public class CnSMajorityPredicate implements Predicate<CnSAnnotationClusterPValu
 	 */
 	@Override
 	public boolean test(CnSAnnotationClusterPValue pv) {
-		CnSEvent ev = new CnSEvent(CnSNodeAnnotationManager.GET_ANNOTATED_NODES, CnSEventManager.ANNOTATION_MANAGER, this.getClass());
+		CnSEvent ev = new CnSEvent(CnSNodeAnnotationManager.GET_NB_ANNOTATED_NODES, CnSEventManager.ANNOTATION_MANAGER, this.getClass());
 		ev.addParameter(CnSNodeAnnotationManager.CLUSTER, pv.getCluster());
-		int node_count = (Integer)CnSEventManager.handleMessage(ev, true);
+		int node_count = (Integer)CnSEventManager.handleMessage(ev, true).getValue();
 		return (((double)(pv.getAnnotatedNodesInCluster()) / (double)node_count) < threshold);
 	}
 }

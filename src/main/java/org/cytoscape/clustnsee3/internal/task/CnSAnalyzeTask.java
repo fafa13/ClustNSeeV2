@@ -44,21 +44,21 @@ public class CnSAnalyzeTask extends AbstractTask {
 	 */
 	@Override
 	public void run(TaskMonitor taskMonitor) throws Exception {
-		taskMonitor.setTitle("Analyze is running ...");
+		taskMonitor.setTitle("Analysis is running ...");
 		taskMonitor.setProgress(-1.0);
 		
 		/**
 		 * Get the name of the selected algorithm
 		 */
 		CnSEvent ev = new CnSEvent(CnSAlgorithmManager.GET_SELECTED_ALGORITHM, CnSEventManager.ALGORITHM_MANAGER, this.getClass());
-		String algoName = (String)CnSEventManager.handleMessage(ev, true);
+		String algoName = (String)CnSEventManager.handleMessage(ev, true).getValue();
 		
 		/**
 		 * Get the selected algorithm
 		 */
 		ev = new CnSEvent(CnSAlgorithmManager.GET_ALGORITHM, CnSEventManager.ALGORITHM_MANAGER, this.getClass());
 		ev.addParameter(CnSAlgorithmManager.ALGO_NAME, algoName);
-		CnSAlgorithm algo = (CnSAlgorithm)CnSEventManager.handleMessage(ev, true);
+		CnSAlgorithm algo = (CnSAlgorithm)CnSEventManager.handleMessage(ev, true).getValue();
 		
 		taskMonitor.setStatusMessage("Cluster computation");
 		/**
@@ -67,7 +67,7 @@ public class CnSAnalyzeTask extends AbstractTask {
 		ev = new CnSEvent(CnSAlgorithmEngine.START, CnSEventManager.ALGORITHM_ENGINE, this.getClass());
 		ev.addParameter(CnSAlgorithmEngine.ALGORITHM, algo);
 		ev.addParameter(CnSAlgorithmEngine.NETWORK, inputNetwork);
-		CnSAlgorithmResult result = (CnSAlgorithmResult)CnSEventManager.handleMessage(ev, true);
+		CnSAlgorithmResult result = (CnSAlgorithmResult)CnSEventManager.handleMessage(ev, true).getValue();
 		
 		taskMonitor.setProgress(0.0);
 		
@@ -78,7 +78,7 @@ public class CnSAnalyzeTask extends AbstractTask {
 		 */
 		if (result != null) {
 			ev = new CnSEvent(CyActivator.GET_APPLICATION_MANAGER, CnSEventManager.CY_ACTIVATOR, this.getClass());
-			CyApplicationManager cam = (CyApplicationManager)CnSEventManager.handleMessage(ev, true);
+			CyApplicationManager cam = (CyApplicationManager)CnSEventManager.handleMessage(ev, true).getValue();
 			CyNetwork network = cam.getCurrentNetwork();
 		
 			ev = new CnSEvent(CnSResultsPanel.ADD_PARTITION, CnSEventManager.RESULTS_PANEL, this.getClass());

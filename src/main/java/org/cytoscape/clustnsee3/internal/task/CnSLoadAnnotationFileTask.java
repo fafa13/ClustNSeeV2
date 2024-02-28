@@ -68,7 +68,7 @@ public class CnSLoadAnnotationFileTask extends AbstractTask {
 		ev.addParameter(CnSNodeAnnotationManager.TARGET_COLUMN, targetColumn);
 		ev.addParameter(CnSNodeAnnotationManager.COLUMN_SEPARATOR, columnSeparator);
 		ev.addParameter(CnSNodeAnnotationManager.ANNOTATION_SEPARATOR, annotationSeparator);
-		CnSNodeAnnotationFile annotationFile = (CnSNodeAnnotationFile)CnSEventManager.handleMessage(ev, true);
+		CnSNodeAnnotationFile annotationFile = (CnSNodeAnnotationFile)CnSEventManager.handleMessage(ev, true).getValue();
 		
 		ev = new CnSEvent(CnSPartitionPanel.INIT, CnSEventManager.PARTITION_PANEL, this.getClass());
 		if (partition != null) ev.addParameter(CnSPartitionPanel.PARTITION, partition);

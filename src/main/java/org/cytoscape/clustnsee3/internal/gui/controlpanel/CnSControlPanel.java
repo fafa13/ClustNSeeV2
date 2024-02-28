@@ -22,6 +22,7 @@ import org.cytoscape.clustnsee3.internal.CyActivator;
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventListener;
 import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
+import org.cytoscape.clustnsee3.internal.event.CnSEventResult;
 import org.cytoscape.clustnsee3.internal.gui.controlpanel.annotationfiletree.nodes.details.CnSAFTreeDetailsNode;
 import org.cytoscape.clustnsee3.internal.gui.controlpanel.annotationfiletree.nodes.details.CnSAFTreeDetailsNodePanel;
 import org.cytoscape.clustnsee3.internal.gui.controlpanel.annotationfiletree.nodes.file.CnSAFTreeFileNode;
@@ -168,13 +169,13 @@ public class CnSControlPanel extends CnSPanel implements CytoPanelComponent, CnS
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				CnSEvent ev = new CnSEvent(CyActivator.GET_APPLICATION_MANAGER, CnSEventManager.CY_ACTIVATOR, this.getClass());
-				CyApplicationManager cam = (CyApplicationManager)CnSEventManager.handleMessage(ev, true);
+				CyApplicationManager cam = (CyApplicationManager)CnSEventManager.handleMessage(ev, true).getValue();
 				CyNetwork network = cam.getCurrentNetwork();
 				if (network == null)
 					JOptionPane.showMessageDialog(null, "You must select a network first !");
 				else {
 					ev = new CnSEvent(CyActivator.GET_TASK_MANAGER, CnSEventManager.CY_ACTIVATOR, this.getClass());
-					DialogTaskManager dialogTaskManager = (DialogTaskManager)CnSEventManager.handleMessage(ev, true);
+					DialogTaskManager dialogTaskManager = (DialogTaskManager)CnSEventManager.handleMessage(ev, true).getValue();
 					TaskIterator ti = new TaskIterator();
 					CnSAnalyzeTask task = new CnSAnalyzeTask(network);
 					ti.append(task);
@@ -189,7 +190,7 @@ public class CnSControlPanel extends CnSPanel implements CytoPanelComponent, CnS
 	 * @see org.cytoscape.clustnsee3.internal.event.CnSEventListener#cnsEventOccured(org.cytoscape.clustnsee3.internal.event.CnSEvent)
 	 */
 	@Override
-	public Object cnsEventOccured(CnSEvent event, boolean log) {
+	public CnSEventResult<?> cnsEventOccured(CnSEvent event, boolean log) {
 		if (log) CnSLogger.LogCnSEvent(event, this);
 		
 		CyNetwork network = (CyNetwork)event.getParameter(NETWORK);
@@ -236,7 +237,7 @@ public class CnSControlPanel extends CnSPanel implements CytoPanelComponent, CnS
 				deannotateAllNetworks();
 				break;
 		}
-		return null;
+		return new CnSEventResult<Object>(null);
 	}
 	
 	@Override

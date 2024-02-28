@@ -38,7 +38,7 @@ public class CnSMulticlassedNodesTableModel extends AbstractTableModel {
 		this.partition = partition;
 		
 		CnSEvent ev = new CnSEvent(CyActivator.GET_RESOURCES_BUNDLE, CnSEventManager.CY_ACTIVATOR, this.getClass());
-		ResourceBundle rBundle = (ResourceBundle)CnSEventManager.handleMessage(ev, true);
+		ResourceBundle rBundle = (ResourceBundle)CnSEventManager.handleMessage(ev, true).getValue();
 		rBundle = CyActivator.getResourcesBundle();
 		System.err.println("BUNDLE = " + rBundle);
 		

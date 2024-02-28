@@ -85,11 +85,11 @@ public class CnSExpandCompressClusterNodeMenuFactory implements CyNodeViewContex
 		
 		CnSEvent ev = new CnSEvent(CnSPartitionManager.GET_NODE, CnSEventManager.PARTITION_MANAGER, this.getClass());
 		ev.addParameter(CnSPartitionManager.CY_NODE, nodeView.getModel());
-		CnSNode cnsNode = (CnSNode)CnSEventManager.handleMessage(ev, true);
+		CnSNode cnsNode = (CnSNode)CnSEventManager.handleMessage(ev, true).getValue();
 		
 		ev = new CnSEvent(CnSNetworkManager.GET_NETWORK, CnSEventManager.NETWORK_MANAGER, this.getClass());
 		ev.addParameter(CnSNetworkManager.NETWORK, netView.getModel());
-		CnSNetwork cnsNetwork = (CnSNetwork)CnSEventManager.handleMessage(ev, true);
+		CnSNetwork cnsNetwork = (CnSNetwork)CnSEventManager.handleMessage(ev, true).getValue();
 		
 		if (cnsNode != null && cnsNetwork != null)
 			if (cnsNode.getNbClusters() > 0)

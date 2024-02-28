@@ -123,11 +123,11 @@ public class CnSResultsCommandPanel extends CnSPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				CnSEvent ev = new CnSEvent(CnSResultsPanel.GET_SELECTED_CLUSTER, CnSEventManager.RESULTS_PANEL, this.getClass());
-		        CnSCluster cluster = (CnSCluster)CnSEventManager.handleMessage(ev, true);
+		        CnSCluster cluster = (CnSCluster)CnSEventManager.handleMessage(ev, true).getValue();
 		        if (cluster != null) {
 		        	// get the selected tab in south panel
 		        	ev = new CnSEvent(CyActivator.GET_SWING_APPLICATION, CnSEventManager.CY_ACTIVATOR, this.getClass());
-		        	CySwingApplication app = (CySwingApplication)CnSEventManager.handleMessage(ev, true);
+		        	CySwingApplication app = (CySwingApplication)CnSEventManager.handleMessage(ev, true).getValue();
 		        	CytoPanel cp = app.getCytoPanel(CytoPanelName.SOUTH);
 		        	int beforeIndex = cp.getSelectedIndex();
 		        	
@@ -150,11 +150,11 @@ public class CnSResultsCommandPanel extends CnSPanel {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				CnSEvent ev = new CnSEvent(CnSResultsPanel.GET_SELECTED_CLUSTER, CnSEventManager.RESULTS_PANEL, this.getClass());
-		        CnSCluster cluster = (CnSCluster)CnSEventManager.handleMessage(ev, true);
+		        CnSCluster cluster = (CnSCluster)CnSEventManager.handleMessage(ev, true).getValue();
 				if (cluster != null) {
 					// get the selected tab in south panel
 					ev = new CnSEvent(CyActivator.GET_SWING_APPLICATION, CnSEventManager.CY_ACTIVATOR, this.getClass());
-		        	CySwingApplication app = (CySwingApplication)CnSEventManager.handleMessage(ev, true);
+		        	CySwingApplication app = (CySwingApplication)CnSEventManager.handleMessage(ev, true).getValue();
 		        	CytoPanel cp = app.getCytoPanel(CytoPanelName.SOUTH);
 		        	int beforeIndex = cp.getSelectedIndex();
 		        	
@@ -165,10 +165,10 @@ public class CnSResultsCommandPanel extends CnSPanel {
 					
 					// create CnS attributes in the partition network table
 					ev = new CnSEvent(CnSViewManager.GET_SELECTED_VIEW, CnSEventManager.VIEW_MANAGER, this.getClass());
-					CnSView sView = (CnSView)CnSEventManager.handleMessage(ev, true);
+					CnSView sView = (CnSView)CnSEventManager.handleMessage(ev, true).getValue();
 					ev = new CnSEvent(CnSViewManager.GET_NETWORK, CnSEventManager.VIEW_MANAGER, this.getClass());
 					ev.addParameter(CnSViewManager.VIEW, sView);
-					CnSNetwork sNetwork = (CnSNetwork)CnSEventManager.handleMessage(ev, true);
+					CnSNetwork sNetwork = (CnSNetwork)CnSEventManager.handleMessage(ev, true).getValue();
 			        CyTable networkTable = sNetwork.getNetwork().getDefaultNetworkTable();
 	                if (networkTable.getColumn("CnS:viewState") == null) networkTable.createColumn("CnS:viewState", String.class, true);
 	                sNetwork.getNetwork().getRow(sNetwork.getNetwork()).set("CnS:viewState", "user");
@@ -183,15 +183,15 @@ public class CnSResultsCommandPanel extends CnSPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				CnSEvent ev = new CnSEvent(CnSResultsPanel.GET_SELECTED_PARTITION, CnSEventManager.RESULTS_PANEL, this.getClass());
-				CnSPartition partition = (CnSPartition)CnSEventManager.handleMessage(ev, true);
+				CnSPartition partition = (CnSPartition)CnSEventManager.handleMessage(ev, true).getValue();
 		        
 				ev = new CnSEvent(CnSViewManager.GET_PARTITION_VIEW, CnSEventManager.VIEW_MANAGER, this.getClass());
 				ev.addParameter(CnSViewManager.REFERENCE, partition);
-				CnSView partitionView = (CnSView)CnSEventManager.handleMessage(ev, true);
+				CnSView partitionView = (CnSView)CnSEventManager.handleMessage(ev, true).getValue();
 				
 				// get the selected tab in south panel
 				ev = new CnSEvent(CyActivator.GET_SWING_APPLICATION, CnSEventManager.CY_ACTIVATOR, this.getClass());
-	        	CySwingApplication app = (CySwingApplication)CnSEventManager.handleMessage(ev, true);
+	        	CySwingApplication app = (CySwingApplication)CnSEventManager.handleMessage(ev, true).getValue();
 	        	CytoPanel cp = app.getCytoPanel(CytoPanelName.SOUTH);
 	        	int beforeIndex = cp.getSelectedIndex();
 				
@@ -199,19 +199,19 @@ public class CnSResultsCommandPanel extends CnSPanel {
 					CyNetwork inputNetwork = partition.getInputNetwork();
 					
 					ev = new CnSEvent(CyActivator.GET_ROOT_NETWORK_MANAGER, CnSEventManager.CY_ACTIVATOR, this.getClass());
-					CyRootNetworkManager crnm = (CyRootNetworkManager)CnSEventManager.handleMessage(ev, true);
+					CyRootNetworkManager crnm = (CyRootNetworkManager)CnSEventManager.handleMessage(ev, true).getValue();
 					CyRootNetwork crn = crnm.getRootNetwork(inputNetwork);
 					if (crn != null) {
 						ev = new CnSEvent(CyActivator.GET_NETWORK_VIEW_FACTORY, CnSEventManager.CY_ACTIVATOR, this.getClass());
-						CyNetworkViewFactory cnvf = (CyNetworkViewFactory)CnSEventManager.handleMessage(ev, true);
+						CyNetworkViewFactory cnvf = (CyNetworkViewFactory)CnSEventManager.handleMessage(ev, true).getValue();
 						ev = new CnSEvent(CyActivator.GET_NETWORK_VIEW_MANAGER, CnSEventManager.CY_ACTIVATOR, this.getClass());
-						CyNetworkViewManager networkViewManager = (CyNetworkViewManager)CnSEventManager.handleMessage(ev, true);
+						CyNetworkViewManager networkViewManager = (CyNetworkViewManager)CnSEventManager.handleMessage(ev, true).getValue();
 						ev = new CnSEvent(CyActivator.GET_NETWORK_MANAGER, CnSEventManager.CY_ACTIVATOR, this.getClass());
-						CyNetworkManager networkManager = (CyNetworkManager)CnSEventManager.handleMessage(ev, true);
+						CyNetworkManager networkManager = (CyNetworkManager)CnSEventManager.handleMessage(ev, true).getValue();
 						ev = new CnSEvent(CyActivator.GET_SYNCHRONOUS_TASK_MANAGER, CnSEventManager.CY_ACTIVATOR, this.getClass());
-						TaskManager<?, ?> tm = (TaskManager<?, ?>)CnSEventManager.handleMessage(ev, true);
+						TaskManager<?, ?> tm = (TaskManager<?, ?>)CnSEventManager.handleMessage(ev, true).getValue();
 						ev = new CnSEvent(CyActivator.GET_LAYOUT_ALGORITHM_MANAGER, CnSEventManager.CY_ACTIVATOR, this.getClass());
-						CyLayoutAlgorithmManager clam = (CyLayoutAlgorithmManager)CnSEventManager.handleMessage(ev, true);
+						CyLayoutAlgorithmManager clam = (CyLayoutAlgorithmManager)CnSEventManager.handleMessage(ev, true).getValue();
 		        
 						// Create a new network
 						CySubNetwork partNet = crn.addSubNetwork();
@@ -243,7 +243,7 @@ public class CnSResultsCommandPanel extends CnSPanel {
 						for (CnSCluster cluster : partition.getClusters()) {
 							ev = new CnSEvent(CnSViewManager.GET_VIEW, CnSEventManager.VIEW_MANAGER, this.getClass());
 							ev.addParameter(CnSViewManager.REFERENCE, cluster);
-							CnSView clusterView = (CnSView)CnSEventManager.handleMessage(ev, true);
+							CnSView clusterView = (CnSView)CnSEventManager.handleMessage(ev, true).getValue();
 						
 							CySubNetwork clNet = null;
 							if (clusterView == null) {
@@ -375,10 +375,10 @@ public class CnSResultsCommandPanel extends CnSPanel {
 				// set the current network in cytoscape to be the partition network
 				ev = new CnSEvent(CnSViewManager.GET_NETWORK, CnSEventManager.VIEW_MANAGER, this.getClass());
 				ev.addParameter(CnSViewManager.VIEW, partitionView);
-				CnSNetwork network = (CnSNetwork)CnSEventManager.handleMessage(ev, true);
+				CnSNetwork network = (CnSNetwork)CnSEventManager.handleMessage(ev, true).getValue();
 				
 				ev = new CnSEvent(CyActivator.GET_APPLICATION_MANAGER, CnSEventManager.CY_ACTIVATOR, this.getClass());
-				CyApplicationManager applicationManager = (CyApplicationManager)CnSEventManager.handleMessage(ev, true);
+				CyApplicationManager applicationManager = (CyApplicationManager)CnSEventManager.handleMessage(ev, true).getValue();
 				applicationManager.setCurrentNetworkView(partitionView.getView());
 				applicationManager.setCurrentNetwork(network.getNetwork());
 				
@@ -394,7 +394,7 @@ public class CnSResultsCommandPanel extends CnSPanel {
 			@Override
 			public void actionPerformed(ActionEvent event) {
 				CnSEvent ev = new CnSEvent(CyActivator.GET_TASK_MANAGER, CnSEventManager.CY_ACTIVATOR, this.getClass());
-				DialogTaskManager dialogTaskManager = (DialogTaskManager)CnSEventManager.handleMessage(ev, true);
+				DialogTaskManager dialogTaskManager = (DialogTaskManager)CnSEventManager.handleMessage(ev, true).getValue();
 				TaskIterator ti = new TaskIterator();
 				CnSDiscardPartitionTask task = new CnSDiscardPartitionTask();
 				ti.append(task);
@@ -405,7 +405,7 @@ public class CnSResultsCommandPanel extends CnSPanel {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				CnSEvent ev = new CnSEvent(CnSResultsPanel.GET_SELECTED_CLUSTER, CnSEventManager.RESULTS_PANEL, this.getClass());
-		        CnSCluster cluster = (CnSCluster)CnSEventManager.handleMessage(ev, true);
+		        CnSCluster cluster = (CnSCluster)CnSEventManager.handleMessage(ev, true).getValue();
 				if (cluster != null) {
 					addClusterToView(cluster);
 					
@@ -419,7 +419,7 @@ public class CnSResultsCommandPanel extends CnSPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				CnSEvent ev = new CnSEvent(CnSResultsPanel.GET_SELECTED_CLUSTER, CnSEventManager.RESULTS_PANEL, this.getClass());
-		        CnSCluster cluster = (CnSCluster)CnSEventManager.handleMessage(ev, true);
+		        CnSCluster cluster = (CnSCluster)CnSEventManager.handleMessage(ev, true).getValue();
 		        if (cluster != null) {
 		        	Long suid = addClusterToView(cluster);
 		        	if (suid != null) {
@@ -454,7 +454,7 @@ public class CnSResultsCommandPanel extends CnSPanel {
 				if (tosave) {
 					try {
 						CnSEvent ev = new CnSEvent(CnSResultsPanel.GET_SELECTED_PARTITION, CnSEventManager.RESULTS_PANEL, this.getClass());
-						CnSPartition partition = (CnSPartition)CnSEventManager.handleMessage(ev, true);
+						CnSPartition partition = (CnSPartition)CnSEventManager.handleMessage(ev, true).getValue();
 				        
 						BufferedWriter br= new BufferedWriter(new FileWriter(file));
 						br.write("#ClustnSee analysis export");
@@ -472,7 +472,7 @@ public class CnSResultsCommandPanel extends CnSPanel {
 							ev = new CnSEvent(CnSPartitionManager.GET_NB_MULTICLASS_NODES, CnSEventManager.PARTITION_MANAGER, this.getClass());
 							ev.addParameter(CnSPartitionManager.PARTITION, partition);
 							ev.addParameter(CnSPartitionManager.CLUSTER, cluster);
-							Integer nb = (Integer)CnSEventManager.handleMessage(ev, true);
+							Integer nb = (Integer)CnSEventManager.handleMessage(ev, true).getValue();
 							br.write(cluster.getName() + "(" + cluster.getNbNodes() + "," + nb.intValue() + "), ");
 						}
 						br.newLine();
@@ -527,7 +527,7 @@ public class CnSResultsCommandPanel extends CnSPanel {
 	private CnSNetwork makeClusterNetworkAndView(CnSCluster cluster, CnSPartition partition) {
 		// get the root network of the cluster
 		CnSEvent ev = new CnSEvent(CyActivator.GET_ROOT_NETWORK_MANAGER, CnSEventManager.CY_ACTIVATOR, this.getClass());
-		CyRootNetworkManager crnm = (CyRootNetworkManager)CnSEventManager.handleMessage(ev, true);
+		CyRootNetworkManager crnm = (CyRootNetworkManager)CnSEventManager.handleMessage(ev, true).getValue();
 		CyRootNetwork crn = crnm.getRootNetwork(partition.getInputNetwork());
 		
 		// Create a new sub-network
@@ -538,7 +538,7 @@ public class CnSResultsCommandPanel extends CnSPanel {
 
 		// Add the sub-network to Cytoscape
 		ev = new CnSEvent(CyActivator.GET_NETWORK_MANAGER, CnSEventManager.CY_ACTIVATOR, this.getClass());
-		CyNetworkManager networkManager = (CyNetworkManager)CnSEventManager.handleMessage(ev, true);
+		CyNetworkManager networkManager = (CyNetworkManager)CnSEventManager.handleMessage(ev, true).getValue();
 		networkManager.addNetwork(clNet);
 
 		// Fill sub-network with cluster nodes and relevant edges 
@@ -547,12 +547,12 @@ public class CnSResultsCommandPanel extends CnSPanel {
 		
 		// create a new view for the sub-network
 		ev = new CnSEvent(CyActivator.GET_NETWORK_VIEW_FACTORY, CnSEventManager.CY_ACTIVATOR, this.getClass());
-		CyNetworkViewFactory cnvf = (CyNetworkViewFactory)CnSEventManager.handleMessage(ev, true);
+		CyNetworkViewFactory cnvf = (CyNetworkViewFactory)CnSEventManager.handleMessage(ev, true).getValue();
 		CyNetworkView clView = cnvf.createNetworkView(clNet);
 		
 		// add the sub-network view in cytoscape
 		ev = new CnSEvent(CyActivator.GET_NETWORK_VIEW_MANAGER, CnSEventManager.CY_ACTIVATOR, this.getClass());
-		CyNetworkViewManager networkViewManager = (CyNetworkViewManager)CnSEventManager.handleMessage(ev, true);
+		CyNetworkViewManager networkViewManager = (CyNetworkViewManager)CnSEventManager.handleMessage(ev, true).getValue();
 		networkViewManager.addNetworkView(clView);
 		
 		// register the sub-network
@@ -584,10 +584,10 @@ public class CnSResultsCommandPanel extends CnSPanel {
 		Vector<CyNetworkView> v = new Vector<CyNetworkView>();
 		v.addElement(clView);
 		ev = new CnSEvent(CyActivator.GET_APPLY_PREFERRED_LAYOUT_TASK_FACTORY, CnSEventManager.CY_ACTIVATOR, this.getClass());
-		ApplyPreferredLayoutTaskFactory apltf =  (ApplyPreferredLayoutTaskFactory)CnSEventManager.handleMessage(ev, true);
+		ApplyPreferredLayoutTaskFactory apltf =  (ApplyPreferredLayoutTaskFactory)CnSEventManager.handleMessage(ev, true).getValue();
 		TaskIterator tit = apltf.createTaskIterator(v);
 		ev = new CnSEvent(CyActivator.GET_SYNCHRONOUS_TASK_MANAGER, CnSEventManager.CY_ACTIVATOR, this.getClass());
-		TaskManager<?, ?> tm = (TaskManager<?, ?>)CnSEventManager.handleMessage(ev, true);
+		TaskManager<?, ?> tm = (TaskManager<?, ?>)CnSEventManager.handleMessage(ev, true).getValue();
 		tm.execute(tit);
 		
 		return network;
@@ -596,10 +596,10 @@ public class CnSResultsCommandPanel extends CnSPanel {
 	private Long makeClusterView(CnSCluster cluster) {
 		// get the selected cluster, his partition and his associated view if exists
 		CnSEvent ev = new CnSEvent(CnSResultsPanel.GET_SELECTED_PARTITION, CnSEventManager.RESULTS_PANEL, this.getClass());
-		CnSPartition partition = (CnSPartition)CnSEventManager.handleMessage(ev, true);				
+		CnSPartition partition = (CnSPartition)CnSEventManager.handleMessage(ev, true).getValue();				
         ev = new CnSEvent(CnSViewManager.GET_VIEW, CnSEventManager.VIEW_MANAGER, this.getClass());
 		ev.addParameter(CnSViewManager.REFERENCE, cluster);
-		CnSView view = (CnSView)CnSEventManager.handleMessage(ev, true);
+		CnSView view = (CnSView)CnSEventManager.handleMessage(ev, true).getValue();
 		
 		// get the cluster network; create it if it doesn't exist
 		CnSNetwork network;
@@ -609,12 +609,12 @@ public class CnSResultsCommandPanel extends CnSPanel {
 		else {
 			ev = new CnSEvent(CnSViewManager.GET_NETWORK, CnSEventManager.VIEW_MANAGER, this.getClass());
         	ev.addParameter(CnSViewManager.VIEW, view);
-        	network = (CnSNetwork)CnSEventManager.handleMessage(ev, true);
+        	network = (CnSNetwork)CnSEventManager.handleMessage(ev, true).getValue();
 		}
 		
 		// Create a new network
 		ev = new CnSEvent(CyActivator.GET_ROOT_NETWORK_MANAGER, CnSEventManager.CY_ACTIVATOR, this.getClass());
-		CyRootNetworkManager crnm = (CyRootNetworkManager)CnSEventManager.handleMessage(ev, true);
+		CyRootNetworkManager crnm = (CyRootNetworkManager)CnSEventManager.handleMessage(ev, true).getValue();
 		CyRootNetwork crn = crnm.getRootNetwork(network.getNetwork());
 		CySubNetwork clNet = crn.addSubNetwork();
 	
@@ -623,7 +623,7 @@ public class CnSResultsCommandPanel extends CnSPanel {
 	
 		// Add the network to Cytoscape
 		ev = new CnSEvent(CyActivator.GET_NETWORK_MANAGER, CnSEventManager.CY_ACTIVATOR, this.getClass());
-		CyNetworkManager networkManager = (CyNetworkManager)CnSEventManager.handleMessage(ev, true);
+		CyNetworkManager networkManager = (CyNetworkManager)CnSEventManager.handleMessage(ev, true).getValue();
 		networkManager.addNetwork(clNet, true);
 
 		// Add a node in partition network
@@ -642,7 +642,7 @@ public class CnSResultsCommandPanel extends CnSPanel {
 		
 		// create a new view for my network
 		ev = new CnSEvent(CyActivator.GET_NETWORK_VIEW_FACTORY, CnSEventManager.CY_ACTIVATOR, this.getClass());
-		CyNetworkViewFactory cnvf = (CyNetworkViewFactory)CnSEventManager.handleMessage(ev, true);
+		CyNetworkViewFactory cnvf = (CyNetworkViewFactory)CnSEventManager.handleMessage(ev, true).getValue();
 		CyNetworkView cyView = cnvf.createNetworkView(clNet);
 		
 		CnSUserViewState viewState = new CnSUserViewState(partition);
@@ -651,7 +651,7 @@ public class CnSResultsCommandPanel extends CnSPanel {
 		
 		// add the view in cytoscape
 		ev = new CnSEvent(CyActivator.GET_NETWORK_VIEW_MANAGER, CnSEventManager.CY_ACTIVATOR, this.getClass());
-		CyNetworkViewManager networkViewManager = (CyNetworkViewManager)CnSEventManager.handleMessage(ev, true);
+		CyNetworkViewManager networkViewManager = (CyNetworkViewManager)CnSEventManager.handleMessage(ev, true).getValue();
 		networkViewManager.addNetworkView(cyView);
 		
 		// register network
@@ -695,19 +695,19 @@ public class CnSResultsCommandPanel extends CnSPanel {
 		
 		// get the selected view, in which the new cluster must be added
 		CnSEvent ev = new CnSEvent(CnSViewManager.GET_SELECTED_VIEW, CnSEventManager.VIEW_MANAGER, this.getClass());
-		CnSView currentView = (CnSView)CnSEventManager.handleMessage(ev, true);
+		CnSView currentView = (CnSView)CnSEventManager.handleMessage(ev, true).getValue();
 		
 		if (currentView != null && currentView.getStateValue() != "cluster" && currentView.getStateValue() != "partition") {
 			System.err.println("current view state = " + currentView.getStateValue());
 			if (!currentView.getClusters().contains(cluster)) {
 				// get the selected partition
 				ev = new CnSEvent(CnSResultsPanel.GET_SELECTED_PARTITION, CnSEventManager.RESULTS_PANEL, this.getClass());
-				CnSPartition partition = (CnSPartition)CnSEventManager.handleMessage(ev, true);
+				CnSPartition partition = (CnSPartition)CnSEventManager.handleMessage(ev, true).getValue();
 				
 				// get the cluster view
 				ev = new CnSEvent(CnSViewManager.GET_VIEW, CnSEventManager.VIEW_MANAGER, this.getClass());
 				ev.addParameter(CnSViewManager.REFERENCE, cluster);
-				CnSView clView = (CnSView)CnSEventManager.handleMessage(ev, true);
+				CnSView clView = (CnSView)CnSEventManager.handleMessage(ev, true).getValue();
 		
 				// get the cluster network; create it if it doesn't exist
 				CnSNetwork network;
@@ -715,18 +715,18 @@ public class CnSResultsCommandPanel extends CnSPanel {
 					network = makeClusterNetworkAndView(cluster, partition);
 					ev = new CnSEvent(CnSViewManager.GET_VIEW, CnSEventManager.VIEW_MANAGER, this.getClass());
 					ev.addParameter(CnSViewManager.REFERENCE, cluster);
-					clView = (CnSView)CnSEventManager.handleMessage(ev, true);
+					clView = (CnSView)CnSEventManager.handleMessage(ev, true).getValue();
 				}
 				else {
 					ev = new CnSEvent(CnSViewManager.GET_NETWORK, CnSEventManager.VIEW_MANAGER, this.getClass());
 					ev.addParameter(CnSViewManager.VIEW, clView);
-					network = (CnSNetwork)CnSEventManager.handleMessage(ev, true);
+					network = (CnSNetwork)CnSEventManager.handleMessage(ev, true).getValue();
 				}
 		
 				// get the selected network
 				ev = new CnSEvent(CnSViewManager.GET_NETWORK, CnSEventManager.VIEW_MANAGER, this.getClass());
 				ev.addParameter(CnSViewManager.VIEW, currentView);
-				CnSNetwork currentNet = (CnSNetwork)CnSEventManager.handleMessage(ev, true);
+				CnSNetwork currentNet = (CnSNetwork)CnSEventManager.handleMessage(ev, true).getValue();
 		
 				// stop listening to network changes
 				currentView.setModifCluster(true);
@@ -760,7 +760,7 @@ public class CnSResultsCommandPanel extends CnSPanel {
 								ev = new CnSEvent(CnSViewManager.IS_EXPANDED, CnSEventManager.VIEW_MANAGER, this.getClass());
 								ev.addParameter(CnSViewManager.CLUSTER, partner);
 								ev.addParameter(CnSViewManager.VIEW, currentView);
-								b = (Boolean)CnSEventManager.handleMessage(ev, true);
+								b = (Boolean)CnSEventManager.handleMessage(ev, true).getValue();
 							
 								if (!b.booleanValue()) {
 									if (cl.getEdges().size() > 0) {

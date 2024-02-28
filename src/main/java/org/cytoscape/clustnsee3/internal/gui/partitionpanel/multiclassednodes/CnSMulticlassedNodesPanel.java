@@ -66,7 +66,7 @@ public class CnSMulticlassedNodesPanel extends CnSPanelSplitCommand {
 			public String getToolTipText(MouseEvent me) {
 				int c = columnAtPoint(me.getPoint());
 				CnSEvent ev = new CnSEvent(CyActivator.GET_RESOURCES_BUNDLE, CnSEventManager.CY_ACTIVATOR, this.getClass());
-				ResourceBundle rBundle = (ResourceBundle)CnSEventManager.handleMessage(ev, false);
+				ResourceBundle rBundle = (ResourceBundle)CnSEventManager.handleMessage(ev, false).getValue();
 				rBundle = CyActivator.getResourcesBundle();
 				switch(c) {
 					case 1 : return rBundle.getString("CnSMulticlassedNodesTableModel.degree_MO");
