@@ -14,6 +14,7 @@
 package org.cytoscape.clustnsee3.internal.gui.partitionpanel;
 
 import java.awt.Component;
+import java.awt.Font;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -143,7 +144,7 @@ public class CnSPartitionPanel extends CnSPanel implements CytoPanelComponent, C
 		tabbedPane.add(rBundle.getString("CnSPartitionPanel.ClusterAnalysisTab"), clusterAnalysisPanel); 
 		tabbedPane.add(rBundle.getString("CnSPartitionPanel.AnnotationTermAnalysisTab"), annotationAnalysisPanel);
 		//tabbedPane.add(rBundle.getString("CnSPartitionPanel.MulticlassedNodesTab"), multiclassedNodesPanel);
-		
+		tabbedPane.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		addComponent(tabbedPane, 0, 0, 3, 1, 1.0, 1.0, CENTER, BOTH, 0, 0, 0, 0, 0, 0);
 	}
 	
@@ -202,23 +203,19 @@ public class CnSPartitionPanel extends CnSPanel implements CytoPanelComponent, C
 					annotationAnalysisPanel.selectCluster(null);
 					clusterAnalysisPanel.selectCluster(0);
 				}
-				ev = new CnSEvent(CnSInfoPanel.TAG_NODES, CnSEventManager.INFO_PANEL, this.getClass());
-				CnSNodeAnnotation annotation = annotationAnalysisPanel.getSelectedAnnotation();
-				if (annotation != null) ev.addParameter(CnSInfoPanel.ANNOTATION, annotation);
-				CnSEventManager.handleMessage(ev, true);
 				break;
 				
 			case SEARCH :
-				annotation = (CnSNodeAnnotation)event.getParameter(ANNOTATION);
+				CnSNodeAnnotation annotation = (CnSNodeAnnotation)event.getParameter(ANNOTATION);
 				cluster = partitionTablePanel.getSelectedCluster();
 				annotationAnalysisPanel.setSelectedAnnotation(annotation);
 				clusterAnalysisPanel.refresh();
 				partitionTablePanel.selectCluster(cluster);
 				annotationAnalysisPanel.selectCluster(cluster);
 				clusterAnalysisPanel.selectAnnotation(annotation);
-				ev = new CnSEvent(CnSInfoPanel.TAG_NODES, CnSEventManager.INFO_PANEL, this.getClass());
+				/*ev = new CnSEvent(CnSInfoPanel.TAG_NODES, CnSEventManager.INFO_PANEL, this.getClass());
 				if (annotation != null) ev.addParameter(CnSInfoPanel.ANNOTATION, annotation);
-				CnSEventManager.handleMessage(ev, true);
+				CnSEventManager.handleMessage(ev, true);*/
 				break;
 				
 			case SEARCH_ANNOTATION :
@@ -251,8 +248,8 @@ public class CnSPartitionPanel extends CnSPanel implements CytoPanelComponent, C
 				
 			case SET_SEARCH_ANNOTATION :
 				annotation = (CnSNodeAnnotation)event.getParameter(ANNOTATION);
-				cluster = partitionTablePanel.getSelectedCluster();
-				partitionTablePanel.selectCluster(cluster);
+				//cluster = partitionTablePanel.getSelectedCluster();
+				//partitionTablePanel.selectCluster(cluster);
 				annotationAnalysisPanel.getSearchComponent().setAnnotation(annotation);
 				break;
 				
@@ -316,8 +313,7 @@ public class CnSPartitionPanel extends CnSPanel implements CytoPanelComponent, C
 					br.write("#Scope: ");
 					if (partition != null) br.write(partition.getScope());
 					br.newLine();
-					if (partition != null) {// TODO Auto-generated method stub
-						
+					if (partition != null) {
 						Iterator<Integer> k = partition.getAlgorithmParameters().iterator();
 						while (k.hasNext()) {
 							int key = k.next();

@@ -283,6 +283,7 @@ public class CnSResultsPanel extends CnSPanel implements CytoPanelComponent, CnS
 	    		
 	    	case DISCARD_PARTITION :
 	    		CnSPartition partition = (CnSPartition)event.getParameter(PARTITION);
+	    		System.err.println("CnSResultsPanel.DISCARD_PARTITION(" + partition + ")");
 	    		taskMonitor = (TaskMonitor)event.getParameter(TASK_MONITOR);
 	    		Vector<CnSCluster> clusters = partition.getClusters();
 	    		

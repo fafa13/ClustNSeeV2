@@ -13,16 +13,19 @@
 
 package org.cytoscape.clustnsee3.internal.gui.infopanel;
 
+import java.awt.Color;
 import java.util.Vector;
 
 import org.cytoscape.clustnsee3.internal.analysis.CnSCluster;
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
+import org.cytoscape.clustnsee3.internal.gui.partitionpanel.CnSPartitionPanel;
 import org.cytoscape.clustnsee3.internal.gui.util.cnstable.CnSTableModel;
 import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeAnnotation;
 import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeAnnotationManager;
 import org.cytoscape.model.CyNode;
 import org.cytoscape.model.CyRow;
+import javax.swing.JLabel;
 
 /**
  * 
@@ -71,7 +74,17 @@ public class CnSNodeListTableModel extends CnSTableModel {
 				CyNode cn = cluster.getNodes().get(rowIndex).getCyNode();
 				CyRow cr = cluster.getNetwork().getRootNetwork().getRow(cn);
 				String name = cr.get("shared name", String.class);
-				return name;
+				JLabel lab = new JLabel(name);
+				lab.setBackground(Color.WHITE);
+				ev.addParameter(CnSNodeAnnotationManager.NODE, cluster.getNodes().get(rowIndex).getCyNode());
+				clusterAnnotations = (Vector<CnSNodeAnnotation>)CnSEventManager.handleMessage(ev, false).getValue();
+				if (clusterAnnotations == null) clusterAnnotations = new Vector<CnSNodeAnnotation>();
+				CnSEvent ev2 = new CnSEvent(CnSPartitionPanel.GET_SELECTED_ANNOTATION, CnSEventManager.PARTITION_PANEL, this.getClass());
+				CnSNodeAnnotation ann = (CnSNodeAnnotation)CnSEventManager.handleMessage(ev2, true).getValue();
+				if (ann != null)
+					if (clusterAnnotations.contains(ann))
+						lab.setBackground(Color.GREEN);
+				return lab;
 			}
 			else if (columnIndex == 2)
 				return cluster.getNodes().get(rowIndex).getNbClusters();
@@ -82,17 +95,6 @@ public class CnSNodeListTableModel extends CnSTableModel {
 				clusterAnnotations = (Vector<CnSNodeAnnotation>)CnSEventManager.handleMessage(ev, false).getValue();
 				if (clusterAnnotations == null) clusterAnnotations = new Vector<CnSNodeAnnotation>();
 				return clusterAnnotations;
-				/*if (clusterAnnotations != null) {
-					StringBuilder sb = new StringBuilder();
-					for (CnSNodeAnnotation na : clusterAnnotations) {
-						sb.append(na.getValue());
-						sb.append(";");
-					}
-					sb.deleteCharAt(sb.length() - 1);
-					return sb.toString();
-				}
-				else
-					return "";*/
 			}
 		return null;
 	}
@@ -111,13 +113,13 @@ public class CnSNodeListTableModel extends CnSTableModel {
 	@Override
 	public Class<?> getColumnClass(int columnIndex) {
 		if (columnIndex == 0)
-			return String.class;
+			return JLabel.class;
 		else if (columnIndex == 2)
 			return Integer.class;
 		else if (columnIndex == 1)
 			return Integer.class;
 		else if (columnIndex == 3)
-			return String.class;
+			return Vector.class;
 		return null;
 	}
 

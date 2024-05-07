@@ -42,7 +42,7 @@ public class CnSInfoPanel extends CnSPanel implements CytoPanelComponent, CnSEve
 	public static final int INIT = 1;
 	public static final int SELECT_PANEL = 2;
 	public static final int CLEAR = 3;
-	public final static int TAG_NODES = 4;
+	//public final static int TAG_NODES = 4;
 	
 	
 	public static final int CLUSTER = 1001;
@@ -82,7 +82,7 @@ public class CnSInfoPanel extends CnSPanel implements CytoPanelComponent, CnSEve
 			case INIT : return "INIT";
 			case SELECT_PANEL : return "SELECT_PANEL";
 			case CLEAR : return "CLEAR";
-			case TAG_NODES : return "TAG_NODES";
+			//case TAG_NODES : return "TAG_NODES";
 			default : return "UNDEFINED_ACTION"; 
 		}
 	}
@@ -148,10 +148,10 @@ public class CnSInfoPanel extends CnSPanel implements CytoPanelComponent, CnSEve
 					nodeDetailsPanel.clear();
 				break;
 				
-			case TAG_NODES :
+			/*case TAG_NODES :
 				CnSNodeAnnotation annotation = (CnSNodeAnnotation)event.getParameter(ANNOTATION);
 				clusterDetailsPanel.tagNodes(annotation);
-				break;
+				break;*/
 		}
 		return new CnSEventResult<Object>(null);
 	}

@@ -28,7 +28,7 @@ import javax.swing.table.DefaultTableCellRenderer;
  */
 public class CnSPartitionTableCellRenderer extends DefaultTableCellRenderer {
 	private static final long serialVersionUID = 9173113458642486427L;
-	private Font font = new Font("serif", Font.PLAIN, 12);
+	private Font font = new Font("SansSerif", Font.PLAIN, 12);
 	private static Border paddingBorder = BorderFactory.createEmptyBorder(0, 10, 0, 10);
 	private static JLabel label;
 	

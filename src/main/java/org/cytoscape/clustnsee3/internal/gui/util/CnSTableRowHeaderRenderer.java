@@ -26,7 +26,7 @@ import javax.swing.table.TableCellRenderer;
  * 
  */
 public class CnSTableRowHeaderRenderer implements TableCellRenderer {
-	private Font font = new Font("serif", Font.PLAIN, 12);
+	private Font font = new Font("SansSerif", Font.PLAIN, 12);
 	
 	/* (non-Javadoc)
 	 * @see javax.swing.table.TableCellRenderer#getTableCellRendererComponent(javax.swing.JTable, java.lang.Object, boolean, boolean, int, int)

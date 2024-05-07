@@ -30,7 +30,7 @@ import javax.swing.JLabel;
  */
 public class CnSAnnotationTableCellRenderer extends DefaultTableCellRenderer {
 	private static final long serialVersionUID = 5792279140943167553L;
-	private Font font = new Font("serif", Font.PLAIN, 12);
+	private Font font = new Font("SansSerif", Font.PLAIN, 12);
 	private static Border paddingBorder = BorderFactory.createEmptyBorder(0, 10, 0, 10);
 	private static JLabel label;
 	

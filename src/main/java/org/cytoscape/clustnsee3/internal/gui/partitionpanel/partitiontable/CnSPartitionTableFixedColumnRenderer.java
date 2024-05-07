@@ -27,7 +27,7 @@ import javax.swing.table.TableCellRenderer;
  * 
  */
 public class CnSPartitionTableFixedColumnRenderer implements TableCellRenderer {
-	private Font font = new Font("serif", Font.PLAIN, 12);
+	private Font font = new Font("SansSerif", Font.PLAIN, 12);
 	private static JLabel label;
 	private static Border paddingBorder = BorderFactory.createEmptyBorder(0, 5, 0, 5);
 	

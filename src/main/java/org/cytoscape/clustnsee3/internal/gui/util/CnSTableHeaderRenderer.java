@@ -34,7 +34,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 public class CnSTableHeaderRenderer extends DefaultTableCellRenderer {
 	private static final long serialVersionUID = -7084782142485553305L;
 	
-	private Font font = new Font("serif", Font.BOLD, 12);
+	private Font font = new Font("SansSerif", Font.BOLD, 12);
 	private Icon ascIcon, descIcon;
     public CnSTableHeaderRenderer() {
     	super();

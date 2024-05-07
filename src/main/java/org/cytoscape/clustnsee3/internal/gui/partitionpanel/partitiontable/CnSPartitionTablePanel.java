@@ -13,6 +13,7 @@
 
 package org.cytoscape.clustnsee3.internal.gui.partitionpanel.partitiontable;
 
+import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
