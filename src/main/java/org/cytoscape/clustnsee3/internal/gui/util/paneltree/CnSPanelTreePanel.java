@@ -19,7 +19,7 @@ import org.cytoscape.clustnsee3.internal.gui.util.CnSPanel;
 
 public class CnSPanelTreePanel extends CnSPanel {
 	private static final long serialVersionUID = -3014417831630947233L;
-	protected Font font = new Font("serif", Font.PLAIN, 12);
+	protected Font font = new Font("SansSerif", Font.PLAIN, 12);
 	
 	public void initGraphics() {
 		super.initGraphics();

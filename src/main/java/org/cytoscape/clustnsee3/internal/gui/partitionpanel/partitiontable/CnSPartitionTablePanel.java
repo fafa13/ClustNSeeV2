@@ -13,7 +13,6 @@
 
 package org.cytoscape.clustnsee3.internal.gui.partitionpanel.partitiontable;
 
-import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -358,8 +357,7 @@ public class CnSPartitionTablePanel extends CnSPanelSplitCommand {
 		this.partition = partition;
 		CnSPartitionTableModel model = new CnSPartitionTableModel(partition);
 		table.setModel(model);
-		//((CnSTableHeaderRenderer)table.getTable().getTableHeader().getDefaultRenderer()).setToolTipText("toto");
-    	TableRowSorter<CnSPartitionTableModel> sorter = new TableRowSorter<CnSPartitionTableModel>(model);
+		TableRowSorter<CnSPartitionTableModel> sorter = new TableRowSorter<CnSPartitionTableModel>(model);
 		sorter.setMaxSortKeys(1);
 		table.getTable().setRowSorter(sorter);
 		table.getFixedTable().setRowSorter(sorter);

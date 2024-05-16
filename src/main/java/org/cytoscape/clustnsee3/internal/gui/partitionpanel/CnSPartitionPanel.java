@@ -36,6 +36,7 @@ import org.cytoscape.clustnsee3.internal.event.CnSEventResult;
 import org.cytoscape.clustnsee3.internal.gui.infopanel.CnSInfoPanel;
 import org.cytoscape.clustnsee3.internal.gui.partitionpanel.annotationanalysis.CnSAnnotationAnalysisPanel;
 import org.cytoscape.clustnsee3.internal.gui.partitionpanel.clusteranalysis.CnSClusterAnalysisPanel;
+import org.cytoscape.clustnsee3.internal.gui.partitionpanel.clusterannotationmatrix.CnSClusterAnnotationMatrixPanel;
 import org.cytoscape.clustnsee3.internal.gui.partitionpanel.multiclassednodes.CnSMulticlassedNodesPanel;
 import org.cytoscape.clustnsee3.internal.gui.partitionpanel.partitiontable.CnSPartitionTablePanel;
 import org.cytoscape.clustnsee3.internal.gui.resultspanel.CnSResultsPanel;
@@ -79,6 +80,7 @@ public class CnSPartitionPanel extends CnSPanel implements CytoPanelComponent, C
 	private CnSClusterAnalysisPanel clusterAnalysisPanel;
 	private CnSAnnotationAnalysisPanel annotationAnalysisPanel;
 	//private CnSMulticlassedNodesPanel multiclassedNodesPanel;
+	private CnSClusterAnnotationMatrixPanel clusterAnnotationMatrixPanel;
 	private static JTabbedPane tabbedPane;
 	
 	public static CnSPartitionPanel getInstance() {
@@ -134,6 +136,7 @@ public class CnSPartitionPanel extends CnSPanel implements CytoPanelComponent, C
 		clusterAnalysisPanel = new CnSClusterAnalysisPanel();
 		annotationAnalysisPanel = new CnSAnnotationAnalysisPanel();
 		//multiclassedNodesPanel = new CnSMulticlassedNodesPanel();
+		clusterAnnotationMatrixPanel = new CnSClusterAnnotationMatrixPanel();
 		
 		ev = new CnSEvent(CnSResultsPanel.GET_SELECTED_PARTITION, CnSEventManager.RESULTS_PANEL, this.getClass());
 		CnSPartition partition = (CnSPartition)CnSEventManager.handleMessage(ev, true).getValue();
@@ -144,6 +147,7 @@ public class CnSPartitionPanel extends CnSPanel implements CytoPanelComponent, C
 		tabbedPane.add(rBundle.getString("CnSPartitionPanel.ClusterAnalysisTab"), clusterAnalysisPanel); 
 		tabbedPane.add(rBundle.getString("CnSPartitionPanel.AnnotationTermAnalysisTab"), annotationAnalysisPanel);
 		//tabbedPane.add(rBundle.getString("CnSPartitionPanel.MulticlassedNodesTab"), multiclassedNodesPanel);
+		tabbedPane.add(rBundle.getString("CnSPartitionPanel.ClusterAnnotationMatrixTab"), clusterAnnotationMatrixPanel);
 		tabbedPane.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		addComponent(tabbedPane, 0, 0, 3, 1, 1.0, 1.0, CENTER, BOTH, 0, 0, 0, 0, 0, 0);
 	}
@@ -180,6 +184,7 @@ public class CnSPartitionPanel extends CnSPanel implements CytoPanelComponent, C
 					clusterAnalysisPanel.init(partition);
 					annotationAnalysisPanel.init(partition);
 					//multiclassedNodesPanel.init(partition);
+					clusterAnnotationMatrixPanel.init();
 				}
 				else {
 					clusterAnalysisPanel.init();
