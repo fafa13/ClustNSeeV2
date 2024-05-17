@@ -1,19 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-
 	<properties>
-						<bundle.symbolicName>org.cytoscape.clustnsee3.tagc-clustnsee3</bundle.symbolicName>
+		<bundle.symbolicName>org.cytoscape.clustnsee3.tagc-clustnsee3</bundle.symbolicName>
 		<bundle.namespace>org.cytoscape.clustnsee3</bundle.namespace>
-		<cytoscape.api.version>3.1.0</cytoscape.api.version>
+		<cytoscape.api.version>3.10.1</cytoscape.api.version>
 	</properties>
 
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.cytoscape.clustnsee3</groupId>
 	<artifactId>tagc-clustnsee3</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-
-			<name>${bundle.symbolicName} [${bundle.namespace}]</name>
-	
+	<version>0.0.6-SNAPSHOT</version>
+	<name>${bundle.symbolicName} [${bundle.namespace}]</name>
 	<packaging>bundle</packaging>
 
 	<build>
@@ -45,8 +42,8 @@
 					</execution>
 				</executions>
 				<configuration>
-					<source>1.7</source>
-					<target>1.7</target>
+					<source>8</source>
+					<target>8</target>
 					<optimize>true</optimize>
 					<showWarnings>true</showWarnings>
 					<showDeprecation>true</showDeprecation>
@@ -72,12 +69,13 @@
 				<extensions>true</extensions>
 				<configuration>
 					<instructions>
-												<Bundle-SymbolicName>${bundle.symbolicName}</Bundle-SymbolicName>
+						<Bundle-SymbolicName>${bundle.symbolicName}</Bundle-SymbolicName>
 						<Bundle-Version>${project.version}</Bundle-Version>
 						<Export-Package>${bundle.namespace}</Export-Package>
 						<Private-Package>${bundle.namespace}.internal.*</Private-Package>
 						<Bundle-Activator>${bundle.namespace}.internal.CyActivator</Bundle-Activator>
-											</instructions>
+                        <Embed-Dependency>commons-math3;scope=compile|runtime</Embed-Dependency>
+                    </instructions>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -112,44 +110,49 @@
 		<dependency>
 			<groupId>org.osgi</groupId>
 			<artifactId>org.osgi.core</artifactId>
-			<version>4.2.0</version>
+			<version>6.0.0</version>
 		</dependency>
 		
 		<dependency>
 			<groupId>org.cytoscape</groupId>
 			<artifactId>service-api</artifactId>
-			<version>3.8.0</version>
+			<version>3.9.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.cytoscape</groupId>
 			<artifactId>swing-application-api</artifactId>
-			<version>3.8.0</version>
+			<version>3.9.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.cytoscape</groupId>
 			<artifactId>session-api</artifactId>
-			<version>3.8.0</version>
+			<version>3.9.0</version>
 		</dependency>
 
 		<!-- Logging -->
 		<dependency>
 			<groupId>org.ops4j.pax.logging</groupId>
 			<artifactId>pax-logging-api</artifactId>
-			<version>1.5.2</version>
+			<version>2.1.2</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.ops4j.pax.logging</groupId>
 			<artifactId>pax-logging-service</artifactId>
-			<version>1.5.2</version>
+			<version>1.11.16</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.cytoscape</groupId>
 			<artifactId>app-api</artifactId>
 			<scope>provided</scope>
-			<version>3.8.0</version>
+			<version>3.9.0</version>
 		</dependency>
+	    <dependency>
+	    	<groupId>org.apache.commons</groupId>
+	    	<artifactId>commons-math3</artifactId>
+	    	<version>3.6.1</version>
+	    </dependency>
 	</dependencies>
 
 </project>
