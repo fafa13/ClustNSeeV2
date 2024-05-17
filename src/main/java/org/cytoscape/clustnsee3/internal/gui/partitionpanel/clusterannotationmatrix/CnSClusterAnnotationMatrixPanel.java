@@ -19,15 +19,18 @@ import java.awt.event.ActionListener;
 import javax.swing.BorderFactory;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.table.JTableHeader;
 
+import org.cytoscape.clustnsee3.internal.gui.partitionpanel.clusteranalysis.CnSClusterTableModel;
 import org.cytoscape.clustnsee3.internal.gui.util.CnSButton;
 import org.cytoscape.clustnsee3.internal.gui.util.CnSPanelSplitCommand;
 import org.cytoscape.clustnsee3.internal.gui.util.CnSTableHeaderRenderer;
+import org.cytoscape.clustnsee3.internal.partition.CnSPartition;
 import org.cytoscape.clustnsee3.internal.gui.util.CnSPanel;
 
 /**
@@ -48,31 +51,36 @@ public class CnSClusterAnnotationMatrixPanel extends CnSPanelSplitCommand {
 		super();
 		matrix = new CnSClusterAnnotationMatrix();
 		matrixModel = new CnSClusterAnnotationMatrixModel();
-		matrix.getTable().setModel(matrixModel);
 		initGraphics();
 		initListeners();
 	}
 	
-	public void init() {
-		matrixModel.init();
+	public void init(CnSPartition partition) {
+		matrixModel = new CnSClusterAnnotationMatrixModel();
+		matrixModel.init(partition);
+		matrix.getTable().setDefaultRenderer(Double.class, new CnSAnnotationMatrixCellRenderer((Integer)thresholdSpinner.getValue()));
+		matrix.getTable().setModel(matrixModel);
+		matrix.getTable().fireTableDataChanged();
 	}
 
 	private void initListeners() {
 		statList.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				System.err.println("statList : " + statList.getSelectedItem());
+				matrix.getTable().setDefaultRenderer(Double.class, new CnSAnnotationMatrixCellRenderer((Integer)thresholdSpinner.getValue()));
 				matrix.getTable().fireTableDataChanged();
 				if (statList.getSelectedIndex() == 0)
 					thresholdSpinner.setValue(currentHypergeometricThreshold);
 				else
 					thresholdSpinner.setValue(currentMajorityThreshold);
+				((CnSClusterAnnotationMatrixModel)matrix.getTable().getModel()).setStat(statList.getSelectedIndex());
 			}
 		});
 		thresholdSpinner.addChangeListener(new ChangeListener() {
 			@Override
 			public void stateChanged(ChangeEvent e) {
 				System.err.println("thSpinner : " + thresholdSpinner.getValue());
+				matrix.getTable().setDefaultRenderer(Double.class, new CnSAnnotationMatrixCellRenderer((Integer)thresholdSpinner.getValue()));
 				matrix.getTable().fireTableDataChanged();
 				if (statList.getSelectedIndex() == 0)
 					currentHypergeometricThreshold = ((Integer)thresholdSpinner.getValue());
@@ -110,10 +118,11 @@ public class CnSClusterAnnotationMatrixPanel extends CnSPanelSplitCommand {
 		commandPanel.addComponent(exportDataButton, 0, 1, 1, 1, 0.0, 0.0, CENTER, NONE, 5, 5, 5, 5, 0, 0);
 		
 		matrix = new CnSClusterAnnotationMatrix();
-		initGraphics(commandPanel, matrix.getScrollPane());
+		initGraphics(commandPanel, new JScrollPane(matrix.getTable()));
 		
-		matrix.getTable().setTableHeader(new JTableHeader(matrix.getTable().getColumnModel()));
+		//matrix.getTable().setTableHeader(new JTableHeader(matrix.getTable().getColumnModel()));
 		matrix.getTable().getTableHeader().setDefaultRenderer(new CnSTableHeaderRenderer());
+		
 	}
 	
 	public int getSelectedStat() {

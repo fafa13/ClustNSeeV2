@@ -184,7 +184,7 @@ public class CnSPartitionPanel extends CnSPanel implements CytoPanelComponent, C
 					clusterAnalysisPanel.init(partition);
 					annotationAnalysisPanel.init(partition);
 					//multiclassedNodesPanel.init(partition);
-					clusterAnnotationMatrixPanel.init();
+					clusterAnnotationMatrixPanel.init(partition);
 				}
 				else {
 					clusterAnalysisPanel.init();

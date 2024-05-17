@@ -29,7 +29,6 @@ import org.cytoscape.clustnsee3.internal.gui.util.cnstable.CnSTable;
  */
 public class CnSClusterAnnotationMatrix {
 	private CnSTable matrix;
-	private JScrollPane scrollPane;
 	
 	public CnSClusterAnnotationMatrix() {
 		super();
@@ -44,23 +43,11 @@ public class CnSClusterAnnotationMatrix {
 		};
 		matrix.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		matrix.setRowHeight(26);
-		scrollPane = new JScrollPane(matrix);
-		//matrix.addPropertyChangeListener(this);
 		matrix.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
-    	scrollPane.setRowHeaderView(matrix);
-    	scrollPane.setCorner(JScrollPane.UPPER_LEFT_CORNER, matrix.getTableHeader());
-    	//scrollPane.getRowHeader().addChangeListener(this);
-    	matrix.setDefaultRenderer(Object.class, new CnSPartitionTableCellRenderer());
-    	matrix.setDefaultRenderer(Integer.class, new CnSPartitionTableCellRenderer());
-    	matrix.setDefaultRenderer(Double.class, new CnSPartitionTableCellRenderer());
     	matrix.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 	}
 	
 	public CnSTable getTable() {
 		return matrix;
-	}
-	
-	public JScrollPane getScrollPane() {
-		return scrollPane;
 	}
 }
