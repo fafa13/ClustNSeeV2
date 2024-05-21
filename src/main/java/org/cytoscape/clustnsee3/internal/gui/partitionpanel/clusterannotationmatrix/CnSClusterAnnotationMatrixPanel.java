@@ -24,9 +24,7 @@ import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.swing.table.JTableHeader;
 
-import org.cytoscape.clustnsee3.internal.gui.partitionpanel.clusteranalysis.CnSClusterTableModel;
 import org.cytoscape.clustnsee3.internal.gui.util.CnSButton;
 import org.cytoscape.clustnsee3.internal.gui.util.CnSPanelSplitCommand;
 import org.cytoscape.clustnsee3.internal.gui.util.CnSTableHeaderRenderer;
@@ -58,7 +56,7 @@ public class CnSClusterAnnotationMatrixPanel extends CnSPanelSplitCommand {
 	public void init(CnSPartition partition) {
 		matrixModel = new CnSClusterAnnotationMatrixModel();
 		matrixModel.init(partition);
-		matrix.getTable().setDefaultRenderer(Double.class, new CnSAnnotationMatrixCellRenderer((Integer)thresholdSpinner.getValue()));
+		matrix.getTable().setDefaultRenderer(Double.class, new CnSAnnotationMatrixCellRenderer((Integer)thresholdSpinner.getValue() / 100.0D, statList.getSelectedIndex()));
 		matrix.getTable().setModel(matrixModel);
 		matrix.getTable().fireTableDataChanged();
 	}
@@ -67,7 +65,7 @@ public class CnSClusterAnnotationMatrixPanel extends CnSPanelSplitCommand {
 		statList.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				matrix.getTable().setDefaultRenderer(Double.class, new CnSAnnotationMatrixCellRenderer((Integer)thresholdSpinner.getValue()));
+				matrix.getTable().setDefaultRenderer(Double.class, new CnSAnnotationMatrixCellRenderer((Integer)thresholdSpinner.getValue(), statList.getSelectedIndex()));
 				matrix.getTable().fireTableDataChanged();
 				if (statList.getSelectedIndex() == 0)
 					thresholdSpinner.setValue(currentHypergeometricThreshold);
@@ -80,7 +78,7 @@ public class CnSClusterAnnotationMatrixPanel extends CnSPanelSplitCommand {
 			@Override
 			public void stateChanged(ChangeEvent e) {
 				System.err.println("thSpinner : " + thresholdSpinner.getValue());
-				matrix.getTable().setDefaultRenderer(Double.class, new CnSAnnotationMatrixCellRenderer((Integer)thresholdSpinner.getValue()));
+				matrix.getTable().setDefaultRenderer(Double.class, new CnSAnnotationMatrixCellRenderer((Integer)thresholdSpinner.getValue() / 100.0D, statList.getSelectedIndex()));
 				matrix.getTable().fireTableDataChanged();
 				if (statList.getSelectedIndex() == 0)
 					currentHypergeometricThreshold = ((Integer)thresholdSpinner.getValue());

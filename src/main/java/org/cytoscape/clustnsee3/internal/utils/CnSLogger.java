@@ -13,6 +13,7 @@
 
 package org.cytoscape.clustnsee3.internal.utils;
 
+import java.util.Enumeration;
 import java.util.Iterator;
 
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
@@ -25,15 +26,15 @@ import org.slf4j.LoggerFactory;
  */
 public final class CnSLogger {
 	public static final void LogCnSEvent(CnSEvent ev, CnSEventListener target) {
-		Iterator<Integer> keys = ev.getParameters().asIterator();
+		Enumeration<Integer> keys = ev.getParameters();
 		final Logger LOGGER = LoggerFactory.getLogger(target.getClass());
 		
 		Integer i;
 		LOGGER.info("CNS\tSource : " + ev.getSource().getSimpleName() + " ; Target : {} ; Action : {}", target.getClass().getSimpleName(), target.getActionName(ev.getAction()));
 		String s = "CNS\tParameters : ";
 		
-		while (keys.hasNext()) {
-			i = keys.next();
+		while (keys.hasMoreElements()) {
+			i = keys.nextElement();
 			s += target.getParameterName(i) + " -> ";
 			s += ev.getParameter(i);
 			s += " ; ";

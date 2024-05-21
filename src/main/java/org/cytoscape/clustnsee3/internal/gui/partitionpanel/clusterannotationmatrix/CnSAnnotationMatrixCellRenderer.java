@@ -28,10 +28,12 @@ public class CnSAnnotationMatrixCellRenderer extends DefaultTableCellRenderer {
 	private static final long serialVersionUID = 5495473881938299625L;
 	private Font font = new Font("SansSerif", Font.PLAIN, 12);
 	private double threshold;
+	private int stat;
 	
-	public CnSAnnotationMatrixCellRenderer(double thr) {
+	public CnSAnnotationMatrixCellRenderer(double thr, int stat) {
 		super();
 		threshold = thr;
+		this.stat = stat;
 	}
 	
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
@@ -46,7 +48,9 @@ public class CnSAnnotationMatrixCellRenderer extends DefaultTableCellRenderer {
 			label.setBackground(Color.white);
 		}
 	    label.setText(value.toString());
-	    if ((Double)value < threshold)
+	    if ((stat == 0) && ((Double)value < threshold))
+	    	label.setBackground(Color.green);
+	    else if ((stat == 1) && ((Double)value > threshold))
 	    	label.setBackground(Color.green);
 		return label;
 	}
