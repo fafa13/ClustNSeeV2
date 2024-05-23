@@ -15,16 +15,25 @@ package org.cytoscape.clustnsee3.internal.gui.partitionpanel.clusterannotationma
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.IOException;
 
 import javax.swing.BorderFactory;
 import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
+import org.cytoscape.clustnsee3.internal.event.CnSEvent;
+import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
+import org.cytoscape.clustnsee3.internal.gui.partitionpanel.CnSPartitionPanel;
 import org.cytoscape.clustnsee3.internal.gui.util.CnSButton;
 import org.cytoscape.clustnsee3.internal.gui.util.CnSPanelSplitCommand;
 import org.cytoscape.clustnsee3.internal.gui.util.CnSTableHeaderRenderer;
@@ -86,6 +95,29 @@ public class CnSClusterAnnotationMatrixPanel extends CnSPanelSplitCommand {
 					currentMajorityThreshold = ((Integer)thresholdSpinner.getValue());
 			}
 		});
+		exportDataButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JFileChooser jfc = new JFileChooser();
+				jfc.addChoosableFileFilter(new FileNameExtensionFilter("CSV file (separator: tabulation)", "csv"));
+				int ret = jfc.showSaveDialog(null);
+				boolean tosave =false;
+				File file = null;
+				if (ret == JFileChooser.APPROVE_OPTION) {
+					tosave =true;
+					file = jfc.getSelectedFile();
+					if (file.exists()) {
+						ret = JOptionPane.showConfirmDialog(null, "The file " + file.getName() + " already exists. Are you sure you want to owerwrite it ?");
+						tosave =  (ret == JOptionPane.YES_OPTION);
+					}	
+				}
+				if (tosave) {
+					CnSEvent ev = new CnSEvent(CnSPartitionPanel.EXPORT_CLUSTER_ANNOTATIONS_MATRIX_DATA, CnSEventManager.PARTITION_PANEL, this.getClass());
+					ev.addParameter(CnSPartitionPanel.OUTPUT_FILE, file);
+					CnSEventManager.handleMessage(ev, true);
+				}
+			}
+		});
 	}
 	
 	public void initGraphics() {
@@ -131,5 +163,29 @@ public class CnSClusterAnnotationMatrixPanel extends CnSPanelSplitCommand {
 	}
 	public int getCurrentThreshold() {
 		return (Integer)thresholdSpinner.getValue();
+	}
+
+	/**
+	 * 
+	 * @param
+	 * @return
+	 */
+	public void write(BufferedWriter br) throws IOException {
+		if (matrix.getTable().getModel() != null) {
+			for (int col = 0; col < matrix.getTable().getModel().getColumnCount(); col++) {
+				br.write(matrix.getTable().getModel().getColumnName(col));
+				br.write("\t");
+			}
+			br.newLine();
+			for (int row = 0; row < matrix.getTable().getRowCount(); row++) {
+			//for (int row = 0; row < matrix.getTable().getRowSorter().getViewRowCount(); row++) {
+				for (int col = 0; col < matrix.getTable().getModel().getColumnCount(); col++) {
+					//br.write(matrix.getTable().getModel().getValueAt(matrix.getTable().getRowSorter().convertRowIndexToModel(row), col).toString());
+					br.write(matrix.getTable().getModel().getValueAt(row, col).toString());
+					br.write("\t");
+				}
+				br.newLine();
+			}
+		}
 	}
 }

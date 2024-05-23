@@ -21,6 +21,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.ResourceBundle;
+import java.util.Vector;
 
 import javax.swing.Icon;
 import javax.swing.JTabbedPane;
@@ -42,6 +43,8 @@ import org.cytoscape.clustnsee3.internal.gui.partitionpanel.partitiontable.CnSPa
 import org.cytoscape.clustnsee3.internal.gui.resultspanel.CnSResultsPanel;
 import org.cytoscape.clustnsee3.internal.gui.util.CnSPanel;
 import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeAnnotation;
+import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeAnnotationFile;
+import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeAnnotationManager;
 import org.cytoscape.clustnsee3.internal.partition.CnSPartition;
 import org.cytoscape.clustnsee3.internal.utils.CnSLogger;
 import org.cytoscape.model.CyNetwork;
@@ -69,6 +72,7 @@ public class CnSPartitionPanel extends CnSPanel implements CytoPanelComponent, C
 	public static final int GET_CURRENT_MAJORITY_THRESHOLD = 28;
 	public static final int GET_HIDE_SMALL_CLUSTERS = 29;
 	public static final int FIRE_TABLE_DATA_CHANGED = 30;
+	public static final int EXPORT_CLUSTER_ANNOTATIONS_MATRIX_DATA = 31;
 	
 	public static final int PARTITION = 1001;
 	public static final int CLUSTER = 1002;
@@ -113,6 +117,7 @@ public class CnSPartitionPanel extends CnSPanel implements CytoPanelComponent, C
 			case GET_CURRENT_MAJORITY_THRESHOLD : return "GET_CURRENT_MAJORITY_THRESHOLD";
 			case GET_HIDE_SMALL_CLUSTERS : return "GET_HIDE_SMALL_CLUSTERS";
 			case FIRE_TABLE_DATA_CHANGED : return "FIRE_TABLE_DATA_CHANGED";
+			case EXPORT_CLUSTER_ANNOTATIONS_MATRIX_DATA : return "EXPORT_CLUSTER_ANNOTATIONS_MATRIX_DATA";
 			default : return "UNDEFINED_ACTION";
 		}
 	}
@@ -334,6 +339,50 @@ public class CnSPartitionPanel extends CnSPanel implements CytoPanelComponent, C
 						br.write("#Cluster: all");
 					br.newLine();
 					clusterAnalysisPanel.write(br);
+					br.close();
+				}
+				catch (IOException e1) {
+					e1.printStackTrace();
+				}
+				break;
+				
+			case EXPORT_CLUSTER_ANNOTATIONS_MATRIX_DATA :
+				file = (File)event.getParameter(OUTPUT_FILE);
+				try {
+					BufferedWriter br= new BufferedWriter(new FileWriter(file));
+					ev = new CnSEvent(CnSResultsPanel.GET_SELECTED_PARTITION, CnSEventManager.RESULTS_PANEL, this.getClass());
+					partition = (CnSPartition)CnSEventManager.handleMessage(ev, true).getValue();
+					ev = new CnSEvent(CnSPartitionPanel.GET_HIDE_SMALL_CLUSTERS, CnSEventManager.PARTITION_PANEL, this.getClass());
+					boolean hsc = (Boolean)CnSEventManager.handleMessage(ev, true).getValue();
+					br.write("#ClustnSee cluster analysis");
+					br.newLine();
+					br.write("#Algorithm: ");
+					if (partition != null) br.write(partition.getAlgorithmName());
+					br.newLine();
+					br.write("#Network: ");
+					if (partition != null) br.write(partition.getInputNetwork().getRow(partition.getInputNetwork()).get(CyNetwork.NAME, String.class));
+					br.newLine();
+					br.write("#Scope: ");
+					if (partition != null) br.write(partition.getScope());
+					br.newLine();
+					if (partition != null) {
+						Iterator<Integer> k = partition.getAlgorithmParameters().iterator();
+						while (k.hasNext()) {
+							int key = k.next();
+							br.write("#Parameter: " + partition.getAlgorithmParameters().getParameter(key).getName() + "=" + partition.getAlgorithmParameters().getParameter(key).getValue());
+							br.newLine();
+						}
+					}
+					ev = new CnSEvent(CnSNodeAnnotationManager.GET_NETWORK_ANNOTATION_FILES, CnSEventManager.ANNOTATION_MANAGER, this.getClass());
+					ev.addParameter(CnSNodeAnnotationManager.NETWORK, partition.getInputNetwork());
+					Vector<CnSNodeAnnotationFile> vcnaf = (Vector<CnSNodeAnnotationFile>)CnSEventManager.handleMessage(ev, true).getValue();
+					br.write("#Annotation files: ");
+					for (CnSNodeAnnotationFile sf : vcnaf) br.write(sf.getFile().getAbsolutePath() + ",");
+					br.newLine();
+					br.write("#Statistics: " + clusterAnnotationMatrixPanel.getSelectedStatName());
+					br.newLine();
+					
+					clusterAnnotationMatrixPanel.write(br);
 					br.close();
 				}
 				catch (IOException e1) {

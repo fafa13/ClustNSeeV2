@@ -94,7 +94,7 @@ public class CnSClusterAnnotationMatrixModel extends CnSTableModel {
 	public String getColumnName(int column) {
 		if (column == 0)
 			return "Annotation term";
-		return String.valueOf(partition.getClusters().get(column - 1));
+		return String.valueOf(partition.getClusters().get(column - 1).getName());
 	}
 	public Class<?> getColumnClass(int columnIndex) {
 		if (columnIndex == 0)

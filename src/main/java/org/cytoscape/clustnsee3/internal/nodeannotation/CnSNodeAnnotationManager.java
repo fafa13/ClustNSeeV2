@@ -89,6 +89,7 @@ public class CnSNodeAnnotationManager implements CnSEventListener {
 	public static final int GET_BH_FILTERED_ANNOTATIONS = 31;
 	public static final int GET_MAJORITY_FILTERED_ANNOTATIONS = 32;
 	public static final int GET_NODE_ANNOTATIONS = 33;
+	public static final int GET_NETWORK_ANNOTATION_FILES = 34;
 	
 	public static final int VALUE = 1001;
 	public static final int NODE = 1002;
@@ -165,6 +166,7 @@ public class CnSNodeAnnotationManager implements CnSEventListener {
 			case GET_BH_FILTERED_ANNOTATIONS : return "GET_BH_FILTERED_ANNOTATIONS";
 			case GET_MAJORITY_FILTERED_ANNOTATIONS : return "GET_MAJORITY_FILTERED_ANNOTATIONS";
 			case GET_NODE_ANNOTATIONS : return "GET_NODE_ANNOTATIONS";
+			case GET_NETWORK_ANNOTATION_FILES : return "GET_NETWORK_ANNOTATION_FILES";
 			default : return "UNDEFINED_ACTION";
 		}
 	}
@@ -761,6 +763,16 @@ public class CnSNodeAnnotationManager implements CnSEventListener {
 			case GET_NODE_ANNOTATIONS :
 				CyNode node = (CyNode)event.getParameter(NODE);
 				ret = new CnSEventResult<Vector<CnSNodeAnnotation>>(cyNodes.get(node));
+				break;
+				
+			case GET_NETWORK_ANNOTATION_FILES :
+				network = (CyNetwork)event.getParameter(NETWORK);
+				Vector<CnSNodeAnnotationFile> vaf = new Vector<CnSNodeAnnotationFile>();
+				ret = new CnSEventResult<Vector<CnSNodeAnnotationFile>>(vaf);
+				for (CnSNodeAnnotationFile caf : annotatedNetworks.keySet()) {
+					Vector<CyNetwork> vnet = annotatedNetworks.get(caf);
+					if (vnet.contains(network)) vaf.addElement(caf);
+				}
 				break;
 		}
 		return ret;

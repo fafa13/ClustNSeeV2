@@ -70,7 +70,7 @@ public class CnSClusterAnalysisPanel extends CnSPanelSplitCommand  {
 	
 	private CnSTable clusterTable;
 	private CnSButton exportDataButton;
-	private JComboBox<String> clusterList;
+	private JComboBox<CnSCluster> clusterList;
 	
 	public CnSClusterAnalysisPanel() {
 		super();
@@ -83,7 +83,7 @@ public class CnSClusterAnalysisPanel extends CnSPanelSplitCommand  {
 		CnSPanel showAnnotationsPanel = new CnSPanel();
 		showAnnotationsPanel.setBorder(BorderFactory.createEtchedBorder());
 		showAnnotationsPanel.addComponent(new JLabel("Show"), 0, 0, 1, 1, 0.0, 0.0, WEST, NONE, 5, 5, 5, 5, 0, 0);
-		clusterList = new JComboBox<String>();
+		clusterList = new JComboBox<CnSCluster>();
 		clusterList.setMinimumSize(new Dimension(100,16));
 		showAnnotationsPanel.addComponent(clusterList, 1, 0, 1, 1, 0.0, 0.0, WEST, NONE, 5, 5, 5, 5, 0, 0);
 		showAnnotationsPanel.addComponent(new JLabel("annotations"), 2, 0, 1, 1, 0.0, 0.0, WEST, NONE, 5, 5, 5, 10, 0, 0);
@@ -117,13 +117,11 @@ public class CnSClusterAnalysisPanel extends CnSPanelSplitCommand  {
 		});
 		clusterTable.getTableHeader().setDefaultRenderer(new CnSTableHeaderRenderer());
 		
-		
 		commandPanel = new CnSPanel();
 		
 		initGraphics(commandPanel, new JScrollPane(clusterTable));
 		commandPanel.addComponent(showAnnotationsPanel,0, 0, 1, 1, 0.0, 0.0, CENTER, HORIZONTAL, 5, 5, 5, 5, 0, 0);
 		commandPanel.addComponent(exportDataButton, 0, 1, 1, 1, 0.0, 0.0, CENTER, NONE, 5, 5, 5, 5, 0, 0);
-		
 		//addComponent(new JScrollPane(clusterTable), 0, 1, 2, 1, 1.0, 1.0, CENTER, BOTH, 0, 5, 0, 5, 0, 0);
 	}
 	
@@ -142,7 +140,8 @@ public class CnSClusterAnalysisPanel extends CnSPanelSplitCommand  {
 		if (id == 0) 
 			i = 0;
 		else
-			for (i = 0; i < clusterList.getItemCount(); i++) if (clusterList.getItemAt(i).equals("cluster " + id)) break;
+			for (i = 0; i < clusterList.getItemCount(); i++) 
+				if (clusterList.getItemAt(i).toString().equals("Cluster " + id)) break;
 		if (i >= clusterList.getItemCount()) i = 0;
 		clusterList.setSelectedIndex(i);
 	}
@@ -167,12 +166,12 @@ public class CnSClusterAnalysisPanel extends CnSPanelSplitCommand  {
 			public void itemStateChanged(ItemEvent event) {
 				if (event.getStateChange() == ItemEvent.SELECTED) {
 					CnSEvent ev = new CnSEvent(CnSResultsPanel.SELECT_CLUSTER, CnSEventManager.RESULTS_PANEL, this.getClass());
-					String cn = (String)clusterList.getSelectedItem();
+					String cn = clusterList.getItemAt(clusterList.getSelectedIndex()).getName();
 					int ci;
 					if (cn.equals("all")) 
 						ci = 0;
 					else
-						ci = Integer.valueOf(cn.substring(8));
+						ci = Integer.valueOf(cn);
 					ev.addParameter(CnSResultsPanel.CLUSTER_NAME, ci);
 					CnSEventManager.handleMessage(ev, true);
 				}
@@ -244,10 +243,10 @@ public class CnSClusterAnalysisPanel extends CnSPanelSplitCommand  {
 		sorter.setMaxSortKeys(1);
 		clusterTable.setRowSorter(sorter);
 		clusterList.removeAllItems();
-		clusterList.addItem("all");
+		clusterList.addItem(new CnSCluster());
 		if (partition != null) {
 			//for (int i = 1; i <= partition.getClusters().size(); i++) clusterList.addItem("cluster " + i);
-			for (CnSCluster cl : partition.getClusters()) clusterList.addItem("cluster " + cl.getName());
+			for (CnSCluster cl : partition.getClusters()) clusterList.addItem(cl);
 		}
 		setColumnsWidth();
 		//clusterTable.fireTableDataChanged();
@@ -257,7 +256,7 @@ public class CnSClusterAnalysisPanel extends CnSPanelSplitCommand  {
 	public void refresh(CnSPartition partition) {
 		System.err.println("CnSClusterAnalysisPanel.refresh");
 		clusterList.removeAllItems();
-		clusterList.addItem("all");
+		clusterList.addItem(new CnSCluster());
 		if (partition != null) {
 			for (int i = 1; i <= partition.getClusters().size(); i++) {
 				CnSCluster cluster = partition.getCluster(i);
@@ -265,11 +264,11 @@ public class CnSClusterAnalysisPanel extends CnSPanelSplitCommand  {
 				boolean b = (Boolean)CnSEventManager.handleMessage(ev, true).getValue();
 				if (b) {
 					if (cluster.getNbNodes() > 4 ) {
-						clusterList.addItem("cluster " + cluster.getName());
+						clusterList.addItem(cluster);
 					}
 				}
 				else
-					clusterList.addItem("cluster " + cluster.getName());
+					clusterList.addItem(cluster);
 			}
 		}
 		clusterList.setSelectedIndex(0);

@@ -93,7 +93,7 @@ public class CnSCluster implements Comparable<CnSCluster> {
 		annotations = new ArrayList<CnSClusterAnnotation>();
 		attributes = new HashMap<String, Object>();
 		attributeTypes = new HashMap<String, Class<?>>();
-		name = null;
+		name = "all";
 		ID = -1;
 	}
 	
@@ -331,7 +331,8 @@ public class CnSCluster implements Comparable<CnSCluster> {
 		return part.getName() + ":" + part.getAlgorithmName() + ":" + getName();
 	}*/
 	public String toString() {
-		return getName();
+		if (getName().equals("all")) return "all";
+		return "Cluster " + getName();
 	}
 	public double getDensity() {
 		return 2.0 * getEdges().size() / (getNbNodes() * (getNbNodes() - 1));
