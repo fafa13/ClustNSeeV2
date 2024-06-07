@@ -34,7 +34,7 @@ import org.cytoscape.clustnsee3.internal.CnSClustnseePlugin;
  * 
  */
 public class CnSStartMenuFactory implements CyNodeViewContextMenuFactory, ActionListener {
-	private ServiceRegistration ref;
+	private ServiceRegistration<?> ref;
 	private BundleContext context;
 	private CyActivator cyActivator;
 	
@@ -68,7 +68,7 @@ public class CnSStartMenuFactory implements CyNodeViewContextMenuFactory, Action
 		return cyMenuItem;
 	}
 	
-	public ServiceRegistration getRef() {
+	public ServiceRegistration<?> getRef() {
 		return ref;
 	}
 	

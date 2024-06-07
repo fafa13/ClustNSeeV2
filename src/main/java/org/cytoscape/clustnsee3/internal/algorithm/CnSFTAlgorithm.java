@@ -181,7 +181,7 @@ public class CnSFTAlgorithm extends CnSAlgorithm {
         // Fusionne les classes initiales tant que la modularité croit
         int i, ii, j, jj, k, k1, k2, cl1, cl2 = 0, fus1, fus2, card;
         short i1, ks;
-        float SumMax, ModTot, ModMax, VarMod, var, VarMax, Mod = 0.f;
+        float SumMax, ModTot, ModMax, VarMod, var, VarMax;
 
         // On Evalue les sommes des poids des aretes en chaque sommet
         SumMax = 0.f;
@@ -207,8 +207,8 @@ public class CnSFTAlgorithm extends CnSAlgorithm {
                 A[ j][ i] = 0.f; // La partie supérieure droite marquera à 1 les paires d'éléments réunis dans au moins
                                  // une classe
             }
-        if( N < 20)
-            EditB();
+        //if( N < 20)
+        //    EditB();
         // printf("Modularite maximum : %.2f, modularite globale : %.2f\n",ModMax,ModTot);
 
         // Initialisation des classes par les singletons
@@ -261,8 +261,8 @@ public class CnSFTAlgorithm extends CnSAlgorithm {
                 Var[ cl2][ cl1] = 1.f * fus1;
             }
         }
-        if( N < 20)
-            VueVar();
+        //if( N < 20)
+        //    VueVar();
 
         // printf("\nFusions\n\n");
         NbClas = (short) N;
@@ -382,11 +382,6 @@ public class CnSFTAlgorithm extends CnSAlgorithm {
             NbClas--; // printf("\n");
             // VueVar(); fflush(stdin); getchar();
         } // printf("\n");
-        if( typ == 1) {
-            Mod = Modularity();
-            System.err.println( "Nb. de classes " + NbClas + ", Modularity = " + Mod + "\n");
-        }
-
         NbClas = 0;
         for( i = 0; i < N; i++) {
             if( Kard[ i] == 0)
@@ -401,39 +396,6 @@ public class CnSFTAlgorithm extends CnSAlgorithm {
         } // printf("\n");
         Transfert( typ);
         return NbClas;
-    }
-
-    void EditB() {
-
-        int i, j;
-
-        System.err.println( "Matrice modularityMatrix\n");
-        for( i = 0; i < N; i++) {
-            System.err.print( " " + Et[ i]);
-            for( j = 0; j < N; j++)
-                System.err.print( " " + B[ i][ j]);
-            System.err.println();
-        }
-        System.err.println();
-        return;
-    }
-
-    void VueVar() {
-
-        int i, j;
-        for( i = 0; i < N; i++) {
-            if( Kard[ i] == 0)
-                continue;
-            System.err.print( " " + (i + 1));
-            for( j = 0; j < N; j++) {
-                if( Kard[ j] == 0)
-                    continue;
-                System.err.print( " " + Var[ i][ j]);
-            }
-            System.err.println();
-        }
-        System.err.println();
-        return;
     }
 
     float Modularity()
@@ -451,7 +413,7 @@ public class CnSFTAlgorithm extends CnSAlgorithm {
 
     void Transfert( int typ) {
 
-        int i, ii, j, flag = 1, NbTrans = 0;
+        int i, ii, j, flag = 1;
         int k, kk;
         float gain, gainmax, sumax;
 
@@ -472,13 +434,6 @@ public class CnSFTAlgorithm extends CnSAlgorithm {
             // printf("%2d : %4d : ",i+1,fusionVariation[i][0]);
             // for (k=1; k<=clusterNumber; k++) printf("%4d ",fusionVariation[i][k]); printf("\n");
         }
-        if( typ == 2)
-            for( i = 0; i < N; i++) {
-                System.err.print( " " + Et[ i] + " (" + Part[ i] + ") : " + Var[ i][ 0]);
-                for( k = 1; k <= NbClas; k++)
-                    System.err.print( Var[ i][ k] + " ");
-                System.err.println();
-            }
 
         while( flag > 0) {
             gainmax = 0.f;
@@ -494,7 +449,6 @@ public class CnSFTAlgorithm extends CnSAlgorithm {
                 flag = 0;
                 continue;
             }
-            NbTrans++;
             // C'est ii qu'on deplace ; mise a jour de fusionVariation
             kk = Part[ ii];
             for( j = 0; j < N; j++)
@@ -511,8 +465,7 @@ public class CnSFTAlgorithm extends CnSAlgorithm {
                 kk = NbClas;
             }
             Part[ ii] = kk;
-            if( typ == 2)
-                System.err.println( Et[ ii] + " -> classe " + kk + " : gain " + gainmax);
+            
             for( j = 0; j < N; j++) {
                 Var[ j][ kk] = Var[ j][ kk] + B[ j][ ii];
                 sumax = -100.f * N;
@@ -525,13 +478,7 @@ public class CnSFTAlgorithm extends CnSAlgorithm {
                     Var[ j][ 0] = 0.f;
             }
         }
-        if( typ == 1)
-            System.err.println( "Nb. de transferts : " + NbTrans + "\n");
         return;
-        /*
-         * for (i=0; i<N; i++) { System.err.print(" "+nodeName[i]+" : "+fusionVariation[i][0]+" : "); for (k=1;
-         * k<=clusterNumber; k++) System.err.print(fusionVariation[i][k]+" "); System.err.println(); } //getchar();
-         */
     }
 
     void ClasOut()

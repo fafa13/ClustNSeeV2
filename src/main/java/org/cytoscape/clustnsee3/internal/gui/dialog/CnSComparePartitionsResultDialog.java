@@ -84,8 +84,6 @@ public class CnSComparePartitionsResultDialog extends JDialog {
 		closeButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				//for (Object o : UIManager.getDefaults().keySet()) System.err.println(o);
-			    
 				dispose();
 			}
 		});

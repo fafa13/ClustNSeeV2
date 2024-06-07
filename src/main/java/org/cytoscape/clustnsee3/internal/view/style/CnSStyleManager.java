@@ -154,7 +154,7 @@ public class CnSStyleManager implements CnSEventListener {
 		CnSEventResult<?> ret = new CnSEventResult<Object>(null);
 		CnSEvent ev;
 		
-		if (log) CnSLogger.LogCnSEvent(event, this);
+		if (log) CnSLogger.getInstance().LogCnSEvent(event, this);
 		
 		switch (event.getAction()) {
 			case SET_CURRENT_STYLE :

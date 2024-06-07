@@ -66,9 +66,6 @@ public class CnSClusterListPanel extends CnSPanel {
 					if (table.getSelectionModel().getMaxSelectionIndex() != -1) {
 						CnSCluster cluster;
 						
-						System.err.println("***** " + table.getSelectionModel().getMinSelectionIndex() + " - " + table.getSelectionModel().getMaxSelectionIndex());
-						
-						
 						if (table.getSelectionModel().isSelectedIndex(table.getSelectionModel().getMaxSelectionIndex()))
 							cluster = (CnSCluster)model.getValueAt(table.getSelectionModel().getMaxSelectionIndex(), 1);
 						else
@@ -88,11 +85,6 @@ public class CnSClusterListPanel extends CnSPanel {
 						ev = new CnSEvent(CnSViewManager.SELECT_CLUSTER, CnSEventManager.VIEW_MANAGER, this.getClass());
 						ev.addParameter(CnSViewManager.CLUSTER, cluster);
 						CnSEventManager.handleMessage(ev, true);
-						
-						System.err.println("CnSClusterListPanel.valueChanged : " + cluster.getName());
-						System.err.println("MinSelectedInex = " + table.getSelectionModel().getMinSelectionIndex());
-						System.err.println("MaxSelectedInex = " + table.getSelectionModel().getMaxSelectionIndex());
-						System.err.println("selectedRow = " + table.getSelectedRow());
 						
 						ev = new CnSEvent(CnSPartitionPanel.SELECT_CLUSTER, CnSEventManager.PARTITION_PANEL, this.getClass());
 						ev.addParameter(CnSPartitionPanel.CLUSTER, cluster);
@@ -141,7 +133,6 @@ public class CnSClusterListPanel extends CnSPanel {
 	 * @return
 	 */
 	public int selectCluster(long nodeId) {
-		System.err.println("CnSClusterListPanel.selectCluster(" + nodeId + ")");
 		int ret = -1;
 		if (nodeId == -1) {
 			table.clearSelection();
@@ -149,7 +140,6 @@ public class CnSClusterListPanel extends CnSPanel {
 		else {
 			int clusterIndex = model.getClusterIndex(nodeId);
 			
-			System.err.println("!!! clusterIndex = " + clusterIndex);
 			if (clusterIndex >= 0 && clusterIndex < table.getModel().getRowCount()) {
 				table.setRowSelectionInterval(table.convertRowIndexToView(clusterIndex), table.convertRowIndexToView(clusterIndex));
 				table.scrollRectToVisible(table.getCellRect(clusterIndex, 0, true));
@@ -165,8 +155,6 @@ public class CnSClusterListPanel extends CnSPanel {
 	
 	public void selectCluster(Integer name) {
 		int clusterIndex = model.getClusterIndex(name);
-		System.err.println("CnSClusterListPanel.selectCluster(" + name + ") : " + clusterIndex);
-		System.err.println("CnSClusterListPanel.selectCluster(" + name + ") : " + table.convertRowIndexToView(clusterIndex));
 		if (clusterIndex != -1) {
 			table.setRowSelectionInterval(table.convertRowIndexToView(clusterIndex), table.convertRowIndexToView(clusterIndex));
 			table.scrollRectToVisible(table.getCellRect(clusterIndex, 0, true));

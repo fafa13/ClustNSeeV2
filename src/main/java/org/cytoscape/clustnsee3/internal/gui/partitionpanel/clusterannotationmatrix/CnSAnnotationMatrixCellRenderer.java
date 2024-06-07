@@ -50,7 +50,7 @@ public class CnSAnnotationMatrixCellRenderer extends DefaultTableCellRenderer {
 	    label.setText(value.toString());
 	    if ((stat == 0) && ((Double)value < threshold))
 	    	label.setBackground(Color.green);
-	    else if ((stat == 1) && ((Double)value > threshold))
+	    else if ((stat == 1) && ((Double)value >= threshold))
 	    	label.setBackground(Color.green);
 		return label;
 	}

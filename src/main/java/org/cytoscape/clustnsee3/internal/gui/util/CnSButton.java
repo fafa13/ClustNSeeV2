@@ -8,7 +8,7 @@ import javax.swing.JButton;
 
 public class CnSButton extends JButton {
 	private static final long serialVersionUID = 4800992668517797309L;
-	private Insets insets;
+	//private Insets insets;
 	
 	public CnSButton() {
 		super();
@@ -33,7 +33,7 @@ public class CnSButton extends JButton {
 	public Insets getInsets() {
 		return super.getInsets();
 	}
-	public void setInsets(int top, int left, int bottom, int right) {
+	/*public void setInsets(int top, int left, int bottom, int right) {
 		insets = new Insets(top, left, bottom, right);
-	}
+	}*/
 }

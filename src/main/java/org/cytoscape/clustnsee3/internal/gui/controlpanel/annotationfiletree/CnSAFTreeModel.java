@@ -22,13 +22,10 @@ import org.cytoscape.clustnsee3.internal.gui.controlpanel.annotationfiletree.nod
 import org.cytoscape.clustnsee3.internal.gui.controlpanel.annotationfiletree.nodes.details.CnSAFTreeDetailsNodePanel;
 import org.cytoscape.clustnsee3.internal.gui.controlpanel.annotationfiletree.nodes.file.CnSAFTreeFileNode;
 import org.cytoscape.clustnsee3.internal.gui.controlpanel.annotationfiletree.nodes.root.CnSAFTreeRootNode;
-import org.cytoscape.clustnsee3.internal.gui.controlpanel.networkfiletree.nodes.netname.CnSAFTreeNetworkNetnameNodePanel;
-import org.cytoscape.clustnsee3.internal.gui.controlpanel.networkfiletree.CnSNetworksTreeModel;
 import org.cytoscape.clustnsee3.internal.gui.controlpanel.networkfiletree.nodes.netname.CnSAFTreeNetworkNetnameNode;
 import org.cytoscape.clustnsee3.internal.gui.util.paneltree.CnSPanelTreeModel;
 import org.cytoscape.clustnsee3.internal.gui.util.paneltree.CnSPanelTreeNode;
 import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeAnnotationFile;
-import org.cytoscape.model.CyNetwork;
 
 public class CnSAFTreeModel extends CnSPanelTreeModel {
 	private static final long serialVersionUID = -6953596223506537360L;
@@ -46,10 +43,6 @@ public class CnSAFTreeModel extends CnSPanelTreeModel {
 			node = new CnSAFTreeFileNode((CnSAFTreeRootNode)getRoot(), v);
 			node.setEditable(true);
 			
-			System.err.println("node : " + node.getClass());
-			System.err.println("parent : " + parent.getClass());
-			System.err.println("nb child : " + parent.getChildCount());
-
 			CnSAFTreeDetailsNode detailsNode = new CnSAFTreeDetailsNode(node, v);
 			detailsNode.setEditable(true);
 			detailsNode.getPanel().deriveFont(11);
@@ -93,21 +86,11 @@ public class CnSAFTreeModel extends CnSPanelTreeModel {
 					Enumeration<CnSPanelTreeNode> etm = ((CnSAFTreeDetailsNodePanel)nnode.getPanel()).getNetworksRootNode().children();					
 					while (etm.hasMoreElements()) {
 						CnSPanelTreeNode tm = etm.nextElement();
-						CyNetwork cn = (CyNetwork)tm.getData(CnSAFTreeNetworkNetnameNode.NETWORK);
-						System.err.println(af.getFile().getAbsolutePath() + " -> " + cn.getSUID());
 						ret.addElement((CnSAFTreeNetworkNetnameNode)tm);
 					}
 				}
 			}
 		}
 		return ret;
-	}
-	public void printStructure(CnSPanelTreeNode node, int level) {
-		printNode(node, level);
-		for (int i = 0; i < node.getChildCount(); i++) printStructure(node.getChildAt(i), level + 1);
-	}
-	private void printNode(CnSPanelTreeNode node, int level) {
-		for (int i = 0; i < level; i++) System.err.print("  ");
-		System.err.println(node.getValue());
 	}
 }

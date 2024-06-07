@@ -49,7 +49,7 @@ public class CnSImportPartitionMenu extends AbstractCyAction {
 	
 	private CnSImportPartitionMenu() {
 		super("Import partition"); 						
-		setPreferredMenu("Apps.Clust&see");
+		setPreferredMenu("Apps.Clust&See");
 		en = true;
 	}
 
@@ -79,7 +79,6 @@ public class CnSImportPartitionMenu extends AbstractCyAction {
 			}	
 		}
 		if (toload) {
-			System.err.println("Importing partition from " + file.getName());
 			CnSEvent ev = new CnSEvent(CyActivator.GET_APPLICATION_MANAGER, CnSEventManager.CY_ACTIVATOR, this.getClass());
 			CyApplicationManager cam = (CyApplicationManager)CnSEventManager.handleMessage(ev, true).getValue();
 			CyNetwork currentNetwork = cam.getCurrentNetwork();
@@ -108,7 +107,6 @@ public class CnSImportPartitionMenu extends AbstractCyAction {
 										JOptionPane.showMessageDialog(null, "Unknown algorithm : " + s, "Unknown algorithm", JOptionPane.ERROR_MESSAGE, null);
 										break;
 									}
-									System.err.println("  Algorithm name = " + algo.getName());
 								}
 								else if (s.startsWith("#Network:")) {
 									networkName = s.substring(9);
@@ -117,7 +115,6 @@ public class CnSImportPartitionMenu extends AbstractCyAction {
 										break;
 									}
 									network = currentNetwork;
-									System.err.println("  Network name = " + networkName);
 								}
 								else if (s.startsWith("#Scope:")) {
 									scope = s.substring(7);
@@ -125,11 +122,6 @@ public class CnSImportPartitionMenu extends AbstractCyAction {
 										JOptionPane.showMessageDialog(null, "Unknown scope : " + s, "Unknown scope", JOptionPane.ERROR_MESSAGE, null);
 										break;
 									}
-									System.err.println("  Scope = " + scope);
-								}
-								else if (s.startsWith("#Cluster Name")) {
-									if ((s = br.readLine()) != null)
-										System.err.println(s.split(", ").length + " clusters");
 								}
 								else if (s.startsWith("#Parameter:")) {
 									String[] item = s.substring(11).split("=");
@@ -153,7 +145,6 @@ public class CnSImportPartitionMenu extends AbstractCyAction {
 								String[] annot = s.split("\\|\\|");
 								
 								for (int i = 1; i < annot.length; i++) imported_annotation.lastElement().addElement(annot[i]);
-								System.err.println("  " + s);
 							}
 							else if (!s.equals("")) {
 								ev = new CnSEvent(CnSNetworkManager.GET_NODES_WITH_VALUE, CnSEventManager.NETWORK_MANAGER, this.getClass());
@@ -163,7 +154,6 @@ public class CnSImportPartitionMenu extends AbstractCyAction {
 								n = (Set<CyNode>)CnSEventManager.handleMessage(ev, true).getValue();
 								
 								if (n.size() == 1) {
-									System.err.println("  " + n.iterator().next().getSUID() + " => " + s);
 									imported_partition.lastElement().addElement(n.iterator().next().getSUID());
 								}
 								else {
@@ -171,13 +161,8 @@ public class CnSImportPartitionMenu extends AbstractCyAction {
 									break;
 								}
 							}
-							else
-								System.err.println();
 						}
 						br.close();
-						for (Integer paramKey : algo.getParameters()) {
-							System.err.println("**Parameter : " + algo.getParameters().getParameter(paramKey).getName() + " = " + algo.getParameters().getParameter(paramKey).getValue());
-						}
 					}
 					else
 						JOptionPane.showMessageDialog(null, "The file you have selected is not a Clustnsee export file", "Unknown file", JOptionPane.ERROR_MESSAGE, null);

@@ -60,7 +60,9 @@ public class CnSClusterAnnotationMatrixModel extends CnSTableModel {
 	 */
 	@Override
 	public int getColumnCount() {
-		return partition.getClusters().size() + 1;
+		if (partition != null)
+			return partition.getClusters().size() + 1;
+		return 0;
 	}
 
 	/* (non-Javadoc)

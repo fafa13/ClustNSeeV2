@@ -110,7 +110,6 @@ public class CnSAnnotationTable implements ChangeListener, PropertyChangeListene
 	 */
 	@Override
 	public void propertyChange(PropertyChangeEvent e) {
-		System.err.println("propertyChange : " + e.getPropertyName());
 		if (e.getPropertyName().equals("selectionModel"))
 			fixed.setSelectionModel(table.getSelectionModel());
 		else if (e.getPropertyName().equals("model"))

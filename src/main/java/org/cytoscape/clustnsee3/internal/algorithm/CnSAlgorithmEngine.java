@@ -85,7 +85,7 @@ public class CnSAlgorithmEngine implements CnSEventListener {
 	public CnSEventResult<?> cnsEventOccured(CnSEvent event, boolean log) {
 		CnSEventResult<?> ret = new CnSEventResult<Object>(null);
 		
-		if (log) CnSLogger.LogCnSEvent(event, this);
+		if (log) CnSLogger.getInstance().LogCnSEvent(event, this);
 		
 		switch(event.getAction()) {
 			case START :

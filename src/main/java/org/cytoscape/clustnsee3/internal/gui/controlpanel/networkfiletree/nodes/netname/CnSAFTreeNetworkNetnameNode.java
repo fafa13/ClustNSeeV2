@@ -37,7 +37,7 @@ public class CnSAFTreeNetworkNetnameNode extends CnSPanelTreeNode implements Act
 	}
 
 	/* (non-Javadoc)
-	 * @see org.cytoscape.clustnsee3.internal.gui.util.paneltree.CnSPanelTreeNodSystem.err.println("ACTIONPERFORMED - getData(ANNOTATION_FILE) = " + getData(ANNOTATION_FILE));
+	 * @see org.cytoscape.clustnsee3.internal.gui.util.paneltree.CnSPanelTreeNode
 	 */
 	@Override
 	public Object getValue() {
@@ -57,7 +57,6 @@ public class CnSAFTreeNetworkNetnameNode extends CnSPanelTreeNode implements Act
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getActionCommand().equals("remove_network")) {
-			System.err.println("ACTIONPERFORMED - getData(ANNOTATION_FILE) = " + getData(ANNOTATION_FILE));
 			CnSEvent ev = new CnSEvent(CnSNodeAnnotationManager.DEANNOTATE_NETWORK, CnSEventManager.ANNOTATION_MANAGER, this.getClass());
 			ev.addParameter(CnSNodeAnnotationManager.ANNOTATION_FILE, getData(ANNOTATION_FILE));
 			ev.addParameter(CnSNodeAnnotationManager.NETWORK, getData(NETWORK));

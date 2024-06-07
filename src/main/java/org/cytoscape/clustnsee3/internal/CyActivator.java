@@ -41,6 +41,7 @@ import org.cytoscape.work.TaskObserver;
 import org.cytoscape.work.swing.DialogTaskManager;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.log.LoggerFactory;
 
 public class CyActivator extends AbstractCyActivator implements CnSEventListener {
 	public static final int GET_NETWORK_FACTORY = 1;
@@ -71,6 +72,7 @@ public class CyActivator extends AbstractCyActivator implements CnSEventListener
 	public static final int GET_TASK_MANAGER = 26;
 	public static final int START = 27;
 	public static final int GET_RESOURCES_BUNDLE = 28;
+	public static final int GET_OSGI_LOGGERFACTORY = 29;
 	
 	public static final int NAME = 1000;
 
@@ -114,6 +116,7 @@ public class CyActivator extends AbstractCyActivator implements CnSEventListener
 			case GET_TASK_MANAGER : return "GET_TASK_MANAGER";
 			case START : return "START";
 			case GET_RESOURCES_BUNDLE : return "GET_RESOURCES_BUNDLE";
+			case GET_OSGI_LOGGERFACTORY : return "GET_OSGI_LOGGERFACTORY";
 			default : return "UNDEFINED_ACTION";
 		}
 	}
@@ -181,7 +184,7 @@ public class CyActivator extends AbstractCyActivator implements CnSEventListener
 	public CnSEventResult<?> cnsEventOccured(CnSEvent event, boolean log) {
 		CnSEventResult<?> ret = new CnSEventResult<Object>(null);
 		
-		if (log) CnSLogger.LogCnSEvent(event, this);
+		if (log && event.getAction() != GET_OSGI_LOGGERFACTORY) CnSLogger.getInstance().LogCnSEvent(event, this);
 		
 		switch(event.getAction()) {
 			case GET_NETWORK_FACTORY :
@@ -285,6 +288,9 @@ public class CyActivator extends AbstractCyActivator implements CnSEventListener
 				break;
 			case GET_RESOURCES_BUNDLE :
 				ret = new CnSEventResult<ResourceBundle>(resourceBundle);
+				break;
+			case GET_OSGI_LOGGERFACTORY :
+				ret = new CnSEventResult<LoggerFactory>(getService(bc, LoggerFactory.class));
 				break;
 		}
 		return ret;

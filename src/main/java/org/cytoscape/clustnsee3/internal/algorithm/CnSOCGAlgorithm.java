@@ -20,14 +20,15 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.cytoscape.clustnsee3.internal.CyActivator;
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
 import org.cytoscape.model.CyEdge;
 import org.cytoscape.model.CyNetwork;
 import org.cytoscape.model.CyNode;
 import org.cytoscape.model.CyTableUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.osgi.service.log.Logger;
+import org.osgi.service.log.LoggerFactory;
 
 /**
  * 
@@ -493,8 +494,11 @@ public class CnSOCGAlgorithm extends CnSAlgorithm {
      * @param analysis The contextual analysis
      */
     private void readNetwork( CyNetwork inputNetwork) {
-    	Logger LOGGER = LoggerFactory.getLogger(this.getClass());
-        CnSEvent ev = new CnSEvent(CnSAlgorithmEngine.GET_SCOPE, CnSEventManager.ALGORITHM_ENGINE, this.getClass());
+    	CnSEvent ev = new CnSEvent(CyActivator.GET_OSGI_LOGGERFACTORY, CnSEventManager.CY_ACTIVATOR, this.getClass());
+    	LoggerFactory lf = (LoggerFactory)CnSEventManager.handleMessage(ev, true).getValue();
+    	Logger LOGGER = lf.getLogger(this.getClass());
+    	
+        ev = new CnSEvent(CnSAlgorithmEngine.GET_SCOPE, CnSEventManager.ALGORITHM_ENGINE, this.getClass());
         String scope = (String)CnSEventManager.handleMessage(ev, true).getValue();
 
         optionsChoice = options.getValue().toString();
@@ -505,7 +509,6 @@ public class CnSOCGAlgorithm extends CnSAlgorithm {
         else if (initialClusters.getValue().toString().equals("Centered cliques"))
         	typ = 3;
 
-        System.err.println("*********** " + clusterMaxCardinal.getValue() + " ******************************");
         CardMax = Integer.parseInt(clusterMaxCardinal.getValue().toString());
         if (classSystem.getValue().toString().equals("Maximize modularity"))
         	FCS = 1;
@@ -657,8 +660,11 @@ public class CnSOCGAlgorithm extends CnSAlgorithm {
      * @return
      */
     private int Clique() {
-    	Logger LOGGER = LoggerFactory.getLogger(this.getClass());
-        if( verbose == 1) {
+    	CnSEvent ev = new CnSEvent(CyActivator.GET_OSGI_LOGGERFACTORY, CnSEventManager.CY_ACTIVATOR, this.getClass());
+    	LoggerFactory lf = (LoggerFactory)CnSEventManager.handleMessage(ev, true).getValue();
+    	Logger LOGGER = lf.getLogger(this.getClass());
+	
+    	if( verbose == 1) {
             LOGGER.debug("Starting Initial classes : maximal cliques");
         }
 
@@ -825,8 +831,11 @@ public class CnSOCGAlgorithm extends CnSAlgorithm {
      * @return
      */
     private int ClasArete( int CardMax) {
-    	Logger LOGGER = LoggerFactory.getLogger(this.getClass());
-        if( verbose == 1) {
+    	CnSEvent ev = new CnSEvent(CyActivator.GET_OSGI_LOGGERFACTORY, CnSEventManager.CY_ACTIVATOR, this.getClass());
+    	LoggerFactory lf = (LoggerFactory)CnSEventManager.handleMessage(ev, true).getValue();
+    	Logger LOGGER = lf.getLogger(this.getClass());
+    	
+    	if( verbose == 1) {
             LOGGER.debug("Starting Initial classes : edges");
         }
 
@@ -858,7 +867,10 @@ public class CnSOCGAlgorithm extends CnSAlgorithm {
      * @return
      */
     private int StarCliq() {
-    	Logger LOGGER = LoggerFactory.getLogger(this.getClass());
+    	CnSEvent ev = new CnSEvent(CyActivator.GET_OSGI_LOGGERFACTORY, CnSEventManager.CY_ACTIVATOR, this.getClass());
+    	LoggerFactory lf = (LoggerFactory)CnSEventManager.handleMessage(ev, true).getValue();
+    	Logger LOGGER = lf.getLogger(this.getClass());
+    	
         if( verbose == 1) {
             LOGGER.debug("Starting Initial classes : centered cliques");
         }

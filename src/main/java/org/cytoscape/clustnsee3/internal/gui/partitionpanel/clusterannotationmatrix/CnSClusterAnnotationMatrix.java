@@ -17,11 +17,9 @@ import java.awt.Color;
 import java.awt.event.MouseEvent;
 
 import javax.swing.BorderFactory;
-import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 
-import org.cytoscape.clustnsee3.internal.gui.partitionpanel.partitiontable.CnSPartitionTableCellRenderer;
 import org.cytoscape.clustnsee3.internal.gui.util.cnstable.CnSTable;
 
 /**

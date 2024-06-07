@@ -40,7 +40,6 @@ public class CnSMulticlassedNodesTableModel extends AbstractTableModel {
 		CnSEvent ev = new CnSEvent(CyActivator.GET_RESOURCES_BUNDLE, CnSEventManager.CY_ACTIVATOR, this.getClass());
 		ResourceBundle rBundle = (ResourceBundle)CnSEventManager.handleMessage(ev, true).getValue();
 		rBundle = CyActivator.getResourcesBundle();
-		System.err.println("BUNDLE = " + rBundle);
 		
 		columnNames[0] = rBundle.getString("CnSMulticlassedNodesTableModel.nodeID");	
 		columnNames[1] = rBundle.getString("CnSMulticlassedNodesTableModel.degree");

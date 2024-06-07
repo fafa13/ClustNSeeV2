@@ -27,7 +27,6 @@ import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventListener;
 import org.cytoscape.clustnsee3.internal.event.CnSEventResult;
 import org.cytoscape.clustnsee3.internal.gui.util.CnSPanel;
-import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeAnnotation;
 import org.cytoscape.clustnsee3.internal.partition.CnSPartition;
 import org.cytoscape.clustnsee3.internal.utils.CnSLogger;
 import org.cytoscape.clustnsee3.internal.view.CnSView;
@@ -111,7 +110,7 @@ public class CnSInfoPanel extends CnSPanel implements CytoPanelComponent, CnSEve
 	@Override
 	public CnSEventResult<?> cnsEventOccured(CnSEvent event, boolean log) {
 		
-		if (log) CnSLogger.LogCnSEvent(event, this);
+		if (log) CnSLogger.getInstance().LogCnSEvent(event, this);
 		
 		switch (event.getAction()) {
 			case INIT :

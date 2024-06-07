@@ -212,19 +212,14 @@ public class CnSNodeAnnotationManager implements CnSEventListener {
 	
 	public Vector<CyNode> getAnnotatedNodes(CnSNodeAnnotation annotation, CnSCluster cluster) {
 		Vector<CyNode> vcn = new Vector<CyNode>();
-		/*if ((cluster != null)  && (annotation == null)) {
-			return getClusterAnnotationNumber(cluster);
-		}
-		else {*/
-			if ((annotation == null) || (cluster == null))
-				vcn = new Vector<CyNode>(cyNodes.keySet());
-			else if ((annotation != null) && (cluster != null)) {
-				for (CnSNodeNetwork cnn : annotations.get(annotation).getNodeNetworks()) {
-					if (cluster.contains(cnn.getNode())) vcn.addElement(cnn.getNode());
-				}
+		if ((annotation == null) || (cluster == null))
+			vcn = new Vector<CyNode>(cyNodes.keySet());
+		else if ((annotation != null) && (cluster != null)) {
+			for (CnSNodeNetwork cnn : annotations.get(annotation).getNodeNetworks()) {
+				if (cluster.contains(cnn.getNode())) vcn.addElement(cnn.getNode());
 			}
-			return vcn;
-		//}
+		}
+		return vcn;
 	}
 
 	/* (non-Javadoc)
@@ -251,7 +246,7 @@ public class CnSNodeAnnotationManager implements CnSEventListener {
 		Vector<CyNode> vcn;
 		double threshold;
 		
-		if (log) CnSLogger.LogCnSEvent(event, this);
+		if (log) CnSLogger.getInstance().LogCnSEvent(event, this);
 		
 		switch (event.getAction()) {
 			case PARSE_ANNOTATIONS :
@@ -279,7 +274,6 @@ public class CnSNodeAnnotationManager implements CnSEventListener {
 						it = network.getDefaultNodeTable().getMatchingRows("shared name", word[targetColumn - 1]).iterator();
 						if (it.hasNext()) {
 							found_nodes++;
-							//node = network.getNode(it.next().get(network.getDefaultNodeTable().getPrimaryKey().getName(), Long.class));
 							for (String q : anno)
 								if (! q.equals("")) 
 									if (!annots.contains(q)) {
@@ -299,11 +293,6 @@ public class CnSNodeAnnotationManager implements CnSEventListener {
 					results[5] = annotations_in_file.size();
 
 					ret = new CnSEventResult<int[]>(results);
-					System.err.println("Total nodes in file : " + nodes_in_file.size());
-					System.err.println("Total annotations in file : " + annotations_in_file.size());
-					System.err.println("Total nodes in graph : " + network.getNodeCount());
-					System.err.println("Found nodes in graph : " + found_nodes);
-					System.err.println("Mapped annotations in graph : " + mapped_annotations);
 				} 
 				catch (FileNotFoundException e) {
 					e.printStackTrace();
@@ -445,21 +434,6 @@ public class CnSNodeAnnotationManager implements CnSEventListener {
 				annotation = (CnSNodeAnnotation)event.getParameter(ANNOTATION);
 				cluster = (CnSCluster)event.getParameter(CLUSTER);
 				ret = new CnSEventResult<Vector<CyNode>>(getAnnotatedNodes(annotation, cluster));
-				
-				/*vcn = new Vector<CyNode>();
-				if ((cluster != null)  && (annotation == null)) {
-					ret = getClusterAnnotationNumber(cluster);
-				}
-				else {
-					if ((annotation == null) || (cluster == null))
-						vcn = new Vector<CyNode>(cyNodes.keySet());
-					else if ((annotation != null) && (cluster != null)) {
-						for (CnSNodeNetwork cnn : annotations.get(annotation).getNodeNetworks()) {
-							if (cluster.contains(cnn.getNode())) vcn.addElement(cnn.getNode());
-						}
-					}
-					ret = vcn;
-				}*/
 				break;
 				
 			case GET_NB_ANNOTATED_NODES :
@@ -475,11 +449,9 @@ public class CnSNodeAnnotationManager implements CnSEventListener {
 
 			case UNLOAD_ANNOTATIONS :
 				af = (CnSNodeAnnotationFile)event.getParameter(ANNOTATION_FILE);
-
 				if (af != null) {
 					removeAnnotations(af);
 					CnSEvent ev = new CnSEvent(CnSPartitionPanel.INIT_ANNOTATION_PANEL, CnSEventManager.PARTITION_PANEL, this.getClass());
-					//CnSEventManager.handleMessage(ev);
 					makeCyNodesHashMap();
 					makeClustersHashMap();
 					files.removeElement(af);
@@ -493,7 +465,6 @@ public class CnSNodeAnnotationManager implements CnSEventListener {
 				network = (CyNetwork)event.getParameter(NETWORK);
 				TaskMonitor task = (TaskMonitor)event.getParameter(TASK);
 				
-				System.err.println("ANNOTATE_NETWORK " + network);
 				List<String> netNodes = network.getDefaultNodeTable().getColumn("shared name").getValues(String.class);
 
 				Set<CyNode> nodes;
@@ -548,7 +519,6 @@ public class CnSNodeAnnotationManager implements CnSEventListener {
 				break;
 
 			case DEANNOTATE_NETWORK :
-				System.err.println("DEANNOTATE_NETWORK");
 				af = (CnSNodeAnnotationFile)event.getParameter(ANNOTATION_FILE);
 				network = (CyNetwork)event.getParameter(NETWORK);
 				
@@ -593,7 +563,6 @@ public class CnSNodeAnnotationManager implements CnSEventListener {
 				}
 				break;
 				
-
 			case GET_NETWORK_ANNOTATED_NODES :
 				network = (CyNetwork)event.getParameter(NETWORK);
 				annotation = (CnSNodeAnnotation)event.getParameter(ANNOTATION);
@@ -663,7 +632,7 @@ public class CnSNodeAnnotationManager implements CnSEventListener {
 			case GET_BH_FILTERED_ANNOTATIONS :
 				cluster = (CnSCluster)event.getParameter(CLUSTER);
 				ev = new CnSEvent(CnSPartitionPanel.GET_CURRENT_BH_THRESHOLD, CnSEventManager.PARTITION_PANEL, this.getClass());
-				threshold = ((Integer)CnSEventManager.handleMessage(ev, true).getValue()).doubleValue() / 100D;
+				threshold = ((Double)CnSEventManager.handleMessage(ev, true).getValue()).doubleValue();
 				
 				pvalues = cluster2pv.get(cluster);
 				if (pvalues != null) pvalues = (Vector<CnSAnnotationClusterPValue>) pvalues.clone();
@@ -677,7 +646,7 @@ public class CnSNodeAnnotationManager implements CnSEventListener {
 			case GET_MAJORITY_FILTERED_ANNOTATIONS :
 				cluster = (CnSCluster)event.getParameter(CLUSTER);
 				ev = new CnSEvent(CnSPartitionPanel.GET_CURRENT_MAJORITY_THRESHOLD, CnSEventManager.PARTITION_PANEL, this.getClass());
-				threshold = ((Integer)CnSEventManager.handleMessage(ev, true).getValue()).doubleValue() / 100D;
+				threshold = ((Double)CnSEventManager.handleMessage(ev, true).getValue()).doubleValue();
 				
 				pvalues = cluster2pv.get(cluster);
 				if (pvalues != null) pvalues = (Vector<CnSAnnotationClusterPValue>) pvalues.clone();
@@ -691,7 +660,7 @@ public class CnSNodeAnnotationManager implements CnSEventListener {
 			case GET_ENRICHED_CLUSTERS :
 				annotation = (CnSNodeAnnotation)event.getParameter(ANNOTATION);
 				ev = new CnSEvent(CnSPartitionPanel.GET_CURRENT_BH_THRESHOLD, CnSEventManager.PARTITION_PANEL, this.getClass());
-				threshold = ((Integer)CnSEventManager.handleMessage(ev, true).getValue()).doubleValue() / 100D;
+				threshold = ((Double)CnSEventManager.handleMessage(ev, true).getValue()).doubleValue();
 				ev = new CnSEvent(CnSResultsPanel.GET_SELECTED_PARTITION, CnSEventManager.RESULTS_PANEL, this.getClass());
 				part = (CnSPartition)CnSEventManager.handleMessage(ev, true).getValue();
 				Vector<CnSCluster> clusters = new Vector<CnSCluster>();
@@ -722,7 +691,7 @@ public class CnSNodeAnnotationManager implements CnSEventListener {
 			case GET_TOP3_CLUSTERS :
 				annotation = (CnSNodeAnnotation)event.getParameter(ANNOTATION);
 				ev = new CnSEvent(CnSPartitionPanel.GET_CURRENT_BH_THRESHOLD, CnSEventManager.PARTITION_PANEL, this.getClass());
-				threshold = ((Integer)CnSEventManager.handleMessage(ev, true).getValue()).doubleValue() / 100D;
+				threshold = ((Double)CnSEventManager.handleMessage(ev, true).getValue()).doubleValue();
 				TreeSet<CnSAnnotationClusterPValue> clustersHash = new TreeSet<CnSAnnotationClusterPValue>();
 				ev = new CnSEvent(CnSResultsPanel.GET_SELECTED_PARTITION, CnSEventManager.RESULTS_PANEL, this.getClass());
 				part = (CnSPartition)CnSEventManager.handleMessage(ev, true).getValue();
@@ -844,7 +813,6 @@ public class CnSNodeAnnotationManager implements CnSEventListener {
 		CnSTrieNode ann;
 		CnSNodeAnnotation nodeAnnotation;
 		Vector<CnSAnnotationTarget> toRemove = new Vector<CnSAnnotationTarget>();
-		System.err.print("Remove annotations : " + annotations.size());
 		while (it.hasNext()) {
 			ann = it.next();
 			nodeAnnotation = ann.getAnnotation();
@@ -861,11 +829,8 @@ public class CnSNodeAnnotationManager implements CnSEventListener {
 					annotationTrie.removeWord(nodeAnnotation.getValue());
 				}
 			}
-			else
-				System.err.println(ann.getWord() + " has no annotation !!!");
 			toRemove.clear();
 		}
-		System.err.println(" -> " + annotations.size());
 	}
 
 	private void makeCyNodesHashMap() {
@@ -909,17 +874,7 @@ public class CnSNodeAnnotationManager implements CnSEventListener {
 							}
 					cluster2annotation.put(cl, annot);
 				}
-				System.err.println("--- " + cl.getName() + " -> " + annot.size());
 			}
-	}
-	public void printAnnotations() {
-		int N = 0;
-		for (CnSNodeAnnotation key : annotations.keySet()) {
-			System.out.println(++N + " " + key.getValue());
-			for (CnSNodeNetwork value : annotations.get(key).getNodeNetworks()) {
-				System.out.println("  " + value.getNode().getSUID());
-			}
-		}
 	}
 	
 	private void computeEnrichment(CyNetwork network, Vector<CnSCluster> clusters, TaskMonitor taskMonitor) {

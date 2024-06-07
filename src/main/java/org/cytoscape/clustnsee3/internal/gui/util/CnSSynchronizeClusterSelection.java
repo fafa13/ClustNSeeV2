@@ -61,7 +61,7 @@ public class CnSSynchronizeClusterSelection implements CnSEventListener {
 		final CnSCluster cluster;
 		final CnSPartition partition;
 		
-		if (log) CnSLogger.LogCnSEvent(event, this);
+		if (log) CnSLogger.getInstance().LogCnSEvent(event, this);
 		
 		switch (event.getAction()) {
 			case SYNCHRONIZE :

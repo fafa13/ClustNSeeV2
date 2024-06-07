@@ -27,19 +27,19 @@ import javax.swing.table.DefaultTableCellRenderer;
  */
 public class CnSLoadAnnotationFileTableHeaderRenderer extends DefaultTableCellRenderer {
 	private static final long serialVersionUID = -5481419485529001820L;
-	private DefaultTableCellRenderer renderer;
+	//private DefaultTableCellRenderer renderer;
 	private CnSLoadAnnotationFileDialog dialog;
 
 	public CnSLoadAnnotationFileTableHeaderRenderer(CnSLoadAnnotationFileDialog cnSLoadAnnotationFileDialog, JTable table) {
 		super();
-		renderer = (DefaultTableCellRenderer)table.getTableHeader().getDefaultRenderer();
+		//renderer = (DefaultTableCellRenderer)table.getTableHeader().getDefaultRenderer();
 		dialog = cnSLoadAnnotationFileDialog;
 	}
 	
 	@Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
         JLabel lab = new JLabel(value.toString());
-		Component c = renderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+		//Component c = renderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
         if ((column == dialog.getNodeColSpinnerValue()) || (column == dialog.getAnnColSpinnerValue())) {
         	lab.setForeground(Color.BLUE);
         	lab.setFont(lab.getFont().deriveFont(Font.BOLD));

@@ -34,11 +34,9 @@ import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventListener;
 import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
 import org.cytoscape.clustnsee3.internal.event.CnSEventResult;
-import org.cytoscape.clustnsee3.internal.gui.infopanel.CnSInfoPanel;
 import org.cytoscape.clustnsee3.internal.gui.partitionpanel.annotationanalysis.CnSAnnotationAnalysisPanel;
 import org.cytoscape.clustnsee3.internal.gui.partitionpanel.clusteranalysis.CnSClusterAnalysisPanel;
 import org.cytoscape.clustnsee3.internal.gui.partitionpanel.clusterannotationmatrix.CnSClusterAnnotationMatrixPanel;
-import org.cytoscape.clustnsee3.internal.gui.partitionpanel.multiclassednodes.CnSMulticlassedNodesPanel;
 import org.cytoscape.clustnsee3.internal.gui.partitionpanel.partitiontable.CnSPartitionTablePanel;
 import org.cytoscape.clustnsee3.internal.gui.resultspanel.CnSResultsPanel;
 import org.cytoscape.clustnsee3.internal.gui.util.CnSPanel;
@@ -178,7 +176,7 @@ public class CnSPartitionPanel extends CnSPanel implements CytoPanelComponent, C
 		final CnSPartition partition;
 		CnSEvent ev;
 		
-		if (log) CnSLogger.LogCnSEvent(event, this);
+		if (log) CnSLogger.getInstance().LogCnSEvent(event, this);
 		
 		switch (event.getAction()) {
 			case INIT :
@@ -353,7 +351,6 @@ public class CnSPartitionPanel extends CnSPanel implements CytoPanelComponent, C
 					ev = new CnSEvent(CnSResultsPanel.GET_SELECTED_PARTITION, CnSEventManager.RESULTS_PANEL, this.getClass());
 					partition = (CnSPartition)CnSEventManager.handleMessage(ev, true).getValue();
 					ev = new CnSEvent(CnSPartitionPanel.GET_HIDE_SMALL_CLUSTERS, CnSEventManager.PARTITION_PANEL, this.getClass());
-					boolean hsc = (Boolean)CnSEventManager.handleMessage(ev, true).getValue();
 					br.write("#ClustnSee cluster analysis");
 					br.newLine();
 					br.write("#Algorithm: ");
@@ -438,11 +435,11 @@ public class CnSPartitionPanel extends CnSPanel implements CytoPanelComponent, C
 				break;
 				
 			case GET_CURRENT_BH_THRESHOLD :
-				ret = new CnSEventResult<Integer>(partitionTablePanel.getCurrentThreshold());
+				ret = new CnSEventResult<Double>(partitionTablePanel.getCurrentThreshold());
 				break;
 				
 			case GET_CURRENT_MAJORITY_THRESHOLD :
-				ret = new CnSEventResult<Integer>(partitionTablePanel.getCurrentThreshold());
+				ret = new CnSEventResult<Double>(partitionTablePanel.getCurrentThreshold());
 				break;
 				
 			case GET_HIDE_SMALL_CLUSTERS :

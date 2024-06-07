@@ -79,7 +79,6 @@ public class CnSClusterAnalysisPanel extends CnSPanelSplitCommand  {
 	}
 	
 	public void initGraphics( ) {
-		System.err.println("CnSClusterAnalysisPanel.initGraphics()");
 		CnSPanel showAnnotationsPanel = new CnSPanel();
 		showAnnotationsPanel.setBorder(BorderFactory.createEtchedBorder());
 		showAnnotationsPanel.addComponent(new JLabel("Show"), 0, 0, 1, 1, 0.0, 0.0, WEST, NONE, 5, 5, 5, 5, 0, 0);
@@ -87,10 +86,8 @@ public class CnSClusterAnalysisPanel extends CnSPanelSplitCommand  {
 		clusterList.setMinimumSize(new Dimension(100,16));
 		showAnnotationsPanel.addComponent(clusterList, 1, 0, 1, 1, 0.0, 0.0, WEST, NONE, 5, 5, 5, 5, 0, 0);
 		showAnnotationsPanel.addComponent(new JLabel("annotations"), 2, 0, 1, 1, 0.0, 0.0, WEST, NONE, 5, 5, 5, 10, 0, 0);
-		//addComponent(showAnnotationsPanel,0, 0, 1, 1, 0.0, 0.0, WEST, HORIZONTAL, 5, 5, 5, 0, 0, 0);
 		
 		exportDataButton = new CnSButton("Export data");
-		//addComponent(exportDataButton, 1, 0, 1, 1, 0.0, 0.0, EAST, NONE, 5, 5, 5, 5, 0, 0);
 		
 		clusterTable = new CnSTable();
 		clusterTable.setRowHeight(26);
@@ -122,11 +119,9 @@ public class CnSClusterAnalysisPanel extends CnSPanelSplitCommand  {
 		initGraphics(commandPanel, new JScrollPane(clusterTable));
 		commandPanel.addComponent(showAnnotationsPanel,0, 0, 1, 1, 0.0, 0.0, CENTER, HORIZONTAL, 5, 5, 5, 5, 0, 0);
 		commandPanel.addComponent(exportDataButton, 0, 1, 1, 1, 0.0, 0.0, CENTER, NONE, 5, 5, 5, 5, 0, 0);
-		//addComponent(new JScrollPane(clusterTable), 0, 1, 2, 1, 1.0, 1.0, CENTER, BOTH, 0, 5, 0, 5, 0, 0);
 	}
 	
 	public CnSNodeAnnotation getSelectedAnnotation() {
-		System.err.println("CnSClusterAnalysisPanel.getSelectedAnnotation()");
 		if (clusterTable.getSelectedRow() != -1)
 			return (CnSNodeAnnotation)clusterTable.getValueAt(clusterTable.getSelectedRow(), 0);
 		else
@@ -135,8 +130,6 @@ public class CnSClusterAnalysisPanel extends CnSPanelSplitCommand  {
 	
 	public void selectCluster(int id) {
 		int i;
-		System.err.println("CnSClusterAnalysisPanel.selectCluster(" + id + ")");
-		//clusterList.setSelectedIndex(id);
 		if (id == 0) 
 			i = 0;
 		else
@@ -146,7 +139,6 @@ public class CnSClusterAnalysisPanel extends CnSPanelSplitCommand  {
 		clusterList.setSelectedIndex(i);
 	}
 	private void initListeners() {
-		System.err.println("CnSClusterAnalysisPanel.initListeners()");
 		clusterTable.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -203,7 +195,6 @@ public class CnSClusterAnalysisPanel extends CnSPanelSplitCommand  {
 	}
 	
 	public void selectAnnotation(CnSNodeAnnotation ann) {
-		System.err.println("CnSClusterAnalysisPanel.selectAnnotation(" + ann + ")");
 		if (ann != null ) {
 			int index = clusterTable.getRowSorter().convertRowIndexToView(((CnSClusterTableModel)clusterTable.getModel()).getIndex(ann));
 			clusterTable.getSelectionModel().setSelectionInterval(index, index);
@@ -216,7 +207,6 @@ public class CnSClusterAnalysisPanel extends CnSPanelSplitCommand  {
 	}
 	
 	public void init(CnSPartition partition) {
-		System.err.println("CnSClusterAnalysisPanel.init(" + partition + ")");
 		CnSClusterTableModel model = new CnSClusterTableModel(partition);
 		clusterTable.setModel(model);
 		
@@ -245,16 +235,13 @@ public class CnSClusterAnalysisPanel extends CnSPanelSplitCommand  {
 		clusterList.removeAllItems();
 		clusterList.addItem(new CnSCluster());
 		if (partition != null) {
-			//for (int i = 1; i <= partition.getClusters().size(); i++) clusterList.addItem("cluster " + i);
 			for (CnSCluster cl : partition.getClusters()) clusterList.addItem(cl);
 		}
 		setColumnsWidth();
-		//clusterTable.fireTableDataChanged();
 		model.fireTableDataChanged();
 	}
 
 	public void refresh(CnSPartition partition) {
-		System.err.println("CnSClusterAnalysisPanel.refresh");
 		clusterList.removeAllItems();
 		clusterList.addItem(new CnSCluster());
 		if (partition != null) {
@@ -274,12 +261,10 @@ public class CnSClusterAnalysisPanel extends CnSPanelSplitCommand  {
 		clusterList.setSelectedIndex(0);
 		((CnSClusterTableModel)clusterTable.getModel()).setSelectedCluster(null);
 		
-		//clusterTable.fireTableDataChanged();
 		((CnSClusterTableModel)clusterTable.getModel()).fireTableDataChanged();
 	}
 	public void init(CnSCluster cluster) {
 		if (cluster != ((CnSClusterTableModel)clusterTable.getModel()).getSelectedCluster()) {
-			System.err.println("CnSClusterAnalysisPanel.init(" + cluster + ")");
 			((CnSClusterTableModel)clusterTable.getModel()).setSelectedCluster(cluster);
 			CnSEvent ev = new CnSEvent(CnSNodeAnnotationManager.GET_CLUSTER_ANNOTATIONS, CnSEventManager.ANNOTATION_MANAGER, this.getClass());
 			ev.addParameter(CnSNodeAnnotationManager.CLUSTER, cluster);
@@ -308,14 +293,11 @@ public class CnSClusterAnalysisPanel extends CnSPanelSplitCommand  {
 			sorter.setMaxSortKeys(1);
 			setColumnsWidth();
 			clusterTable.setRowSorter(sorter);
-			//clusterList.setSelectedIndex(cluster.getID());
 			selectCluster(cluster.getID());
-			//clusterTable.fireTableDataChanged();
 			((CnSClusterTableModel)clusterTable.getModel()).fireTableDataChanged();
 		}
 	}
 	public void init() {
-		System.err.println("CnSClusterAnalysisPanel.init()");
 		CnSEvent ev = new CnSEvent(CnSNodeAnnotationManager.GET_ANNOTATIONS, CnSEventManager.ANNOTATION_MANAGER, this.getClass());
 		ev = new CnSEvent(CyActivator.GET_APPLICATION_MANAGER, CnSEventManager.CY_ACTIVATOR, this.getClass());
 		CyApplicationManager cam = (CyApplicationManager)CnSEventManager.handleMessage(ev, true).getValue();
@@ -327,8 +309,12 @@ public class CnSClusterAnalysisPanel extends CnSPanelSplitCommand  {
 			@Override
 			public boolean include(Entry<? extends CnSClusterTableModel, ? extends Integer> entry) {
 				int i = clusterList.getSelectedIndex();
-				if (i == 0) 
+				if (i == 0) {
+					/*CnSEvent ev = new CnSEvent(CnSNodeAnnotationManager.GET_NODES, CnSEventManager.ANNOTATION_MANAGER, this.getClass());
+				 	ev.addParameter(CnSNodeAnnotationManager.ANNOTATION, entry.getModel().getAnnotation(entry.getIdentifier()));
+				 	return ((Vector<?>)CnSEventManager.handleMessage(ev, false).getValue()).size() > 0;*/
 					return true;
+				}
 				else {
 					CnSClusterTableModel model = entry.getModel();
 					CnSCluster cluster = model.getSelectedCluster();
@@ -345,33 +331,26 @@ public class CnSClusterAnalysisPanel extends CnSPanelSplitCommand  {
 		sorter.setMaxSortKeys(1);
 		clusterTable.setRowSorter(sorter);
 		model.fireTableDataChanged();
-		//clusterTable.fireTableDataChanged();
 		clusterList.removeAllItems();
 	}
 	
 	public void clear() {
-		System.err.println("CnSClusterAnalysisPanel.clear()");
 		((CnSClusterTableModel)clusterTable.getModel()).setSelectedCluster(null);
 		clusterTable.clear();
-		//clusterTable.fireTableDataChanged();
 		((CnSClusterTableModel)clusterTable.getModel()).fireTableDataChanged();
 	}
 	
 	public void refresh() {
-		System.err.println("CnSClusterAnalysisPanel.refresh()");
-		//clusterTable.fireTableDataChanged();
 		((CnSClusterTableModel)clusterTable.getModel()).fireTableDataChanged();
 	}
 	
 	public CnSCluster getSelectedCluster() {
-		System.err.println("CnSClusterAnalysisPanel.getSelectedCluster()");
 		CnSEvent ev = new CnSEvent(CnSResultsPanel.GET_SELECTED_CLUSTER, CnSEventManager.RESULTS_PANEL, this.getClass());
 		CnSCluster cl = (CnSCluster)(CnSEventManager.handleMessage(ev, true)).getValue();
 		return cl;
 	}
 	
 	private void setColumnsWidth() {
-		System.err.println("CnSClusterAnalysisPanel.setColumnsWidth()");
 		int pWidth, maxWidth = 500, minWidth = 20;
 		TableColumn tc;
 		FontMetrics headerFontMetrics = clusterTable.getTableHeader().getFontMetrics(((CnSTableHeaderRenderer)clusterTable.getTableHeader().getDefaultRenderer()).getFont());
@@ -389,7 +368,6 @@ public class CnSClusterAnalysisPanel extends CnSPanelSplitCommand  {
 			}
 	        pWidth = Math.min(pWidth, maxWidth);
 			tc.setPreferredWidth(pWidth);
-		    //System.err.println("colmun = " + clusterTable.getModel().getColumnName(col) + " ; id = " + col + " ; pwidth = " + pWidth);
 		}
 	}
 	

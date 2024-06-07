@@ -14,23 +14,32 @@
 package org.cytoscape.clustnsee3.internal.utils;
 
 import java.util.Enumeration;
-import java.util.Iterator;
 
+import org.cytoscape.clustnsee3.internal.CyActivator;
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventListener;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
+import org.osgi.service.log.Logger;
+import org.osgi.service.log.LoggerFactory;
 
 /**
  * 
  */
 public final class CnSLogger {
-	public static final void LogCnSEvent(CnSEvent ev, CnSEventListener target) {
+	private static CnSLogger cnslogger = null;
+	private Logger logger;
+	
+	private CnSLogger() {
+		CnSEvent ev = new CnSEvent(CyActivator.GET_OSGI_LOGGERFACTORY, CnSEventManager.CY_ACTIVATOR, CnSLogger.class);
+    	LoggerFactory lf = (LoggerFactory)CnSEventManager.handleMessage(ev, true).getValue();
+    	logger = lf.getLogger(CnSLogger.class);
+	}
+	public void LogCnSEvent(CnSEvent ev, CnSEventListener target) {
 		Enumeration<Integer> keys = ev.getParameters();
-		final Logger LOGGER = LoggerFactory.getLogger(target.getClass());
 		
 		Integer i;
-		LOGGER.info("CNS\tSource : " + ev.getSource().getSimpleName() + " ; Target : {} ; Action : {}", target.getClass().getSimpleName(), target.getActionName(ev.getAction()));
+		logger.info("CNS\tSource : " + ev.getSource().getSimpleName() + " ; Target : {} ; Action : {}", target.getClass().getSimpleName(), target.getActionName(ev.getAction()));
+		System.err.println("LogCnSEvent : " + "CNS\tSource : " + ev.getSource().getSimpleName() + " ; Target : " + target.getClass().getSimpleName() + " ; Action : " + target.getActionName(ev.getAction()));
 		String s = "CNS\tParameters : ";
 		
 		while (keys.hasMoreElements()) {
@@ -39,6 +48,16 @@ public final class CnSLogger {
 			s += ev.getParameter(i);
 			s += " ; ";
 		}
-		LOGGER.info(s);
+		System.err.println("LogCnSEvent : " + s);
+		logger.info(s);
+	}
+	public static CnSLogger getInstance() {
+		if (cnslogger == null) {
+			cnslogger = new CnSLogger();
+		}
+		return cnslogger;
+	}
+	public Logger getLogger() {
+		return logger;
 	}
 }

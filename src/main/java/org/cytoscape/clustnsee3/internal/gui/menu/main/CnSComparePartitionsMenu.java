@@ -34,7 +34,7 @@ public class CnSComparePartitionsMenu extends AbstractCyAction {
 	
 	private CnSComparePartitionsMenu() {
 		super("Compare partitions"); 
-		setPreferredMenu("Apps.Clust&see");
+		setPreferredMenu("Apps.Clust&See");
 		en = true;
 	}
 

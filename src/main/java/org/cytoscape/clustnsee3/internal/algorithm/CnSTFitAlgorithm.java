@@ -116,10 +116,7 @@ public class CnSTFitAlgorithm extends CnSAlgorithm {
             N = inputNetwork.getNodeCount();
             Na = inputNetwork.getEdgeCount();
         }
-
-        System.err.println( "Nb. de sommets " + N + ", d'aretes " + Na);
-        System.err.println( "Taux d'aretes du graphe " + 2. * Na / N / (N - 1));
-        
+ 
         clusterMaxCard = N; // cardinal maximum d'une classe
 
         weightedNetwork = new float[N][N]; // Graphe pondéré
@@ -228,7 +225,6 @@ public class CnSTFitAlgorithm extends CnSAlgorithm {
 
         int flag = 1;
         int fflag = 0;
-        int NbTrans = 0;
         // fflag=1 si au moins 1 transfert dans cet appel de la procedure
         while( flag > 0) {
             flag = 0; // mis a 1 si transfert dans cette boucle
@@ -245,7 +241,6 @@ public class CnSTFitAlgorithm extends CnSAlgorithm {
                 if( NewC > 0 || VarMax < 0.) {
                     flag = 1;
                     fflag = 1;
-                    NbTrans++;
                     for( int j = 0; j < N; j++) {
                         fusionVariation[ j][ OldC] = fusionVariation[ j][ OldC] - modularityMatrix[ j][ i];
                     }
@@ -263,8 +258,7 @@ public class CnSTFitAlgorithm extends CnSAlgorithm {
                 }
             }
         }
-        System.err.println( "Nb. de transferts : " + NbTrans + "\n");
-
+       
         return fflag;
     }
 
@@ -400,8 +394,8 @@ public class CnSTFitAlgorithm extends CnSAlgorithm {
                                                // dans au moins
                 // une classe
             }
-        if( N < 20)
-            EditB();
+        //if( N < 20)
+        //    EditB();
         // printf("Modularite maximum : %.2f, modularite globale : %.2f\n",ModMax,ModTot);
 
         // Initialisation des classes par les singletons
@@ -456,7 +450,6 @@ public class CnSTFitAlgorithm extends CnSAlgorithm {
                 if( partition[ ii] == k) {
                     nodeCluster[ card] = ii;
                     card++;
-                    System.err.print( nodeName[ ii] + " ");
                 }
             if( card < 2)
                 continue;
@@ -469,21 +462,6 @@ public class CnSTFitAlgorithm extends CnSAlgorithm {
                 }
             }
         }
-        return;
-    }
-
-    private void EditB() {
-
-        int i, j;
-
-        System.err.println( "Matrice modularityMatrix\n");
-        for( i = 0; i < N; i++) {
-            System.err.print( " " + nodeName[ i]);
-            for( j = 0; j < N; j++)
-                System.err.print( " " + modularityMatrix[ i][ j]);
-            System.err.println();
-        }
-        System.err.println();
         return;
     }
 

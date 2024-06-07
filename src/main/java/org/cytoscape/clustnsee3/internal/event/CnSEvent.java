@@ -38,7 +38,7 @@ public class CnSEvent {
 	/*
 	 * 
 	 */
-	private Class source;
+	private Class<?> source;
 	
 	/*
 	 * 
@@ -49,7 +49,7 @@ public class CnSEvent {
 		eventParameters = new Hashtable<Integer, Object>();
 	}
 	
-	public CnSEvent(int action, int target, Class source) {
+	public CnSEvent(int action, int target, Class<?> source) {
 		this();
 		this.target = target;
 		this.action = action;
@@ -68,7 +68,7 @@ public class CnSEvent {
 	public int getAction() {
 		return action;
 	}
-	public Class getSource() {
+	public Class<?> getSource() {
 		return source;
 	}
 	public Object getParameter(int k) {

@@ -152,11 +152,11 @@ public class CnSClustnseePlugin implements CnSEventListener {
 	public CnSEventResult<?> cnsEventOccured(CnSEvent event, boolean log) {
 		CnSEventResult<?> ret = new CnSEventResult<Object>(null);
 		
-		if (log) CnSLogger.LogCnSEvent(event, this);
+		if (log) CnSLogger.getInstance().LogCnSEvent(event, this);
 		
 		switch (event.getAction()) {
 			case (GET_PANEL) :
-				ret = new CnSEventResult<CnSControlPanel>(new CnSControlPanel("Clust&see"));
+				ret = new CnSEventResult<CnSControlPanel>(new CnSControlPanel("Clust&See"));
 				break;
 			case ENABLE_ANALYZIS :
 				controlPanel.setAnalysisEnabled((Boolean)event.getParameter(ENABLE));

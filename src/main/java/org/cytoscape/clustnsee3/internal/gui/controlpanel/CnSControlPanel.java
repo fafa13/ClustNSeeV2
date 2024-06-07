@@ -180,7 +180,6 @@ public class CnSControlPanel extends CnSPanel implements CytoPanelComponent, CnS
 					CnSAnalyzeTask task = new CnSAnalyzeTask(network);
 					ti.append(task);
 					dialogTaskManager.execute(ti);
-					System.err.println("fini");
 				}
 			}
 		});
@@ -191,7 +190,7 @@ public class CnSControlPanel extends CnSPanel implements CytoPanelComponent, CnS
 	 */
 	@Override
 	public CnSEventResult<?> cnsEventOccured(CnSEvent event, boolean log) {
-		if (log) CnSLogger.LogCnSEvent(event, this);
+		if (log) CnSLogger.getInstance().LogCnSEvent(event, this);
 		
 		CyNetwork network = (CyNetwork)event.getParameter(NETWORK);
 		CnSNodeAnnotationFile af = (CnSNodeAnnotationFile)event.getParameter(ANNOTATION_FILE);
@@ -207,7 +206,7 @@ public class CnSControlPanel extends CnSPanel implements CytoPanelComponent, CnS
 				networksTreeModel.addNetwork(network, af, (Integer)event.getParameter(MAPPED_ANNOTATIONS),
 						(Integer)event.getParameter(MAPPED_NODES), (Integer)event.getParameter(NETWORK_NODES), 
 						(Integer)event.getParameter(FILE_ANNOTATIONS));
-				networksTreeModel.printStructure((CnSPanelTreeNode) networksTreeModel.getRoot(), 0);
+				//networksTreeModel.printStructure((CnSPanelTreeNode) networksTreeModel.getRoot(), 0);
 				detailsNodePanel.getNetworksTree().updateUI();
 				break;
 

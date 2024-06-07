@@ -26,7 +26,6 @@ public class CnSPanelTreeModel extends DefaultTreeModel {
 	
 	public CnSPanelTreeModel(CnSPanelTreeNode treeNode) {
 		super(treeNode);
-		System.err.println("init tree model !!!");
 		rootNode = treeNode;
 		listeners = new Vector<TreeModelListener>();
 	}
@@ -48,7 +47,6 @@ public class CnSPanelTreeModel extends DefaultTreeModel {
 	}
 
 	public void valueForPathChanged(TreePath path, Object newValue) {
-		System.err.println("Value for path " + path + " has changed.");
 		super.valueForPathChanged(path, newValue);
 	}
 	

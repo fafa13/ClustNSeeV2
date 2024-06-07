@@ -72,7 +72,6 @@ public class CnSAnnotationAnalysisPanel extends CnSPanelSplitCommand {
 	}
 	
 	public void setSelectedAnnotation(CnSNodeAnnotation annotation) {
-		if (annotation != null) System.err.println("CnSAnnotationAnalysisPanel.setSelectedAnnotation : " + annotation.getValue());
 		table.setSelectedAnnotation(annotation);
 		table.fireTableDataChanged();
 		repaintTable();
@@ -148,13 +147,10 @@ public class CnSAnnotationAnalysisPanel extends CnSPanelSplitCommand {
 		clearButton.setPreferredSize(new Dimension(icon_delete.getIconWidth() + 6, icon_delete.getIconHeight()));
 		clearButton.setFocusable(false);
 		annotationsPanel.addComponent(clearButton, 2, 0, 1, 1, 0.0, 1.0, WEST, BOTH, 5, 5, 5, 5, 0, 0);
-		//addComponent(annotationsPanel, 0, 0, 1, 1, 1.0, 0.0, WEST, HORIZONTAL, 5, 5, 0, 0, 0, 0);
 		
 		exportDataButton = new CnSButton("Export data");
-		//addComponent(exportDataButton, 1, 0, 1, 1, 0.0, 0.0, EAST, NONE, 5, 5, 0, 5, 0, 0);
 		
 		table = new CnSAnnotationTable();
-		//addComponent(table.getScrollPane(), 0, 1, 2, 1, 1.0, 1.0, CnSPanel.CENTER, CnSPanel.BOTH, 5, 5, 0, 5, 0, 0);
 		
 		table.getTable().setTableHeader(new JTableHeader(table.getTable().getColumnModel()) {
 			private static final long serialVersionUID = -7453185345738046988L;
@@ -227,7 +223,6 @@ public class CnSAnnotationAnalysisPanel extends CnSPanelSplitCommand {
 				pWidth = Math.max(pWidth, table.getTable().prepareRenderer(table.getTable().getDefaultRenderer(table.getModel().getColumnClass(col + 1)), row, col).getPreferredSize().width + 10 + table.getTable().getIntercellSpacing().width);
 	        pWidth = Math.min(pWidth, maxWidth);
 			tc.setPreferredWidth(pWidth);//if (columnIndex == 5) return CnSEnrichmentStatValue.class;
-		    //System.err.println("colmun = " + table.getTable().getModel().getColumnName(col + 1) + " ; id = " + col + " ; pwidth = " + pWidth);
 		}
 		
 		pWidth = headerFontMetrics.stringWidth(table.getFixedTable().getColumnName(0)) + table.getFixedTable().getIntercellSpacing().width + 10 + UIManager.getIcon("Table.ascendingSortIcon").getIconWidth();
@@ -238,8 +233,7 @@ public class CnSAnnotationAnalysisPanel extends CnSPanelSplitCommand {
 		for (int row = 0; row < table.getFixedTable().getRowCount(); row++)
 			pWidth = Math.max(pWidth, table.getFixedTable().prepareRenderer(table.getFixedTable().getDefaultRenderer(table.getFixedTable().getColumnClass(0)), row, 0).getPreferredSize().width + 10 + table.getFixedTable().getIntercellSpacing().width);
         pWidth = Math.min(pWidth, maxWidth);
-        //System.err.println("colmun = " + table.getFixedTable().getModel().getColumnName(0) + " ; " + "pwidth = " + pWidth);
-		tc.setPreferredWidth(pWidth);
+        tc.setPreferredWidth(pWidth);
 	}
 	public void clear() {
 		table.getTable().setModel(new DefaultTableModel());

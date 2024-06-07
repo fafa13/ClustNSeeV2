@@ -29,7 +29,7 @@ public class CnSBuildNeighborhoodNetworkMenu extends AbstractCyAction {
 	
 	private CnSBuildNeighborhoodNetworkMenu() {
 		super("Build neighborhood network"); 
-		setPreferredMenu("Apps.Clust&see");
+		setPreferredMenu("Apps.Clust&See");
 		en = true;
 	}
 

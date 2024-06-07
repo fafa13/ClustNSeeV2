@@ -32,7 +32,6 @@ public class CnSPanelSplitCommand extends CnSPanel {
 	}
 	
 	public void initGraphics(CnSPanel commandPanel, Component mainPanel) {
-		//System.err.println("CnSPanelSplitCommand.initGraphics(" + commandPanel + " , " + mainPanel);
 		splitPane = new JSplitPane();
 		splitPane.setResizeWeight(1.0D);
 		splitPane.setAutoscrolls(true);

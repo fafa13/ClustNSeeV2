@@ -26,7 +26,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Iterator;
-//import java.util.ResourceBundle;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
@@ -44,7 +43,6 @@ import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableRowSorter;
 
-//import org.cytoscape.clustnsee3.internal.CyActivator;
 import org.cytoscape.clustnsee3.internal.analysis.CnSCluster;
 import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
@@ -56,11 +54,9 @@ import org.cytoscape.clustnsee3.internal.gui.util.CnSPanelSplitCommand;
 import org.cytoscape.clustnsee3.internal.gui.util.CnSTableHeaderRenderer;
 import org.cytoscape.clustnsee3.internal.gui.util.cnstable.CnSTable;
 import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeAnnotation;
-import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeAnnotationManager;
 import org.cytoscape.clustnsee3.internal.partition.CnSPartition;
 import org.cytoscape.clustnsee3.internal.partition.CnSPartitionManager;
 import org.cytoscape.model.CyNetwork;
-import org.cytoscape.model.CyNode;
 
 /**
  * 
@@ -75,22 +71,17 @@ public class CnSClusterDetailsPanel extends CnSPanelSplitCommand {
 	private JLabel clusterNameLabel, nodesInClusterLabel, monoClusteredNodesLabel, multiClusteredNodesLabel, intraClusterEdgesLabel, extraClusterEdgesLabel;
 	private CnSButton exportDataButton;
 	private CnSTable nodeTable;
-	private CnSCluster currentCluster; 
 	
 	public CnSClusterDetailsPanel() {
 		super();
 		nodeTable = new CnSTable();
 		nodeTable.setAutoCreateRowSorter(true);
-		//nodeTable.setDefaultRenderer(Vector.class, new CnSNodeListTableCellRenderer());
 		Vector<CnSNodeAnnotation> v = new Vector<CnSNodeAnnotation>();
-		//nodeTable = new CnSTable();
 		nodeTable.setDefaultRenderer(v.getClass(), new CnSNodeListTableCellRenderer());
 		nodeTable.setDefaultRenderer(JLabel.class, new CnSNodeListTableCellRenderer());
 		Vector<String> columnNames = new Vector<String>();
 		columnNames.addElement("Annotation");
 		data = new Vector<Vector<String>>();
-		//annotationTable = new CnSTable(data, columnNames);
-		//annotationTable.setAutoCreateRowSorter(true);
 		initGraphics();
 		initListeners();
 	}
@@ -225,6 +216,7 @@ public class CnSClusterDetailsPanel extends CnSPanelSplitCommand {
 		super.initGraphics();
 		Vector<CnSNodeAnnotation> v = new Vector<CnSNodeAnnotation>();
 		nodeTable = new CnSTable() {
+			private static final long serialVersionUID = -3262262817917972446L;
 			public String getToolTipText(MouseEvent me) {
 				int c = columnAtPoint(me.getPoint());
 				int r = rowAtPoint(me.getPoint());
@@ -274,9 +266,6 @@ public class CnSClusterDetailsPanel extends CnSPanelSplitCommand {
 			long serialVersionUID = 1L;
 			public String getToolTipText(MouseEvent me) {
 				int c = columnAtPoint(me.getPoint());
-				//CnSEvent ev = new CnSEvent(CyActivator.GET_RESOURCES_BUNDLE, CnSEventManager.CY_ACTIVATOR, this.getClass());
-				//ResourceBundle rBundle = (ResourceBundle)CnSEventManager.handleMessage(ev, false).getValue();
-				//rBundle = CyActivator.getResourcesBundle();
 				switch(c) {
 					
 				}
@@ -328,10 +317,6 @@ public class CnSClusterDetailsPanel extends CnSPanelSplitCommand {
 	
 	public void init(CnSCluster cluster) {
 		
-		if (cluster != null)
-			System.err.println("CnSClusterDetailsPanel.init(" + cluster.getName() + ")");
-		else
-			System.err.println("CnSClusterDetailsPanel.init(null)");
 		clusterNameLabel.setText("Cluster #" + cluster.getName());
 		
 		nodesInClusterLabel.setText(String.valueOf(cluster.getNbNodes()));
@@ -362,16 +347,12 @@ public class CnSClusterDetailsPanel extends CnSPanelSplitCommand {
 			data.addElement(v);
 		}
 		annotationTable.fireTableDataChanged();
-		//((DefaultTableModel)annotationTable.getModel()).fireTableDataChanged();
 		setColumnsWidth();
 		repaint();
-		currentCluster = cluster;
 	}
 
 	public void clear() {
-		System.err.println("CnSClusterDetailsPanel.clear()");
 		clusterNameLabel.setText("");
-		currentCluster = null;
 		nodesInClusterLabel.setText("");
 		multiClusteredNodesLabel.setText("");
 		monoClusteredNodesLabel.setText("");
@@ -386,7 +367,6 @@ public class CnSClusterDetailsPanel extends CnSPanelSplitCommand {
 	}
 	
 	private void setColumnsWidth() {
-		System.err.println("CnSClusterDetailsPanel.setColumnsWidth()");
 		int pWidth, maxWidth = 500, minWidth = 20;
 		TableColumn tc;
 		FontMetrics headerFontMetrics = nodeTable.getTableHeader().getFontMetrics(((CnSTableHeaderRenderer)nodeTable.getTableHeader().getDefaultRenderer()).getFont());
@@ -422,25 +402,4 @@ public class CnSClusterDetailsPanel extends CnSPanelSplitCommand {
 			tc.setPreferredWidth(pWidth);
 		}
 	}
-	
-	/*public void tagNodes(CnSNodeAnnotation annotation) {
-		if (annotation != null)
-			System.err.println("CnSClusterDetailsPanel.tagNodes(" + annotation.getValue() + ")");
-		else
-			System.err.println("CnSClusterDetailsPanel.tagNodes(null)");
-		if (currentCluster != null && annotation != null) {
-			CnSEvent ev = new CnSEvent(CnSNodeAnnotationManager.GET_ANNOTATED_NODES, CnSEventManager.ANNOTATION_MANAGER, this.getClass());
-			ev.addParameter(CnSNodeAnnotationManager.CLUSTER, currentCluster);
-			ev.addParameter(CnSNodeAnnotationManager.ANNOTATION, annotation);
-			Vector<CyNode> clusterAnnotatedNodes = (Vector<CyNode>)CnSEventManager.handleMessage(ev, true).getValue();
-			if (clusterAnnotatedNodes != null) {
-				StringBuilder sb = new StringBuilder();
-				for (CyNode cn : clusterAnnotatedNodes) {
-					sb.append(cn.getSUID());
-					sb.append(";");
-				}
-				System.err.println("============> " + sb.toString());
-			}
-		}
-	}*/
 }

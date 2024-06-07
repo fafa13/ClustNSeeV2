@@ -212,7 +212,7 @@ public class CnSResultsPanel extends CnSPanel implements CytoPanelComponent, CnS
 	    String scope;
 	    final TaskMonitor taskMonitor;
 	    
-	    if (log) CnSLogger.LogCnSEvent(event, this);
+	    if (log) CnSLogger.getInstance().LogCnSEvent(event, this);
 		
 	    switch (action) {
 	    	case ADD_PARTITION:
@@ -272,7 +272,6 @@ public class CnSResultsPanel extends CnSPanel implements CytoPanelComponent, CnS
 	    			else {
 	    				index = jtp.getModel().getSelectedIndex();
 	    				if (index != -1) {
-	    					System.err.println("CnSResultsPanel.SELECT_CLUSTER(" + name + ")");
 	    					((CnSClusterListPanel)jtp.getComponentAt(index)).selectCluster(name);
 	    					sortPanel.setSelectedCluster(name);
 	    				}
@@ -283,7 +282,6 @@ public class CnSResultsPanel extends CnSPanel implements CytoPanelComponent, CnS
 	    		
 	    	case DISCARD_PARTITION :
 	    		CnSPartition partition = (CnSPartition)event.getParameter(PARTITION);
-	    		System.err.println("CnSResultsPanel.DISCARD_PARTITION(" + partition + ")");
 	    		taskMonitor = (TaskMonitor)event.getParameter(TASK_MONITOR);
 	    		Vector<CnSCluster> clusters = partition.getClusters();
 	    		
@@ -378,7 +376,6 @@ public class CnSResultsPanel extends CnSPanel implements CytoPanelComponent, CnS
 		jtp.setSelectedComponent(clp);
 		
 		ev = new CnSEvent(CnSNodeAnnotationManager.REFRESH_CLUSTER_HASMAP, CnSEventManager.ANNOTATION_MANAGER, this.getClass());
-        //ev.addParameter(CnSNodeAnnotationManager.NETWORK, inputNetwork);
         ev.addParameter(CnSNodeAnnotationManager.PARTITION, newPartition);
         ev.addParameter(CnSNodeAnnotationManager.TASK, taskMonitor);
         CnSEventManager.handleMessage(ev, true);
@@ -404,7 +401,6 @@ public class CnSResultsPanel extends CnSPanel implements CytoPanelComponent, CnS
 		jtp.setSelectedComponent(clp);
 		
 		ev = new CnSEvent(CnSNodeAnnotationManager.REFRESH_CLUSTER_HASMAP, CnSEventManager.ANNOTATION_MANAGER, this.getClass());
-        //ev.addParameter(CnSNodeAnnotationManager.NETWORK, inputNetwork);
         ev.addParameter(CnSNodeAnnotationManager.PARTITION, newPartition);
         ev.addParameter(CnSNodeAnnotationManager.TASK, taskMonitor);
         CnSEventManager.handleMessage(ev, true);

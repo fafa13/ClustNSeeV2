@@ -58,8 +58,6 @@ public class CnSDeleteAnnotationFileTask extends AbstractTask {
 			ev.addParameter(CnSNodeAnnotationManager.ANNOTATION_FILE, annotationFile);
 			ev.addParameter(CnSNodeAnnotationManager.NETWORK, nw);
 			CnSEventManager.handleMessage(ev, true);
-				
-			System.err.println("------ " + nw);
 		}
 		
 		CnSEvent ev = new CnSEvent(CnSNodeAnnotationManager.UNLOAD_ANNOTATIONS, CnSEventManager.ANNOTATION_MANAGER, this.getClass());
@@ -78,7 +76,5 @@ public class CnSDeleteAnnotationFileTask extends AbstractTask {
 		
 		ev = new CnSEvent(CnSControlPanel.REFRESH, CnSEventManager.CONTROL_PANEL, this.getClass());
 		CnSEventManager.handleMessage(ev, true);
-		System.err.println("OK");
 	}
-
 }

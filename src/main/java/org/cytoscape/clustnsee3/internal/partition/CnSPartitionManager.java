@@ -192,7 +192,7 @@ public class CnSPartitionManager implements CnSEventListener, SessionLoadedListe
 		Vector<CnSCluster> clusters;
 		Integer clusterID;
 		
-		if (log) CnSLogger.LogCnSEvent(event, this);
+		if (log) CnSLogger.getInstance().LogCnSEvent(event, this);
 		
 		switch (event.getAction()) {
 			case ADD_PARTITON :
@@ -464,10 +464,6 @@ public class CnSPartitionManager implements CnSEventListener, SessionLoadedListe
         	for (int index_in_class = 0; index_in_class < imported_partition.get(k).size(); index_in_class++)
             	cynodes_to_keep.addElement(inputNetwork.getNode(imported_partition.get(k).get(index_in_class)));
         
-        //System.err.println("----------------------------");
-        //for (CyNode nn : cynodes_to_keep) System.err.println(nn.getSUID());
-        //System.err.println("----------------------------");
-        
         // the main loop on clusters
         taskMonitor.setProgress(0.0);
         for( int k = 0; k < imported_partition.size(); k++) {
@@ -557,38 +553,23 @@ public class CnSPartitionManager implements CnSEventListener, SessionLoadedListe
 			
 			cluster.print();
 			
-			//System.err.println("Cluster #" + cluster.getName());
-			//System.err.println("  CnS:isCluster : " + cluster.getAttributes().get("CnS:isCluster"));
-			//System.err.println("  CnS:size : " + cluster.getAttributes().get("CnS:size"));
-			//System.err.println("  CyNetwork.NAME : " + cluster.getAttributes().get(CyNetwork.NAME));
-			//System.err.println("  canonicalName : " + cluster.getAttributes().get("canonicalName"));
-			
-            //System.err.print("  calculating modularity ... ");
 			cluster.calModularity(clusterNet);
-            //System.err.println("done.");
             
-            //System.err.print("  making view ... ");
-			// create a new view for my network
+            // create a new view for my network
             CyNetworkView myView = cnvf.createNetworkView(clusterNet);
             
-            // myView.updateView();
             networkViewManager.addNetworkView(myView, false);
-            //System.err.println("done.");
             
-            //System.err.print("  making snapshot ... ");
-			
             // create the CnSView and apply the snapshot style
             CnSView view = new CnSView(myView, new CnSClusterViewState(cluster));
             ev = new CnSEvent(CnSStyleManager.APPLY_CURRENT_STYLE, CnSEventManager.STYLE_MANAGER, this.getClass());
             ev.addParameter(CnSStyleManager.VIEW, view);
             CnSEventManager.handleMessage(ev, true);
-            //System.err.print("--- ");
              
             // make the snapshot
         	TaskIterator tit = apltf.createTaskIterator(networkViewManager.getNetworkViews(clusterNet));
             FTTaskObserver to = new FTTaskObserver(myView, cluster);
             tm.execute(tit, to);
-            //System.err.println("done.");
             
             // create the network and register it
             CnSNetwork network = new CnSNetwork(clusterNet, inputNetwork);
@@ -643,11 +624,9 @@ public class CnSPartitionManager implements CnSEventListener, SessionLoadedListe
 	 * @return
 	 */
 	private CnSPartition createPartition(CyNetwork inputNetwork, CnSAlgorithmResult algoResults, CnSAlgorithm algorithm, TaskMonitor taskMonitor) {
-		// get services needed for network and view creation in cytoscape
 		CnSEvent ev = new CnSEvent(CyActivator.GET_ROOT_NETWORK_MANAGER, CnSEventManager.CY_ACTIVATOR, this.getClass());
         CyRootNetworkManager crnm = (CyRootNetworkManager)CnSEventManager.handleMessage(ev, true).getValue();
         CyRootNetwork crn = crnm.getRootNetwork(inputNetwork);
-        System.err.println("CRN = " + crn);
         ev = new CnSEvent(CyActivator.GET_NETWORK_MANAGER, CnSEventManager.CY_ACTIVATOR, this.getClass());
         CyNetworkManager networkManager = (CyNetworkManager)CnSEventManager.handleMessage(ev, true).getValue();
         ev = new CnSEvent(CyActivator.GET_NETWORK_VIEW_FACTORY, CnSEventManager.CY_ACTIVATOR, this.getClass());
@@ -678,10 +657,6 @@ public class CnSPartitionManager implements CnSEventListener, SessionLoadedListe
             	if( cyto_index != null) cynodes_to_keep.addElement(inputNetwork.getNode(cyto_index));
             }
         }
-        
-        //System.err.println("----------------------------");
-        //for (CyNode nn : cynodes_to_keep) System.err.println(nn.getSUID());
-        //System.err.println("----------------------------");
         
         // use the snapshot style
         ev = new CnSEvent(CnSStyleManager.SET_CURRENT_STYLE, CnSEventManager.STYLE_MANAGER, this.getClass());
@@ -777,12 +752,6 @@ public class CnSPartitionManager implements CnSEventListener, SessionLoadedListe
 			
 			cluster.print();
 			
-			//System.err.println("Cluster #" + cluster.getName());
-			//System.err.println("  CnS:isCluster : 				" + cluster.getAttributes().get("CnS:isCluster"));
-			//System.err.println("  CnS:size : " + cluster.getAttributes().get("CnS:size"));
-			//System.err.println("  CyNetwork.NAME : " + cluster.getAttributes().get(CyNetwork.NAME));
-			//System.err.println("  canonicalName : " + cluster.getAttributes().get("canonicalName"));
-			
 			// create a new view for my network
             CyNetworkView myView = cnvf.createNetworkView(clusterNet);
             
@@ -843,8 +812,6 @@ public class CnSPartitionManager implements CnSEventListener, SessionLoadedListe
         ev.addParameter(CnSStyleManager.STYLE, CnSStyleManager.CNS_STYLE);
         CnSEventManager.handleMessage(ev, true);
         
-        //partition.sortClusters();
-		
         return partition;
 	}
 
@@ -905,16 +872,12 @@ public class CnSPartitionManager implements CnSEventListener, SessionLoadedListe
 			}
 	}
 	public void handleEvent(SessionLoadedEvent e) {
-		System.err.println("Session loaded : " + e.getLoadedFileName());
-		//while (partitions.size() > 0)  {
-			CnSEvent ev = new CnSEvent(CyActivator.GET_TASK_MANAGER, CnSEventManager.CY_ACTIVATOR, this.getClass());
-			DialogTaskManager dialogTaskManager = (DialogTaskManager)CnSEventManager.handleMessage(ev, true).getValue();
-			TaskIterator ti = new TaskIterator();
-			CnSDiscardAllPartitionsTask task = new CnSDiscardAllPartitionsTask();
-			ti.append(task);
-			dialogTaskManager.execute(ti);
-		//}
-			System.err.println("Partitions : " + partitions.size());
+		CnSEvent ev = new CnSEvent(CyActivator.GET_TASK_MANAGER, CnSEventManager.CY_ACTIVATOR, this.getClass());
+		DialogTaskManager dialogTaskManager = (DialogTaskManager)CnSEventManager.handleMessage(ev, true).getValue();
+		TaskIterator ti = new TaskIterator();
+		CnSDiscardAllPartitionsTask task = new CnSDiscardAllPartitionsTask();
+		ti.append(task);
+		dialogTaskManager.execute(ti);
 	}
 }
 

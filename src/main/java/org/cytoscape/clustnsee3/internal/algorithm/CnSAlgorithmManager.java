@@ -118,7 +118,7 @@ public class CnSAlgorithmManager implements CnSEventListener  {
 		int action = event.getAction();
 		CnSEventResult<?> ret = new CnSEventResult<Object>(null);
 	    
-	    if (log) CnSLogger.LogCnSEvent(event, this);
+	    if (log) CnSLogger.getInstance().LogCnSEvent(event, this);
 		
 	    switch (action) {
 	    	case INIT:

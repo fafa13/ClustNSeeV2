@@ -74,7 +74,6 @@ public class FTTaskObserver implements TaskObserver {
 		CnSEvent ev = new CnSEvent(CyActivator.GET_RENDERING_ENGINE_MANAGER, CnSEventManager.CY_ACTIVATOR, this.getClass());
 		RenderingEngineManager rem = (RenderingEngineManager)CnSEventManager.handleMessage(ev, true).getValue();
 	
-		System.err.println("--- Cluster : " + cluster.getID());
 			
 		Iterator<RenderingEngine<?>> it = rem.getRenderingEngines(view).iterator();
 		while (it.hasNext()) {
@@ -88,10 +87,8 @@ public class FTTaskObserver implements TaskObserver {
 				if (re.getViewModel() == view) break; else re = null;
 			}
 		}
-		System.err.println("--- re = " + re);
 		if (re != null) {
 			BufferedImage i = (BufferedImage)re.createImage(200, 100);
-			System.err.println("--- i = " + i);
 			ImageProducer filteredImgProd = new FilteredImageSource(i.getSource(), filter);
 			Image transparentImg = Toolkit.getDefaultToolkit().createImage(filteredImgProd);
 

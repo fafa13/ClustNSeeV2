@@ -110,7 +110,7 @@ public class CnSNetworkManager implements CnSEventListener, NetworkAboutToBeDest
 		CyNetwork cyNetwork;
 		String colName;
 		
-		if (log) CnSLogger.LogCnSEvent(event, this);
+		if (log) CnSLogger.getInstance().LogCnSEvent(event, this);
 		
 		switch (event.getAction()) {
 			case ADD_NETWORK :

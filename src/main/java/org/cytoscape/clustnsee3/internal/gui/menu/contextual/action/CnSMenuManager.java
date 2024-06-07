@@ -47,7 +47,7 @@ public class CnSMenuManager implements CnSEventListener {
 	}
 	@Override
 	public CnSEventResult<?> cnsEventOccured(CnSEvent event, boolean log) {
-		if (log) CnSLogger.LogCnSEvent(event, this);
+		if (log) CnSLogger.getInstance().LogCnSEvent(event, this);
 		
 		return new CnSEventResult<Object>(null);
 	}

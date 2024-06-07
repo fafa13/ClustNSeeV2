@@ -29,7 +29,7 @@ public class CnSSearchNodeClustersMenu extends AbstractCyAction {
 	
 	private CnSSearchNodeClustersMenu() {
 		super("Search node clusters"); 
-		setPreferredMenu("Apps.Clust&see");
+		setPreferredMenu("Apps.Clust&See");
 		en = true;
 	}
 

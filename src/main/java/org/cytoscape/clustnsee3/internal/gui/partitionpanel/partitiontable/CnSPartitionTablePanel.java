@@ -29,11 +29,7 @@ import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JSpinner;
-import javax.swing.SpinnerNumberModel;
 import javax.swing.UIManager;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -54,6 +50,7 @@ import org.cytoscape.clustnsee3.internal.gui.util.CnSButton;
 import org.cytoscape.clustnsee3.internal.gui.util.CnSPanel;
 import org.cytoscape.clustnsee3.internal.gui.util.CnSPanelSplitCommand;
 import org.cytoscape.clustnsee3.internal.gui.util.CnSTableHeaderRenderer;
+import org.cytoscape.clustnsee3.internal.gui.util.CnSThresholdTextField;
 import org.cytoscape.clustnsee3.internal.nodeannotation.stats.CnSAnnotationClusterPValue;
 import org.cytoscape.clustnsee3.internal.partition.CnSPartition;
 import org.cytoscape.clustnsee3.internal.partition.CnSPartitionManager;
@@ -68,11 +65,12 @@ public class CnSPartitionTablePanel extends CnSPanelSplitCommand {
 	private CnSButton exportDataButton, annotateButton, deannotateButton;
 	private CnSCluster selectedCluster;
 	private JComboBox<String> statList;
-	private JSpinner thresholdSpinner;
+	//private JSpinner thresholdSpinner;
+	private CnSThresholdTextField thresholdTextField;
 	private JCheckBox hideSmallClustersCheckbox;
 	private CnSPartition partition;
-	private int currentHypergeometricThreshold = 5;
-	private int currentMajorityThreshold = 50;
+	private double currentHypergeometricThreshold = 0.05;
+	private double currentMajorityThreshold = 0.5;
 	
 	public CnSPartitionTablePanel() {
 		super();
@@ -86,22 +84,20 @@ public class CnSPartitionTablePanel extends CnSPanelSplitCommand {
 		final ResourceBundle rBundle = CyActivator.getResourcesBundle();
 		
 		CnSPanel showPanel1 = new CnSPanel();
-		showPanel1.addComponent(new JLabel("Show"), 0, 0, 1, 1, 0.0, 0.0, WEST, NONE, 5, 5, 5, 0, 0, 0);
+		showPanel1.addComponent(new JLabel("Annotation rule:"), 0, 0, 1, 1, 0.0, 0.0, WEST, NONE, 5, 5, 5, 0, 0, 0);
 		statList = new JComboBox<String>();
-		statList.addItem("Hypergeometric");
-		statList.addItem("Majority");
+		statList.addItem("Hypergeometric law");
+		statList.addItem("Majority rule");
 		showPanel1.addComponent(statList, 1, 0, 1, 1, 0.0, 0.0, WEST, NONE, 5, 5, 5, 0, 0, 0);
-		showPanel1.addComponent(new JLabel("enriched terms"), 2, 0, 1, 1, 0.0, 0.0, WEST, NONE, 5, 5, 5, 0, 0, 0);
 		
 		CnSPanel showPanel2 = new CnSPanel();
-		showPanel2.addComponent(new JLabel("with a threshold of"), 0, 0, 1, 1, 0.0, 0.0, WEST, NONE, 5, 5, 5, 0, 0, 0);
-		thresholdSpinner = new JSpinner(new SpinnerNumberModel(5, 0, 100, 1));
-		showPanel2.addComponent(thresholdSpinner, 1, 0, 1, 1, 0.0, 0.0, WEST, NONE, 5, 5, 5, 0, 0, 0);
-		showPanel2.addComponent(new JLabel("%."), 2, 0, 1, 1, 0.0, 0.0, WEST, NONE, 5, 5, 5, 0, 0, 0);
+		showPanel2.addComponent(new JLabel("Threshold:"), 0, 0, 1, 1, 0.0, 0.0, WEST, NONE, 5, 5, 5, 0, 0, 0);
+		thresholdTextField = new CnSThresholdTextField("0.05");
+		showPanel2.addComponent(thresholdTextField, 1, 0, 1, 1, 1.0, 0.0, WEST, HORIZONTAL	, 5, 5, 5, 0, 0, 0);
 		
 		CnSPanel showPanel = new CnSPanel();
 		showPanel.addComponent(showPanel1, 0, 0, 1, 1, 0.0, 0.0, CENTER, NONE, 5, 5, 0, 5, 0, 0);
-		showPanel.addComponent(showPanel2, 0, 1, 1, 1, 0.0, 0.0, CENTER, NONE, 5, 5, 5, 5, 0, 0);
+		showPanel.addComponent(showPanel2, 0, 1, 1, 1, 0.0, 0.0, CENTER, HORIZONTAL, 5, 5, 5, 5, 0, 0);
 		showPanel.setBorder(BorderFactory.createEtchedBorder());
 		
 		CnSPanel buttonsPanel = new CnSPanel();
@@ -109,7 +105,7 @@ public class CnSPartitionTablePanel extends CnSPanelSplitCommand {
 		annotateButton.setActionCommand("All");
 		buttonsPanel.addComponent(annotateButton, 0, 0, 1, 1, 0.0, 0.0, CENTER, NONE, 5, 5, 5, 0, 0, 0);
 		
-		deannotateButton = new CnSButton("Remove all clusters annotations");
+		deannotateButton = new CnSButton("Remove all cluster annotations");
 		deannotateButton.setActionCommand("All");
 		buttonsPanel.addComponent(deannotateButton, 0, 1, 1, 1, 0.0, 0.0, CENTER, NONE, 5, 5, 5, 5, 0, 0);
 		
@@ -126,7 +122,6 @@ public class CnSPartitionTablePanel extends CnSPanelSplitCommand {
 		commandPanel = new CnSPanel();
 		commandPanel.setBorder(BorderFactory.createEtchedBorder());
 		commandPanel.addComponent(showPanel, 0, 0, 1, 1, 1.0, 0.0, NORTHWEST, HORIZONTAL, 5, 5, 0, 5, 0, 0);
-		//commandPanel.addComponent(showPanel2, 0, 1, 1, 1, 0.0, 0.0, NORTHWEST, NONE, 5, 5, 0, 5, 0, 0);
 		commandPanel.addComponent(buttonsPanel, 0, 1, 1, 1, 1.0, 0.0, NORTHWEST, HORIZONTAL, 5, 5, 0, 5, 0, 0);
 		commandPanel.addComponent(hidePanel, 0, 2, 1, 1, 0.0, 0.0, NORTHWEST, HORIZONTAL, 5, 5, 5, 5, 0, 0);
 		
@@ -138,8 +133,8 @@ public class CnSPartitionTablePanel extends CnSPanelSplitCommand {
 
 			public String getToolTipText(MouseEvent me) {
 				int c = columnAtPoint(me.getPoint());
-				//rBundle = CyActivator.getResourcesBundle();
 				switch(c) {
+					case 0 : return rBundle.getString("CnSPartitionTableModel.userAnnotations_MO");
 					case 1 : return rBundle.getString("CnSPartitionTableModel.nodes_MO");
 					case 2 : return rBundle.getString("CnSPartitionTableModel.edges_MO");
 					case 3 : return rBundle.getString("CnSPartitionTableModel.annotationTerms_MO");
@@ -157,7 +152,6 @@ public class CnSPartitionTablePanel extends CnSPanelSplitCommand {
 		exportDataButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				System.err.println("exportDataButton");
 				JFileChooser jfc = new JFileChooser();
 				jfc.addChoosableFileFilter(new FileNameExtensionFilter("CSV file (separator: tabulation)", "csv"));
 				int ret = jfc.showSaveDialog(null);
@@ -224,23 +218,23 @@ public class CnSPartitionTablePanel extends CnSPanelSplitCommand {
 		statList.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				System.err.println("statList : " + statList.getSelectedItem());
 				table.fireTableDataChanged();
 				if (statList.getSelectedIndex() == 0)
-					thresholdSpinner.setValue(currentHypergeometricThreshold);
+					thresholdTextField.setText(Double.toString(currentHypergeometricThreshold));
 				else
-					thresholdSpinner.setValue(currentMajorityThreshold);
+					thresholdTextField.setText(Double.toString(currentMajorityThreshold));
 			}
 		});
-		thresholdSpinner.addChangeListener(new ChangeListener() {
+		thresholdTextField.addActionListener(new ActionListener() {
 			@Override
-			public void stateChanged(ChangeEvent e) {
-				System.err.println("thSpinner : " + thresholdSpinner.getValue());
-				table.fireTableDataChanged();
-				if (statList.getSelectedIndex() == 0)
-					currentHypergeometricThreshold = ((Integer)thresholdSpinner.getValue());
-				else
-					currentMajorityThreshold = ((Integer)thresholdSpinner.getValue());
+			public void actionPerformed(ActionEvent e) {
+				if (thresholdTextField.isANumber()) {
+					table.fireTableDataChanged();
+					if (statList.getSelectedIndex() == 0)
+						currentHypergeometricThreshold = Double.parseDouble(thresholdTextField.getText());
+					else
+						currentMajorityThreshold = Double.parseDouble(thresholdTextField.getText());
+				}
 			}
 		});
 		annotateButton.addActionListener(new ActionListener() {
@@ -335,7 +329,6 @@ public class CnSPartitionTablePanel extends CnSPanelSplitCommand {
 		hideSmallClustersCheckbox.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				System.err.println(hideSmallClustersCheckbox.isSelected());
 				CnSEvent ev = new CnSEvent(CnSPartitionPanel.REFRESH, CnSEventManager.PARTITION_PANEL, this.getClass());
 				if (partition != null) ev.addParameter(CnSPartitionPanel.PARTITION, partition);
 				CnSEventManager.handleMessage(ev, true);
@@ -437,15 +430,6 @@ public class CnSPartitionTablePanel extends CnSPanelSplitCommand {
 		}
 	}
 	
-	/*public void setSelectedAnnotation(CnSNodeAnnotation annotation) {
-		table.setSelectedAnnotation(annotation);
-		table.fireTableDataChanged();
-		repaintTable();
-	}
-	public CnSNodeAnnotation getSelectedAnnoselectedAnnotationtation() {
-		return table.getSelectedAnnotation();
-	}*/
-	
 	public void clear() {
 		table.getTable().setModel(new DefaultTableModel());
 		table.clear();
@@ -462,8 +446,6 @@ public class CnSPartitionTablePanel extends CnSPanelSplitCommand {
 		table.getTable().doLayout();
 		table.getTable().repaint();
 		table.getFixedTable().repaint();
-		//splitPane.setDividerLocation(this.getWidth() - commandPanel.getPreferredSize().width -5);
-		System.err.println("divider location = " + (this.getWidth() - commandPanel.getPreferredSize().width));
 	}
 	
 	/**
@@ -492,12 +474,7 @@ public class CnSPartitionTablePanel extends CnSPanelSplitCommand {
 			for (int row = 0; row < table.getTable().getRowSorter().getViewRowCount(); row++) {
 				for (int col = 0; col < table.getTable().getModel().getColumnCount(); col++) {
 					value = table.getModel().getValueAt(table.getTable().getRowSorter().convertRowIndexToModel(row), col);
-					/*if (col == 5) {
-						Vector<CnSAnnotationClusterPValue> v = (Vector<CnSAnnotationClusterPValue>)value;
-						br.write(String.valueOf(v.size()));
-					}
-					else*/
-						br.write(value.toString());
+					br.write(value.toString());
 					br.write("\t");
 				}
 				br.newLine();
@@ -505,8 +482,16 @@ public class CnSPartitionTablePanel extends CnSPanelSplitCommand {
 		}
 	}
 	
-	public int getCurrentThreshold() {
-		return (Integer)thresholdSpinner.getValue();
+	public double getCurrentThreshold() {
+		try {
+			return Integer.parseInt(thresholdTextField.getText());
+		}
+		catch (NumberFormatException ex) {
+			if (statList.getSelectedIndex() == 0)
+				return currentHypergeometricThreshold;
+			else
+				return currentMajorityThreshold;
+		}
 	}
 	
 	public boolean hideSmallClusters() {

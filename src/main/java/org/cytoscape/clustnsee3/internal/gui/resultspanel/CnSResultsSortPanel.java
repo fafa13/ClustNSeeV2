@@ -94,7 +94,6 @@ public class CnSResultsSortPanel extends CnSPanel {
 			@Override
 			public void itemStateChanged(ItemEvent event) {
 				if (event.getStateChange() == ItemEvent.SELECTED) {
-					System.err.println("CnSResultsSortPanel.itemStateChanged(" + clusterList.getSelectedItem() + ")");
 					CnSEvent ev = new CnSEvent(CnSResultsPanel.SELECT_CLUSTER, CnSEventManager.RESULTS_PANEL, this.getClass());
 					ev.addParameter(CnSResultsPanel.CLUSTER_NAME, clusterList.getSelectedItem());
 					CnSEventManager.handleMessage(ev, true);
@@ -112,7 +111,6 @@ public class CnSResultsSortPanel extends CnSPanel {
 		sortCheckBox.setEnabled(b);
 	}
 	public void setSelectedCluster(int i) {
-		System.err.println("CnSResultsSortPanel.setSelectedCluster(" + i + ")");
 		clusterList.setSelectedItem(Integer.valueOf(i));
 	}
 	public void setSelectedCluster(long l) {

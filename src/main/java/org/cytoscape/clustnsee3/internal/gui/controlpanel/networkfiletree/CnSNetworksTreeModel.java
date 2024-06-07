@@ -37,7 +37,6 @@ public class CnSNetworksTreeModel extends CnSPanelTreeModel {
 		v.put(CnSAFTreeNetworkNetnameNode.NETWORK, network);
 		v.put(CnSAFTreeNetworkNetnameNode.ANNOTATION_FILE, af);
 		final CnSAFTreeNetworkNetnameNode networkNode = new CnSAFTreeNetworkNetnameNode(rootNode, v);
-		System.err.println("inserting " + af + " in " + rootNode.hashCode() + " , position " + rootNode.getChildCount());
 		v.clear();
 		v.put(CnSAFTreeNetworkNetnameDetailsNode.MAPPED_ANNOTATIONS, mappedAnnotations);
 		v.put(CnSAFTreeNetworkNetnameDetailsNode.MAPPED_NODES, mappedNodes);
@@ -60,13 +59,4 @@ public class CnSNetworksTreeModel extends CnSPanelTreeModel {
 	public void removeNetwork(CnSAFTreeNetworkNetnameNode netNode, CyNetwork network, CnSNodeAnnotationFile annotationFile) {
 		netNode.remove();
 	}
-	public void printStructure(CnSPanelTreeNode node, int level) {
-		printNode(node, level);
-		for (int i = 0; i < node.getChildCount(); i++) printStructure(node.getChildAt(i), level + 1);
-	}
-	private void printNode(CnSPanelTreeNode node, int level) {
-		for (int i = 0; i < level; i++) System.err.print("  ");
-		System.err.println(node.getValue());
-	}
-
 }

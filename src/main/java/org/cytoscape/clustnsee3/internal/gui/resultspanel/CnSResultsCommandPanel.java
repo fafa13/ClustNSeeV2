@@ -698,7 +698,6 @@ public class CnSResultsCommandPanel extends CnSPanel {
 		CnSView currentView = (CnSView)CnSEventManager.handleMessage(ev, true).getValue();
 		
 		if (currentView != null && currentView.getStateValue() != "cluster" && currentView.getStateValue() != "partition") {
-			System.err.println("current view state = " + currentView.getStateValue());
 			if (!currentView.getClusters().contains(cluster)) {
 				// get the selected partition
 				ev = new CnSEvent(CnSResultsPanel.GET_SELECTED_PARTITION, CnSEventManager.RESULTS_PANEL, this.getClass());

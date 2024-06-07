@@ -20,7 +20,7 @@ public class CnSStartMenu extends AbstractCyAction {
 	
 	private CnSStartMenu(BundleContext context, CyActivator ca) {
 		super("Start"); 						// name est le menu item
-		setPreferredMenu("Apps.Clust&see"); 	// definit le menu
+		setPreferredMenu("Apps.Clust&See"); 	// definit le menu
 		en = true;
 	}
 

@@ -31,7 +31,7 @@ public class CnSStopMenu extends AbstractCyAction {
 	
 	private CnSStopMenu() {
 		super("Stop"); 						
-		setPreferredMenu("Apps.Clust&see");	
+		setPreferredMenu("Apps.Clust&See");	
 		en = true;
 	}
 
