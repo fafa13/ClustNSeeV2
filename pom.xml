@@ -14,11 +14,6 @@
 	<packaging>bundle</packaging>
 
 	<build>
-		<resources>
-			<resource>
-				<directory>src/main/resources</directory>
-			</resource>
-		</resources>
 		<!-- Cytoscape requires Java 1.6 -->
 		<plugins>
 			<plugin>
@@ -78,6 +73,28 @@
                     </instructions>
 				</configuration>
 			</plugin>
+	      <plugin>
+    	    <artifactId>maven-resources-plugin</artifactId>
+    	    <version>3.3.1</version>
+    	    <executions>
+    	      <execution>
+    	        <id>copy-resources</id>
+    	        <phase>validate</phase>
+    	        <goals>
+	              <goal>copy-resources</goal>
+    	        </goals>
+    	        <configuration>
+    	          <outputDirectory>target/classes/org/cytoscape/clustnsee3/internal/resources</outputDirectory>
+    	          <resources>          
+    	            <resource>
+    	              <directory>resources</directory>
+    	              <filtering>true</filtering>
+    	            </resource>
+    	          </resources>              
+    	        </configuration>            
+    	      </execution>
+    	    </executions>
+    	  </plugin>
 		</plugins>
 	</build>
 
