@@ -169,6 +169,7 @@ public class CnSAnnotationAnalysisPanel extends CnSPanelSplitCommand {
 				return null;
 			}
 		});
+		
 		table.getTable().getTableHeader().setDefaultRenderer(new CnSTableHeaderRenderer());
 		table.getFixedTable().getTableHeader().setDefaultRenderer(new CnSTableHeaderRenderer());
 		
@@ -181,7 +182,7 @@ public class CnSAnnotationAnalysisPanel extends CnSPanelSplitCommand {
 	public void init(CnSPartition partition) {
 		CnSAnnotationTableModel model = new CnSAnnotationTableModel(partition);
 		table.setModel(model);
-		((CnSTableHeaderRenderer)table.getTable().getTableHeader().getDefaultRenderer()).setToolTipText("toto");
+		//((CnSTableHeaderRenderer)table.getTable().getTableHeader().getDefaultRenderer()).setToolTipText("toto");
     	
 
 		RowFilter<CnSAnnotationTableModel,Integer> annotationFilter = new RowFilter<CnSAnnotationTableModel,Integer>() {
@@ -224,16 +225,17 @@ public class CnSAnnotationAnalysisPanel extends CnSPanelSplitCommand {
 	        pWidth = Math.min(pWidth, maxWidth);
 			tc.setPreferredWidth(pWidth);//if (columnIndex == 5) return CnSEnrichmentStatValue.class;
 		}
-		
-		pWidth = headerFontMetrics.stringWidth(table.getFixedTable().getColumnName(0)) + table.getFixedTable().getIntercellSpacing().width + 10 + UIManager.getIcon("Table.ascendingSortIcon").getIconWidth();
-		pWidth = Math.max(pWidth,  minWidth);
-		tc = table.getFixedTable().getColumnModel().getColumn(0);
-		tc.setMinWidth(minWidth);
-		tc.setMaxWidth(maxWidth);
-		for (int row = 0; row < table.getFixedTable().getRowCount(); row++)
-			pWidth = Math.max(pWidth, table.getFixedTable().prepareRenderer(table.getFixedTable().getDefaultRenderer(table.getFixedTable().getColumnClass(0)), row, 0).getPreferredSize().width + 10 + table.getFixedTable().getIntercellSpacing().width);
-        pWidth = Math.min(pWidth, maxWidth);
-        tc.setPreferredWidth(pWidth);
+		if (table.getModel().getColumnCount() > 0) {
+			pWidth = headerFontMetrics.stringWidth(table.getFixedTable().getColumnName(0)) + table.getFixedTable().getIntercellSpacing().width + 10 + UIManager.getIcon("Table.ascendingSortIcon").getIconWidth();
+			pWidth = Math.max(pWidth,  minWidth);
+			tc = table.getFixedTable().getColumnModel().getColumn(0);
+			tc.setMinWidth(minWidth);
+			tc.setMaxWidth(maxWidth);
+			for (int row = 0; row < table.getFixedTable().getRowCount(); row++)
+				pWidth = Math.max(pWidth, table.getFixedTable().prepareRenderer(table.getFixedTable().getDefaultRenderer(table.getFixedTable().getColumnClass(0)), row, 0).getPreferredSize().width + 10 + table.getFixedTable().getIntercellSpacing().width);
+			pWidth = Math.min(pWidth, maxWidth);
+			tc.setPreferredWidth(pWidth);
+		}
 	}
 	public void clear() {
 		table.getTable().setModel(new DefaultTableModel());

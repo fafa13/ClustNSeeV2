@@ -65,7 +65,6 @@ public class CnSPartitionTablePanel extends CnSPanelSplitCommand {
 	private CnSButton exportDataButton, annotateButton, deannotateButton;
 	private CnSCluster selectedCluster;
 	private JComboBox<String> statList;
-	//private JSpinner thresholdSpinner;
 	private CnSThresholdTextField thresholdTextField;
 	private JCheckBox hideSmallClustersCheckbox;
 	private CnSPartition partition;

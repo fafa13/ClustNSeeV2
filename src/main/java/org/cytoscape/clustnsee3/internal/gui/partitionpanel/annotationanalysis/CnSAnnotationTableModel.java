@@ -19,6 +19,7 @@ import java.util.ResourceBundle;
 import java.util.Vector;
 
 import org.cytoscape.clustnsee3.internal.event.CnSEventManager;
+import org.cytoscape.clustnsee3.internal.gui.util.cnstable.CnSTableModel;
 import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeAnnotation;
 import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeAnnotationManager;
 import org.cytoscape.clustnsee3.internal.nodeannotation.stats.CnSAnnotationClusterPValue;
@@ -30,9 +31,10 @@ import org.cytoscape.clustnsee3.internal.event.CnSEvent;
 /**
  * 
  */
-public class CnSAnnotationTableModel extends AbstractTableModel {
+public class CnSAnnotationTableModel extends CnSTableModel {
 	private static final long serialVersionUID = 142374013826060311L;
 	private static final String[] columnNames = new String[5]; 
+	private static final Class<?>[] columnClass = {Integer.class, Integer.class, Double.class, Double.class, Double.class};
 	private CnSPartition partition;
 	private CnSNodeAnnotation selectedAnnotation;
 	
@@ -82,9 +84,9 @@ public class CnSAnnotationTableModel extends AbstractTableModel {
 	 */
 	@Override
 	public String getColumnName(int columnIndex) {
-		if (partition != null)
+		//if (partition != null)
 			return columnNames[columnIndex];
-		return null;
+		//return null;
 	}
 	
 	/* (non-Javadoc)
@@ -160,7 +162,7 @@ public class CnSAnnotationTableModel extends AbstractTableModel {
 	 */
 	@Override
 	public Class<?> getColumnClass(int columnIndex) {
-		if (getRowCount() == 0) return Object.class;
-		return getValueAt(0, columnIndex).getClass();
+		//if (getRowCount() == 0) return Object.class;
+		return columnClass[columnIndex];
 	}
 }

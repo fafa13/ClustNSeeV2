@@ -39,7 +39,7 @@ public final class CnSLogger {
 		
 		Integer i;
 		logger.info("CNS\tSource : " + ev.getSource().getSimpleName() + " ; Target : {} ; Action : {}", target.getClass().getSimpleName(), target.getActionName(ev.getAction()));
-		System.err.println("LogCnSEvent : " + "CNS\tSource : " + ev.getSource().getSimpleName() + " ; Target : " + target.getClass().getSimpleName() + " ; Action : " + target.getActionName(ev.getAction()));
+		//System.err.println("LogCnSEvent : " + "CNS\tSource : " + ev.getSource().getSimpleName() + " ; Target : " + target.getClass().getSimpleName() + " ; Action : " + target.getActionName(ev.getAction()));
 		String s = "CNS\tParameters : ";
 		
 		while (keys.hasMoreElements()) {
@@ -48,7 +48,7 @@ public final class CnSLogger {
 			s += ev.getParameter(i);
 			s += " ; ";
 		}
-		System.err.println("LogCnSEvent : " + s);
+		//System.err.println("LogCnSEvent : " + s);
 		logger.info(s);
 	}
 	public static CnSLogger getInstance() {

@@ -260,7 +260,7 @@ public class CnSClusterAnalysisPanel extends CnSPanelSplitCommand  {
 		}
 		clusterList.setSelectedIndex(0);
 		((CnSClusterTableModel)clusterTable.getModel()).setSelectedCluster(null);
-		
+		((CnSClusterTableModel)clusterTable.getModel()).refreshModel();
 		((CnSClusterTableModel)clusterTable.getModel()).fireTableDataChanged();
 	}
 	public void init(CnSCluster cluster) {

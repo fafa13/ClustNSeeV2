@@ -30,19 +30,20 @@ import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 
 import org.cytoscape.clustnsee3.internal.gui.partitionpanel.partitiontable.CnSPartitionTableFixedColumnRenderer;
+import org.cytoscape.clustnsee3.internal.gui.util.cnstable.CnSTable;
 import org.cytoscape.clustnsee3.internal.nodeannotation.CnSNodeAnnotation;
 
 /**
  * 
  */
 public class CnSAnnotationTable implements ChangeListener, PropertyChangeListener {
-	private JTable table;
-	private JTable fixed;
+	private CnSTable table;
+	private CnSTable fixed;
 	private JScrollPane scrollPane;
 	
 	public CnSAnnotationTable() {
 		super();
-		table = new JTable(new CnSAnnotationTableModel(null)) {
+		table = new CnSTable(new CnSAnnotationTableModel(null)) {
 			private static final long serialVersionUID = 3844853711811737093L;
 
 			public String getToolTipText(MouseEvent me) {
@@ -55,7 +56,7 @@ public class CnSAnnotationTable implements ChangeListener, PropertyChangeListene
 		table.setRowHeight(26);
 		scrollPane = new JScrollPane(table);
 		table.addPropertyChangeListener(this);
-		fixed = new JTable();
+		fixed = new CnSTable();
 		fixed.setAutoCreateColumnsFromModel(false);
 		
 		fixed.setSelectionModel(table.getSelectionModel());
@@ -99,11 +100,14 @@ public class CnSAnnotationTable implements ChangeListener, PropertyChangeListene
 		fixed.setModel(model);
 		
 		TableColumnModel columnModel = table.getColumnModel();
-	    TableColumn column = columnModel.getColumn(0);
-    	columnModel.removeColumn(column);
-    	if (fixed.getColumnModel().getColumnCount() > 0) fixed.getColumnModel().removeColumn(fixed.getColumnModel().getColumn(0));
-    	fixed.getColumnModel().addColumn(column);
-    	fixed.getColumnModel().getColumn(0).setCellRenderer(new CnSPartitionTableFixedColumnRenderer());
+		if (model.getColumnCount() > 0) {
+			TableColumn column = columnModel.getColumn(0);
+			columnModel.removeColumn(column);
+			if (fixed.getColumnModel().getColumnCount() > 0) fixed.getColumnModel().removeColumn(fixed.getColumnModel().getColumn(0));
+			fixed.getColumnModel().addColumn(column);
+			fixed.getColumnModel().getColumn(0).setCellRenderer(new CnSPartitionTableFixedColumnRenderer());
+		}
+    	table.fireTableDataChanged();
    	}
 	/* (non-Javadoc)
 	 * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)

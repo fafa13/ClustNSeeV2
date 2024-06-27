@@ -38,6 +38,7 @@ import org.cytoscape.clustnsee3.internal.partition.CnSPartition;
 public class CnSPartitionTableModel extends AbstractTableModel {
 	private static final long serialVersionUID = 3984889084020756303L;
 	private static final String[] columnNames = new String[6];
+	private static final Class<?>[] columnClass = {Integer.class, String.class, CnSTwoIntegers.class, Integer.class, Integer.class, Integer.class};
 	private CnSPartition partition;
 	private CnSNodeAnnotation selectedAnnotation;
 	
@@ -130,13 +131,14 @@ public class CnSPartitionTableModel extends AbstractTableModel {
 					 ev.addParameter(CnSNodeAnnotationManager.CLUSTER, cluster);
 					 return ((Vector<?>)CnSEventManager.handleMessage(ev, false).getValue()).size();
 			case -5 : ev = new CnSEvent(CnSPartitionPanel.GET_SELECTED_STAT, CnSEventManager.PARTITION_PANEL, this.getClass());
-			 		  selectedStat = (Integer)CnSEventManager.handleMessage(ev, false).getValue();
-			 		  if (selectedStat == 0)
-			 			  ev = new CnSEvent(CnSNodeAnnotationManager.GET_BH_FILTERED_ANNOTATIONS, CnSEventManager.ANNOTATION_MANAGER, this.getClass());
-			 		  else
-			 			  ev = new CnSEvent(CnSNodeAnnotationManager.GET_MAJORITY_FILTERED_ANNOTATIONS, CnSEventManager.ANNOTATION_MANAGER, this.getClass());
-			 		  ev.addParameter(CnSNodeAnnotationManager.CLUSTER, cluster);
-			 		  return (Vector<CnSAnnotationClusterPValue>)CnSEventManager.handleMessage(ev, false).getValue();
+					  selectedStat = (Integer)CnSEventManager.handleMessage(ev, false).getValue();
+					  if (selectedStat == 0)
+						  ev = new CnSEvent(CnSNodeAnnotationManager.GET_BH_FILTERED_ANNOTATIONS, CnSEventManager.ANNOTATION_MANAGER, this.getClass());
+					  else
+						  ev = new CnSEvent(CnSNodeAnnotationManager.GET_MAJORITY_FILTERED_ANNOTATIONS, CnSEventManager.ANNOTATION_MANAGER, this.getClass());
+					  ev.addParameter(CnSNodeAnnotationManager.CLUSTER, cluster);
+					  return (Vector<CnSAnnotationClusterPValue>)CnSEventManager.handleMessage(ev, false).getValue();
+
 			default : return "NA";
 		}
 	}
@@ -155,7 +157,7 @@ public class CnSPartitionTableModel extends AbstractTableModel {
 	@Override
 	public Class<?> getColumnClass(int columnIndex) {
 		if (getRowCount() == 0) return Object.class;
-		return getValueAt(0, columnIndex).getClass();
+		return columnClass[columnIndex];
 	}
 
 	/* (non-Javadoc)

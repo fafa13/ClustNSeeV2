@@ -33,7 +33,12 @@ public class CnSTable extends JTable {
 		setDefaultRenderer(Object.class, new CnSTableCellRenderer());
 		setDefaultRenderer(Double.class, new CnSTableCellRenderer());
 		setDefaultRenderer(Integer.class, new CnSTableCellRenderer());
+		setDefaultRenderer(String.class, new CnSTableCellRenderer());
 		model = new CnSDefaultTableModel();
+	}
+	public CnSTable(CnSTableModel tm) {
+		this();
+		setModel(tm);
 	}
 	public void setModel(CnSTableModel tm) {
 		model = tm;

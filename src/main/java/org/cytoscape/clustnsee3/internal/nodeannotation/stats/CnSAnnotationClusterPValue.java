@@ -33,7 +33,7 @@ public class CnSAnnotationClusterPValue implements Comparable<CnSAnnotationClust
 		this.pvalue = pvalue;
 		this.annotatedNodesInCluster = annotatedNodesInCluster;
 		this.annotatedNodesInGraph = annotatedNodesInGraph;
-		bhvalue = 1.0;
+		bhvalue = 2.0;
 	}
 
 	public double getPValue() {

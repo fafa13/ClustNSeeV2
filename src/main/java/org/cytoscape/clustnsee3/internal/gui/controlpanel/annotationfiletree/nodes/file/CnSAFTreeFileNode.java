@@ -61,8 +61,8 @@ public class CnSAFTreeFileNode extends CnSPanelTreeNode {
 		if (e.getSource() instanceof CnSButton) {
 			af = (CnSNodeAnnotationFile)getData(CnSAFTreeFileNode.ANNOTATION_FILE);
 			if (((CnSButton)e.getSource()).getActionCommand().equals("delete")) {
-				System.out.println("Pressed: delete " + af);
-				System.out.println("Child count = " + getChildCount());
+				//System.out.println("Pressed: delete " + af);
+				//System.out.println("Child count = " + getChildCount());
 				
 				CnSEvent ev = new CnSEvent(CyActivator.GET_TASK_MANAGER, CnSEventManager.CY_ACTIVATOR, this.getClass());
 				DialogTaskManager dialogTaskManager = (DialogTaskManager)CnSEventManager.handleMessage(ev, true).getValue();
@@ -74,7 +74,7 @@ public class CnSAFTreeFileNode extends CnSPanelTreeNode {
 				dialogTaskManager.execute(ti);
 			}
 			else if (((CnSButton)e.getSource()).getActionCommand().equals("annotate")) {
-				System.out.println("Pressed: annotate " + af);
+				//System.out.println("Pressed: annotate " + af);
 				CnSEvent ev = new CnSEvent(CyActivator.GET_APPLICATION_MANAGER, CnSEventManager.CY_ACTIVATOR, this.getClass());
 				CyApplicationManager cam = (CyApplicationManager)CnSEventManager.handleMessage(ev, true).getValue();
 				CyNetwork network = cam.getCurrentNetwork();

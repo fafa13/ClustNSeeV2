@@ -80,7 +80,8 @@ public class CnSClusterAnnotationMatrixModel extends CnSTableModel {
 			ev.addParameter(CnSNodeAnnotationManager.CLUSTER, partition.getCluster(columnIndex));
 			ev.addParameter(CnSNodeAnnotationManager.ANNOTATION, annotations.elementAt(rowIndex));
 			CnSAnnotationClusterPValue pv = (CnSAnnotationClusterPValue)CnSEventManager.handleMessage(ev, false).getValue();
-			return pv.getBHValue();
+			if (pv.getBHValue() != 2.0D) return pv.getBHValue();
+			return Double.NaN;
 		} 
 		else {
 			ev = new CnSEvent(CnSNodeAnnotationManager.GET_ANNOTATED_NODES, CnSEventManager.ANNOTATION_MANAGER, this.getClass());

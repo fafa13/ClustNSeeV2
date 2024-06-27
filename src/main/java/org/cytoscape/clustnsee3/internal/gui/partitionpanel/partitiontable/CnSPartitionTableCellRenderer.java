@@ -20,6 +20,7 @@ import java.awt.Font;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JTable;
+import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 import javax.swing.table.DefaultTableCellRenderer;
 
@@ -36,6 +37,7 @@ public class CnSPartitionTableCellRenderer extends DefaultTableCellRenderer {
 		label = new JLabel();
 		label.setOpaque(true);
 		label.setBorder(paddingBorder);
+		label.setHorizontalAlignment(SwingConstants.CENTER);
 	}
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
 		if (column == 4)

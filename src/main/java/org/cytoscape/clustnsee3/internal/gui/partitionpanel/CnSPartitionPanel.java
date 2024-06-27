@@ -248,6 +248,8 @@ public class CnSPartitionPanel extends CnSPanel implements CytoPanelComponent, C
 			case REFRESH :
 				partition = (CnSPartition)event.getParameter(PARTITION);
 				partitionTablePanel.refresh();
+				clusterAnnotationMatrixPanel.init(partition);
+				annotationAnalysisPanel.init(partition);
 				if (partition != null) 
 					clusterAnalysisPanel.refresh(partition);
 				else

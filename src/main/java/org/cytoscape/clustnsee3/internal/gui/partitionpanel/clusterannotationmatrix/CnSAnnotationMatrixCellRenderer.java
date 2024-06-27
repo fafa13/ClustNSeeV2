@@ -19,6 +19,7 @@ import java.awt.Font;
 
 import javax.swing.JLabel;
 import javax.swing.JTable;
+import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 
 /**
@@ -39,6 +40,7 @@ public class CnSAnnotationMatrixCellRenderer extends DefaultTableCellRenderer {
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
 		JLabel label = new JLabel();
 		label.setOpaque(true);
+		label.setHorizontalAlignment(SwingConstants.CENTER);
 		if (isSelected) {
 	    	label.setFont(font.deriveFont(Font.BOLD));
 			label.setBackground(Color.yellow);
@@ -47,7 +49,11 @@ public class CnSAnnotationMatrixCellRenderer extends DefaultTableCellRenderer {
 			label.setFont(font);
 			label.setBackground(Color.white);
 		}
-	    label.setText(value.toString());
+		if (value instanceof Double) {
+			if (!Double.isNaN((Double)value)) label.setText(value.toString());
+		}
+		else
+			label.setText(value.toString());
 	    if ((stat == 0) && ((Double)value < threshold))
 	    	label.setBackground(Color.green);
 	    else if ((stat == 1) && ((Double)value >= threshold))

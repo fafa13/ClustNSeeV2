@@ -24,7 +24,6 @@ import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JScrollPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.TableRowSorter;
 
@@ -68,7 +67,8 @@ public class CnSClusterAnnotationMatrixPanel extends CnSPanelSplitCommand {
 		matrix.getTable().setRowSorter(sorter);
 		
 		matrix.getTable().setModel(matrixModel);
-		matrix.getTable().fireTableDataChanged();
+		matrix.getTable().fireTableDataChanged();		
+		matrix.getFixedTable().setPreferredScrollableViewportSize(matrix.getFixedTable().getPreferredSize());
 	}
 
 	private void initListeners() {
@@ -79,12 +79,12 @@ public class CnSClusterAnnotationMatrixPanel extends CnSPanelSplitCommand {
 				matrix.getTable().fireTableDataChanged();
 				
 				if (statList.getSelectedIndex() == 0)
-					//thresholdSpinner.setValue(currentHypergeometricThreshold);
 					thresholdTextField.setText(Double.toString(currentHypergeometricThreshold));
 				else
-					//thresholdSpinner.setValue(currentMajorityThreshold);
 					thresholdTextField.setText(Double.toString(currentMajorityThreshold));
 				((CnSClusterAnnotationMatrixModel)matrix.getTable().getModel()).setStat(statList.getSelectedIndex());
+				matrix.getTable().setDefaultRenderer(Double.class, new CnSAnnotationMatrixCellRenderer(Double.parseDouble(thresholdTextField.getText()), statList.getSelectedIndex()));
+				matrix.getTable().fireTableDataChanged();
 			}
 		});
 		thresholdTextField.addActionListener(new ActionListener() {
@@ -155,7 +155,10 @@ public class CnSClusterAnnotationMatrixPanel extends CnSPanelSplitCommand {
 		matrix.getTable().setModel(matrixModel);
 		matrix.getTable().fireTableDataChanged();
 		
-		initGraphics(commandPanel, new JScrollPane(matrix.getTable()));
+		matrix.getTable().getTableHeader().setDefaultRenderer(new CnSTableHeaderRenderer());
+		matrix.getFixedTable().getTableHeader().setDefaultRenderer(new CnSTableHeaderRenderer());
+		
+		initGraphics(commandPanel, matrix.getScrollPane());
 		
 		matrix.getTable().getTableHeader().setDefaultRenderer(new CnSTableHeaderRenderer());
 	}
@@ -184,6 +187,7 @@ public class CnSClusterAnnotationMatrixPanel extends CnSPanelSplitCommand {
 	 * @return
 	 */
 	public void write(BufferedWriter br) throws IOException {
+		Object value;
 		if (matrix.getTable().getModel() != null) {
 			for (int col = 0; col < matrix.getTable().getModel().getColumnCount(); col++) {
 				br.write(matrix.getTable().getModel().getColumnName(col));
@@ -192,7 +196,15 @@ public class CnSClusterAnnotationMatrixPanel extends CnSPanelSplitCommand {
 			br.newLine();
 			for (int row = 0; row < matrix.getTable().getRowSorter().getViewRowCount(); row++) {
 				for (int col = 0; col < matrix.getTable().getModel().getColumnCount(); col++) {
-					br.write(matrix.getTable().getModel().getValueAt(matrix.getTable().getRowSorter().convertRowIndexToModel(row), col).toString());
+					value = matrix.getTable().getModel().getValueAt(matrix.getTable().getRowSorter().convertRowIndexToModel(row), col);
+					if (col != 0) {
+						if (((Double)value).isNaN()) 
+							br.write("NA");
+						else
+							br.write(value.toString());
+					}
+					else
+						br.write(value.toString());
 					br.write("\t");
 				}
 				br.newLine();

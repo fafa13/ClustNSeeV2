@@ -110,7 +110,9 @@ public class CnSClusterTableModel extends CnSTableModel {
 	 */
 	@Override
 	public int getColumnCount() {
-		return columnNames.length;
+		if (annotations.size() > 0)
+			return columnNames.length;
+		return 0;
 	}
 	
 	public String getColumnName(int column) {
