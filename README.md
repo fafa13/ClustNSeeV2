@@ -20,4 +20,6 @@ cd ClustnSee-3
 mvn clean install -U
 ```
 ## Installing the app :
-```cp ./target/tagc-clustnsee-3.0.0.jar $HOME/CytoscapeConfiguration/3/apps/installed/```
+```
+cp ./target/tagc-clustnsee-3.0.0.jar $HOME/CytoscapeConfiguration/3/apps/installed/
+```
