@@ -1,10 +1,10 @@
 # ClustnSee 3
 
-This is the Maven project for building ClustnSee App for Cytoscape 3
+This is the Maven project for building ClustnSee app for Cytoscape 3
 
 ## Requirements
 
-You need the following tools to build and install ClustnSee :
+First, you need to install the following tools to build and install ClustnSee app:
 
   * [Git](https://github.com/git-guides/install-git)
   * [JDK](https://www.oracle.com/java/technologies/downloads/)
@@ -13,7 +13,7 @@ You need the following tools to build and install ClustnSee :
     * binary tar.gz archive for Linux and OS X
   * [Cytoscape](https://cytoscape.org/download.html)
 
-## Building ClustnSee App :
+## Building ClustnSee app :
 ```
 git clone https://github.com/fafa13/ClustnSee-3.git
 cd ClustnSee-3
